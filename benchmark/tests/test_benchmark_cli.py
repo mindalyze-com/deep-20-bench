@@ -8,6 +8,7 @@ from deep20_benchmark import cli
 from deep20_benchmark.canary import LlmCanaryResult, StartupCanaryResult
 from deep20_benchmark.cli import benchmark_app
 from deep20_benchmark.models import BenchmarkLlmRole
+from typer._click.utils import strip_ansi
 from typer.testing import CliRunner
 
 
@@ -24,10 +25,12 @@ def test_benchmark_mode_is_required_and_lists_every_choice() -> None:
         ],
     )
 
+    output = strip_ansi(result.output)
+
     assert result.exit_code == 2
-    assert "Missing option '--benchmark-mode'" in result.output
-    assert "official" in result.output
-    assert "experimental" in result.output
+    assert "Missing option '--benchmark-mode'" in output
+    assert "official" in output
+    assert "experimental" in output
 
 
 def test_benchmark_mode_rejects_values_outside_the_declared_choices() -> None:
@@ -45,10 +48,12 @@ def test_benchmark_mode_rejects_values_outside_the_declared_choices() -> None:
         ],
     )
 
+    output = strip_ansi(result.output)
+
     assert result.exit_code == 2
-    assert "Invalid value for '--benchmark-mode': 'draft'" in result.output
-    assert "official" in result.output
-    assert "experimental" in result.output
+    assert "Invalid value for '--benchmark-mode': 'draft'" in output
+    assert "official" in output
+    assert "experimental" in output
 
 
 def test_success_relies_on_concise_result_log_without_dumping_typed_result(

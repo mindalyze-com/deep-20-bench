@@ -11,6 +11,7 @@ from deep20_game.models import GameProviderExchange
 from deep20_game.sampling import derive_guesser_prompt_nonce
 from deep20_oracle import cli as root_cli
 from deep20_oracle.cli import app
+from typer._click.utils import strip_ansi
 from typer.testing import CliRunner
 
 from .conftest import provider_trace
@@ -45,13 +46,14 @@ def test_root_cli_exposes_game_and_cache_probe_commands() -> None:
     play = CliRunner().invoke(app, ["game", "play", "--help"])
 
     assert root.exit_code == 0
-    assert "game" in root.output
+    assert "game" in strip_ansi(root.output)
     assert game.exit_code == 0
-    assert "cache-probe" in game.output
+    assert "cache-probe" in strip_ansi(game.output)
     assert play.exit_code == 0
-    assert "--cache-probe" in play.output
-    assert "--seed" in play.output
-    assert "--verbose" in play.output
+    play_output = strip_ansi(play.output)
+    assert "--cache-probe" in play_output
+    assert "--seed" in play_output
+    assert "--verbose" in play_output
 
 
 class _CliGameProvider:
