@@ -1,0 +1,2320 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260728-official-M0005-010
+    model_id: M-0005
+    target_id: T-0004
+    trial_id: trial-003
+    trial_number: 3
+    episode_run_id: BR-f85ef4b3c1b3dff8b985516b93279020e34ee5d8
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-f85ef4b3c1b3dff8b985516b93279020e34ee5d8
+      episode_id: EP-019fa9df4418771d83018c29d728dda3
+      subject:
+        target_id: T-0004
+        canonical_name: Garfield
+        aliases:
+        - Garfield the Cat
+        entity_type: fictional_character
+        description: Garfield, the lazy, cynical, lasagna-loving orange cat created
+          by Jim Davis and protagonist of the Garfield comic strip, identified by
+          Wikidata entity Q767120.
+        reference_url: https://en.wikipedia.org/wiki/Garfield_(character)
+      started_at: '2026-07-28T17:56:49.304613+00:00'
+      completed_at: '2026-07-28T18:20:37.203992+00:00'
+      duration_ms: 1427899
+    outcome:
+      success: false
+      terminal_reason: guesser_protocol_failure
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 51
+      counted_questions: 50
+      guesser_call_count: 51
+      ask_count: 43
+      guess_count: 7
+      rejected_guess_count: 7
+      oracle_unknown_count: 15
+      oracle_quality:
+        reviewed_questions: 28
+        agreements: 27
+        disagreements: 1
+        judge_invocations: 1
+        oracle_answers_changed: 1
+        final_unknown_answers: 15
+        judge_yes_answers: 1
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0277732'
+        judge_cost_usd: '0.019485'
+        quality_control_cost_usd: '0.0472582'
+        question_types:
+        - question_type: other
+          reviewed_questions: 27
+          disagreements: 1
+        - question_type: temporal_comparison
+          reviewed_questions: 1
+          disagreements: 0
+      contract:
+        evaluated_outputs: 51
+        valid_outputs: 51
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.6849238'
+        oracle: '0.2962344500000000024'
+        validator: '0.0025885'
+        total: '0.9837467500000000024'
+      tokens:
+        guesser: 205950
+        oracle: 356715
+        validator: 3152
+        total: 565817
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0005
+        requested_model: anthropic/claude-sonnet-5
+        requested_provider: anthropic
+        resolved_models:
+        - anthropic/claude-sonnet-5
+        resolved_providers:
+        - Anthropic
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the character from a book (originally in print/literature) rather
+          than a movie, TV show, or video game?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9df5186742db6fb566a3020418e
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.guinnessworldrecords.com/world-records/67023-most-syndicated-comic-strip
+          excerpt: Garfield, created by Jim Davis, was first published in the USA
+            in June 1978, printed in just 41 publications.
+          validation: model_reported
+        - source_url: https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years
+          excerpt: Garfield made his debut ... in his first comic strip ... in 41
+            newspapers.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fa9df4418771d83018c2b46e5cf0d
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the character from a fantasy genre book?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9df892e75c48991a843a873a8e7
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: In 1978 he launched Garfield for United Features... Garfield (1978-
+            ) is a comic strip.
+          validation: model_reported
+        - source_url: https://openlibrary.org/subjects/person:garfield_(fictitious_character)
+          excerpt: Garfield (Fictitious character) ... Humor, form, comic strips &
+            cartoons ... Comics & graphic novels, general
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fa9df7bbb752a9230b8149394d4b9
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is the character human (as opposed to an animal, robot, or other
+          non-human being)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9dfc6d4729ea2ca67f5042fd27c
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Garfield-character
+          excerpt: Garfield is a cartoon character.
+          validation: model_reported
+        - source_url: https://www.garfield.wiki/
+          excerpt: Garfield is a fictional orange tabby cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fa9dfb8fa741d9cd6c33e231688e2
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is the character an animal?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9dffb76748c8869431da12b62d9
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: Garfield (1978- ) is a comic strip which looks at the life of the
+            title character, a tabby cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fa9dfe3f673278b42f88a112ddbfb
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is the character from a children's book?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e029a4713ba6ed4df194ce1821
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years
+          excerpt: Garfield made his debut ... from the panels of his first comic
+            strip.
+          validation: model_reported
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: In 1978 he launched Garfield ... Garfield (1978- ) is a comic strip.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019fa9e0154c71e5af9e7cd74218364a
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is the character from a satirical or allegorical novel (like Animal
+          Farm)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e07a5b71558cc62d830e3bbe8f
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: In 1978 he launched Garfield for United Features... Garfield (1978-
+            ) is a comic strip...
+          validation: model_reported
+        - source_url: https://www.britannica.com/topic/Garfield-character
+          excerpt: Garfield | cartoon character | Britannica
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019fa9e064d3712485b1054c9f6ca00f
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is the animal a dog?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e0aab772b78ca8ecdb3da6ceab
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Garfield-character
+          excerpt: Garfield’s costars include ... the dopey dog Odie.
+          validation: model_reported
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: The title character, a tabby cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019fa9e0938071c6a0e2e2e2a3e7dc74
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Is the animal a whale?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e0e23171ed9a7e89a2d945aa06
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: Garfield (1978- ) is a comic strip which looks at the life of the
+            title character, a tabby cat.
+          validation: model_reported
+        - source_url: https://www.britannica.com/topic/Garfield-character
+          excerpt: Garfield is a cartoon character created by Jim Davis.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019fa9e0c80670f1994a5bb0ce2cd3e5
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Is the animal a mammal?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e1184977faaac6c1b1d9990bf4
+        answer: 'YES'
+        evidence:
+        - source_url: https://americanhistory.si.edu/collections/object/nmah_1367415
+          excerpt: Garfield ... the title character, a tabby cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019fa9e1010173dc83b496f98c628da2
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Is the animal a horse?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e14ab1732fb04cc5553ab33aec
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.keycollectorcomics.com/character/garfield,13370/
+          excerpt: 'Species: Cat'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019fa9e1385f7599afbb45e8ae0b21fa
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Is the animal a wolf?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e1831277b48a9ae794da3fdd3d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.petscare.com/news/faq/what-type-of-cat-is-garfield
+          excerpt: Garfield is an orange tabby cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019fa9e16ce77118bdfd523ba3af0967
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Is the book primarily a survival or adventure story where the animal
+          is the protagonist?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e1a8897080923a052dd32b7d2b
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019fa9e1953d71aa8b3914fc94958485
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Is the animal a feline (cat, tiger, lion, etc.)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e1d491737299c80ae9ece8bc1e
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: Garfield (1978- ) is a comic strip which looks at the life of the
+            title character, a tabby cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-019fa9e1b8ee71f8a1c3cdd7ae86c026
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Is the animal a tiger?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e1fe8376fb87320ecfaeeb376c
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Garfield
+          excerpt: Garfield | Cartoon Cat, Lasagna Lover & Monday Blues
+          validation: model_reported
+        - source_url: https://characters.fandom.com/wiki/Garfield
+          excerpt: Garfield, portrayed as an overweight, cynical, lazy and sarcastic
+            orange cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-019fa9e1e3a3718ead522b5823bc1073
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: ASK
+        question: Is the animal a lion?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e23fe372018ab6a0af0ae1762a
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: Garfield (1978- ) is a comic strip which looks at the life of the
+            title character, a tabby cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-019fa9e2245473b7a1ed1897bed1cd3b
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: ASK
+        question: Is the animal a domestic cat?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e2640372909403d12fa9ae413b
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Garfield-and-Friends
+          excerpt: Garfield, a lazy, lasagna-loving orange tabby cat, his owner Jon
+            Arbuckle
+          validation: model_reported
+        - source_url: https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years
+          excerpt: an orange tabby cat ... his owner, Jon Arbuckle
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 16
+      guesser_call_id: GC-019fa9e2538475c68d9079df0a84c35c
+    - turn_type: action
+      turn_number: 17
+      action:
+        action: ASK
+        question: Is the book a horror novel?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e2e0e476a5ae683dcbe58da151
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 17
+      guesser_call_id: GC-019fa9e2c72273b18e7bed78fefc1072
+    - turn_type: action
+      turn_number: 18
+      action:
+        action: ASK
+        question: Is the book part of a mystery/detective series featuring the cat
+          solving crimes?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e32f107180baa5da0938264977
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 18
+      guesser_call_id: GC-019fa9e2f97776db9e3eeb801a3794ce
+    - turn_type: action
+      turn_number: 19
+      action:
+        action: ASK
+        question: Is the cat from a Stephen King novel?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e393d272dc84cbdb1590dde538
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: In 1978 he launched Garfield for United Features... Garfield (1978-
+            ) is a comic strip... the title character, a tabby cat.
+          validation: model_reported
+        - source_url: https://www.ebsco.com/research-starters/literature-and-writing/pet-sematary-stephen-king
+          excerpt: When Ellie’s cat, Church, is killed by a car... Jud helps Louis
+            bury Church... Church returns home.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 19
+      guesser_call_id: GC-019fa9e3567d71ba9fc0e0832d53614a
+    - turn_type: action
+      turn_number: 20
+      action:
+        action: GUESS
+        question: null
+        name: Cat (from Breakfast at Tiffany's)
+        description: The unnamed orange tomcat belonging to Holly Golightly in Truman
+          Capote's novella Breakfast at Tiffany's.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fa9e3e03876d597e7762e0de47668
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies the unnamed cat from Breakfast at Tiffany's,
+          which is distinct from Garfield, the comic-strip character created by Jim
+          Davis.
+        oracle_quality: null
+      counted: true
+      counted_questions: 20
+      guesser_call_id: GC-019fa9e3c022708ea78082b37370168d
+    - turn_type: action
+      turn_number: 21
+      action:
+        action: ASK
+        question: Is the book considered a work of classic or literary fiction for
+          adults (rather than genre fiction like romance, sci-fi, or thriller)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e475bf746a8f8908e14098564e
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 21
+      guesser_call_id: GC-019fa9e3e8e6704397b993bf3e3ac566
+    - turn_type: action
+      turn_number: 22
+      action:
+        action: ASK
+        question: Is the cat a supernatural or demonic being (able to talk, shapeshift,
+          or possess magical powers)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e4a52c7183a55c740929205f38
+        answer: 'NO'
+        evidence:
+        - source_url: https://americanhistory.si.edu/collections/object/nmah_1367415
+          excerpt: Garfield (1978- ) is a comic strip which looks at the life of the
+            title character, a tabby cat.
+          validation: model_reported
+        - source_url: https://www.nytimes.com/2008/06/02/business/media/02garfield.html
+          excerpt: the cutesy thought-bubbles of his lasagna-loving cat
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 22
+      guesser_call_id: GC-019fa9e487657063bccab5a0c5503a11
+    - turn_type: action
+      turn_number: 23
+      action:
+        action: GUESS
+        question: null
+        name: Blofeld's cat
+        description: The unnamed white Persian cat belonging to Ernst Stavro Blofeld
+          in Ian Fleming's James Bond novels.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fa9e56b487407b00d415127a3c684
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Blofeld's unnamed white Persian cat,
+          which is distinct from Garfield.
+        oracle_quality: null
+      counted: true
+      counted_questions: 23
+      guesser_call_id: GC-019fa9e533ef733d980a6b4d6fe3ccc2
+    - turn_type: action
+      turn_number: 24
+      action:
+        action: ASK
+        question: Is the book a memoir or based on a true story (nonfiction-inspired)
+          featuring a real cat?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e5a46e7456bf39ff24a68f275f
+        answer: 'NO'
+        evidence:
+        - source_url: https://archive.org/details/garfieldeatshish0000davi
+          excerpt: Garfield (Fictitious character) ... Cats -- Fiction
+          validation: model_reported
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: In 1978 he launched Garfield ... Garfield is a comic strip ...
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 24
+      guesser_call_id: GC-019fa9e5718b7649bca69a7fd2e085e9
+    - turn_type: action
+      turn_number: 25
+      action:
+        action: GUESS
+        question: null
+        name: Koko
+        description: The Siamese cat detective in Lilian Jackson Braun's 'The Cat
+          Who...' mystery novel series.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fa9e603aa7278b4ad983922d2ed73
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Koko, the Siamese cat from The Cat Who...
+          series, not Garfield.
+        oracle_quality: null
+      counted: true
+      counted_questions: 25
+      guesser_call_id: GC-019fa9e5e8ac713296ff1df470d96b8c
+    - turn_type: action
+      turn_number: 26
+      action:
+        action: ASK
+        question: Is the cat a narrator or point-of-view character in the story (the
+          story is told from the cat's perspective)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e64e71707294c5a844fa3153cb
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 26
+      guesser_call_id: GC-019fa9e60c30716ab0e65eb79018b86f
+    - turn_type: action
+      turn_number: 27
+      action:
+        action: ASK
+        question: Is the cat from a book originally written in a language other than
+          English?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e70553743b89d9341b75d86fe9
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years
+          excerpt: Garfield made his debut ... from the panels of his first comic
+            strip.
+          validation: model_reported
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: Garfield (1978-) is a comic strip ... Garfield has been represented
+            in books.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 27
+      guesser_call_id: GC-019fa9e686937108bb998add36f9b6b5
+    - turn_type: action
+      turn_number: 28
+      action:
+        action: GUESS
+        question: null
+        name: Tao
+        description: The clever Siamese cat who journeys home with two dogs in Sheila
+          Burnford's novel 'The Incredible Journey'.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fa9e81e1c710a8cfec563dbda9493
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Tao, a Siamese cat from The Incredible
+          Journey, not Garfield.
+        oracle_quality: null
+      counted: true
+      counted_questions: 28
+      guesser_call_id: GC-019fa9e7379173ea9cd20a781660cf3b
+    - turn_type: action
+      turn_number: 29
+      action:
+        action: ASK
+        question: Is the cat from a book published before 1950?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e837ad76f3a9d289bf1449033e
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.penguinrandomhouse.com/books/37527/garfield-at-large-by-jim-davis/
+          excerpt: The Garfield strip was born on June 19, 1978, syndicated in forty-one
+            U.S. newspapers.
+          validation: model_reported
+        - source_url: https://grokipedia.com/page/garfield_at_large_his_first_book_garfield_1_(book)
+          excerpt: Garfield at Large, published in 1980, was the first collection
+            of Jim Davis's Garfield comic strips to appear in book form.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 29
+      guesser_call_id: GC-019fa9e82735726785b26340daa7965b
+    - turn_type: action
+      turn_number: 30
+      action:
+        action: ASK
+        question: Was the book published after the year 2000?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e8d333714dbfdb55cbff74f829
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: temporal_comparison
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 30
+      guesser_call_id: GC-019fa9e867ec74a3a2eaee01286188fa
+    - turn_type: action
+      turn_number: 31
+      action:
+        action: ASK
+        question: Was the book published between 1950 and 2000?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e8feef76b38e1923fd3a88a321
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: temporal_comparison
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 31
+      guesser_call_id: GC-019fa9e8ea28731da64dc20d291519a6
+    - turn_type: action
+      turn_number: 32
+      action:
+        action: ASK
+        question: Is the cat from a poem rather than a novel (e.g., a poem collection)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e9417c74d69d261efae372e1d9
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: In 1978 he launched Garfield ... Garfield (1978- ) is a comic strip.
+          validation: model_reported
+        - source_url: https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203
+          excerpt: The character created by US cartoonist Jim Davis debuted 40 years
+            ago ... in a comic strip.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 32
+      guesser_call_id: GC-019fa9e916107300abd0a3884b0f29e1
+    - turn_type: action
+      turn_number: 33
+      action:
+        action: ASK
+        question: Is the book a work of science fiction?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9e9c5d27219af6f1af0e7644c3d
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 33
+      guesser_call_id: GC-019fa9e9695275fc959257cc07a0f737
+    - turn_type: action
+      turn_number: 34
+      action:
+        action: ASK
+        question: Is the book generally categorized as adult literary fiction (not
+          children's, YA, or middle-grade)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9eac681758996c7fe1379058bd6
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: negation
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 34
+      guesser_call_id: GC-019fa9e9e0fd756ea4567e216c27d3b8
+    - turn_type: action
+      turn_number: 35
+      action:
+        action: ASK
+        question: Does the cat have a proper given name (as opposed to being unnamed
+          or just called "the cat")?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9eb04327537ad7b50ffbf256a6a
+        answer: 'YES'
+        evidence:
+        - source_url: https://indianahistory.org/education/education-resources/educator-resources/famous-hoosiers/jim-davis
+          excerpt: Jim created a new character – a fat, lasagna-loving cat named Garfield.
+          validation: model_reported
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: Garfield (1978- ) is a comic strip which looks at the life of the
+            title character, a tabby cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 35
+      guesser_call_id: GC-019fa9eaf3dd7568968f76982ac3ba94
+    - turn_type: action
+      turn_number: 36
+      action:
+        action: ASK
+        question: Is the story primarily a comedic or humorous novel (rather than
+          serious drama)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9ebbc7477ca9aee5f4ed1d5ed3a
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: Garfield (1978-) is a comic strip.
+          validation: model_reported
+        - source_url: https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years
+          excerpt: Garfield ... the eponymous hero of what would go on to become the
+            most widely syndicated comic strip in the world.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 36
+      guesser_call_id: GC-019fa9eb246c74828ecf0b7107a100e5
+    - turn_type: action
+      turn_number: 37
+      action:
+        action: ASK
+        question: Can the cat talk or communicate in human language within the story?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9ec437270f695d970bd6683d47c
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Garfield
+          excerpt: Garfield ... communicates via cartoon “thought bubbles” (as opposed
+            to “speech balloons”).
+          validation: model_reported
+        - source_url: https://www.newyorker.com/cartoons/cartoon-lounge/an-interview-with-garfield-minus-garfield-creator-dan-walsh
+          excerpt: All of Garfield’s responses are in thought balloons.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 37
+      guesser_call_id: GC-019fa9ebe37c7156b313fbc67c7a883b
+    - turn_type: action
+      turn_number: 38
+      action:
+        action: ASK
+        question: Is the book a work of magical realism (blending a realistic setting
+          with fantastical or surreal elements)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9ed212774e8957822752b435ca4
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 38
+      guesser_call_id: GC-019fa9ec7c897789a8c79a18b4c7ce24
+    - turn_type: action
+      turn_number: 39
+      action:
+        action: ASK
+        question: Does the cat's name appear in the title of the book?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9edbdd7764ebd2aec0dd053c246
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 39
+      guesser_call_id: GC-019fa9ed3111761ba8ebd277885addf9
+    - turn_type: action
+      turn_number: 40
+      action:
+        action: ASK
+        question: Does the cat literally speak using human words that other human
+          characters can hear and understand within the story?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9ef1b72777aa30cda48c55f58c9
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nytimes.com/2008/06/02/business/media/02garfield.html
+          excerpt: Without the cutesy thought-bubbles of his lasagna-loving cat, Jon
+            Arbuckle’s observations seem to teeter between existential crisis and
+            deep despair.
+          validation: model_reported
+        - source_url: https://whatculture.com/comics/garfield-minus-garfield-review-dan-walsh-and-jim-davis
+          excerpt: Garfield never really says anything—all of his dialogue is in thought
+            bubbles... Garfield has never talked back.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 40
+      guesser_call_id: GC-019fa9edd0137475adc4eeb020393459
+    - turn_type: action
+      turn_number: 41
+      action:
+        action: ASK
+        question: Is the cat capable of walking upright on two legs like a human at
+          times in the story?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9ef869070bd947e00de63a094b1
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.hollywoodreporter.com/movies/movie-features/the-garfield-movie-spotlight-here-comes-garfield-1235905414/
+          excerpt: “Garfield’s been walking upright ever since.”
+          validation: model_reported
+        - source_url: https://www.cbr.com/snoopy-garfield-schulz-davis-influence/
+          excerpt: “When Garfield got the big back feet, then he could walk.”
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 41
+      guesser_call_id: GC-019fa9ef6c05747797337b7c80986013
+    - turn_type: action
+      turn_number: 42
+      action:
+        action: ASK
+        question: Is the cat the protagonist or title character of the book (rather
+          than a supporting character)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f0357f714c9e2f8ac538af1aec
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 42
+      guesser_call_id: GC-019fa9ef9f1974349013f5d78c129afe
+    - turn_type: action
+      turn_number: 43
+      action:
+        action: ASK
+        question: Does the cat communicate through telepathy or a mental link with
+          certain characters rather than through spoken words?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f0e87b7253a4dc37e250117bd9
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Garfield
+          excerpt: Garfield ... communicates via cartoon “thought bubbles” (as opposed
+            to “speech balloons,” which are understood to be heard out loud).
+          validation: model_reported
+        - source_url: https://comicbookglossary.wordpress.com/thought-balloon
+          excerpt: A thought balloon ... is used to visually manifest a particular
+            character’s thoughts ... other characters generally do not recognize or
+            see the contents.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 43
+      guesser_call_id: GC-019fa9f0664f7766a4082567f80a21ce
+    - turn_type: action
+      turn_number: 44
+      action:
+        action: GUESS
+        question: null
+        name: Varjak Paw
+        description: The young Mesopotamian Blue cat protagonist of S.F. Said's novel
+          'Varjak Paw', who learns the mystical Way of the Cat, including telepathic
+          communication and the ability to walk upright like a human.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fa9f16fef7435974e18e330f485d0
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Garfield, a fictional character created
+          by Jim Davis; the proposal is Varjak Paw, a different fictional cat character.
+        oracle_quality: null
+      counted: true
+      counted_questions: 44
+      guesser_call_id: GC-019fa9f141457565a914f535119868f5
+    - turn_type: action
+      turn_number: 45
+      action:
+        action: GUESS
+        question: null
+        name: Thomasina
+        description: The orange tabby cat protagonist of Paul Gallico's novel 'Thomasina',
+          who 'dies' and is reincarnated, and who has a mystical, telepathic bond
+          with the animal-healer Lori MacGregor.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fa9f273f6769f986595ee877a2f31
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Thomasina, the protagonist of Paul Gallico's
+          novel, which is a different character from Garfield.
+        oracle_quality: null
+      counted: true
+      counted_questions: 45
+      guesser_call_id: GC-019fa9f174537625b26e4fb884b716ff
+    - turn_type: action
+      turn_number: 46
+      action:
+        action: ASK
+        question: Is the book generally classified as science fiction (as opposed
+          to literary fiction, horror, or another genre)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f313ed762081559e4b494146ca
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 46
+      guesser_call_id: GC-019fa9f27d9f72d4a3af06f86e8c8000
+    - turn_type: action
+      turn_number: 47
+      action:
+        action: ASK
+        question: Is the book primarily classified as a horror or dark fiction novel?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f39973721c98ca9a90aa42a9ff
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 47
+      guesser_call_id: GC-019fa9f334f674fc9df3b80dd863ae34
+    - turn_type: action
+      turn_number: 48
+      action:
+        action: GUESS
+        question: null
+        name: Tiro (from the Star Ka'at series)
+        description: A telepathic alien cat from Andre Norton's science-fiction Star
+          Ka'at book series, who communicates mentally with chosen human children
+          and can stand upright like the other Ka'ats.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fa9f3e51376799877561f71489f6d
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Tiro, a telepathic alien cat from Andre
+          Norton's Star Ka'at series, not Garfield.
+        oracle_quality: null
+      counted: true
+      counted_questions: 48
+      guesser_call_id: GC-019fa9f3aa5e75d8b2b149a3b878e25d
+    - turn_type: action
+      turn_number: 49
+      action:
+        action: ASK
+        question: Is the story set in outer space or involves interstellar travel/aliens?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f44b5677039afb47583b92f92b
+        answer: 'YES'
+        evidence:
+        - source_url: https://tubitv.com/tv-shows/587353/s07-e715-horror-hostess-pt-1-newsworthy-wade-horror-hostess-pt-2
+          excerpt: Jon becomes invincible with the help from some outer space aliens.
+          validation: model_reported
+        - source_url: https://chaucersbooks.com/book/9781684151592
+          excerpt: Pooky is abducted by invaders from outer space ... Garfield makes
+            a bunch of new friends—cats, elves, aliens, robots, and ninjas.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 49
+      guesser_call_id: GC-019fa9f3ea8a74fea63942b90e3d8802
+    - turn_type: action
+      turn_number: 50
+      action:
+        action: ASK
+        question: placeholder
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f4d28673069965304f7466cd2b
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 50
+      guesser_call_id: GC-019fa9f478c8734c8d1fbeb3c720d63a
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"fictional_character","event":"BEGIN","variation_token":"AMZAISLM"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a book (originally in print/literature) rather than a movie,
+        TV show, or video game?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a fantasy genre book?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character human (as opposed to an animal, robot, or other non-human being)?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character an animal?"}}'
+      turn_number: 4
+    - role: user
+      content: 'YES'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a children''s book?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a satirical or allegorical novel (like Animal Farm)?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the animal a dog?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the animal a whale?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the animal a mammal?"}}'
+      turn_number: 9
+    - role: user
+      content: 'YES'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the animal a horse?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the animal a wolf?"}}'
+      turn_number: 11
+    - role: user
+      content: 'NO'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the book primarily a survival or adventure story where the animal is the protagonist?"}}'
+      turn_number: 12
+    - role: user
+      content: UNKNOWN
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the animal a feline (cat, tiger, lion, etc.)?"}}'
+      turn_number: 13
+    - role: user
+      content: 'YES'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the animal a tiger?"}}'
+      turn_number: 14
+    - role: user
+      content: 'NO'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the animal a lion?"}}'
+      turn_number: 15
+    - role: user
+      content: 'NO'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the animal a domestic cat?"}}'
+      turn_number: 16
+    - role: user
+      content: 'YES'
+      turn_number: 16
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the book a horror novel?"}}'
+      turn_number: 17
+    - role: user
+      content: UNKNOWN
+      turn_number: 17
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the book part of a mystery/detective series featuring the cat solving crimes?"}}'
+      turn_number: 18
+    - role: user
+      content: UNKNOWN
+      turn_number: 18
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the cat from a Stephen King novel?"}}'
+      turn_number: 19
+    - role: user
+      content: 'NO'
+      turn_number: 19
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The unnamed orange tomcat
+        belonging to Holly Golightly in Truman Capote''s novella Breakfast at Tiffany''s.","name":"Cat
+        (from Breakfast at Tiffany''s)","question":null}}'
+      turn_number: 20
+    - role: user
+      content: 'NO'
+      turn_number: 20
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the book considered a work of classic or literary fiction for adults (rather
+        than genre fiction like romance, sci-fi, or thriller)?"}}'
+      turn_number: 21
+    - role: user
+      content: UNKNOWN
+      turn_number: 21
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the cat a supernatural or demonic being (able to talk, shapeshift, or possess
+        magical powers)?"}}'
+      turn_number: 22
+    - role: user
+      content: 'NO'
+      turn_number: 22
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The unnamed white Persian
+        cat belonging to Ernst Stavro Blofeld in Ian Fleming''s James Bond novels.","name":"Blofeld''s
+        cat","question":null}}'
+      turn_number: 23
+    - role: user
+      content: 'NO'
+      turn_number: 23
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the book a memoir or based on a true story (nonfiction-inspired) featuring
+        a real cat?"}}'
+      turn_number: 24
+    - role: user
+      content: 'NO'
+      turn_number: 24
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The Siamese cat detective
+        in Lilian Jackson Braun''s ''The Cat Who...'' mystery novel series.","name":"Koko","question":null}}'
+      turn_number: 25
+    - role: user
+      content: 'NO'
+      turn_number: 25
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the cat a narrator or point-of-view character in the story (the story is told
+        from the cat''s perspective)?"}}'
+      turn_number: 26
+    - role: user
+      content: UNKNOWN
+      turn_number: 26
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the cat from a book originally written in a language other than English?"}}'
+      turn_number: 27
+    - role: user
+      content: 'NO'
+      turn_number: 27
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The clever Siamese cat
+        who journeys home with two dogs in Sheila Burnford''s novel ''The Incredible
+        Journey''.","name":"Tao","question":null}}'
+      turn_number: 28
+    - role: user
+      content: 'NO'
+      turn_number: 28
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the cat from a book published before 1950?"}}'
+      turn_number: 29
+    - role: user
+      content: 'NO'
+      turn_number: 29
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the book published after the year 2000?"}}'
+      turn_number: 30
+    - role: user
+      content: UNKNOWN
+      turn_number: 30
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the book published between 1950 and 2000?"}}'
+      turn_number: 31
+    - role: user
+      content: UNKNOWN
+      turn_number: 31
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the cat from a poem rather than a novel (e.g., a poem collection)?"}}'
+      turn_number: 32
+    - role: user
+      content: 'NO'
+      turn_number: 32
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the book a work of science fiction?"}}'
+      turn_number: 33
+    - role: user
+      content: UNKNOWN
+      turn_number: 33
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the book generally categorized as adult literary fiction (not children''s,
+        YA, or middle-grade)?"}}'
+      turn_number: 34
+    - role: user
+      content: UNKNOWN
+      turn_number: 34
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        the cat have a proper given name (as opposed to being unnamed or just called
+        \"the cat\")?"}}'
+      turn_number: 35
+    - role: user
+      content: 'YES'
+      turn_number: 35
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the story primarily a comedic or humorous novel (rather than serious drama)?"}}'
+      turn_number: 36
+    - role: user
+      content: 'NO'
+      turn_number: 36
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Can
+        the cat talk or communicate in human language within the story?"}}'
+      turn_number: 37
+    - role: user
+      content: 'YES'
+      turn_number: 37
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the book a work of magical realism (blending a realistic setting with fantastical
+        or surreal elements)?"}}'
+      turn_number: 38
+    - role: user
+      content: UNKNOWN
+      turn_number: 38
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        the cat''s name appear in the title of the book?"}}'
+      turn_number: 39
+    - role: user
+      content: UNKNOWN
+      turn_number: 39
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        the cat literally speak using human words that other human characters can
+        hear and understand within the story?"}}'
+      turn_number: 40
+    - role: user
+      content: 'NO'
+      turn_number: 40
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the cat capable of walking upright on two legs like a human at times in the
+        story?"}}'
+      turn_number: 41
+    - role: user
+      content: 'YES'
+      turn_number: 41
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the cat the protagonist or title character of the book (rather than a supporting
+        character)?"}}'
+      turn_number: 42
+    - role: user
+      content: UNKNOWN
+      turn_number: 42
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        the cat communicate through telepathy or a mental link with certain characters
+        rather than through spoken words?"}}'
+      turn_number: 43
+    - role: user
+      content: 'YES'
+      turn_number: 43
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The young Mesopotamian
+        Blue cat protagonist of S.F. Said''s novel ''Varjak Paw'', who learns the
+        mystical Way of the Cat, including telepathic communication and the ability
+        to walk upright like a human.","name":"Varjak Paw","question":null}}'
+      turn_number: 44
+    - role: user
+      content: 'NO'
+      turn_number: 44
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The orange tabby cat protagonist
+        of Paul Gallico''s novel ''Thomasina'', who ''dies'' and is reincarnated,
+        and who has a mystical, telepathic bond with the animal-healer Lori MacGregor.","name":"Thomasina","question":null}}'
+      turn_number: 45
+    - role: user
+      content: 'NO'
+      turn_number: 45
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the book generally classified as science fiction (as opposed to literary fiction,
+        horror, or another genre)?"}}'
+      turn_number: 46
+    - role: user
+      content: UNKNOWN
+      turn_number: 46
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the book primarily classified as a horror or dark fiction novel?"}}'
+      turn_number: 47
+    - role: user
+      content: UNKNOWN
+      turn_number: 47
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"A telepathic alien cat
+        from Andre Norton''s science-fiction Star Ka''at book series, who communicates
+        mentally with chosen human children and can stand upright like the other Ka''ats.","name":"Tiro
+        (from the Star Ka''at series)","question":null}}'
+      turn_number: 48
+    - role: user
+      content: 'NO'
+      turn_number: 48
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the story set in outer space or involves interstellar travel/aliens?"}}'
+      turn_number: 49
+    - role: user
+      content: 'YES'
+      turn_number: 49
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"placeholder"}}'
+      turn_number: 50
+    - role: user
+      content: UNKNOWN
+      turn_number: 50
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the cat an alien species native to another planet (rather than an Earth-origin
+        domestic cat that traveled into space)?"}}'
+      turn_number: 51
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0005
+          gateway: openrouter
+          model: anthropic/claude-sonnet-5
+          provider: anthropic
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '2.00'
+            cached_input_usd_per_million: '0.20'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 51
+          cost_usd: '0.6849238'
+          latency_ms: 972404
+          total_tokens: 205950
+          input_tokens: 141326
+          cached_input_tokens: 136774
+          cache_write_tokens: 4450
+          output_tokens: 64624
+          reasoning_tokens: 16752
+          estimated_cache_savings_usd: '0.24396820'
+          recovery:
+            request_attempts: 51
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: anthropic
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 43
+          cost_usd: '0.2962344500000000024'
+          latency_ms: 439707
+          total_tokens: 356715
+          input_tokens: 334776
+          cached_input_tokens: 133580
+          cache_write_tokens: 0
+          output_tokens: 21939
+          reasoning_tokens: 14484
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 72
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 7
+          cost_usd: '0.0025885'
+          latency_ms: 12951
+          total_tokens: 3152
+          input_tokens: 2747
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 405
+          reasoning_tokens: 112
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 7
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+    failure:
+      code: ask_after_question_limit
+      type: GuesserProtocolError
+      message: ASK is forbidden on the final guess-only opportunity
+      call_id: GC-019fa9f4e060755c8afaa3ffe9f59ffd
+      diagnostics:
+        causes:
+        - exception_type: GuesserProtocolError
+          module: deep20_game.errors
+          message: ASK is forbidden on the final guess-only opportunity
+        frames: []
+        provider: null
+        metadata: {}
+  failure:
+    code: ask_after_question_limit
+    type: GuesserProtocolError
+    message: ASK is forbidden on the final guess-only opportunity
+    call_id: GC-019fa9f4e060755c8afaa3ffe9f59ffd
+    diagnostics:
+      causes:
+      - exception_type: GuesserProtocolError
+        module: deep20_game.errors
+        message: ASK is forbidden on the final guess-only opportunity
+      frames: []
+      provider: null
+      metadata: {}
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0005/BX-20260728-official-M0005-010/subjects/T-0004/trials/trial-003/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: dc9032ff13fa0bf1c90a6b86800e10305435dffcb311dd02b2ad84dbe456fd14

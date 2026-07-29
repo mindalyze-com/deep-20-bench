@@ -1,0 +1,50 @@
+[project]
+name = "deep20bench"
+version = "0.2.0"
+authors = [
+  { name = "Patrick Heusser" },
+  { name = "Markus Tuor" },
+]
+license = "PolyForm-Noncommercial-1.0.0"
+requires-python = ">=3.14.6,<3.15"
+dependencies = ["deep20-benchmark", "deep20-game", "deep20-oracle"]
+
+[project.urls]
+Documentation = "https://mindalyze-com.github.io/deep-20-bench/"
+Repository = "https://github.com/mindalyze-com/deep-20-bench"
+
+[dependency-groups]
+dev = [
+  "mypy>=1.18",
+  "pytest>=9",
+  "pytest-cov>=7",
+  "ruff>=0.14",
+  "types-pyyaml>=6.0.12",
+]
+
+[tool.uv.workspace]
+members = ["benchmark", "game", "oracle"]
+
+[tool.uv.sources]
+deep20-game = { workspace = true }
+deep20-oracle = { workspace = true }
+deep20-benchmark = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["benchmark/tests", "game/tests", "oracle/tests"]
+markers = [
+  "integration: requires OPENROUTER_API_KEY and makes a paid live request",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+files = [
+  "benchmark/src",
+  "game/src/deep20_game/sinks.py",
+  "oracle/src/deep20_oracle/sinks.py",
+]

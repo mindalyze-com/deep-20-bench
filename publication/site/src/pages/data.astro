@@ -1,0 +1,285 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { dataset, date } from "../lib/data";
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Data"
+  section="Public data"
+  description="Download the Deep20Bench dataset and see what it contains."
+>
+  <section class="page-hero">
+    <div>
+      <p class="eyebrow">Public data</p>
+      <h1>Download the data.</h1>
+    </div>
+    <p>
+      JSON contains runs, subjects, and episodes. CSV contains the current leaderboard.
+    </p>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="download-grid">
+        <article>
+          <p class="file-type">JSON · schema v{dataset.schema_version}</p>
+          <h2>Full public dataset</h2>
+          <p>
+            Cohort rules, models, runs, subjects, episodes, scores, and build details.
+          </p>
+          <a class="button button-primary" href={`${base}data/deep20bench-v3.json`} download>
+            Download JSON <span aria-hidden="true">↓</span>
+          </a>
+        </article>
+        <article>
+          <p class="file-type">CSV · UTF-8</p>
+          <h2>Leaderboard table</h2>
+          <p>
+            One row per model with a selected complete run.
+          </p>
+          <a class="button button-secondary" href={`${base}data/leaderboard.csv`} download>
+            Download CSV <span aria-hidden="true">↓</span>
+          </a>
+        </article>
+      </div>
+
+      <div class="provenance">
+        <div class="provenance-head">
+          <p class="eyebrow">Build details</p>
+          <h2>Included in this build</h2>
+        </div>
+        <dl>
+          <div><dt>Validated source runs</dt><dd>{dataset.provenance.source_run_count}</dd></div>
+          <div><dt>Selected official runs</dt><dd>{dataset.provenance.official_run_count}</dd></div>
+          <div>
+            <dt>Benchmark protocol</dt>
+            <dd>v{dataset.active_cohort.benchmark_version}</dd>
+          </div>
+          <div><dt>Latest completion</dt><dd>{date(dataset.provenance.latest_completed_at)}</dd></div>
+          <div>
+            <dt>Subject catalog SHA-256</dt>
+            <dd><code>{dataset.provenance.subject_catalog_hash}</code></dd>
+          </div>
+          <div><dt>Active cohort</dt><dd>{dataset.active_cohort.cohort_id}</dd></div>
+        </dl>
+      </div>
+
+      <div class="contract-grid">
+        <div>
+          <p class="eyebrow">Contents</p>
+          <h2>What is public</h2>
+        </div>
+        <div>
+          <p>
+            Included: IDs, model settings, B20 and question scores, outcomes, costs, timestamps,
+            source commit, and eligibility reasons.
+          </p>
+          <p>
+            Excluded: prompts, raw responses, provider traces, credentials, headers, environment
+            values, and private subject data.
+          </p>
+          <p>
+            The publisher reads completed run files. It makes no model calls and does not change
+            source runs.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-hero {
+    display: grid;
+    grid-template-columns: 1.2fr 0.65fr;
+    gap: clamp(3rem, 8vw, 8rem);
+    align-items: end;
+    padding: clamp(5rem, 10vw, 9rem) var(--gutter);
+    background: var(--ink);
+    color: white;
+  }
+
+  .page-hero h1 {
+    max-width: 10ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(3.7rem, 8.5vw, 8.5rem);
+    font-weight: 500;
+    letter-spacing: -0.065em;
+    line-height: 0.88;
+  }
+
+  .page-hero > p {
+    margin: 0;
+    color: rgb(255 255 255 / 60%);
+    line-height: 1.7;
+  }
+
+  .download-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .download-grid article {
+    display: flex;
+    min-height: 28rem;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid var(--line);
+    background: var(--paper-bright);
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .download-grid article:first-child {
+    background: var(--blue);
+    color: white;
+  }
+
+  .file-type {
+    margin: 0;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  .download-grid h2 {
+    max-width: 11ch;
+    margin: auto 0 1rem;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(2.2rem, 5vw, 4.8rem);
+    font-weight: 500;
+    letter-spacing: -0.055em;
+    line-height: 0.95;
+  }
+
+  .download-grid article > p:not(.file-type) {
+    max-width: 32rem;
+    min-height: 5rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .download-grid article:first-child > p:not(.file-type) {
+    color: rgb(255 255 255 / 68%);
+  }
+
+  .download-grid .button {
+    margin-top: 1rem;
+  }
+
+  .provenance {
+    display: grid;
+    grid-template-columns: 0.6fr 1fr;
+    gap: clamp(2rem, 8vw, 8rem);
+    margin-top: clamp(5rem, 10vw, 9rem);
+    padding-top: 1rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  .provenance-head h2 {
+    max-width: 10ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  .provenance dl {
+    margin: 0;
+  }
+
+  .provenance dl div {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .provenance dt {
+    color: var(--muted);
+    font-size: 0.69rem;
+    font-weight: 760;
+    text-transform: uppercase;
+  }
+
+  .provenance dd {
+    margin: 0;
+    font-size: 0.88rem;
+    overflow-wrap: anywhere;
+  }
+
+  .provenance code {
+    font-size: 0.7rem;
+  }
+
+  .exclusions {
+    margin-top: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .exclusions summary {
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 760;
+  }
+
+  .exclusions ul {
+    display: grid;
+    gap: 0.55rem;
+    margin: 1rem 0 0;
+    padding-left: 1.2rem;
+  }
+
+  .exclusions code {
+    font-size: 0.72rem;
+    overflow-wrap: anywhere;
+  }
+
+  .contract-grid {
+    display: grid;
+    grid-template-columns: 0.6fr 1fr;
+    gap: clamp(2rem, 8vw, 8rem);
+    margin-top: clamp(5rem, 10vw, 9rem);
+    padding: clamp(2rem, 5vw, 4rem);
+    background: var(--acid);
+  }
+
+  .contract-grid h2 {
+    max-width: 10ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  .contract-grid > div:last-child {
+    line-height: 1.7;
+  }
+
+  .contract-grid > div:last-child p:first-child {
+    margin-top: 0;
+  }
+
+  @media (max-width: 760px) {
+    .page-hero,
+    .download-grid,
+    .provenance,
+    .contract-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .download-grid article {
+      min-height: 24rem;
+    }
+  }
+</style>

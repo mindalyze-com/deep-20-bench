@@ -1,0 +1,1851 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260728-official-M0009-010
+    model_id: M-0009
+    target_id: T-0003
+    trial_id: trial-005
+    trial_number: 5
+    episode_run_id: BR-d2951d0e3976f668186d7b49040f118fff213e70
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-d2951d0e3976f668186d7b49040f118fff213e70
+      episode_id: EP-019faa45d8057504b388eb0c00b15a40
+      subject:
+        target_id: T-0003
+        canonical_name: Stephen King
+        aliases:
+        - Stephen Edwin King
+        - Steven King
+        - Richard Bachman
+        entity_type: person
+        description: Stephen King, the American author known for horror, supernatural
+          fiction, suspense, and novels including Carrie, The Shining, and It, identified
+          by Wikidata entity Q39829.
+        reference_url: https://en.wikipedia.org/wiki/Stephen_King
+      started_at: '2026-07-28T19:48:51.845073+00:00'
+      completed_at: '2026-07-28T19:53:14.816965+00:00'
+      duration_ms: 262972
+    outcome:
+      success: false
+      terminal_reason: limit_exhausted
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 51
+      counted_questions: 50
+      guesser_call_count: 51
+      ask_count: 9
+      guess_count: 42
+      rejected_guess_count: 42
+      oracle_unknown_count: 0
+      oracle_quality:
+        reviewed_questions: 9
+        agreements: 6
+        disagreements: 3
+        judge_invocations: 3
+        oracle_answers_changed: 1
+        final_unknown_answers: 0
+        judge_yes_answers: 1
+        judge_no_answers: 2
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0120598'
+        judge_cost_usd: '0.043700'
+        quality_control_cost_usd: '0.0557598'
+        question_types:
+        - question_type: other
+          reviewed_questions: 9
+          disagreements: 3
+      contract:
+        evaluated_outputs: 51
+        valid_outputs: 51
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.01492415'
+        oracle: '0.1333943000000000013'
+        validator: '0.0125695'
+        total: '0.1608879500000000013'
+      tokens:
+        guesser: 77159
+        oracle: 146212
+        validator: 17389
+        total: 240760
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0009
+        requested_model: meta-llama/llama-4-maverick
+        requested_provider: parasail
+        resolved_models:
+        - meta-llama/llama-4-maverick
+        resolved_providers:
+        - Parasail
+        reasoning_effort: none
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the person male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa45dad5766799ce89f7fa8b2b57
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nndb.com/people/221/000024149
+          excerpt: 'Stephen King ... Gender: Male'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019faa45d8057504b388eb0ee23b1c28
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the person primarily known for their work in the entertainment
+          industry?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa45f44e7255b944ad224da3aa0a
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King ... is an American novelist and short-story writer.
+          validation: model_reported
+        - source_url: https://definitions.uslegal.com/e/entertainment-industry
+          excerpt: Generally, the entertainment industry includes ... literary publishing.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019faa45f0db74cdaf3e3a13ea943a9b
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Has the person won a major award in their field, such as an Academy
+          Award or a Grammy?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa464f4570f6a49f3c09f2a65bfe
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.arts.gov/honors/medals/stephen-king
+          excerpt: Stephen King — Author — 2014 National Medal of Arts Recipient.
+            Stephen King received the award for his contributions as an author.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019faa464c1d741e9e085de79eb0713e
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is the person an actor?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa46794872bb8b23d03f632d5737
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.cnn.com/us/stephen-king-fast-facts
+          excerpt: 1989 - Makes a cameo in the movie “Pet Sematary,” which is based
+            on his novel.
+          validation: model_reported
+        - source_url: https://www.rottentomatoes.com/celebrity/richard_bachman
+          excerpt: 'It: Chapter Two (2019) — Shopkeeper — Actor.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019faa4673d1747e8e122a52f10d83a5
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Has the person played a major role in a blockbuster movie franchise?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa46bfd1702898d7c9cf8fadc827
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.dw.com/en/bestselling-author-stephen-king-turns-75/a-40621337
+          excerpt: One of King's best works, "It," has been turned into a Hollywood
+            movie twice, with the latest adaptation dating from 2017. The film broke
+            all box office records in the horror genre.
+          validation: model_reported
+        - source_url: https://www.boxofficemojo.com/title/tt7349950
+          excerpt: 'It: Chapter Two (2019) ... Worldwide $473,123,154 ... Stephen
+            King Brand rankings It Franchise rankings'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019faa46bd01752581003301e0e7fcad
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Has the person received an Academy Award for their acting work?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa478410721bba0c10d740c870bf
+        answer: 'NO'
+        evidence:
+        - source_url: https://screenrant.com/stephen-king-carrie-movies-upcoming-show-adaptations
+          excerpt: The only acting Oscar ever won for a Stephen King adaptation was
+            Kathy Bates’s Best Actress award for Misery.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019faa4781cc743fbf634477e6c5ca77
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: GUESS
+        question: null
+        name: Leonardo DiCaprio
+        description: Acclaimed actor known for his versatility and environmental activism.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa47d750705c9909c1e4c0e5869e
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Leonardo DiCaprio, while the trusted
+          subject is Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019faa47d3fd7005b5a3ba8734412931
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Is the person a comedian or known primarily for their work in comedy?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa47de4176a585b777bfc9b740b8
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/summary/Stephen-King
+          excerpt: Stephen (Edwin) King ... U.S. writer of horror stories ... His
+            books blend horror, the macabre, fantasy, and science fiction.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019faa47dbd17789beeea908a351ddfb
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Is the person American?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa4826c9773387d42419a56df2ed
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/summary/Stephen-King
+          excerpt: Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.),
+            U.S. writer of horror stories.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019faa48241f76a5a369974ad4998e00
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: GUESS
+        question: null
+        name: Denzel Washington
+        description: Renowned American actor known for his powerful performances and
+          multiple award nominations.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa483c08757fb73dca388dc32408
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Denzel Washington, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019faa4837a475f3898945f4ce4fc987
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Has the person directed any films or television shows?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa484645765a98e27b037614bd01
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.cnn.com/us/stephen-king-fast-facts
+          excerpt: 1986 - Makes his directorial debut with the release of “Maximum
+            Overdrive.”
+          validation: model_reported
+        - source_url: https://stephenking.com/works/movie/maximum-overdrive.html
+          excerpt: Director(s) Stephen King
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019faa4843db778a9d70c7a41dec7a87
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: GUESS
+        question: null
+        name: Clint Eastwood
+        description: American actor, director, and filmmaker known for his work in
+          various genres.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48654976e49e8d14196b077bd1
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Clint Eastwood, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019faa48627f714badee1cc8d34c3899
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: GUESS
+        question: null
+        name: Tom Hanks
+        description: American actor known for his versatility and award-winning performances.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa486caf74d4ade9e9c37725a5c2
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Tom Hanks, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-019faa4868c17549b84196f3833078aa
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: GUESS
+        question: null
+        name: Meryl Streep
+        description: Not a male person, incorrect category.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa488e0072e5a38135c9ea9c8cc5
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal names Meryl Streep, a different person from the
+          trusted subject, Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-019faa4872bb751ebe6553a3e5081945
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: GUESS
+        question: null
+        name: Robert De Niro
+        description: Acclaimed American actor known for his diverse film roles.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa4896a87043bdec9f97bf02afce
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Robert De Niro.
+        oracle_quality: null
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-019faa4891ec777caa7b8d570dec5614
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: GUESS
+        question: null
+        name: Harrison Ford
+        description: American actor known for iconic roles in film franchises.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa489f5873cba95c2ad5685d884f
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposal identifies
+          Harrison Ford, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 16
+      guesser_call_id: GC-019faa489a667134b209bf03d9e6d810
+    - turn_type: action
+      turn_number: 17
+      action:
+        action: GUESS
+        question: null
+        name: Morgan Freeman
+        description: Veteran American actor known for his distinctive voice and versatile
+          roles.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48a88874e8896878e35966089f
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies actor Morgan Freeman, while the trusted
+          subject is author Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 17
+      guesser_call_id: GC-019faa48a309761698c1c327960d2055
+    - turn_type: action
+      turn_number: 18
+      action:
+        action: GUESS
+        question: null
+        name: Al Pacino
+        description: Iconic American actor known for intense performances in film
+          and theater.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48b4c871e2a553d5839ef8b96a
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Al Pacino, while the trusted subject
+          is Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 18
+      guesser_call_id: GC-019faa48b26071c2bd15d66375a2ca1c
+    - turn_type: action
+      turn_number: 19
+      action:
+        action: GUESS
+        question: null
+        name: Jack Nicholson
+        description: Legendary American actor known for iconic and diverse roles in
+          cinema.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48bb5876b4baa82097a6ed1128
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Jack Nicholson, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 19
+      guesser_call_id: GC-019faa48b8ae7098b439245b076e086a
+    - turn_type: action
+      turn_number: 20
+      action:
+        action: GUESS
+        question: null
+        name: Mel Gibson
+        description: American actor and filmmaker known for his work in film.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48c28d74cfa3ac8ec7d8790f18
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, an American author; the
+          proposal identifies Mel Gibson, an American actor and filmmaker.
+        oracle_quality: null
+      counted: true
+      counted_questions: 20
+      guesser_call_id: GC-019faa48c0487039ad5cf92f23168476
+    - turn_type: action
+      turn_number: 21
+      action:
+        action: GUESS
+        question: null
+        name: Benedict Cumberbatch
+        description: British actor known for his work on stage, television, and film.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48ca6f76f18018608ed4880fbe
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Benedict Cumberbatch.
+        oracle_quality: null
+      counted: true
+      counted_questions: 21
+      guesser_call_id: GC-019faa48c7c676c391cd6e12013ba405
+    - turn_type: action
+      turn_number: 22
+      action:
+        action: GUESS
+        question: null
+        name: Philip Seymour Hoffman
+        description: American actor known for his versatile performances on stage
+          and screen.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48d0cb74b9a1787ab5f0022004
+        answer: 'NO'
+        evidence: []
+        explanation: The proposed identity is Philip Seymour Hoffman, while the trusted
+          subject is Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 22
+      guesser_call_id: GC-019faa48ce0670bca6ec7331c66ed9b1
+    - turn_type: action
+      turn_number: 23
+      action:
+        action: GUESS
+        question: null
+        name: John Lithgow
+        description: Veteran American actor known for his diverse roles in film, television,
+          and theater.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48d7f770b48c52a2f9b5d61cb0
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is John Lithgow, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 23
+      guesser_call_id: GC-019faa48d498746c8fb56ed77a9ce5f0
+    - turn_type: action
+      turn_number: 24
+      action:
+        action: GUESS
+        question: null
+        name: Bryan Cranston
+        description: American actor known for his acclaimed performances on television
+          and film.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48decb761a9110a4bcfbf548e4
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Bryan Cranston, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 24
+      guesser_call_id: GC-019faa48dc447726af6a2da4a093da15
+    - turn_type: action
+      turn_number: 25
+      action:
+        action: GUESS
+        question: null
+        name: Kevin Spacey
+        description: American actor known for his film and television roles and awards.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48e746725982d70ae9a120418e
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Kevin Spacey, while the trusted subject
+          is Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 25
+      guesser_call_id: GC-019faa48e32772b78d36d7e857e6284d
+    - turn_type: action
+      turn_number: 26
+      action:
+        action: GUESS
+        question: null
+        name: Bruce Willis
+        description: American actor known for action films and diverse roles.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48f515730ab7f44edd693ed761
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Bruce Willis, while the trusted subject
+          is Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 26
+      guesser_call_id: GC-019faa48f1d27671b04db90036259ca8
+    - turn_type: action
+      turn_number: 27
+      action:
+        action: GUESS
+        question: null
+        name: Michael Keaton
+        description: American actor known for his versatility and acclaimed performances
+          in film.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa48fabf70cbadc4754c4f6e850c
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Michael Keaton, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 27
+      guesser_call_id: GC-019faa48f84072bbada786dae15681d0
+    - turn_type: action
+      turn_number: 28
+      action:
+        action: GUESS
+        question: null
+        name: Gene Hackman
+        description: Veteran American actor known for diverse film roles.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa4904dd75d2ad18b155e77ea2e3
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is author Stephen King, while the proposed
+          identity is actor Gene Hackman.
+        oracle_quality: null
+      counted: true
+      counted_questions: 28
+      guesser_call_id: GC-019faa49024c73c8ad490aaa9ae9df8c
+    - turn_type: action
+      turn_number: 29
+      action:
+        action: GUESS
+        question: null
+        name: Eddie Murphy
+        description: American actor and comedian known for diverse roles in film.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa490cf8767e9876b8062c2c0a0c
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposal identifies
+          Eddie Murphy.
+        oracle_quality: null
+      counted: true
+      counted_questions: 29
+      guesser_call_id: GC-019faa4909cd7068a5f96165f08d7354
+    - turn_type: action
+      turn_number: 30
+      action:
+        action: GUESS
+        question: null
+        name: Michael Fassbender
+        description: Irish-German actor known for his intense performances in a wide
+          range of film roles.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa4914ce70eabb8f30633f582bbf
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Michael Fassbender, an actor, while the
+          trusted subject is Stephen King, an American author.
+        oracle_quality: null
+      counted: true
+      counted_questions: 30
+      guesser_call_id: GC-019faa49111572028e226cc6b96eddf5
+    - turn_type: action
+      turn_number: 31
+      action:
+        action: GUESS
+        question: null
+        name: Christopher Walken
+        description: American actor known for distinctive performances.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa491ae874c2b3f1f4cd68f02465
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, an American author; the
+          proposal identifies Christopher Walken, an American actor.
+        oracle_quality: null
+      counted: true
+      counted_questions: 31
+      guesser_call_id: GC-019faa49187275ba8dd11a712125decd
+    - turn_type: action
+      turn_number: 32
+      action:
+        action: GUESS
+        question: null
+        name: Jon Hamm
+        description: American actor known for his role as Don Draper in Mad Men.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa49213674d09725e96a20b47e0e
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Jon Hamm, an American actor, while the
+          trusted subject is Stephen King, an American author.
+        oracle_quality: null
+      counted: true
+      counted_questions: 32
+      guesser_call_id: GC-019faa491e907709aaca65b02f04d0f0
+    - turn_type: action
+      turn_number: 33
+      action:
+        action: GUESS
+        question: null
+        name: Matt Damon
+        description: American actor known for diverse film roles and screenwriting.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa49284d713ab092d843179209d6
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Matt Damon, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 33
+      guesser_call_id: GC-019faa49256777ae8169ba0f8d6db687
+    - turn_type: action
+      turn_number: 34
+      action:
+        action: GUESS
+        question: null
+        name: Jeff Bridges
+        description: American actor known for diverse film roles and distinctive performances.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa492fe772d09523d945e69df64f
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Jeff Bridges, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 34
+      guesser_call_id: GC-019faa492d137624b6a650e56bb94964
+    - turn_type: action
+      turn_number: 35
+      action:
+        action: GUESS
+        question: null
+        name: Javier Bardem
+        description: Spanish actor known for diverse film roles and awards.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa493a23707ca4313ff8ec802052
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Javier Bardem, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 35
+      guesser_call_id: GC-019faa4933dd73cab5cbc88d8a7e2efa
+    - turn_type: action
+      turn_number: 36
+      action:
+        action: GUESS
+        question: null
+        name: Sean Penn
+        description: Acclaimed American actor known for his intense performances and
+          activism.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa49413576aeafa9b114bb714a5a
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is author Stephen King; the proposal identifies
+          actor Sean Penn, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 36
+      guesser_call_id: GC-019faa493d86761d836ac15b1bb69737
+    - turn_type: action
+      turn_number: 37
+      action:
+        action: GUESS
+        question: null
+        name: Rami Malek
+        description: American actor known for his diverse roles and award-winning
+          performances.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa4947707269afe63f5f13f823ad
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, an American author; the
+          proposal names Rami Malek, an American actor.
+        oracle_quality: null
+      counted: true
+      counted_questions: 37
+      guesser_call_id: GC-019faa494477708fb7e01a17fb3916df
+    - turn_type: action
+      turn_number: 38
+      action:
+        action: GUESS
+        question: null
+        name: Ben Affleck
+        description: American actor and filmmaker known for diverse roles and award-winning
+          performances.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa494eeb74f491d7c9a8d756f44c
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Ben Affleck, while the trusted subject
+          is author Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 38
+      guesser_call_id: GC-019faa494b7c727baf89848e48e24607
+    - turn_type: action
+      turn_number: 39
+      action:
+        action: GUESS
+        question: null
+        name: Jake Gyllenhaal
+        description: American actor known for diverse film roles and critically acclaimed
+          performances.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa4954d7724e8b5ee3b57bba1388
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is author Stephen King, while the proposal
+          identifies actor Jake Gyllenhaal.
+        oracle_quality: null
+      counted: true
+      counted_questions: 39
+      guesser_call_id: GC-019faa495230703a8a3e423b9630b8f9
+    - turn_type: action
+      turn_number: 40
+      action:
+        action: GUESS
+        question: null
+        name: Will Smith
+        description: American actor and rapper known for diverse film roles and high-profile
+          appearances.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa4962f67354b346402b2e9ae289
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Will Smith, while the trusted subject
+          is Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 40
+      guesser_call_id: GC-019faa495e5e743693d0b5e4cb78a9b9
+    - turn_type: action
+      turn_number: 41
+      action:
+        action: GUESS
+        question: null
+        name: Ryan Gosling
+        description: Canadian actor known for critically acclaimed film roles and
+          diverse performances.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa496965748086fe5d6bddb85ea8
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposal identifies
+          Ryan Gosling, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 41
+      guesser_call_id: GC-019faa4966a377fcaf751837b9e85027
+    - turn_type: action
+      turn_number: 42
+      action:
+        action: GUESS
+        question: null
+        name: Channing Tatum
+        description: American actor known for diverse film roles.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa49705a76f5b8d4f18fd0486d73
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is author Stephen King, while the proposed
+          identity is actor Channing Tatum.
+        oracle_quality: null
+      counted: true
+      counted_questions: 42
+      guesser_call_id: GC-019faa496da877049c73ea830cdd80a1
+    - turn_type: action
+      turn_number: 43
+      action:
+        action: GUESS
+        question: null
+        name: George Clooney
+        description: American actor known for diverse film roles and directing.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa4978c47246a72d5a707e697490
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies George Clooney, while the trusted subject
+          is Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 43
+      guesser_call_id: GC-019faa49757676ca8b75b31d0a76ec98
+    - turn_type: action
+      turn_number: 44
+      action:
+        action: GUESS
+        question: null
+        name: Christian Bale
+        description: British actor known for his intense preparation and versatile
+          performances in film.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa497ef974f586d3a43c05ad0e0f
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Christian Bale, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 44
+      guesser_call_id: GC-019faa497c4870ea96fb911d53159a16
+    - turn_type: action
+      turn_number: 45
+      action:
+        action: GUESS
+        question: null
+        name: Daniel Day-Lewis
+        description: Highly acclaimed British-Irish actor known for intense method
+          performances and numerous awards.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa498c1c73ef89a19616ae44a42b
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Daniel Day-Lewis, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 45
+      guesser_call_id: GC-019faa49826570c58f36ae60c5724286
+    - turn_type: action
+      turn_number: 46
+      action:
+        action: GUESS
+        question: null
+        name: Johnny Depp
+        description: Actor known for diverse and iconic film roles.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa4993977256ba259126155af06d
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposed identity
+          is Johnny Depp, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 46
+      guesser_call_id: GC-019faa49911473cebb9846a2a3c5daa3
+    - turn_type: action
+      turn_number: 47
+      action:
+        action: GUESS
+        question: null
+        name: Marlon Brando
+        description: Iconic American actor known for groundbreaking performances.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa499f987455aa437dd2e934c25b
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Marlon Brando, while the trusted subject
+          is Stephen King.
+        oracle_quality: null
+      counted: true
+      counted_questions: 47
+      guesser_call_id: GC-019faa499a1276beb084cb2400539245
+    - turn_type: action
+      turn_number: 48
+      action:
+        action: GUESS
+        question: null
+        name: Humphrey Bogart
+        description: Iconic American actor known for classic Hollywood films.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa49a9f077edb1bdb0c5ccbe2aa8
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is author Stephen King, while the proposal
+          identifies actor Humphrey Bogart.
+        oracle_quality: null
+      counted: true
+      counted_questions: 48
+      guesser_call_id: GC-019faa49a6af75529777a3b5b153f6a4
+    - turn_type: action
+      turn_number: 49
+      action:
+        action: GUESS
+        question: null
+        name: Anthony Hopkins
+        description: Acclaimed Welsh actor known for iconic roles and command of his
+          craft.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa49b0fb777791ebf90ff660eb37
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, while the proposal identifies
+          Anthony Hopkins, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 49
+      guesser_call_id: GC-019faa49ae1e7708bf1f186262de947c
+    - turn_type: action
+      turn_number: 50
+      action:
+        action: GUESS
+        question: null
+        name: Mark Ruffalo
+        description: American actor known for diverse film roles and critically acclaimed
+          performances.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa49bb3f74859ac5c11d54ac83e4
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Stephen King, an American author; the
+          proposal identifies Mark Ruffalo, an American actor.
+        oracle_quality: null
+      counted: true
+      counted_questions: 50
+      guesser_call_id: GC-019faa49b60f7049a9ad84e578972837
+    - turn_type: action
+      turn_number: 51
+      action:
+        action: GUESS
+        question: null
+        name: Brad Pitt
+        description: Acclaimed American actor and producer known for diverse film
+          roles and philanthropy.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa49cfea7160b3608a2bdfd07f47
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is author Stephen King, while the proposal
+          identifies actor Brad Pitt.
+        oracle_quality: null
+      counted: false
+      counted_questions: 50
+      guesser_call_id: GC-019faa49c10871c1ac0a56567ca5940e
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"XSZW5TRZ"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person male?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for their work in the entertainment industry?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Has
+        the person won a major award in their field, such as an Academy Award or a
+        Grammy?"}}'
+      turn_number: 3
+    - role: user
+      content: 'YES'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person an actor?"}}'
+      turn_number: 4
+    - role: user
+      content: 'YES'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Has
+        the person played a major role in a blockbuster movie franchise?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Has
+        the person received an Academy Award for their acting work?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Acclaimed actor known for
+        his versatility and environmental activism.","name":"Leonardo DiCaprio","question":null}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person a comedian or known primarily for their work in comedy?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person American?"}}'
+      turn_number: 9
+    - role: user
+      content: 'YES'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Renowned American actor
+        known for his powerful performances and multiple award nominations.","name":"Denzel
+        Washington","question":null}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Has
+        the person directed any films or television shows?"}}'
+      turn_number: 11
+    - role: user
+      content: 'YES'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor, director,
+        and filmmaker known for his work in various genres.","name":"Clint Eastwood","question":null}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        his versatility and award-winning performances.","name":"Tom Hanks","question":null}}'
+      turn_number: 13
+    - role: user
+      content: 'NO'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Not a male person, incorrect
+        category.","name":"Meryl Streep","question":null}}'
+      turn_number: 14
+    - role: user
+      content: 'NO'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Acclaimed American actor
+        known for his diverse film roles.","name":"Robert De Niro","question":null}}'
+      turn_number: 15
+    - role: user
+      content: 'NO'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        iconic roles in film franchises.","name":"Harrison Ford","question":null}}'
+      turn_number: 16
+    - role: user
+      content: 'NO'
+      turn_number: 16
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Veteran American actor
+        known for his distinctive voice and versatile roles.","name":"Morgan Freeman","question":null}}'
+      turn_number: 17
+    - role: user
+      content: 'NO'
+      turn_number: 17
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Iconic American actor known
+        for intense performances in film and theater.","name":"Al Pacino","question":null}}'
+      turn_number: 18
+    - role: user
+      content: 'NO'
+      turn_number: 18
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Legendary American actor
+        known for iconic and diverse roles in cinema.","name":"Jack Nicholson","question":null}}'
+      turn_number: 19
+    - role: user
+      content: 'NO'
+      turn_number: 19
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor and filmmaker
+        known for his work in film.","name":"Mel Gibson","question":null}}'
+      turn_number: 20
+    - role: user
+      content: 'NO'
+      turn_number: 20
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"British actor known for
+        his work on stage, television, and film.","name":"Benedict Cumberbatch","question":null}}'
+      turn_number: 21
+    - role: user
+      content: 'NO'
+      turn_number: 21
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        his versatile performances on stage and screen.","name":"Philip Seymour Hoffman","question":null}}'
+      turn_number: 22
+    - role: user
+      content: 'NO'
+      turn_number: 22
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Veteran American actor
+        known for his diverse roles in film, television, and theater.","name":"John
+        Lithgow","question":null}}'
+      turn_number: 23
+    - role: user
+      content: 'NO'
+      turn_number: 23
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        his acclaimed performances on television and film.","name":"Bryan Cranston","question":null}}'
+      turn_number: 24
+    - role: user
+      content: 'NO'
+      turn_number: 24
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        his film and television roles and awards.","name":"Kevin Spacey","question":null}}'
+      turn_number: 25
+    - role: user
+      content: 'NO'
+      turn_number: 25
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        action films and diverse roles.","name":"Bruce Willis","question":null}}'
+      turn_number: 26
+    - role: user
+      content: 'NO'
+      turn_number: 26
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        his versatility and acclaimed performances in film.","name":"Michael Keaton","question":null}}'
+      turn_number: 27
+    - role: user
+      content: 'NO'
+      turn_number: 27
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Veteran American actor
+        known for diverse film roles.","name":"Gene Hackman","question":null}}'
+      turn_number: 28
+    - role: user
+      content: 'NO'
+      turn_number: 28
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor and comedian
+        known for diverse roles in film.","name":"Eddie Murphy","question":null}}'
+      turn_number: 29
+    - role: user
+      content: 'NO'
+      turn_number: 29
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Irish-German actor known
+        for his intense performances in a wide range of film roles.","name":"Michael
+        Fassbender","question":null}}'
+      turn_number: 30
+    - role: user
+      content: 'NO'
+      turn_number: 30
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        distinctive performances.","name":"Christopher Walken","question":null}}'
+      turn_number: 31
+    - role: user
+      content: 'NO'
+      turn_number: 31
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        his role as Don Draper in Mad Men.","name":"Jon Hamm","question":null}}'
+      turn_number: 32
+    - role: user
+      content: 'NO'
+      turn_number: 32
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        diverse film roles and screenwriting.","name":"Matt Damon","question":null}}'
+      turn_number: 33
+    - role: user
+      content: 'NO'
+      turn_number: 33
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        diverse film roles and distinctive performances.","name":"Jeff Bridges","question":null}}'
+      turn_number: 34
+    - role: user
+      content: 'NO'
+      turn_number: 34
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Spanish actor known for
+        diverse film roles and awards.","name":"Javier Bardem","question":null}}'
+      turn_number: 35
+    - role: user
+      content: 'NO'
+      turn_number: 35
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Acclaimed American actor
+        known for his intense performances and activism.","name":"Sean Penn","question":null}}'
+      turn_number: 36
+    - role: user
+      content: 'NO'
+      turn_number: 36
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        his diverse roles and award-winning performances.","name":"Rami Malek","question":null}}'
+      turn_number: 37
+    - role: user
+      content: 'NO'
+      turn_number: 37
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor and filmmaker
+        known for diverse roles and award-winning performances.","name":"Ben Affleck","question":null}}'
+      turn_number: 38
+    - role: user
+      content: 'NO'
+      turn_number: 38
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        diverse film roles and critically acclaimed performances.","name":"Jake Gyllenhaal","question":null}}'
+      turn_number: 39
+    - role: user
+      content: 'NO'
+      turn_number: 39
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor and rapper
+        known for diverse film roles and high-profile appearances.","name":"Will Smith","question":null}}'
+      turn_number: 40
+    - role: user
+      content: 'NO'
+      turn_number: 40
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Canadian actor known for
+        critically acclaimed film roles and diverse performances.","name":"Ryan Gosling","question":null}}'
+      turn_number: 41
+    - role: user
+      content: 'NO'
+      turn_number: 41
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        diverse film roles.","name":"Channing Tatum","question":null}}'
+      turn_number: 42
+    - role: user
+      content: 'NO'
+      turn_number: 42
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        diverse film roles and directing.","name":"George Clooney","question":null}}'
+      turn_number: 43
+    - role: user
+      content: 'NO'
+      turn_number: 43
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"British actor known for
+        his intense preparation and versatile performances in film.","name":"Christian
+        Bale","question":null}}'
+      turn_number: 44
+    - role: user
+      content: 'NO'
+      turn_number: 44
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Highly acclaimed British-Irish
+        actor known for intense method performances and numerous awards.","name":"Daniel
+        Day-Lewis","question":null}}'
+      turn_number: 45
+    - role: user
+      content: 'NO'
+      turn_number: 45
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Actor known for diverse
+        and iconic film roles.","name":"Johnny Depp","question":null}}'
+      turn_number: 46
+    - role: user
+      content: 'NO'
+      turn_number: 46
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Iconic American actor known
+        for groundbreaking performances.","name":"Marlon Brando","question":null}}'
+      turn_number: 47
+    - role: user
+      content: 'NO'
+      turn_number: 47
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Iconic American actor known
+        for classic Hollywood films.","name":"Humphrey Bogart","question":null}}'
+      turn_number: 48
+    - role: user
+      content: 'NO'
+      turn_number: 48
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Acclaimed Welsh actor known
+        for iconic roles and command of his craft.","name":"Anthony Hopkins","question":null}}'
+      turn_number: 49
+    - role: user
+      content: 'NO'
+      turn_number: 49
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American actor known for
+        diverse film roles and critically acclaimed performances.","name":"Mark Ruffalo","question":null}}'
+      turn_number: 50
+    - role: user
+      content: 'NO'
+      turn_number: 50
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Acclaimed American actor
+        and producer known for diverse film roles and philanthropy.","name":"Brad
+        Pitt","question":null}}'
+      turn_number: 51
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0009
+          gateway: openrouter
+          model: meta-llama/llama-4-maverick
+          provider: parasail
+          reasoning_effort: none
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: supported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '0.35'
+            cached_input_usd_per_million: '0.17'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 51
+          cost_usd: '0.01492415'
+          latency_ms: 54095
+          total_tokens: 77159
+          input_tokens: 75453
+          cached_input_tokens: 73280
+          cache_write_tokens: 0
+          output_tokens: 1706
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: '0.0131904000'
+          recovery:
+            request_attempts: 52
+            retried_calls: 1
+            recovered_calls: 1
+            exhausted_retries: 0
+            reasons:
+            - reason: provider_http_429
+              count: 1
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 6570
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: anthropic
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 9
+          cost_usd: '0.1333943000000000013'
+          latency_ms: 153833
+          total_tokens: 146212
+          input_tokens: 137667
+          cached_input_tokens: 68755
+          cache_write_tokens: 0
+          output_tokens: 8545
+          reasoning_tokens: 6163
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 21
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 42
+          cost_usd: '0.0125695'
+          latency_ms: 52064
+          total_tokens: 17389
+          input_tokens: 15839
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 1550
+          reasoning_tokens: 16
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 42
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0009/BX-20260728-official-M0009-010/subjects/T-0003/trials/trial-005/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 14b08156b574af1eca1bc8ef60ad19e42da355928146590f37b1d13b0ebb58fc

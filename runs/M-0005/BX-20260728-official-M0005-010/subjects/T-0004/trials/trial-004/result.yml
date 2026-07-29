@@ -1,0 +1,2445 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260728-official-M0005-010
+    model_id: M-0005
+    target_id: T-0004
+    trial_id: trial-004
+    trial_number: 4
+    episode_run_id: BR-a569d0d9e533bae2904eb2e88a44dd912a2fe7fd
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-a569d0d9e533bae2904eb2e88a44dd912a2fe7fd
+      episode_id: EP-019fa9f50e7a74538700d50c18b3f2b0
+      subject:
+        target_id: T-0004
+        canonical_name: Garfield
+        aliases:
+        - Garfield the Cat
+        entity_type: fictional_character
+        description: Garfield, the lazy, cynical, lasagna-loving orange cat created
+          by Jim Davis and protagonist of the Garfield comic strip, identified by
+          Wikidata entity Q767120.
+        reference_url: https://en.wikipedia.org/wiki/Garfield_(character)
+      started_at: '2026-07-28T18:20:37.370750+00:00'
+      completed_at: '2026-07-28T18:45:33.935443+00:00'
+      duration_ms: 1496565
+    outcome:
+      success: false
+      terminal_reason: guesser_protocol_failure
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 51
+      counted_questions: 50
+      guesser_call_count: 51
+      ask_count: 46
+      guess_count: 4
+      rejected_guess_count: 4
+      oracle_unknown_count: 10
+      oracle_quality:
+        reviewed_questions: 36
+        agreements: 36
+        disagreements: 0
+        judge_invocations: 0
+        oracle_answers_changed: 0
+        final_unknown_answers: 10
+        judge_yes_answers: 0
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0384033'
+        judge_cost_usd: '0'
+        quality_control_cost_usd: '0.0384033'
+        question_types:
+        - question_type: negation
+          reviewed_questions: 3
+          disagreements: 0
+        - question_type: other
+          reviewed_questions: 33
+          disagreements: 0
+      contract:
+        evaluated_outputs: 51
+        valid_outputs: 51
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.5939591'
+        oracle: '0.4438999499999999970'
+        validator: '0.0015235'
+        total: '1.0393825499999999970'
+      tokens:
+        guesser: 199797
+        oracle: 598462
+        validator: 1812
+        total: 800071
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0005
+        requested_model: anthropic/claude-sonnet-5
+        requested_provider: anthropic
+        resolved_models:
+        - anthropic/claude-sonnet-5
+        resolved_providers:
+        - Anthropic
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the character from a book (originally, not a movie or TV show)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f51d42710699519ce7b1c274ce
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: In 1978 he launched Garfield... Garfield (1978– ) is a comic strip.
+          validation: model_reported
+        - source_url: https://www.penguinrandomhouse.com/books/37527/garfield-at-large-by-jim-davis/
+          excerpt: The Garfield strip was born on June 19, 1978... Garfield at Large...
+            His 1st Book.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: negation
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fa9f50e7a74538700d50e2feeed77
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the character from a movie or TV show (live-action or animated)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f556a572c19717b9b17203a4be
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Garfield-and-Friends
+          excerpt: 'The animated Saturday-morning series Garfield and Friends ran
+            for seven seasons (1988–94) on CBS... The 2004 film Garfield: The Movie...'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fa9f54915701dbe59ef642807d215
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is the character from an animated production (movie or show)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f58d9b761b98bb09c59a73914d
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Garfield-and-Friends
+          excerpt: The animated Saturday-morning series Garfield and Friends ran for
+            seven seasons (1988–94) on CBS. The show featured Garfield.
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/The_Garfield_Show
+          excerpt: The Garfield Show is an animated television series ... based on
+            the American Garfield comic strip.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fa9f5776e76b7982f6cdc96e9a2d8
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is the character from a TV series (as opposed to a feature film)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f5b32b77d984bfebbe3d754bd5
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203
+          excerpt: The character created by US cartoonist Jim Davis debuted ... on
+            June 19, 1978, in a comic strip published in 41 newspapers.
+          validation: model_reported
+        - source_url: https://indianahistory.org/education/education-resources/educator-resources/famous-hoosiers/jim-davis
+          excerpt: On June 19, 1978, the comic strip first appeared ... Garfield has
+            become more than just a comic strip. There are Garfield movies, a television
+            show.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fa9f5a7157168aa5665d71f99a449
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is the character human (or human-like in appearance)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f5f128736f9a086dee0d47b2b4
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.cbr.com/garfield-changed-since-1978
+          excerpt: He has evolved into a more anthropomorphic character that walks
+            like a person.
+          validation: model_reported
+        - source_url: https://www.wikidata.org/wiki/Q767120
+          excerpt: Garfield (Q767120) instance of anthropomorphic cat
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019fa9f5e10d7787877aed6b06ba21de
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is the character from a Disney animated film?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f661ab74ce97eae48a75f8544d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.sonypictures.co.uk/movies/garfield-movie
+          excerpt: 'The Garfield Movie ... Based on the Garfield® characters created
+            by: Jim Davis'
+          validation: model_reported
+        - source_url: https://apnews.com/article/garfield-movie-review-63f71f05e5316fc21bb9479fc43e34a7
+          excerpt: This image released by Sony Pictures shows ... Garfield ... in
+            a scene from the animated film “The Garfield Movie.”
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019fa9f64dd27280b36c64d5bd48064b
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is the character from a Studio Ghibli film?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f6972774eb91f56c1363ac0df5
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: In 1978 he launched Garfield for United Features... Garfield (1978–
+            ) is a comic strip.
+          validation: model_reported
+        - source_url: https://www.britannica.com/topic/The-Garfield-Movie
+          excerpt: The 2024 animated film The Garfield Movie featured the voices of
+            Chris Pratt as Garfield and Samuel L. Jackson as Garfield’s father.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019fa9f689ec71eb990e9ee393417363
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Is the character from a Pixar film?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f6e22c7131bb3af247ed034a03
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.sonypictures.com/movies/thegarfieldmovie
+          excerpt: 'Based on the Garfield® characters created by: Jim Davis.'
+          validation: model_reported
+        - source_url: https://www.awn.com/animationworld/garfield-movie-mouth-window-belly
+          excerpt: The Garfield Movie ... is the first fully animated theatrically
+            released Garfield film ... released ... by Columbia Pictures through Sony
+            Pictures.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019fa9f6d0457761a59b404c09b2d559
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Is the character from a DreamWorks Animation film?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f71ffa77b6ac24e98fcf6e4f99
+        answer: 'NO'
+        evidence:
+        - source_url: https://screenrant.com/garfield-animated-movie-director/
+          excerpt: Unfortunately, however, that film was cancelled after NBCUniversal
+            acquired DreamWorks Animation in 2016.
+          validation: model_reported
+        - source_url: https://variety.com/2016/film/news/garfield-animated-movie-alcon-1201781160
+          excerpt: ‘Garfield’ animated movie in the works at Alcon; Fox released the
+            earlier films.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019fa9f7100774d3908182497cc4b4be
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Is the character from a Japanese anime film?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f79cd7739e902e4f4a63ba7689
+        answer: 'NO'
+        evidence:
+        - source_url: https://americanhistory.si.edu/collections/object/nmah_1367415
+          excerpt: In 1978 he launched Garfield for United Features; Garfield is the
+            title character of the Garfield comic strip.
+          validation: model_reported
+        - source_url: https://musicbrainz.org/artist/88019054-68a7-4478-9965-5e9673369667
+          excerpt: Garfield is a fictional American cat and the protagonist of the
+            comic strip of the same name, created by Jim Davis.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019fa9f784897717a20d499491c91929
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Is the character from an animated film intended primarily for adult
+          audiences (not a children's film)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f80fcf72989a6e4da40860c8c6
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.cbr.com/the-garfield-movie-box-office-success
+          excerpt: The Garfield Movie was the only animated movie aimed at families
+            in theaters.
+          validation: model_reported
+        - source_url: https://guides.justwatch.com/us/garfield-movies-in-order
+          excerpt: After producing a series of kid-centric direct-to-video films...
+            Genres Comedy, Kids & Family.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: negation
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019fa9f7c6ce74079aee88341f9928e3
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Is the character from a film made by Illumination Entertainment
+          (like Despicable Me, The Grinch, or Sing)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f8820a7684b73eca7439fdc20a
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.awn.com/animationworld/garfield-movie-mouth-window-belly
+          excerpt: The property has ... 2 live-action/CG animated hybrid films from
+            20th Century Fox ... The Garfield Movie ... was released ... by Columbia
+            Pictures through Sony Pictures.
+          validation: model_reported
+        - source_url: https://www.movieinsider.com/m14423/garfield/credits
+          excerpt: The Garfield Movie ... Distributor Sony Pictures ... Production
+            Company Alcon Entertainment DNEG Animation.
+          validation: model_reported
+        - source_url: https://family.20thcenturystudios.com/movies/garfield
+          excerpt: 'Garfield ... 20th Century Studios ... Release Date: June 11, 2004.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019fa9f86ba7744fabfe1962c744fc0e
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: 'Is the character from a film made by Sony Pictures Animation (like
+          Cloudy with a Chance of Meatballs or Spider-Man: Into the Spider-Verse)?'
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f8cdba742e930bb0161e86a5f0
+        answer: 'NO'
+        evidence:
+        - source_url: https://deadline.com/2022/08/garfield-chris-pratt-release-date-1235084683
+          excerpt: Alcon and DNEG Entertainment are co-financing and co-producing
+            the animated feature, which Sony Pictures will be distributing globally.
+          validation: model_reported
+        - source_url: https://family.20thcenturystudios.com/movies/garfield
+          excerpt: Produced By John Davis
+          validation: model_reported
+        - source_url: https://www.sonypicturesanimation.com/projects/films
+          excerpt: 'Films ... Spider-Man: Across the Spider-Verse ... Hotel Transylvania:
+            Transformania'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-019fa9f8b5f2723cb56295a6b0e9efd7
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Is the character from a stop-motion animated film (like Aardman
+          or Laika productions)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f95784772c9ac8751055923823
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Garfield_at_Large
+          excerpt: 'Feature films: Live-action—Garfield: The Movie (2004), A Tail
+            of Two Kitties (2006); Animated—Garfield Gets Real (2007), Fun Fest (2008),
+            Pet Force (2009), The Garfield Movie (2024).'
+          validation: model_reported
+        - source_url: https://www.britannica.com/topic/Garfield-The-Movie
+          excerpt: 'The 2004 film Garfield: The Movie used computer-generated imagery.'
+          validation: model_reported
+        - source_url: https://fromthefourthrow.com/2024/05/20/the-garfield-movie-review-terrific-voice-over-performances-cant-save-basic-animation-and-a-retread-plot
+          excerpt: The Garfield Movie takes the computer animation approach.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-019fa9f93a2273e9bff862bd3b8cd91b
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: ASK
+        question: Is the character from a Blue Sky Studios film (like Ice Age or Rio)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9f9a52575d68786fc4c94315a6e
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Garfield_at_Large
+          excerpt: 'Feature films: Garfield: The Movie (2004), A Tail of Two Kitties
+            (2006), Garfield Gets Real (2007), Fun Fest (2008), Pet Force (2009),
+            and The Garfield Movie (2024).'
+          validation: model_reported
+        - source_url: https://ny411.com/listing/blue-sky-studios-inc
+          excerpt: Blue Sky’s productions include Ice Age, Robots, Horton Hears a
+            Who!, Rio, Epic, The Peanuts Movie, Ferdinand, and other listed Blue Sky
+            films; Garfield is not among them.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-019fa9f98f03704693dfd38369452c6d
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: ASK
+        question: Is the character from a Don Bluth animated film (like An American
+          Tail, The Secret of NIMH, or Anastasia)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fa21e47042ab68c278146190ea
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: In 1978 he launched Garfield for United Features... Garfield (1978–
+            ) is a comic strip.
+          validation: model_reported
+        - source_url: https://catalog.afi.com/Catalog/moviedetails/63082
+          excerpt: 'Garfield (2004)... Director: Peter Hewitt.'
+          validation: model_reported
+        - source_url: https://www.allmovie.com/artist/don-bluth-an6041
+          excerpt: Don Bluth is known for directing animated films including The Secret
+            of NIMH, An American Tail, The Land Before Time, All Dogs Go to Heaven,
+            and Anastasia.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 16
+      guesser_call_id: GC-019fa9fa0ec27580a0b71ec33225c560
+    - turn_type: action
+      turn_number: 17
+      action:
+        action: ASK
+        question: Was the film released before the year 2000?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fa6f5e7205a861e7782b4a33b5
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: temporal_comparison
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 17
+      guesser_call_id: GC-019fa9fa5cee74f19bc24691c013a4e3
+    - turn_type: action
+      turn_number: 18
+      action:
+        action: ASK
+        question: Is the character male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9faa39372c79de0fbc267a08545
+        answer: 'YES'
+        evidence:
+        - source_url: https://us-public-domain.fandom.com/wiki/Garfield
+          excerpt: 'In-Universe Information ... Gender: Male ... Species: Cat'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 18
+      guesser_call_id: GC-019fa9fa800671b0899beb4f64f04c4d
+    - turn_type: action
+      turn_number: 19
+      action:
+        action: ASK
+        question: Is the character from a Warner Bros. animated film (such as The
+          Iron Giant or Space Jam)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fadd30766dabf6df7c44b712a5
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.awn.com/animationworld/garfield-movie-mouth-window-belly
+          excerpt: The Garfield Movie ... was released in U.S. cinemas by Columbia
+            Pictures through Sony Pictures.
+          validation: model_reported
+        - source_url: https://variety.com/2016/film/news/garfield-animated-movie-alcon-1201781160
+          excerpt: 20th Century Fox ... secured exclusive rights to produce animated
+            theatrical motion pictures based on the comic strip Garfield.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 19
+      guesser_call_id: GC-019fa9fabcf771a5984cfaa90e77772f
+    - turn_type: action
+      turn_number: 20
+      action:
+        action: ASK
+        question: Is the character considered the main protagonist of the film?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fb5eb3727d9250201457174cac
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 20
+      guesser_call_id: GC-019fa9fb4b6175c7b93f1eaa473878c6
+    - turn_type: action
+      turn_number: 21
+      action:
+        action: ASK
+        question: Is the film primarily in a language other than English (e.g., French,
+          or another non-English language)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fb9ab57305a87a8311535aeb12
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.the-numbers.com/movie/Garfield-A-Tail-of-Two-Kitties
+          excerpt: 'Languages: English'
+          validation: model_reported
+        - source_url: https://movies.fandom.com/wiki/The_Garfield_Movie
+          excerpt: 'Language: English'
+          validation: model_reported
+        - source_url: https://catalog.spokanelibrary.org/catalog/Record/380dc226-a4a5-5d68-b453-1c5daae25353?lng=ar
+          excerpt: The language is listed as English, French, Spanish.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 21
+      guesser_call_id: GC-019fa9fb7b757127b915a61ae67478f9
+    - turn_type: action
+      turn_number: 22
+      action:
+        action: ASK
+        question: Is the film primarily 2D/hand-drawn animation (as opposed to 3D/CGI)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fbeab5737e8b4c36b8937cc9c4
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 22
+      guesser_call_id: GC-019fa9fbcf187198b86c52e7b5a33a52
+    - turn_type: action
+      turn_number: 23
+      action:
+        action: ASK
+        question: Is the character a villain or antagonist in the story?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fc1e91767abb004211281f659d
+        answer: 'NO'
+        evidence:
+        - source_url: https://musicbrainz.org/artist/88019054-68a7-4478-9965-5e9673369667
+          excerpt: Garfield is a fictional American cat and the protagonist of the
+            comic strip of the same name.
+          validation: model_reported
+        - source_url: https://www.imdb.com/news/ni64690736
+          excerpt: Garfield ... [is] the protagonist.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 23
+      guesser_call_id: GC-019fa9fc0bc4742595b781b9a496e6b4
+    - turn_type: action
+      turn_number: 24
+      action:
+        action: ASK
+        question: Is the character from a film by Cartoon Saloon (such as The Secret
+          of Kells, Song of the Sea, or Wolfwalkers)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fc7dcd77c7b098a02a8057d32c
+        answer: 'NO'
+        evidence:
+        - source_url: https://americanhistory.si.edu/collections/object/nmah_1367415
+          excerpt: In 1978 he launched Garfield for United Features... Garfield (1978–)
+            is a comic strip...
+          validation: model_reported
+        - source_url: https://www.cartoonsaloon.ie/feature-films
+          excerpt: Cartoon Saloon’s feature-film list includes Puffin Rock and the
+            New Friends, My Father’s Dragon, WolfWalkers, The Breadwinner, The Song
+            of the Sea, and The Secret of Kells.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 24
+      guesser_call_id: GC-019fa9fc5b4573cabb1f147833afc887
+    - turn_type: action
+      turn_number: 25
+      action:
+        action: ASK
+        question: Is the film a Netflix original animated production (like Klaus,
+          The Willoughbys, or Over the Moon)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fceaa1714ba8980142bf924e49
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.sonypictures.com/movies/thegarfieldmovie
+          excerpt: THE GARFIELD MOVIE — Now on Digital, Blu-ray™ and DVD
+          validation: model_reported
+        - source_url: https://www.huffpost.com/entry/garfield-movie-popular-netflix-films_n_66f0de22e4b0af9094c4ad84
+          excerpt: After a theatrical run that began in May, “The Garfield Movie”
+            joined Netflix on Sept. 21.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 25
+      guesser_call_id: GC-019fa9fcb76b76fcbc75c699a46b289a
+    - turn_type: action
+      turn_number: 26
+      action:
+        action: ASK
+        question: Is the story set in a fantasy world with magic, mythical creatures,
+          or supernatural elements?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fd378d76d2b35b312a16913bd8
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: The strip’s international popularity is the result of non-topical
+            and apolitical humor, and a simple story; Garfield’s housemates are Odie
+            and owner Jon Arbuckle.
+          validation: model_reported
+        - source_url: https://www.thetvdb.com/series/the-garfield-show
+          excerpt: Garfield lives with his owner, Jon Arbuckle, and Jon’s dog, Odie,
+            in a detached 3-story house; the show’s premise is comedic slapstick.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 26
+      guesser_call_id: GC-019fa9fd26b67092bcd64639e6f8df83
+    - turn_type: action
+      turn_number: 27
+      action:
+        action: ASK
+        question: Is the story set in a real-world historical time period (past era,
+          not present day)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fd956f70e8891bc6bc4ac69f1f
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: negation
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 27
+      guesser_call_id: GC-019fa9fd83487552a8e59eb7b7a04c4d
+    - turn_type: action
+      turn_number: 28
+      action:
+        action: ASK
+        question: Is the story set in a science-fiction or futuristic setting (e.g.,
+          space travel, robots, advanced technology)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fde43c767cb671013976f5671c
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.cbr.com/where-garfield-and-friends-live/
+          excerpt: Garfield and Friends ... Jon’s house ... Mostly domestic; the farm
+            is used for U.S. Acres side stories. Live-action/CGI Films ... Suburban
+            U.S.
+          validation: model_reported
+        - source_url: https://wondermark.com/the-comic-strip-doctor-garfield/
+          excerpt: Garfield’s stories commonly use settings such as the living room
+            or the front yard, and involve Jon going about his life and doing laundry.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 28
+      guesser_call_id: GC-019fa9fdd43576f6846a28485662e9fa
+    - turn_type: action
+      turn_number: 29
+      action:
+        action: ASK
+        question: Is the story set in contemporary/modern times (present day, not
+          past or future)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fe376875f4a6cac3316415b2c0
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: negation
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 29
+      guesser_call_id: GC-019fa9fe2005752293ddfda9eab62cd4
+    - turn_type: action
+      turn_number: 30
+      action:
+        action: ASK
+        question: Is the character an adult (as opposed to a child or teenager)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fec5f87019b59b77bc28215265
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.calendarr.com/united-states/national-garfield-the-cat-day
+          excerpt: Garfield was shown as a grown cat when the strip first appeared
+            on June 19, 1978.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 30
+      guesser_call_id: GC-019fa9feb4d272a3847c917547b1b405
+    - turn_type: action
+      turn_number: 31
+      action:
+        action: ASK
+        question: Is the character based on a real historical person (i.e., the film
+          is a biographical or historical account)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9ff4747772691fa45954fb556d4
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 31
+      guesser_call_id: GC-019fa9ff02d4724e912af743492bd49a
+    - turn_type: action
+      turn_number: 32
+      action:
+        action: ASK
+        question: Is the film based on or inspired by a real musical band or group
+          (like The Beatles)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa9fff9d5766e892b1495e2a0127f
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 32
+      guesser_call_id: GC-019fa9ff7fcb762fb44a7b5bcc64cc18
+    - turn_type: action
+      turn_number: 33
+      action:
+        action: ASK
+        question: Is the film a musical (with characters singing original songs as
+          part of the story)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa005f9974a08b016b4cf06fbd0d
+        answer: 'YES'
+        evidence:
+        - source_url: https://family.20thcenturystudios.com/movies/garfield
+          excerpt: 'Genre: Animation, Comedy, Musical'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 33
+      guesser_call_id: GC-019faa00228874668e3dfc713d538332
+    - turn_type: action
+      turn_number: 34
+      action:
+        action: ASK
+        question: Is the character one of The Beatles (John, Paul, George, or Ringo)
+          as depicted in an animated film?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa00e4ae73929eeb26fb93704d7d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Garfield-character
+          excerpt: Garfield is a cartoon character created by Jim Davis.
+          validation: model_reported
+        - source_url: https://kids.britannica.com/kids/assembly/view/17814
+          excerpt: 'The Beatles: Paul McCartney, John Lennon, Ringo Starr, and George
+            Harrison.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 34
+      guesser_call_id: GC-019faa00af607661b2e79f7010936e8a
+    - turn_type: action
+      turn_number: 35
+      action:
+        action: ASK
+        question: Is the film primarily a comedy?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa0173f770da99be104c2403c9fa
+        answer: 'YES'
+        evidence:
+        - source_url: https://catalog.afi.com/Catalog/moviedetails/63082
+          excerpt: Garfield (2004) — Comedy
+          validation: model_reported
+        - source_url: https://www.disneyplus.com/en-gb/browse/entity-7e233916-607f-49fd-bb04-93e65fcf1a7c
+          excerpt: 'Garfield: The Movie — Genre: Comedy'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 35
+      guesser_call_id: GC-019faa010cc9774cbdf2cf1d2346b4f8
+    - turn_type: action
+      turn_number: 36
+      action:
+        action: ASK
+        question: Is the film primarily aimed at children/family audiences (as opposed
+          to teens or general adult audiences)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa028a2f75719c7daf267bdbcc78
+        answer: 'YES'
+        evidence:
+        - source_url: https://tv.apple.com/gb/movie/the-garfield-movie/umc.cmc.4si7hhlswcdl4ys5h8ozmm53q
+          excerpt: The Garfield Movie — Kids & Family
+          validation: model_reported
+        - source_url: https://visit.lacountylibrary.org/event/12934342
+          excerpt: Movie recommended for children 7 and up with a parent or caregiver.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 36
+      guesser_call_id: GC-019faa019614734ba9c84eed40bf4156
+    - turn_type: action
+      turn_number: 37
+      action:
+        action: ASK
+        question: Is the film an adaptation of a stage musical or Broadway show?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa02e5bb74a68bf594dcc0504ae3
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 37
+      guesser_call_id: GC-019faa02b40875caa58ef6c36489756a
+    - turn_type: action
+      turn_number: 38
+      action:
+        action: ASK
+        question: Is the film based on a pre-existing literary work, such as a novel
+          or fairy tale?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa03a7557015b320c41250e03208
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.alconent.com/news/chris-pratt-joins-alcon-entertainments-animated-feature-garfield-in-title-role-film-set-for-release-via-sony-pictures
+          excerpt: The film [is] based on the iconic comic strip Garfield.
+          validation: model_reported
+        - source_url: https://www.rottentomatoes.com/m/garfield_the_movie_2004
+          excerpt: 'Garfield: The Movie — Based on the popular comic strip.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 38
+      guesser_call_id: GC-019faa030c77769d9171d795c7d62b17
+    - turn_type: action
+      turn_number: 39
+      action:
+        action: GUESS
+        question: null
+        name: Prince Derek
+        description: The male protagonist of the 1994 non-Disney animated musical
+          film 'The Swan Princess', based on the Swan Lake fairy tale/ballet.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa04216f7425a64dc2325ba1cbb9
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Prince Derek, a fictional character from
+          The Swan Princess, while the trusted subject is Garfield the Cat.
+        oracle_quality: null
+      counted: true
+      counted_questions: 39
+      guesser_call_id: GC-019faa03de6c770ba130257f3a61b8c6
+    - turn_type: action
+      turn_number: 40
+      action:
+        action: ASK
+        question: Is the character royalty (such as a prince, king, or nobleman)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa0472de70069f855ec807c6edd4
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 40
+      guesser_call_id: GC-019faa042a8470f8bf37866d75852d33
+    - turn_type: action
+      turn_number: 41
+      action:
+        action: ASK
+        question: Is the film part of a franchise with multiple sequels (i.e., there
+          are two or more sequel films)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa04f2fe72468dd96d122ba3a5d6
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 41
+      guesser_call_id: GC-019faa049b74763b8f9d133cbd368b15
+    - turn_type: action
+      turn_number: 42
+      action:
+        action: ASK
+        question: Is the character portrayed as an anthropomorphic animal (not a human)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa0691b6736abe578c07b1e9ae7e
+        answer: 'YES'
+        evidence:
+        - source_url: https://professionalmoron.com/2020/07/04/garfield-by-jim-davis
+          excerpt: The cat is an orange tabby with anthropomorphic qualities.
+          validation: model_reported
+        - source_url: https://movieweb.com/garfield-looks-different-why/
+          excerpt: He now stands on his hind legs ... and he's far more expressive
+            ... he basically became more anthropomorphic.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: negation
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 42
+      guesser_call_id: GC-019faa052c5e72259b19ae716d8d1d33
+    - turn_type: action
+      turn_number: 43
+      action:
+        action: GUESS
+        question: null
+        name: Wilbur
+        description: The pig protagonist of the 1973 animated musical film 'Charlotte's
+          Web', based on E.B. White's novel.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa07017477c8ae25e85eb816848e
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Wilbur, the pig from Charlotte's Web,
+          not Garfield, the orange cat from the Garfield comic strip.
+        oracle_quality: null
+      counted: true
+      counted_questions: 43
+      guesser_call_id: GC-019faa06c8bc73c6828400e191b1bcd1
+    - turn_type: action
+      turn_number: 44
+      action:
+        action: ASK
+        question: Is the character a dog?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa07875a736bac718368cb593d51
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.whsv.com/content/news/Debate-prompts-Garfield-creator-to-clarify-cats-gender-415243723.html
+          excerpt: Garfield creator Jim Davis clarified that Garfield is a cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 44
+      guesser_call_id: GC-019faa07089075d8864bed18f780825f
+    - turn_type: action
+      turn_number: 45
+      action:
+        action: ASK
+        question: Is the character a rodent, such as a rat or mouse?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa07d5e777439f0b9756ad92cab8
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: The title character, a tabby cat
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 45
+      guesser_call_id: GC-019faa079a4a702cb10fd39ddd9e32fd
+    - turn_type: action
+      turn_number: 46
+      action:
+        action: ASK
+        question: Does the story take place primarily in a farm or rural countryside
+          setting?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa084ca7701b8753df5c259cd2a3
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.cbr.com/where-garfield-and-friends-live/
+          excerpt: Garfield | None | N/A | Non-specific suburbia
+          validation: model_reported
+        - source_url: https://www.cbr.com/where-garfield-and-friends-live/
+          excerpt: Garfield and Friends ... Mostly domestic; the farm is used for
+            U.S. Acres side stories.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 46
+      guesser_call_id: GC-019faa07f26571c289f264909ef265e1
+    - turn_type: action
+      turn_number: 47
+      action:
+        action: GUESS
+        question: null
+        name: Rex
+        description: The friendly Tyrannosaurus from the 1993 animated musical comedy
+          'We're Back! A Dinosaur's Story,' based on Hudson Talbott's book.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa09329777c7a985a911ff82b4aa
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Rex, a Tyrannosaurus from *We're Back!
+          A Dinosaur's Story*, not Garfield the Cat.
+        oracle_quality: null
+      counted: true
+      counted_questions: 47
+      guesser_call_id: GC-019faa087b0d7567a176337d15be7480
+    - turn_type: action
+      turn_number: 48
+      action:
+        action: ASK
+        question: Is the character a bird (such as a duck, chicken, or other avian
+          species)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa0a63b476b3a5947a0fc6d28df4
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.keycollectorcomics.com/character/garfield,13370/
+          excerpt: 'Species: Cat'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 48
+      guesser_call_id: GC-019faa0938907740a99639c692251f54
+    - turn_type: action
+      turn_number: 49
+      action:
+        action: GUESS
+        question: null
+        name: Kirk (Nicky Flippers) the Wolf
+        description: The wolf detective protagonist of the 2005 non-Disney animated
+          musical comedy 'Hoodwinked!', based on the Little Red Riding Hood fairy
+          tale.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa0aecc17430b3d7152977777c1a
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Garfield, the fictional cat from Jim Davis's
+          comic strip; the proposal identifies Kirk (Nicky Flippers) the Wolf from
+          Hoodwinked!, a different character.
+        oracle_quality: null
+      counted: true
+      counted_questions: 49
+      guesser_call_id: GC-019faa0a790e73a0b10f0d18970f2195
+    - turn_type: action
+      turn_number: 50
+      action:
+        action: ASK
+        question: Is the character a cat?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa0b07897079a69d2546bec07a1f
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: Garfield (1978- ) is a comic strip which looks at the life of the
+            title character, a tabby cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 50
+      guesser_call_id: GC-019faa0af579768aafb946eac85e9e86
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"fictional_character","event":"BEGIN","variation_token":"BYOMPCJW"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a book (originally, not a movie or TV show)?"}}'
+      turn_number: 1
+    - role: user
+      content: 'NO'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a movie or TV show (live-action or animated)?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from an animated production (movie or show)?"}}'
+      turn_number: 3
+    - role: user
+      content: 'YES'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a TV series (as opposed to a feature film)?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character human (or human-like in appearance)?"}}'
+      turn_number: 5
+    - role: user
+      content: 'YES'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a Disney animated film?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a Studio Ghibli film?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a Pixar film?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a DreamWorks Animation film?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a Japanese anime film?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from an animated film intended primarily for adult audiences
+        (not a children''s film)?"}}'
+      turn_number: 11
+    - role: user
+      content: 'NO'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a film made by Illumination Entertainment (like Despicable
+        Me, The Grinch, or Sing)?"}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a film made by Sony Pictures Animation (like Cloudy with
+        a Chance of Meatballs or Spider-Man: Into the Spider-Verse)?"}}'
+      turn_number: 13
+    - role: user
+      content: 'NO'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a stop-motion animated film (like Aardman or Laika productions)?"}}'
+      turn_number: 14
+    - role: user
+      content: 'NO'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a Blue Sky Studios film (like Ice Age or Rio)?"}}'
+      turn_number: 15
+    - role: user
+      content: 'NO'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a Don Bluth animated film (like An American Tail, The Secret
+        of NIMH, or Anastasia)?"}}'
+      turn_number: 16
+    - role: user
+      content: 'NO'
+      turn_number: 16
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the film released before the year 2000?"}}'
+      turn_number: 17
+    - role: user
+      content: UNKNOWN
+      turn_number: 17
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character male?"}}'
+      turn_number: 18
+    - role: user
+      content: 'YES'
+      turn_number: 18
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a Warner Bros. animated film (such as The Iron Giant or
+        Space Jam)?"}}'
+      turn_number: 19
+    - role: user
+      content: 'NO'
+      turn_number: 19
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character considered the main protagonist of the film?"}}'
+      turn_number: 20
+    - role: user
+      content: UNKNOWN
+      turn_number: 20
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the film primarily in a language other than English (e.g., French, or another
+        non-English language)?"}}'
+      turn_number: 21
+    - role: user
+      content: 'NO'
+      turn_number: 21
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the film primarily 2D/hand-drawn animation (as opposed to 3D/CGI)?"}}'
+      turn_number: 22
+    - role: user
+      content: UNKNOWN
+      turn_number: 22
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character a villain or antagonist in the story?"}}'
+      turn_number: 23
+    - role: user
+      content: 'NO'
+      turn_number: 23
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a film by Cartoon Saloon (such as The Secret of Kells,
+        Song of the Sea, or Wolfwalkers)?"}}'
+      turn_number: 24
+    - role: user
+      content: 'NO'
+      turn_number: 24
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the film a Netflix original animated production (like Klaus, The Willoughbys,
+        or Over the Moon)?"}}'
+      turn_number: 25
+    - role: user
+      content: 'NO'
+      turn_number: 25
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the story set in a fantasy world with magic, mythical creatures, or supernatural
+        elements?"}}'
+      turn_number: 26
+    - role: user
+      content: 'NO'
+      turn_number: 26
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the story set in a real-world historical time period (past era, not present
+        day)?"}}'
+      turn_number: 27
+    - role: user
+      content: UNKNOWN
+      turn_number: 27
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the story set in a science-fiction or futuristic setting (e.g., space travel,
+        robots, advanced technology)?"}}'
+      turn_number: 28
+    - role: user
+      content: 'NO'
+      turn_number: 28
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the story set in contemporary/modern times (present day, not past or future)?"}}'
+      turn_number: 29
+    - role: user
+      content: UNKNOWN
+      turn_number: 29
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character an adult (as opposed to a child or teenager)?"}}'
+      turn_number: 30
+    - role: user
+      content: 'YES'
+      turn_number: 30
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character based on a real historical person (i.e., the film is a biographical
+        or historical account)?"}}'
+      turn_number: 31
+    - role: user
+      content: UNKNOWN
+      turn_number: 31
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the film based on or inspired by a real musical band or group (like The Beatles)?"}}'
+      turn_number: 32
+    - role: user
+      content: UNKNOWN
+      turn_number: 32
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the film a musical (with characters singing original songs as part of the
+        story)?"}}'
+      turn_number: 33
+    - role: user
+      content: 'YES'
+      turn_number: 33
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character one of The Beatles (John, Paul, George, or Ringo) as depicted
+        in an animated film?"}}'
+      turn_number: 34
+    - role: user
+      content: 'NO'
+      turn_number: 34
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the film primarily a comedy?"}}'
+      turn_number: 35
+    - role: user
+      content: 'YES'
+      turn_number: 35
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the film primarily aimed at children/family audiences (as opposed to teens
+        or general adult audiences)?"}}'
+      turn_number: 36
+    - role: user
+      content: 'YES'
+      turn_number: 36
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the film an adaptation of a stage musical or Broadway show?"}}'
+      turn_number: 37
+    - role: user
+      content: UNKNOWN
+      turn_number: 37
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the film based on a pre-existing literary work, such as a novel or fairy tale?"}}'
+      turn_number: 38
+    - role: user
+      content: 'YES'
+      turn_number: 38
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The male protagonist of
+        the 1994 non-Disney animated musical film ''The Swan Princess'', based on
+        the Swan Lake fairy tale/ballet.","name":"Prince Derek","question":null}}'
+      turn_number: 39
+    - role: user
+      content: 'NO'
+      turn_number: 39
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character royalty (such as a prince, king, or nobleman)?"}}'
+      turn_number: 40
+    - role: user
+      content: UNKNOWN
+      turn_number: 40
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the film part of a franchise with multiple sequels (i.e., there are two or
+        more sequel films)?"}}'
+      turn_number: 41
+    - role: user
+      content: UNKNOWN
+      turn_number: 41
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character portrayed as an anthropomorphic animal (not a human)?"}}'
+      turn_number: 42
+    - role: user
+      content: 'YES'
+      turn_number: 42
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The pig protagonist of
+        the 1973 animated musical film ''Charlotte''s Web'', based on E.B. White''s
+        novel.","name":"Wilbur","question":null}}'
+      turn_number: 43
+    - role: user
+      content: 'NO'
+      turn_number: 43
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character a dog?"}}'
+      turn_number: 44
+    - role: user
+      content: 'NO'
+      turn_number: 44
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character a rodent, such as a rat or mouse?"}}'
+      turn_number: 45
+    - role: user
+      content: 'NO'
+      turn_number: 45
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        the story take place primarily in a farm or rural countryside setting?"}}'
+      turn_number: 46
+    - role: user
+      content: 'NO'
+      turn_number: 46
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The friendly Tyrannosaurus
+        from the 1993 animated musical comedy ''We''re Back! A Dinosaur''s Story,''
+        based on Hudson Talbott''s book.","name":"Rex","question":null}}'
+      turn_number: 47
+    - role: user
+      content: 'NO'
+      turn_number: 47
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character a bird (such as a duck, chicken, or other avian species)?"}}'
+      turn_number: 48
+    - role: user
+      content: 'NO'
+      turn_number: 48
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The wolf detective protagonist
+        of the 2005 non-Disney animated musical comedy ''Hoodwinked!'', based on the
+        Little Red Riding Hood fairy tale.","name":"Kirk (Nicky Flippers) the Wolf","question":null}}'
+      turn_number: 49
+    - role: user
+      content: 'NO'
+      turn_number: 49
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character a cat?"}}'
+      turn_number: 50
+    - role: user
+      content: 'YES'
+      turn_number: 50
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character a lion, tiger, or other big cat (rather than a small/domestic-type
+        cat)?"}}'
+      turn_number: 51
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0005
+          gateway: openrouter
+          model: anthropic/claude-sonnet-5
+          provider: anthropic
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '2.00'
+            cached_input_usd_per_million: '0.20'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 51
+          cost_usd: '0.5939591'
+          latency_ms: 841598
+          total_tokens: 199797
+          input_tokens: 144334
+          cached_input_tokens: 139763
+          cache_write_tokens: 4469
+          output_tokens: 55463
+          reasoning_tokens: 14779
+          estimated_cache_savings_usd: '0.24933890'
+          recovery:
+            request_attempts: 51
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: anthropic
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 46
+          cost_usd: '0.4438999499999999970'
+          latency_ms: 644433
+          total_tokens: 598462
+          input_tokens: 564630
+          cached_input_tokens: 266433
+          cache_write_tokens: 0
+          output_tokens: 33832
+          reasoning_tokens: 23068
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 82
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 4
+          cost_usd: '0.0015235'
+          latency_ms: 7721
+          total_tokens: 1812
+          input_tokens: 1565
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 247
+          reasoning_tokens: 59
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 4
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+    failure:
+      code: ask_after_question_limit
+      type: GuesserProtocolError
+      message: ASK is forbidden on the final guess-only opportunity
+      call_id: GC-019faa0b3334777f87b47e211635754a
+      diagnostics:
+        causes:
+        - exception_type: GuesserProtocolError
+          module: deep20_game.errors
+          message: ASK is forbidden on the final guess-only opportunity
+        frames: []
+        provider: null
+        metadata: {}
+  failure:
+    code: ask_after_question_limit
+    type: GuesserProtocolError
+    message: ASK is forbidden on the final guess-only opportunity
+    call_id: GC-019faa0b3334777f87b47e211635754a
+    diagnostics:
+      causes:
+      - exception_type: GuesserProtocolError
+        module: deep20_game.errors
+        message: ASK is forbidden on the final guess-only opportunity
+      frames: []
+      provider: null
+      metadata: {}
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0005/BX-20260728-official-M0005-010/subjects/T-0004/trials/trial-004/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 65162982f6c0a6d8b5273879b85c1ca1cec6a3dade599838c09f4a33987d9fb8

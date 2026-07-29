@@ -1,0 +1,177 @@
+---
+interface Datum {
+  label: string;
+  value: number;
+  detail?: string;
+  category?: string;
+}
+
+interface Props {
+  data: Datum[];
+  kind: "leaderboard" | "outcomes";
+  label: string;
+}
+
+const { data, kind, label } = Astro.props;
+---
+
+<div class="plot-frame" data-publication-chart={kind} aria-label={label}>
+  <div class="plot-target" role="img" aria-label={label}></div>
+  <script
+    is:inline
+    type="application/json"
+    class="plot-source"
+    set:html={JSON.stringify(data)}
+  ></script>
+</div>
+
+<script>
+  import * as Plot from "@observablehq/plot";
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  for (const frame of document.querySelectorAll<HTMLElement>("[data-publication-chart]")) {
+    if (frame.dataset.ready === "true") continue;
+    frame.dataset.ready = "true";
+    const source = frame.querySelector<HTMLScriptElement>(".plot-source");
+    const target = frame.querySelector<HTMLElement>(".plot-target");
+    if (!source || !target) continue;
+    const values = JSON.parse(source.textContent ?? "[]") as Array<{
+      label: string;
+      value: number;
+      detail?: string;
+      category?: string;
+    }>;
+    const kind = frame.dataset.publicationChart;
+    const compactExecutionLabel = (label: string) => {
+      const modelMatch = label.match(/M(\d{4})/);
+      if (modelMatch) {
+        return `M-${modelMatch[1]} · ${label.split("-").at(-1)}`;
+      }
+      return label.length > 20 ? `${label.slice(0, 10)}…${label.slice(-7)}` : label;
+    };
+    const maxValue = Math.max(0, ...values.map((value) => value.value));
+    let renderedWidth = 0;
+
+    const render = () => {
+      const width = Math.floor(frame.clientWidth);
+      if (width < 1 || width === renderedWidth) return;
+      renderedWidth = width;
+
+      const isCompact = width < 520;
+      const labelRail = isCompact ? 112 : kind === "leaderboard" ? 220 : 150;
+      const labelMeasure = document.createElement("canvas").getContext("2d");
+      if (labelMeasure) {
+        labelMeasure.font = `${isCompact ? 10 : 12}px Inter, ui-sans-serif, system-ui, sans-serif`;
+      }
+      const leaderboardAxisLabel = (label: string) => {
+        const configuration = label.match(/^(.*?)\s+\(([^()]*)\)$/);
+        const measuredWidth = labelMeasure?.measureText(label).width ?? label.length * 6.5;
+        return configuration && measuredWidth > labelRail - 18
+          ? `${configuration[1]}\n${configuration[2]}`
+          : label;
+      };
+      const plottedValues = values.map((value) => ({
+        ...value,
+        axisLabel:
+          kind === "outcomes"
+            ? compactExecutionLabel(value.label)
+            : leaderboardAxisLabel(value.label),
+      }));
+      const labels = [...new Set(plottedValues.map((value) => value.axisLabel))];
+      const common = {
+        width,
+        marginLeft: labelRail,
+        marginRight: isCompact ? 8 : 28,
+        style: {
+          background: "transparent",
+          color: "#252833",
+          fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+          fontSize: isCompact ? "10px" : "12px",
+        },
+      };
+      const plot =
+        kind === "leaderboard"
+          ? Plot.plot({
+              ...common,
+              height: Math.max(190, labels.length * 50 + (isCompact ? 44 : 56)),
+              marginBottom: isCompact ? 30 : 42,
+              x: {
+                domain: [0, Math.ceil(Math.max(20, maxValue) * 1.2)],
+                grid: true,
+                label: isCompact ? null : "B20 Score · 20 target · higher is better",
+                nice: true,
+                ...(isCompact ? { ticks: 4 } : {}),
+                ...(!isCompact ? { labelOffset: 39 } : {}),
+              },
+              y: { label: null, domain: labels },
+              marks: [
+                Plot.ruleX([0], { stroke: "#adb0b7" }),
+                Plot.ruleX([20], {
+                  stroke: "#11131c",
+                  strokeDasharray: "4,4",
+                  strokeWidth: 1.5,
+                }),
+                Plot.ruleY(plottedValues, {
+                  y: "axisLabel",
+                  x2: "value",
+                  stroke: "#b7bac2",
+                }),
+                Plot.dot(plottedValues, {
+                  x: "value",
+                  y: "axisLabel",
+                  r: isCompact ? 5.5 : 7,
+                  fill: (value) => (value.value >= 20 ? "#4e64ff" : "#ff6d4a"),
+                  stroke: "#11131c",
+                  strokeWidth: 1.5,
+                  title: (value) => `${value.label}: ${value.detail ?? value.value}`,
+                }),
+                Plot.text(plottedValues, {
+                  x: "value",
+                  y: "axisLabel",
+                  text: (value) => value.value.toFixed(2),
+                  dx: isCompact ? -9 : 13,
+                  textAnchor: isCompact ? "end" : "start",
+                  fill: "#252833",
+                  fontSize: isCompact ? 9 : 12,
+                  fontWeight: 700,
+                  ...(isCompact
+                    ? { paintOrder: "stroke", stroke: "white", strokeWidth: 3 }
+                    : {}),
+                }),
+              ],
+            })
+          : Plot.plot({
+              ...common,
+              height: Math.max(190, labels.length * (isCompact ? 58 : 52) + 66),
+              x: {
+                grid: true,
+                label: isCompact ? null : "Terminal trials",
+                interval: 1,
+                ticks: Math.min(7, Math.max(2, Math.ceil(maxValue) + 1)),
+                tickFormat: "d",
+              },
+              y: { label: null, domain: labels },
+              color: {
+                domain: ["Success", "Model failure", "Infrastructure"],
+                range: ["#4e64ff", "#ff6d4a", "#252833"],
+                legend: true,
+              },
+              marks: [
+                Plot.barX(plottedValues, {
+                  x: "value",
+                  y: "axisLabel",
+                  fill: "category",
+                  title: (value) => `${value.label} · ${value.category}: ${value.value}`,
+                }),
+                Plot.ruleX([0]),
+              ],
+            });
+      target.replaceChildren(plot);
+      if (!reducedMotion) frame.classList.add("plot-ready");
+    };
+
+    render();
+    new ResizeObserver(render).observe(frame);
+  }
+</script>

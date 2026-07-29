@@ -1,0 +1,619 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260727-official-M0012-025
+    model_id: M-0012
+    target_id: T-0001
+    trial_id: trial-001
+    trial_number: 1
+    episode_run_id: BR-d3430d37e0aba80ff014e5bbd16df38e89c58ec3
+  result:
+    schema_version: 6
+    run:
+      run_id: BR-d3430d37e0aba80ff014e5bbd16df38e89c58ec3
+      episode_id: EP-019fa540675d7306aa4baad7d07bbe97
+      subject:
+        target_id: T-0001
+        canonical_name: Albert Einstein
+        aliases:
+        - Einstein
+        entity_type: person
+        description: Albert Einstein, the German-born theoretical physicist known
+          for relativity, identified by Wikidata entity Q937.
+        reference_url: https://en.wikipedia.org/wiki/Albert_Einstein
+      started_at: '2026-07-27T20:24:49.245294+00:00'
+      completed_at: '2026-07-27T20:27:22.714838+00:00'
+      duration_ms: 153470
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 11
+      counted_questions: 10
+      guesser_call_count: 11
+      ask_count: 10
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      contract:
+        evaluated_outputs: 11
+        valid_outputs: 11
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.0125504'
+        oracle: '0.0332238250000000003'
+        validator: '0.0002735'
+        total: '0.0460477250000000003'
+      tokens:
+        guesser: 12438
+        oracle: 30177
+        validator: 387
+        total: 43002
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0012
+        requested_model: x-ai/grok-4.5
+        requested_provider: xai
+        resolved_models:
+        - x-ai/grok-4.5
+        resolved_providers:
+        - xAI
+        reasoning_effort: medium
+        prompt_version: stateful-category-guesser-v9-canonical-wire-history
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v5
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is this person male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa54070dc7213995f7c75dd05ab57
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.biography.com/scientists/albert-einstein
+          excerpt: Albert Einstein was a German mathematician and physicist.
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fa540675d7306aa4baad9c94d1021
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is this person a historical figure (born before 1900)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa54091d3769dba89c52c5f59c1ac
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.biography.com/scientists/albert-einstein
+          excerpt: Albert Einstein was born on March 14, 1879, in Ulm, Württemberg,
+            Germany.
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fa5408b4a718d91d3ab30bb3ae311
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is this person primarily known as a political leader or ruler?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa540b3c27311a7e45a625ecf37bb
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/contributor/Albert-Einstein/9536716
+          excerpt: German-born physicist who developed the special and general theories
+            of relativity and won the Nobel Prize for Physics in 1921.
+          validation: model_reported
+        - source_url: https://www.biography.com/scientists/albert-einstein
+          excerpt: Albert Einstein was a German mathematician and physicist who developed
+            the special and general theories of relativity.
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fa540ac7171f68814886b76d461c3
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is this person primarily known for contributions to science or mathematics?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa540ca1f76f9941bbfc559210af1
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/contributor/Albert-Einstein/9536716
+          excerpt: German-born physicist who developed the special and general theories
+            of relativity and won the Nobel Prize for Physics in 1921.
+          validation: model_reported
+        - source_url: https://www.britannica.com/question/What-is-Albert-Einstein-known-for
+          excerpt: What is Albert Einstein known for?
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fa540c303760a868b3ff11aa36507
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is this person primarily known for work in physics?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa540e61973c19e6a57a15536c4be
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.alberteinstein.com/
+          excerpt: Albert Einstein was a theoretical physicist and the most famous
+            scientist in human history. He developed the general theory of relativity,
+            one of the two pillars of modern physics.
+          validation: model_reported
+        - source_url: https://www.amacad.org/person/albert-einstein
+          excerpt: Albert Einstein was a German-born theoretical physicist, widely
+            acknowledged to be one of the greatest physicists of all time.
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019fa540df4b7788af604c0b1e449e89
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Was this person born in Europe?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa54152f773119726345f03b6f3df
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.biography.com/scientists/albert-einstein
+          excerpt: Albert Einstein was born on March 14, 1879, in Ulm, Württemberg,
+            Germany.
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019fa5411f077377957d858fd3575cfc
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Was this person born in the British Isles?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa5422f0b76c39ad947501c4dfbb7
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.biography.com/scientists/albert-einstein
+          excerpt: Albert Einstein was born on March 14, 1879, in Ulm, Württemberg,
+            Germany.
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019fa5421f8376ebaa3bf2f7e7556943
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Was this person born in Italy?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa542582b71e9838d81bd7b8e8404
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.biography.com/scientists/albert-einstein
+          excerpt: 'Birthplace: Ulm, Württemberg, Germany'
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019fa542476a774ebade7be787f2d09f
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Was this person born in Germany?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa542710971b78efb2945092c6826
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.biography.com/scientists/albert-einstein
+          excerpt: Albert Einstein was born on March 14, 1879, in Ulm, Württemberg,
+            Germany.
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019fa542652e762599877163160b8f5e
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Is this person Albert Einstein?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa542978676dc85f91a4809389d70
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.biography.com/scientists/albert-einstein
+          excerpt: 'FULL NAME: Albert Einstein'
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019fa542847d720d8f4cd235e012d048
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: GUESS
+        question: null
+        name: Albert Einstein
+        description: German-born theoretical physicist who developed the theory of
+          relativity
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fa542ba3e70aea93626447f951f1e
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity exactly matches Albert Einstein and the
+          identifying description is consistent.
+      counted: false
+      counted_questions: 10
+      guesser_call_id: GC-019fa542b069763ea86654897dbb7c6b
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the judge could not determine the proposition.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"EAQCORIU"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person male?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person a historical figure (born before 1900)?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a political leader or ruler?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for contributions to science or mathematics?"}}'
+      turn_number: 4
+    - role: user
+      content: 'YES'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for work in physics?"}}'
+      turn_number: 5
+    - role: user
+      content: 'YES'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born in Europe?"}}'
+      turn_number: 6
+    - role: user
+      content: 'YES'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born in the British Isles?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born in Italy?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born in Germany?"}}'
+      turn_number: 9
+    - role: user
+      content: 'YES'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person Albert Einstein?"}}'
+      turn_number: 10
+    - role: user
+      content: 'YES'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"German-born theoretical
+        physicist who developed the theory of relativity","name":"Albert Einstein","question":null}}'
+      turn_number: 11
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0012
+          gateway: openrouter
+          model: x-ai/grok-4.5
+          provider: xai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 16384
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+          seed_capability: supported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '2.00'
+            cached_input_usd_per_million: '0.30'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 11
+          cost_usd: '0.0125504'
+          latency_ms: 41501
+          total_tokens: 12438
+          input_tokens: 11385
+          cached_input_tokens: 9728
+          cache_write_tokens: 0
+          output_tokens: 1053
+          reasoning_tokens: 718
+          estimated_cache_savings_usd: '0.01653760'
+          recovery:
+            request_attempts: 11
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          parallel_search: true
+          max_search_results: 5
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+        metrics:
+          calls: 10
+          cost_usd: '0.0332238250000000003'
+          latency_ms: 110687
+          total_tokens: 30177
+          input_tokens: 28452
+          cached_input_tokens: 3809
+          cache_write_tokens: 0
+          output_tokens: 1725
+          reasoning_tokens: 570
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 10
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0002735'
+          latency_ms: 1176
+          total_tokens: 387
+          input_tokens: 355
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 32
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0012/BX-20260727-official-M0012-025/subjects/T-0001/trials/trial-001/result.yml
+      record_count: 1
+      integrity_hash: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 66894212f19ac62cc0f3c02a67cd77a2f28d4566b2d2fa1d9f8db20583c79444

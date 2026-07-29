@@ -1,0 +1,1437 @@
+---
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import B20Score from "../../../../../../components/B20Score.astro";
+import ModelUnderTest from "../../../../../../components/ModelUnderTest.astro";
+import {
+  dataset,
+  dateTime,
+  duration,
+  money,
+  number,
+  seconds,
+  type PublicEpisodeDetail,
+  type PublicRun,
+  type PublicSubject,
+  type PublicTrial,
+} from "../../../../../../lib/data";
+
+export function getStaticPaths() {
+  return dataset.official_runs.flatMap((run) =>
+    run.subjects.flatMap((subject) =>
+      subject.trials.flatMap((trial) =>
+        trial.episode
+          ? [
+              {
+                params: {
+                  execution_id: run.execution_id,
+                  target_id: subject.target_id,
+                  trial_id: trial.trial_id,
+                },
+                props: { run, subject, trial, episode: trial.episode },
+              },
+            ]
+          : [],
+      ),
+    ),
+  );
+}
+
+interface Props {
+  run: PublicRun;
+  subject: PublicSubject;
+  trial: PublicTrial;
+  episode: PublicEpisodeDetail;
+}
+
+const { run, subject, trial, episode } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const testedModel = dataset.models.find((model) => model.model_id === run.model_id);
+
+if (!testedModel) {
+  throw new Error(`Missing public model metadata for ${run.model_id}`);
+}
+
+const evidenceCount = episode.turns.reduce(
+  (count, turn) => count + (turn.turn_type === "action" ? turn.evidence.length : 0),
+  0,
+);
+const sourceLabel = (sourceUrl: string) =>
+  new URL(sourceUrl).hostname.replace(/^www\./, "");
+const technicalRows = [
+  { role: "Guesser", values: episode.telemetry.guesser },
+  { role: "Oracle", values: episode.telemetry.oracle },
+  { role: "Validator", values: episode.telemetry.validator },
+];
+const oracleSupportRows = [
+  {
+    role: "Primary Oracle",
+    values: episode.oracle_support.oracle,
+    description: "Searches evidence and proposes an answer.",
+  },
+  {
+    role: "Reviewer",
+    values: episode.oracle_support.reviewer,
+    description: "Checks each Oracle YES or NO independently.",
+  },
+  {
+    role: "Judge",
+    values: episode.oracle_support.judge,
+    description: "Decides when the Oracle and Reviewer disagree.",
+  },
+];
+---
+
+<BaseLayout
+  title={`Finding ${episode.subject_name} · ${trial.trial_id}`}
+  section="Episode"
+  activeNav="Results"
+  description={`Questions, answers, and Oracle evidence for finding ${episode.subject_name}.`}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href={`${base}index.html#leaderboard`}>Results</a><span aria-hidden="true">/</span>
+    <a href={`${base}runs/${run.execution_id}/`}>{run.execution_id}</a>
+    <span aria-hidden="true">/</span>
+    <a href={`${base}runs/${run.execution_id}/subjects/${subject.target_id}/`}>
+      {subject.display_name}
+    </a>
+    <span aria-hidden="true">/</span><span aria-current="page">Episode {trial.trial_number}</span>
+  </nav>
+
+  <ModelUnderTest
+    model={testedModel}
+    roles={episode.models}
+    oracleSupport={episode.oracle_support}
+  />
+
+  <header class="episode-hero">
+    <div>
+      <p class="eyebrow">Episode {trial.trial_number}</p>
+      <h1>Finding<br /><em>{episode.subject_name}.</em></h1>
+      <p class="episode-deck">{episode.subject_description}</p>
+      {
+        episode.subject_reference_url && (
+          <a
+            class="reference-link"
+            href={episode.subject_reference_url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Subject reference <span aria-hidden="true">↗</span>
+          </a>
+        )
+      }
+    </div>
+    <aside class="outcome-card">
+      <div class="outcome-top">
+        <span class:list={["outcome-dot", episode.success && "outcome-success"]}></span>
+        <span>{episode.success ? "Identified" : episode.terminal_reason.replaceAll("_", " ")}</span>
+      </div>
+      <strong>{episode.counted_questions}</strong>
+      <p>counted questions</p>
+      <dl>
+        <div>
+          <dt>B20 Score</dt>
+          <dd>
+            <B20Score
+              score={trial.b20_score}
+              maxQuestions={run.max_questions}
+              status={trial.status}
+              label={`B20 Score for episode ${trial.trial_number}`}
+              variant="metric"
+              theme="dark"
+            />
+          </dd>
+        </div>
+        <div><dt>Scored questions</dt><dd>{number(trial.scored_questions)}</dd></div>
+        <div><dt>Turns</dt><dd>{episode.total_turns}</dd></div>
+        <div>
+          <dt>Output contract</dt>
+          <dd>{episode.contract.status === "breached" ? "BREACHED" : episode.contract.status}</dd>
+        </div>
+        <div><dt>Evidence items</dt><dd>{evidenceCount}</dd></div>
+        <div><dt>Duration</dt><dd>{duration(episode.duration_ms)}</dd></div>
+        <div class="episode-cost">
+          <dt>Episode cost</dt>
+          <dd>
+            {money(episode.total_cost_usd)}
+            <small>All {episode.total_turns} turns</small>
+          </dd>
+        </div>
+      </dl>
+    </aside>
+  </header>
+
+  {
+    episode.contract.status === "breached" && (
+      <section class="contract-alert" aria-label="Output contract reliability warning">
+        <div>
+          <p class="eyebrow">Reliability warning</p>
+          <h2>Model broke the output contract.</h2>
+        </div>
+        <p>
+          The Guesser produced {episode.contract.violations} invalid structured{" "}
+          {episode.contract.violations === 1 ? "response" : "responses"}. Each violation before
+          the limit consumed one counted turn; the benchmark disclosed only the fixed required
+          format and never whether the attempted answer was right or wrong. This reliability
+          mark remains even though the episode later completed.
+        </p>
+        <dl>
+          <div><dt>Compliance</dt><dd>{number(Number(episode.contract.compliance_rate) * 100, 1)}%</dd></div>
+          <div><dt>Violations</dt><dd>{episode.contract.violations}</dd></div>
+          <div><dt>Turn penalties</dt><dd>{episode.contract.counted_penalties}</dd></div>
+        </dl>
+      </section>
+    )
+  }
+
+  <aside class="cost-context" aria-label="Cost scope">
+    <div>
+      <span>Page scope</span>
+      <strong>Episode cost {money(episode.total_cost_usd)}</strong>
+    </div>
+    <p>
+      Includes all {episode.total_turns} turns and the model and search activity used to run this
+      episode.
+    </p>
+    <a href={`${base}runs/${run.execution_id}/`}>
+      Full run {money(run.total_cost_usd)} · {run.terminal_trials}{" "}
+      {run.terminal_trials === 1 ? "episode" : "episodes"} <span aria-hidden="true">→</span>
+    </a>
+  </aside>
+
+  <div class="transparency-banner">
+    <strong>Public post-run view.</strong>
+    <span>
+      Typed actions are shown by default. Exact Guesser instructions and stored structured
+      outputs are available on demand. Oracle evidence is model-reported. Adjudicator prompts,
+      hidden reasoning, and provider payloads are excluded.
+    </span>
+    <nav aria-label="Episode contents">
+      <a href="#transcript">Transcript · {episode.total_turns} turns ↓</a>
+      <a href="#reliability">Contract reliability ↓</a>
+      <a href="#technical">Technical details ↓</a>
+    </nav>
+  </div>
+
+  <div class="episode-content">
+    <section id="transcript" class="conversation" aria-labelledby="conversation-heading">
+      <header class="section-intro">
+        <div>
+          <p class="eyebrow">Transcript</p>
+          <h2 id="conversation-heading">Questions and answers.</h2>
+        </div>
+        <p>
+          The Guesser action is on the left. The answer it received is on the right.
+        </p>
+      </header>
+
+      {
+        episode.guesser_disclosure && (
+          <details class="guesser-disclosure">
+            <summary>
+              <span>Exact Guesser setup</span>
+              <small>System message + BEGIN event</small>
+            </summary>
+            <div class="guesser-disclosure-body">
+              <p>
+                These are the messages that introduced this episode to the Guesser. The system
+                message is fixed by the prompt version. The BEGIN event carries the broad
+                category and an opaque, subject-independent variation token.
+              </p>
+              <article>
+                <span>System message</span>
+                <pre>{episode.guesser_disclosure.system_message}</pre>
+              </article>
+              <article>
+                <span>BEGIN event</span>
+                <pre>{episode.guesser_disclosure.begin_message}</pre>
+              </article>
+              <aside>
+                <strong>About recorded outputs</strong>
+                <p>
+                  Each turn can reveal the canonical structured action stored by the benchmark.
+                  Original provider bytes and hidden reasoning are not retained.
+                </p>
+              </aside>
+            </div>
+          </details>
+        )
+      }
+
+      <div class="turn-list">
+        {
+          episode.turns.map((turn) =>
+            turn.turn_type === "action" ? (
+              <article class:list={["turn", turn.action === "GUESS" && "turn-guess"]}>
+                <div class="turn-rail">
+                  <span
+                    class:list={[turn.counted ? "question-marker" : "guess-marker"]}
+                    aria-label={turn.counted
+                      ? `Question ${turn.counted_questions}`
+                      : "Final guess"}
+                  >
+                    {turn.counted ? `Q${turn.counted_questions}` : "G"}
+                  </span>
+                  <i aria-hidden="true"></i>
+                </div>
+                <div class="turn-body">
+                  <div class="turn-label">
+                    <span>{turn.action === "ASK" ? "Guesser asks" : "Final guess"}</span>
+                    {!turn.counted && <span>No question charge</span>}
+                  </div>
+                  {
+                    turn.action === "ASK" ? (
+                      <h3>{turn.question}</h3>
+                    ) : (
+                      <>
+                        <h3>{turn.guess_name}</h3>
+                        <p class="guess-description">{turn.guess_description}</p>
+                      </>
+                    )
+                  }
+                  {
+                    turn.validator_explanation && (
+                      <p class="validator-note">
+                        <span>Validator rationale</span>
+                        {turn.validator_explanation}
+                      </p>
+                    )
+                  }
+                  {
+                    turn.evidence.length > 0 && (
+                      <details class="evidence-drawer">
+                        <summary>
+                          <span>Oracle evidence</span>
+                          <small>
+                            {turn.evidence.length} model-reported{" "}
+                            {turn.evidence.length === 1 ? "source" : "sources"}
+                          </small>
+                        </summary>
+                        <div class="evidence-disclosure">
+                          The Oracle reported these excerpts and URLs. They are not independently
+                          checked.
+                        </div>
+                        <div class="evidence-list">
+                          {turn.evidence.map((evidence, index) => (
+                            <article>
+                              <span class="source-index">
+                                Source {String(index + 1).padStart(2, "0")}
+                              </span>
+                              <blockquote>{evidence.excerpt}</blockquote>
+                              <a href={evidence.source_url} target="_blank" rel="noreferrer">
+                                Open {sourceLabel(evidence.source_url)}{" "}
+                                <span aria-hidden="true">↗</span>
+                              </a>
+                            </article>
+                          ))}
+                        </div>
+                      </details>
+                    )
+                  }
+                  {
+                    turn.recorded_output && (
+                      <details class="recorded-output-drawer">
+                        <summary>
+                          <span>Recorded Guesser output</span>
+                          <small>Canonical structured JSON</small>
+                        </summary>
+                        <pre>{turn.recorded_output}</pre>
+                      </details>
+                    )
+                  }
+                </div>
+                <div class:list={["answer", `answer-${turn.answer.toLowerCase()}`]}>
+                  <span>{turn.adjudicator === "oracle" ? "Oracle" : "Validator"}</span>
+                  <strong>{turn.answer}</strong>
+                </div>
+              </article>
+            ) : (
+              <article class="turn turn-contract">
+                <div class="turn-rail">
+                  <span
+                    class="contract-marker"
+                    aria-label={turn.counted
+                      ? `Question ${turn.counted_questions}`
+                      : `Terminal turn ${turn.turn_number}`}
+                  >
+                    {turn.counted ? `Q${turn.counted_questions}` : "END"}
+                  </span>
+                  <i aria-hidden="true"></i>
+                </div>
+                <div class="turn-body">
+                  <div class="turn-label">
+                    <span>Output contract violation</span>
+                    <span>{turn.counted ? "Turn charged" : "Limit reached"}</span>
+                  </div>
+                  <h3>Model broke the output contract.</h3>
+                  <p class="guess-description">
+                    {turn.violation_kind.replaceAll("_", " ")} ·{" "}
+                    {turn.feedback_event === "FORMAT_ERROR"
+                      ? "fixed format reminder sent"
+                      : "episode ended without another retry"}
+                  </p>
+                </div>
+                <div class="answer answer-contract">
+                  <span>Protocol</span>
+                  <strong>FORMAT</strong>
+                </div>
+              </article>
+            ),
+          )
+        }
+      </div>
+    </section>
+
+    <section id="reliability" class="technical reliability" aria-labelledby="reliability-heading">
+      <header class="technical-head">
+        <div>
+          <p class="eyebrow">Independent aspect</p>
+          <h2 id="reliability-heading">Output-contract reliability.</h2>
+        </div>
+        <p>
+          Gameplay success and format reliability are reported separately. Contract penalties
+          already appear in the counted-question total; this metric does not add a second score
+          penalty.
+        </p>
+      </header>
+      <dl class="reliability-grid">
+        <div><dt>Status</dt><dd>{episode.contract.status}</dd></div>
+        <div><dt>Valid outputs</dt><dd>{episode.contract.valid_outputs}</dd></div>
+        <div><dt>Evaluated outputs</dt><dd>{episode.contract.evaluated_outputs}</dd></div>
+        <div><dt>Compliance</dt><dd>{episode.contract.compliance_rate === null ? "n/a" : `${number(Number(episode.contract.compliance_rate) * 100, 1)}%`}</dd></div>
+        <div><dt>Violations</dt><dd>{episode.contract.violations}</dd></div>
+        <div><dt>Counted-turn penalties</dt><dd>{episode.contract.counted_penalties}</dd></div>
+      </dl>
+    </section>
+
+    <section id="technical" class="technical" aria-labelledby="technical-heading">
+      <header class="technical-head">
+        <div>
+          <p class="eyebrow">Technical details</p>
+          <h2 id="technical-heading">Models and usage.</h2>
+        </div>
+        <p>
+          Models, prompt versions, tokens, cache use, latency, and cost for this episode.
+        </p>
+      </header>
+
+      <div class="model-cards">
+        {
+          episode.models.map((model) => (
+            <article class:list={[model.role === "guesser" && "model-card-tested"]}>
+              <div class="model-role">
+                {model.role === "guesser"
+                  ? "Model under test · Guesser · scored"
+                  : `Benchmark support · ${model.role.replace("_", " ")} · not scored`}
+              </div>
+              <h3>{model.requested_model}</h3>
+              <p>{model.requested_provider} · {model.reasoning_effort} reasoning</p>
+              <dl>
+                <div>
+                  <dt>Resolved model</dt>
+                  <dd>{model.resolved_models.join(", ") || "not reported"}</dd>
+                </div>
+                <div>
+                  <dt>Resolved provider</dt>
+                  <dd>{model.resolved_providers.join(", ") || "not reported"}</dd>
+                </div>
+                <div><dt>Prompt contract</dt><dd><code>{model.prompt_version}</code></dd></div>
+                <div>
+                  <dt>Configuration</dt>
+                  <dd><code>{model.configuration_id ?? "role-local"}</code></dd>
+                </div>
+              </dl>
+            </article>
+          ))
+        }
+      </div>
+
+      <p class="telemetry-note">
+        <strong>Episode scope.</strong> These values cover all {episode.total_turns} turns.
+        The table combines Oracle, Reviewer, and Judge tokens and latency as Oracle support. The
+        role breakdown shows their separate calls and costs.
+      </p>
+
+      <div class="oracle-support-breakdown" aria-label="Oracle support role breakdown">
+        {
+          oracleSupportRows.map((row) => (
+            <article>
+              <span>{row.role}</span>
+              <strong>{row.values.requested_model}</strong>
+              <p>{row.description}</p>
+              <dl>
+                <div>
+                  <dt>{row.role === "Reviewer" ? "Checks" : "Calls"}</dt>
+                  <dd>{row.values.calls}</dd>
+                </div>
+                <div>
+                  <dt>Cost in episode</dt>
+                  <dd>{money(row.values.cost_usd)}</dd>
+                </div>
+              </dl>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="telemetry-wrap" tabindex="0" aria-label="Scrollable component telemetry">
+        <table class="telemetry-table">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Component calls</th>
+              <th>Total tokens</th>
+              <th>Input</th>
+              <th>Cached input</th>
+              <th>Cache write</th>
+              <th>Output</th>
+              <th>Reasoning</th>
+              <th>Latency (s)</th>
+              <th>Cost in episode</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              technicalRows.map((row) => (
+                <tr>
+                  <th>{row.role === "Oracle" ? "Oracle support" : row.role}</th>
+                  <td>{row.values.calls}</td>
+                  <td>{row.values.total_tokens.toLocaleString("en")}</td>
+                  <td>{row.values.input_tokens.toLocaleString("en")}</td>
+                  <td>{row.values.cached_input_tokens.toLocaleString("en")}</td>
+                  <td>{row.values.cache_write_tokens.toLocaleString("en")}</td>
+                  <td>{row.values.output_tokens.toLocaleString("en")}</td>
+                  <td>{row.values.reasoning_tokens.toLocaleString("en")}</td>
+                  <td>{seconds(row.values.latency_ms)}</td>
+                  <td>{money(row.values.cost_usd)}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <details class="provenance-details">
+        <summary>IDs and timing</summary>
+        <dl>
+          <div><dt>Execution</dt><dd><code>{run.execution_id}</code></dd></div>
+          <div><dt>Episode run</dt><dd><code>{episode.episode_run_id}</code></dd></div>
+          <div><dt>Episode</dt><dd><code>{episode.episode_id}</code></dd></div>
+          <div><dt>Trial</dt><dd><code>{trial.trial_id}</code></dd></div>
+          <div><dt>Started</dt><dd>{dateTime(episode.started_at)}</dd></div>
+          <div><dt>Completed</dt><dd>{dateTime(episode.completed_at)}</dd></div>
+          <div><dt>Git commit</dt><dd><code>{run.git_commit}</code></dd></div>
+          <div><dt>Cache status</dt><dd>{episode.cache_status.replaceAll("_", " ")}</dd></div>
+          <div><dt>Total tokens</dt><dd>{episode.total_tokens.toLocaleString("en")}</dd></div>
+          <div><dt>Episode cost</dt><dd>{money(episode.total_cost_usd)}</dd></div>
+        </dl>
+      </details>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    gap: 0.6rem;
+    padding: 1rem var(--gutter);
+    overflow-x: auto;
+    border-bottom: 1px solid rgb(255 255 255 / 14%);
+    background: var(--ink);
+    color: rgb(255 255 255 / 52%);
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+
+  .breadcrumbs a:hover {
+    color: white;
+  }
+
+  .episode-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+    gap: clamp(3rem, 8vw, 8rem);
+    margin-top: clamp(2.5rem, 6vw, 5rem);
+    padding: clamp(4rem, 9vw, 8rem) var(--gutter);
+    background: var(--ink);
+    color: white;
+  }
+
+  .episode-hero h1 {
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(4.5rem, 10vw, 10rem);
+    font-weight: 500;
+    letter-spacing: -0.075em;
+    line-height: 0.82;
+  }
+
+  .episode-hero h1 em {
+    color: var(--acid);
+    font-weight: inherit;
+  }
+
+  .episode-deck {
+    max-width: 46rem;
+    margin: 2.4rem 0 0;
+    color: rgb(255 255 255 / 64%);
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    line-height: 1.65;
+  }
+
+  .reference-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--acid);
+    font-size: 0.75rem;
+    font-weight: 750;
+  }
+
+  .outcome-card {
+    align-self: end;
+    padding: clamp(1.4rem, 3vw, 2.2rem);
+    border: 1px solid rgb(255 255 255 / 24%);
+  }
+
+  .outcome-top {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    color: rgb(255 255 255 / 62%);
+    font-size: 0.7rem;
+    font-weight: 760;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .outcome-dot {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: var(--coral);
+  }
+
+  .outcome-success {
+    background: var(--acid);
+  }
+
+  .outcome-card > strong {
+    display: block;
+    margin-top: 2rem;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(5rem, 10vw, 9rem);
+    font-weight: 500;
+    letter-spacing: -0.08em;
+    line-height: 0.75;
+  }
+
+  .outcome-card > p {
+    margin: 0.8rem 0 2rem;
+    color: rgb(255 255 255 / 45%);
+  }
+
+  .outcome-card dl {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0;
+    border-top: 1px solid rgb(255 255 255 / 16%);
+  }
+
+  .outcome-card dl div {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+  }
+
+  .outcome-card dt {
+    color: rgb(255 255 255 / 40%);
+    font-size: 0.61rem;
+    text-transform: uppercase;
+  }
+
+  .outcome-card dd {
+    margin: 0.35rem 0 0;
+    font-size: 0.88rem;
+  }
+
+  .outcome-card dd small {
+    display: block;
+    margin-top: 0.25rem;
+    color: rgb(255 255 255 / 42%);
+    font-size: 0.58rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .cost-context {
+    display: grid;
+    grid-template-columns: minmax(12rem, 0.4fr) minmax(0, 1fr) auto;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: center;
+    padding: 1.4rem var(--gutter);
+    border-bottom: 1px solid var(--ink);
+    background: var(--paper-bright);
+  }
+
+  .cost-context div {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .cost-context span,
+  .cost-context a {
+    font-size: 0.65rem;
+    font-weight: 780;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .cost-context div > span {
+    color: var(--muted);
+  }
+
+  .cost-context strong {
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  .cost-context p {
+    max-width: 42rem;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.55;
+  }
+
+  .cost-context a {
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid currentColor;
+    color: var(--blue);
+    white-space: nowrap;
+  }
+
+  .transparency-banner {
+    display: grid;
+    grid-template-columns: 0.28fr minmax(0, 1fr) auto;
+    gap: 2rem;
+    align-items: center;
+    padding: 1.3rem var(--gutter);
+    border-bottom: 1px solid var(--ink);
+    background: var(--acid);
+    font-size: 0.78rem;
+    line-height: 1.55;
+  }
+
+  .transparency-banner nav {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.7rem;
+    font-weight: 760;
+    white-space: nowrap;
+  }
+
+  .contract-alert {
+    display: grid;
+    grid-template-columns: 0.6fr 1fr;
+    gap: clamp(1.5rem, 5vw, 5rem);
+    padding: clamp(2rem, 5vw, 4rem) var(--gutter);
+    border-block: 1px solid var(--ink);
+    background: #ffc9bb;
+  }
+
+  .contract-alert h2 {
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(2.2rem, 5vw, 5rem);
+    font-weight: 500;
+    letter-spacing: -0.055em;
+    line-height: 0.95;
+  }
+
+  .contract-alert > p {
+    max-width: 50rem;
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  .contract-alert dl,
+  .reliability-grid {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 0;
+    border: 1px solid var(--ink);
+    background: var(--paper-bright);
+  }
+
+  .contract-alert dl div,
+  .reliability-grid div {
+    padding: 1rem;
+    border-right: 1px solid var(--ink);
+  }
+
+  .contract-alert dt,
+  .reliability-grid dt {
+    color: var(--muted);
+    font-size: 0.62rem;
+    font-weight: 760;
+    text-transform: uppercase;
+  }
+
+  .contract-alert dd,
+  .reliability-grid dd {
+    margin: 0.5rem 0 0;
+    font-size: 1.5rem;
+    font-weight: 760;
+  }
+
+  .episode-content {
+    padding: clamp(5rem, 10vw, 9rem) var(--gutter);
+  }
+
+  .episode-content > section {
+    width: min(100%, var(--max));
+    margin-inline: auto;
+  }
+
+  .section-intro,
+  .technical-head {
+    display: grid;
+    grid-template-columns: 1fr 0.55fr;
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .section-intro h2,
+  .technical-head h2 {
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(3.2rem, 7vw, 7rem);
+    font-weight: 500;
+    letter-spacing: -0.06em;
+    line-height: 0.95;
+  }
+
+  .section-intro > p,
+  .technical-head > p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .turn-list {
+    margin-top: 4rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  .guesser-disclosure {
+    margin-top: 3rem;
+    border: 1px solid var(--ink);
+    background: var(--paper-bright);
+  }
+
+  .guesser-disclosure > summary,
+  .recorded-output-drawer > summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem 1.15rem;
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 780;
+  }
+
+  .guesser-disclosure > summary small,
+  .recorded-output-drawer > summary small {
+    color: var(--muted);
+    font-size: 0.64rem;
+    font-weight: 500;
+  }
+
+  .guesser-disclosure-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.65fr);
+    gap: 1rem;
+    padding: 1.15rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  .guesser-disclosure-body > p {
+    grid-column: 1 / -1;
+    max-width: 60rem;
+    margin: 0 0 0.4rem;
+    color: var(--muted);
+    font-size: 0.76rem;
+    line-height: 1.6;
+  }
+
+  .guesser-disclosure-body article,
+  .guesser-disclosure-body aside {
+    min-width: 0;
+  }
+
+  .guesser-disclosure-body article > span,
+  .guesser-disclosure-body aside > strong {
+    display: block;
+    margin-bottom: 0.55rem;
+    color: var(--blue);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .guesser-disclosure-body pre,
+  .recorded-output-drawer pre {
+    margin: 0;
+    padding: 1rem;
+    background: var(--ink);
+    color: #f5f3ec;
+    font: 0.7rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .guesser-disclosure-body pre {
+    max-height: 25rem;
+    overflow: auto;
+  }
+
+  .guesser-disclosure-body aside {
+    grid-column: 1 / -1;
+    padding: 0.9rem 1rem;
+    border-left: 3px solid var(--blue);
+    background: #e9ebff;
+  }
+
+  .guesser-disclosure-body aside > strong {
+    margin-bottom: 0.35rem;
+    color: var(--ink);
+  }
+
+  .guesser-disclosure-body aside p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.55;
+  }
+
+  .turn {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr) 8rem;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .turn-rail {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .turn-rail span {
+    display: inline-flex;
+    min-width: 2.6rem;
+    min-height: 1.8rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem 0.45rem;
+    border: 1px solid var(--ink);
+    background: var(--acid);
+    box-shadow: 2px 2px 0 var(--ink);
+    color: var(--ink);
+    font: 800 0.68rem ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.02em;
+  }
+
+  .turn-rail .guess-marker {
+    background: var(--ink);
+    color: var(--acid);
+  }
+
+  .turn-rail .contract-marker {
+    background: #ffc9bb;
+    box-shadow: 2px 2px 0 #c26752;
+  }
+
+  .turn-rail i {
+    width: 1px;
+    height: 100%;
+    margin-top: 0.75rem;
+    background: var(--line);
+  }
+
+  .turn-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--muted);
+    font-size: 0.62rem;
+    font-weight: 760;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .turn h3 {
+    max-width: 48rem;
+    margin: 1rem 0 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(1.7rem, 3.3vw, 3rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+  }
+
+  .turn-guess {
+    margin-inline: -1rem;
+    padding: 2rem 1rem;
+    border: 1px solid var(--ink);
+    background: var(--paper-bright);
+  }
+
+  .turn-contract {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    border: 1px solid #c26752;
+    background: #fff0eb;
+  }
+
+  .answer-contract {
+    background: #ffc9bb;
+  }
+
+  .guess-description {
+    max-width: 46rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .validator-note {
+    max-width: 46rem;
+    padding: 1rem;
+    border-left: 3px solid var(--blue);
+    background: #e9ebff;
+    line-height: 1.55;
+  }
+
+  .validator-note span {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--blue);
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .answer {
+    display: flex;
+    width: 7.5rem;
+    min-height: 7.5rem;
+    align-self: start;
+    border: 1px solid var(--ink);
+    background: var(--paper-bright);
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.8rem;
+  }
+
+  .answer span {
+    color: var(--muted);
+    font-size: 0.59rem;
+    font-weight: 760;
+    text-transform: uppercase;
+  }
+
+  .answer strong {
+    font-size: 1.4rem;
+    letter-spacing: -0.04em;
+  }
+
+  .answer-yes {
+    background: var(--acid);
+  }
+
+  .answer-no {
+    background: #ffc9bb;
+  }
+
+  .answer-unknown {
+    background: #e3e1da;
+  }
+
+  .evidence-drawer {
+    max-width: 52rem;
+    margin-top: 1.4rem;
+    border: 1px solid var(--line);
+    background: var(--paper-bright);
+  }
+
+  .evidence-drawer summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    cursor: pointer;
+    font-size: 0.74rem;
+    font-weight: 760;
+  }
+
+  .evidence-drawer summary small {
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-weight: 500;
+  }
+
+  .evidence-disclosure {
+    padding: 0.8rem 1rem;
+    border-block: 1px solid var(--line);
+    background: #fff8d5;
+    color: #675c26;
+    font-size: 0.71rem;
+    line-height: 1.5;
+  }
+
+  .evidence-list article {
+    padding: 1.2rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .evidence-list article:last-child {
+    border-bottom: 0;
+  }
+
+  .source-index {
+    color: var(--blue);
+    font-size: 0.61rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .evidence-list blockquote {
+    margin: 0.8rem 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: 1.05rem;
+    line-height: 1.5;
+  }
+
+  .evidence-list a {
+    color: var(--blue);
+    font-size: 0.7rem;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+  }
+
+  .recorded-output-drawer {
+    max-width: 52rem;
+    margin-top: 1rem;
+    border: 1px solid var(--line);
+    background: #f0eee7;
+  }
+
+  .recorded-output-drawer[open] > summary {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .recorded-output-drawer pre {
+    background: #262a36;
+  }
+
+  .technical {
+    margin-top: clamp(6rem, 13vw, 12rem);
+    padding-top: clamp(4rem, 8vw, 7rem);
+    border-top: 4px solid var(--ink);
+  }
+
+  .reliability {
+    border-top-color: #c26752;
+  }
+
+  .reliability-grid {
+    margin-top: 3rem;
+  }
+
+  .model-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 3.5rem;
+  }
+
+  .model-cards article {
+    padding: 1.4rem;
+    border: 1px solid var(--line);
+    background: var(--paper-bright);
+  }
+
+  .model-cards .model-card-tested {
+    border-color: var(--ink);
+    background: var(--acid);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+
+  .model-role {
+    color: var(--blue);
+    font-size: 0.63rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .model-card-tested .model-role {
+    color: var(--ink);
+  }
+
+  .model-cards h3 {
+    margin: 1.2rem 0 0.3rem;
+    font-size: 1.05rem;
+    overflow-wrap: anywhere;
+  }
+
+  .model-cards > article > p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  .model-cards dl {
+    margin: 1.5rem 0 0;
+  }
+
+  .model-cards dl div {
+    padding: 0.8rem 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .model-cards dt {
+    color: var(--muted);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+  }
+
+  .model-cards dd {
+    margin: 0.35rem 0 0;
+    font-size: 0.74rem;
+    overflow-wrap: anywhere;
+  }
+
+  .telemetry-wrap {
+    margin-top: 1rem;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    background: var(--paper-bright);
+  }
+
+  .telemetry-note {
+    max-width: 54rem;
+    margin: 3rem 0 0;
+    padding: 1rem 1.15rem;
+    border-left: 3px solid var(--blue);
+    background: #e9ebff;
+    color: var(--muted);
+    font-size: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .telemetry-note strong {
+    color: var(--ink);
+  }
+
+  .oracle-support-breakdown {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .oracle-support-breakdown article {
+    padding: 1.15rem;
+    border: 1px solid var(--line);
+    background: var(--paper-bright);
+  }
+
+  .oracle-support-breakdown article > span {
+    color: var(--blue);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .oracle-support-breakdown article > strong {
+    display: block;
+    margin-top: 0.65rem;
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+  }
+
+  .oracle-support-breakdown article > p {
+    min-height: 2.8em;
+    margin: 0.5rem 0 1rem;
+    color: var(--muted);
+    font-size: 0.7rem;
+    line-height: 1.45;
+  }
+
+  .oracle-support-breakdown dl {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .oracle-support-breakdown dl div {
+    padding-top: 0.8rem;
+  }
+
+  .oracle-support-breakdown dt {
+    color: var(--muted);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+  }
+
+  .oracle-support-breakdown dd {
+    margin: 0.3rem 0 0;
+    font-size: 0.9rem;
+    font-weight: 760;
+  }
+
+  .telemetry-table {
+    width: 100%;
+    min-width: 970px;
+    border-collapse: collapse;
+    font-size: 0.72rem;
+  }
+
+  .telemetry-table th,
+  .telemetry-table td {
+    padding: 0.9rem 0.7rem;
+    border-bottom: 1px solid var(--line);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .telemetry-table th:first-child {
+    text-align: left;
+  }
+
+  .telemetry-table thead th {
+    color: var(--muted);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+  }
+
+  .provenance-details {
+    margin-top: 1rem;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: white;
+  }
+
+  .provenance-details summary {
+    padding: 1.2rem;
+    cursor: pointer;
+    color: var(--acid);
+    font-size: 0.75rem;
+    font-weight: 760;
+  }
+
+  .provenance-details dl {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    margin: 0;
+    padding: 0 1.2rem 1.2rem;
+  }
+
+  .provenance-details dl div {
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid rgb(255 255 255 / 13%);
+  }
+
+  .provenance-details dt {
+    color: rgb(255 255 255 / 43%);
+    font-size: 0.61rem;
+    text-transform: uppercase;
+  }
+
+  .provenance-details dd {
+    margin: 0.4rem 0 0;
+    overflow-wrap: anywhere;
+  }
+
+  .provenance-details code {
+    font-size: 0.68rem;
+  }
+
+  @media (max-width: 780px) {
+    .breadcrumbs {
+      flex-wrap: wrap;
+      overflow-x: visible;
+      white-space: normal;
+    }
+
+    .episode-hero,
+    .section-intro,
+    .technical-head,
+    .guesser-disclosure-body,
+    .cost-context,
+    .transparency-banner,
+    .contract-alert,
+    .model-cards,
+    .oracle-support-breakdown {
+      grid-template-columns: 1fr;
+    }
+
+    .oracle-support-breakdown article > p {
+      min-height: 0;
+    }
+
+    .transparency-banner nav {
+      flex-wrap: wrap;
+      white-space: normal;
+    }
+
+    .cost-context a {
+      width: fit-content;
+      white-space: normal;
+    }
+
+    .guesser-disclosure > summary,
+    .recorded-output-drawer > summary {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .turn {
+      grid-template-columns: 2.8rem minmax(0, 1fr);
+    }
+
+    .answer {
+      grid-column: 2;
+      width: 100%;
+      min-height: 4.8rem;
+    }
+
+    .turn-label {
+      flex-direction: column;
+    }
+
+    .provenance-details dl {
+      grid-template-columns: 1fr;
+    }
+
+    .contract-alert dl,
+    .reliability-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .contract-alert dl div,
+    .reliability-grid div {
+      border-right: 0;
+      border-bottom: 1px solid var(--ink);
+    }
+  }
+</style>

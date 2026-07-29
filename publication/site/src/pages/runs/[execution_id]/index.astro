@@ -1,0 +1,986 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import B20Score from "../../../components/B20Score.astro";
+import {
+  dataset,
+  dateTime,
+  duration,
+  moneyDetailed,
+  number,
+  percent,
+  type PublicRun,
+} from "../../../lib/data";
+
+export function getStaticPaths() {
+  return dataset.official_runs.map((run) => ({
+    params: { execution_id: run.execution_id },
+    props: { run },
+  }));
+}
+
+interface Props {
+  run: PublicRun;
+}
+
+const { run } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const costTotal = Number(run.totals.costs_usd.total);
+const costLedger = [
+  {
+    label: "Guesser",
+    note: "Model under test",
+    value: run.totals.costs_usd.guesser,
+    primary: true,
+  },
+  {
+    label: "Primary Oracle",
+    note: "Direct answers",
+    value: run.totals.costs_usd.primary_oracle,
+    primary: false,
+  },
+  {
+    label: "Reviewer",
+    note: "Answer checks",
+    value: run.totals.costs_usd.reviewer,
+    primary: false,
+  },
+  {
+    label: "Judge",
+    note: "Disagreements",
+    value: run.totals.costs_usd.judge,
+    primary: false,
+  },
+  {
+    label: "Validator",
+    note: "Final guesses",
+    value: run.totals.costs_usd.validator,
+    primary: false,
+  },
+].map((item) => ({
+  ...item,
+  share: costTotal === 0 ? 0 : (Number(item.value) / costTotal) * 100,
+}));
+---
+
+<BaseLayout
+  title={`${run.execution_id} · ${run.model_name}`}
+  section="Run"
+  activeNav="Results"
+  description={`Subjects and episodes in Deep20Bench run ${run.execution_id}.`}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href={`${base}index.html#leaderboard`}>Results</a>
+    <span aria-hidden="true">/</span>
+    <a href={base}>Official</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{run.execution_id}</span>
+  </nav>
+
+  <header class="run-hero">
+    <div class="run-hero-primary">
+      <div class="run-model">
+        <p class="eyebrow run-model-label">
+          <span aria-hidden="true"></span>
+          Model under test · Guesser · scored
+        </p>
+        <h1>{run.model_name}</h1>
+        <p class="run-deck">
+          This is the contestant that asked every question and made every final guess. Its results
+          come from {run.terminal_trials}{" "}
+          {run.terminal_trials === 1 ? "episode" : "episodes"} across {run.subjects.length}{" "}
+          {run.subjects.length === 1 ? "subject" : "subjects"}; Oracle and Validator models only
+          operate the benchmark and are not scored.
+        </p>
+      </div>
+      <aside class="score-spotlight" aria-label="Run score">
+        <B20Score
+          score={run.b20_score}
+          penalizedQuestions={run.descriptive_score}
+          maxQuestions={run.max_questions}
+          label="B20 Score"
+          variant="hero"
+          theme="dark"
+          explain
+        />
+      </aside>
+    </div>
+    <dl class="run-facts" aria-label="Run summary">
+      <div class="run-fact-identity">
+        <dt>Certified official run</dt>
+        <dd><code>{run.execution_id}</code></dd>
+      </div>
+      <div>
+        <dt>Success rate</dt>
+        <dd>{percent(run.success_rate)}</dd>
+      </div>
+      <div>
+        <dt>Contract compliance</dt>
+        <dd>{percent(run.contract.compliance_rate)}</dd>
+      </div>
+      <div>
+        <dt>Penalized questions</dt>
+        <dd>{number(run.descriptive_score)}</dd>
+      </div>
+      <div>
+        <dt>Completed</dt>
+        <dd>{dateTime(run.completed_at)}</dd>
+      </div>
+    </dl>
+  </header>
+
+  <div class="run-content">
+    <section class="run-totals" aria-labelledby="totals-heading">
+      <header class="totals-intro">
+        <div>
+          <p class="eyebrow">Full benchmark</p>
+          <h2 id="totals-heading">Full run totals.</h2>
+        </div>
+        <p>
+          These figures cover all {run.terminal_trials} episodes in this benchmark run. They are
+          full-run sums, not per-turn values.
+        </p>
+      </header>
+
+      <div class="totals-spread">
+        <div class="totals-detail">
+          <article class="token-feature">
+            <span class="metric-index">01 / Usage</span>
+            <div>
+              <p class="metric-label">Total tokens</p>
+              <strong>{run.totals.total_tokens.toLocaleString("en")}</strong>
+              <p>Tokens used by every model call in the run.</p>
+            </div>
+          </article>
+
+          <div class="timing-grid">
+            <article>
+              <span class="metric-index">02 / Elapsed</span>
+              <p class="metric-label">Benchmark runtime</p>
+              <strong>{duration(run.totals.runtime_ms)}</strong>
+              <p>Wall clock from run creation to completion.</p>
+            </article>
+            <article class="guesser-time">
+              <span class="metric-index">03 / Guesser</span>
+              <p class="metric-label">Guesser think time</p>
+              <strong>{duration(run.totals.guesser_think_time_ms)}</strong>
+              <p>Sum of Guesser response latency across all episodes.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <section class="cost-ledger" aria-labelledby="cost-ledger-heading">
+        <header>
+          <div>
+            <p class="eyebrow">Cost detail</p>
+            <h3 id="cost-ledger-heading">Cost ledger.</h3>
+          </div>
+          <p>
+            Guesser is the model under test. All other rows are benchmark-support costs.
+          </p>
+        </header>
+        <div class="cost-rows">
+          {
+            costLedger.map((item) => (
+              <article class:list={[item.primary && "cost-row-guesser"]}>
+                <div>
+                  <div class="cost-row-heading">
+                    <h4>{item.label}</h4>
+                    {item.primary && <span class="model-cost-badge">Model cost</span>}
+                  </div>
+                  <p>{item.note}</p>
+                </div>
+                <strong>{moneyDetailed(item.value)}</strong>
+                <span class="cost-share" aria-hidden="true">
+                  <i style={`--share: ${item.share}%`} />
+                </span>
+              </article>
+            ))
+          }
+        </div>
+        <div class="cost-total">
+          <div>
+            <span>Total benchmark cost</span>
+            <p>Guesser and all benchmark-support calls.</p>
+          </div>
+          <strong>{moneyDetailed(run.totals.costs_usd.total)}</strong>
+        </div>
+      </section>
+    </section>
+
+    {
+      run.contract.status === "breached" && (
+        <section class="contract-alert" aria-labelledby="contract-heading">
+          <div>
+            <p class="eyebrow">Reliability warning</p>
+            <h2 id="contract-heading">Model broke the output contract.</h2>
+          </div>
+          <p>
+            This run recorded {run.contract.violations} invalid structured{" "}
+            {run.contract.violations === 1 ? "response" : "responses"} in{" "}
+            {run.contract.affected_trials}{" "}
+            {run.contract.affected_trials === 1 ? "episode" : "episodes"}.{" "}
+            {run.contract.counted_penalties} violations consumed counted turns. This is shown
+            independently of game success and remains part of the run report even when all
+            episodes eventually complete.
+          </p>
+        </section>
+      )
+    }
+
+    <section class="subject-section" aria-labelledby="subjects-heading">
+      <div class="section-intro">
+        <div>
+          <p class="eyebrow">Subjects</p>
+          <h2 id="subjects-heading">Hidden subjects.</h2>
+        </div>
+        <p>
+          Subject names are shown only after the run. The Guesser did not see them.
+        </p>
+      </div>
+      <div class="subject-grid">
+        {
+          run.subjects.map((subject, index) => (
+            <a
+              class="subject-card"
+              href={`${base}runs/${run.execution_id}/subjects/${subject.target_id}/`}
+            >
+              <span class="subject-index">{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <p class="subject-type">{subject.entity_type.replaceAll("_", " ")}</p>
+                <h3>{subject.display_name}</h3>
+              </div>
+              <dl>
+                <div><dt>Episodes</dt><dd>{subject.trials.length}</dd></div>
+                <div><dt>Success</dt><dd>{percent(subject.success_rate)}</dd></div>
+                <div>
+                  <dt>Contract</dt>
+                  <dd class:list={[subject.contract.status === "breached" && "contract-breached"]}>
+                    {percent(subject.contract.compliance_rate)}
+                    {subject.contract.status === "breached" && " · breached"}
+                  </dd>
+                </div>
+                <div>
+                  <dt>B20 Score</dt>
+                  <dd>
+                    <B20Score
+                      score={subject.b20_score}
+                      maxQuestions={run.max_questions}
+                      label={`B20 Score for ${subject.display_name}`}
+                      variant="metric"
+                    />
+                  </dd>
+                </div>
+                <div>
+                  <dt>Penalized questions</dt>
+                  <dd>{number(subject.subject_score)}</dd>
+                </div>
+              </dl>
+              <span class="card-action">View subject <span aria-hidden="true">↗</span></span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="provenance-strip" aria-label="Run provenance">
+      <div><span>Model ID</span><code>{run.model_id}</code></div>
+      <div><span>Benchmark</span><code>{run.benchmark_id}</code></div>
+      <div><span>Base seed</span><code>{run.base_seed}</code></div>
+      <div><span>Git commit</span><code>{run.git_commit.slice(0, 12)}</code></div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    gap: 0.6rem;
+    padding: 1rem var(--gutter);
+    border-bottom: 1px solid rgb(255 255 255 / 14%);
+    background: var(--ink);
+    color: rgb(255 255 255 / 52%);
+    font-size: 0.7rem;
+  }
+
+  .breadcrumbs a:hover {
+    color: white;
+  }
+
+  @media (max-width: 780px) {
+    .breadcrumbs {
+      flex-wrap: wrap;
+    }
+  }
+
+  .run-hero {
+    padding: clamp(3.5rem, 7vw, 6.5rem) var(--gutter) 0;
+    background: var(--ink);
+    color: white;
+  }
+
+  .run-hero-primary,
+  .run-facts {
+    width: min(100%, var(--max));
+    margin-inline: auto;
+  }
+
+  .run-hero-primary {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(28rem, 1.1fr);
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: stretch;
+    padding-bottom: clamp(3rem, 6vw, 5.5rem);
+  }
+
+  .run-model {
+    align-self: center;
+  }
+
+  .run-hero h1 {
+    max-width: 11ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(3.5rem, 6vw, 6.4rem);
+    font-weight: 500;
+    letter-spacing: -0.065em;
+    line-height: 0.9;
+  }
+
+  .run-model-label {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    color: var(--acid);
+  }
+
+  .run-model-label span {
+    width: 0.62rem;
+    height: 0.62rem;
+    border: 2px solid var(--acid);
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 0 0 0 3px rgb(214 255 63 / 16%);
+  }
+
+  .run-hero h1 em {
+    color: var(--acid);
+    font-weight: inherit;
+  }
+
+  .run-deck {
+    max-width: 44rem;
+    margin: 1.8rem 0 0;
+    color: rgb(255 255 255 / 61%);
+    font-size: clamp(0.95rem, 1.25vw, 1.12rem);
+    line-height: 1.65;
+  }
+
+  .score-spotlight {
+    min-width: 0;
+    padding: 0.35rem 0 0.35rem clamp(2.5rem, 5vw, 5rem);
+    border-left: 1px solid rgb(255 255 255 / 25%);
+  }
+
+  .run-facts {
+    display: grid;
+    grid-template-columns: 1.65fr 0.8fr 1.05fr 1.05fr 1.5fr;
+    margin: 0;
+    border-top: 1px solid rgb(255 255 255 / 30%);
+  }
+
+  .run-facts div {
+    display: flex;
+    min-width: 0;
+    min-height: 5.4rem;
+    padding: 1.1rem clamp(0.8rem, 1.6vw, 1.35rem);
+    border-right: 1px solid rgb(255 255 255 / 18%);
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .run-facts div:first-child {
+    padding-left: 0;
+  }
+
+  .run-facts div:last-child {
+    padding-right: 0;
+    border-right: 0;
+  }
+
+  .run-facts dt {
+    color: rgb(255 255 255 / 48%);
+    font-size: 0.61rem;
+    font-weight: 760;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .run-facts dd {
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 680;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.3;
+  }
+
+  .run-facts code {
+    color: white;
+    font-size: 0.67rem;
+    overflow-wrap: anywhere;
+  }
+
+  .run-content {
+    padding: clamp(4rem, 8vw, 7rem) var(--gutter);
+  }
+
+  .run-content > * {
+    width: min(100%, var(--max));
+    margin-inline: auto;
+  }
+
+  .run-totals {
+    margin-bottom: clamp(4rem, 8vw, 7rem);
+  }
+
+  .totals-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: end;
+    margin-bottom: 2rem;
+  }
+
+  .totals-intro h2 {
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(2.8rem, 5vw, 5.5rem);
+    font-weight: 500;
+    letter-spacing: -0.055em;
+    line-height: 0.95;
+  }
+
+  .totals-intro > p {
+    max-width: 36rem;
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .totals-spread {
+    border: 1px solid var(--ink);
+  }
+
+  .token-feature,
+  .timing-grid article {
+    padding: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .metric-index {
+    font: 800 0.65rem ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .metric-label {
+    margin: 0;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .token-feature strong {
+    display: block;
+    margin-top: 0.55rem;
+    font: 700 clamp(2.7rem, 4vw, 4.25rem) / 0.95 ui-monospace, SFMono-Regular, Menlo,
+      monospace;
+    letter-spacing: -0.075em;
+  }
+
+  .token-feature div > p:last-child,
+  .timing-grid article > p:last-child {
+    margin: 1rem 0 0;
+    line-height: 1.55;
+  }
+
+  .totals-detail {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-width: 0;
+  }
+
+  .token-feature {
+    display: flex;
+    min-height: 15rem;
+    background: var(--paper-bright);
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .token-feature strong {
+    color: var(--blue);
+    font-size: clamp(2.6rem, 3.7vw, 4rem);
+    overflow-wrap: anywhere;
+  }
+
+  .token-feature div > p:last-child {
+    color: var(--muted);
+  }
+
+  .timing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--ink);
+  }
+
+  .timing-grid article + article {
+    border-left: 1px solid var(--ink);
+  }
+
+  .timing-grid strong {
+    display: block;
+    margin-top: 0.5rem;
+    font: 700 clamp(2rem, 2.7vw, 2.9rem) / 1 ui-monospace, SFMono-Regular, Menlo,
+      monospace;
+    letter-spacing: -0.06em;
+  }
+
+  .timing-grid article > .metric-label {
+    margin-top: 2.4rem;
+  }
+
+  .timing-grid article > p:last-child {
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  .guesser-time {
+    background: #eef0ff;
+  }
+
+  .guesser-time strong {
+    color: var(--blue);
+  }
+
+  .cost-ledger {
+    border: 1px solid var(--ink);
+    border-top: 0;
+    background: var(--paper-bright);
+  }
+
+  .cost-ledger > header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: end;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .cost-ledger h3 {
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(2rem, 3.2vw, 3.4rem);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  .cost-ledger > header > p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .cost-rows {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .cost-rows article {
+    display: flex;
+    min-width: 0;
+    padding: 1.25rem;
+    border-right: 1px solid var(--line);
+    flex-direction: column;
+  }
+
+  .cost-rows .cost-row-guesser {
+    background: #eef0ff;
+    box-shadow: inset 0 0.32rem 0 var(--blue);
+  }
+
+  .cost-rows article:last-child {
+    border-right: 0;
+  }
+
+  .cost-row-heading {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .cost-rows h4,
+  .cost-rows p {
+    margin: 0;
+  }
+
+  .cost-rows h4 {
+    font-size: 0.76rem;
+  }
+
+  .cost-rows p {
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: 0.66rem;
+  }
+
+  .cost-rows strong {
+    display: block;
+    margin-top: 1.6rem;
+    font: 750 1.08rem ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cost-row-guesser strong {
+    color: var(--blue);
+    font-size: 1.4rem;
+  }
+
+  .model-cost-badge {
+    padding: 0.28rem 0.42rem;
+    background: var(--blue);
+    color: white;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .cost-share {
+    display: block;
+    height: 0.28rem;
+    margin-top: 1rem;
+    background: var(--paper);
+  }
+
+  .cost-share i {
+    display: block;
+    width: var(--share);
+    height: 100%;
+    background: #a9adba;
+  }
+
+  .cost-row-guesser .cost-share i {
+    background: var(--blue);
+  }
+
+  .cost-total {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .cost-total span {
+    color: var(--muted);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .cost-total p {
+    margin: 0.2rem 0 0;
+    color: var(--muted);
+    font-size: 0.64rem;
+  }
+
+  .cost-total strong {
+    color: var(--muted);
+    font: 700 0.95rem ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .contract-alert,
+  .section-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .contract-alert {
+    margin-bottom: 2rem;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid #c26752;
+    background: #fff0eb;
+  }
+
+  .contract-alert > p {
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  .contract-alert h2,
+  .section-intro h2 {
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(2rem, 4.5vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  .contract-breached {
+    color: #9d3f28;
+    font-weight: 800;
+  }
+
+  .section-intro > p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .subject-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+
+  .subject-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.5rem;
+    min-height: 22rem;
+    padding: clamp(1.3rem, 3vw, 2rem);
+    border: 1px solid var(--line);
+    background: var(--paper-bright);
+    text-decoration: none;
+    transition: transform 160ms ease, border-color 160ms ease;
+  }
+
+  .subject-card:hover {
+    border-color: var(--blue);
+    transform: translateY(-3px);
+  }
+
+  .subject-card:focus-visible {
+    border-color: var(--blue);
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+  }
+
+  .subject-index {
+    color: var(--blue);
+    font: 700 0.7rem ui-monospace, monospace;
+  }
+
+  .subject-type {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.66rem;
+    font-weight: 760;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .subject-card h3 {
+    margin: 0.45rem 0 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(2.5rem, 5vw, 5.5rem);
+    font-weight: 500;
+    letter-spacing: -0.06em;
+  }
+
+  .subject-card dl {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-self: end;
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .subject-card dl div {
+    padding-top: 1rem;
+  }
+
+  .subject-card dt {
+    color: var(--muted);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+  }
+
+  .subject-card dd {
+    margin: 0.35rem 0 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  .card-action {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ink);
+    font-size: 0.77rem;
+    font-weight: 760;
+  }
+
+  .provenance-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    margin-top: 5rem;
+    border-block: 1px solid var(--ink);
+  }
+
+  .provenance-strip div {
+    display: flex;
+    min-width: 0;
+    padding: 1rem;
+    border-right: 1px solid var(--line);
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .provenance-strip div:last-child {
+    border-right: 0;
+  }
+
+  .provenance-strip span {
+    color: var(--muted);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+  }
+
+  .provenance-strip code {
+    overflow: hidden;
+    font-size: 0.72rem;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 980px) {
+    .run-hero-primary {
+      grid-template-columns: 1fr;
+    }
+
+    .score-spotlight {
+      padding: 2.5rem 0 0;
+      border-top: 1px solid rgb(255 255 255 / 25%);
+      border-left: 0;
+    }
+
+    .run-facts {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .run-facts div,
+    .run-facts div:first-child,
+    .run-facts div:last-child {
+      padding-inline: 1rem;
+      border-right: 1px solid rgb(255 255 255 / 18%);
+      border-bottom: 1px solid rgb(255 255 255 / 18%);
+    }
+
+    .run-facts div:nth-child(3n) {
+      border-right: 0;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .contract-alert,
+    .totals-intro,
+    .totals-spread,
+    .section-intro,
+    .subject-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .timing-grid,
+    .cost-ledger > header {
+      grid-template-columns: 1fr;
+    }
+
+    .timing-grid article + article {
+      border-top: 1px solid var(--ink);
+      border-left: 0;
+    }
+
+    .cost-rows {
+      grid-template-columns: 1fr;
+    }
+
+    .cost-rows article {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 1rem;
+      align-items: end;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cost-rows article:last-child {
+      border-bottom: 0;
+    }
+
+    .cost-rows strong {
+      margin-top: 0;
+    }
+
+    .cost-share {
+      grid-column: 1 / -1;
+      width: 100%;
+      margin-top: 0;
+    }
+
+    .provenance-strip {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .subject-card dl {
+      grid-template-columns: 1fr 1fr;
+      row-gap: 1rem;
+    }
+
+    .provenance-strip div {
+      border-bottom: 1px solid var(--line);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .run-facts {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .run-facts div:nth-child(3n) {
+      border-right: 1px solid rgb(255 255 255 / 18%);
+    }
+
+    .run-facts div:nth-child(even) {
+      border-right: 1px solid rgb(255 255 255 / 18%);
+    }
+
+    .run-facts div:nth-child(odd) {
+      border-right: 0;
+    }
+
+    .run-fact-identity {
+      grid-column: 1 / -1;
+      border-right: 0;
+    }
+
+    .run-facts div:last-child {
+      grid-column: 1 / -1;
+      border-right: 0;
+    }
+  }
+</style>

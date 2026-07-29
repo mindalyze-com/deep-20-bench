@@ -1,0 +1,983 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260728-official-M0009-010
+    model_id: M-0009
+    target_id: T-0006
+    trial_id: trial-001
+    trial_number: 1
+    episode_run_id: BR-b53e75916070fec3449b7dd21dfade1e7f1f7a9c
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-b53e75916070fec3449b7dd21dfade1e7f1f7a9c
+      episode_id: EP-019faa6b242a71b185ec5f04d7206a66
+      subject:
+        target_id: T-0006
+        canonical_name: Genghis Khan
+        aliases:
+        - Chinggis Khan
+        - Temüjin
+        - Temujin
+        entity_type: person
+        description: Genghis Khan, the founder and first khan of the Mongol Empire,
+          identified by Wikidata entity Q720.
+        reference_url: https://en.wikipedia.org/wiki/Genghis_Khan
+      started_at: '2026-07-28T20:29:36.170923+00:00'
+      completed_at: '2026-07-28T20:32:28.771893+00:00'
+      duration_ms: 172601
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 15
+      counted_questions: 14
+      guesser_call_count: 15
+      ask_count: 13
+      guess_count: 2
+      rejected_guess_count: 1
+      oracle_unknown_count: 2
+      oracle_quality:
+        reviewed_questions: 11
+        agreements: 9
+        disagreements: 2
+        judge_invocations: 2
+        oracle_answers_changed: 1
+        final_unknown_answers: 2
+        judge_yes_answers: 0
+        judge_no_answers: 2
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0126187'
+        judge_cost_usd: '0.024615'
+        quality_control_cost_usd: '0.0372337'
+        question_types:
+        - question_type: other
+          reviewed_questions: 11
+          disagreements: 2
+      contract:
+        evaluated_outputs: 15
+        valid_outputs: 15
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.00237981'
+        oracle: '0.1194732999999999978'
+        validator: '0.0005905'
+        total: '0.1224436099999999978'
+      tokens:
+        guesser: 11053
+        oracle: 117971
+        validator: 811
+        total: 129835
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0009
+        requested_model: meta-llama/llama-4-maverick
+        requested_provider: parasail
+        resolved_models:
+        - meta-llama/llama-4-maverick
+        resolved_providers:
+        - Parasail
+        reasoning_effort: none
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the person male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6b26547459aadae19836e437e0
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan/Legacy
+          excerpt: He was above all adaptable, a man who could learn.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019faa6b242b762bbb75e38d71ac6887
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the person primarily known for work in entertainment?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6b4b347100ba380c19d5ac5b46
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.livescience.com/43260-genghis-khan.html
+          excerpt: Who was Genghis Khan, the warrior who founded the Mongol Empire?
+          validation: model_reported
+        - source_url: https://www.worldhistory.org/timeline/Genghis_Khan
+          excerpt: Genghis Khan ... was the founder of the Mongol Empire ... after
+            unifying the Mongol tribes.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019faa6b468a71c5bd025f94e7236525
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is the person a historical figure?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6b8ebc754992ad783aa9b6e924
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.history.com/articles/genghis-khan
+          excerpt: Mongol leader Genghis Khan (1162-1227) rose from humble beginnings
+            to establish the largest land empire in history.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019faa6b89b9733ead9d7646c1529043
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Did the person hold a high-ranking political office?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6ba456773f8ef8a2fe1eabc985
+        answer: 'YES'
+        evidence:
+        - source_url: https://courses.lumenlearning.com/suny-hccc-worldcivilization/chapter/genghis-khan
+          excerpt: Genghis Khan was the first leader, or Khan, of the Mongol Empire,
+            from 1206 CE–1227 CE.
+          validation: model_reported
+        - source_url: https://kids.britannica.com/students/article/Mongol-Empire/275900
+          excerpt: In 1206 Genghis (or Chinggis) Khan was elected head of the All
+            the Mongols league, a confederation of Mongol tribes, and founded the
+            Mongol Dynasty.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019faa6ba1fc756c8060e4c20dc0a985
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Was the person a head of state or government in the United States?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6bcbbc72dc9d54221abeb4b03d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan ... was a Mongolian warrior-ruler ... died August
+            18, 1227.
+          validation: model_reported
+        - source_url: https://www.archives.gov/historical-docs/constitution
+          excerpt: The Constitution ... established the government of the United States.
+          validation: model_reported
+        - source_url: https://www.archives.gov/legislative/features/gw-inauguration
+          excerpt: George Washington took the oath as the first president of the United
+            States on April 30, 1789.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019faa6bc9177341899913400d8ec4d6
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Did the person serve as a head of state or government in a major
+          European country?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6c041175e78d6be3f1c06f6f5e
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/facts/Genghis-Khan
+          excerpt: Title / Office | khan (1206-1227), Mongol empire
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan ... was a Mongolian warrior-ruler, one of the most
+            famous conquerors of history, who consolidated tribes into a unified Mongolia
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019faa6c009570db9f73defbeff8b988
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Was the person's influence significant in a country outside of Europe
+          and North America?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6c39e67756b95676a4d64e8b2d
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.mongoliajol.info/index.php/MJIA/article/view/127
+          excerpt: 'Genghis Khan and Modern Mongolian Identity: The Democracy Connection'
+          validation: model_reported
+        - source_url: https://thediplomat.com/2013/08/modern-mongolia-from-genghis-khan-to-traffic-jams
+          excerpt: Genghis Khan renaissance... Genghis statue at our national airport,
+            Genghis pubs, restaurants, streets named after him—Genghis everything.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019faa6c372c71229005bee0b31a0980
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Did the person rule or lead in Asia during the 20th century?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6c7c3b73cfa37f761980e89617
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/facts/Genghis-Khan
+          excerpt: Died | August 18, 1227; Title / Office | khan (1206-1227), Mongol
+            empire
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019faa6c79bf7358ae56e2050955f163
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Was the person a leader in the Middle East or North Africa?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6c9c1871e6aeb052013b0d1c40
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Islamic-world/Mongols
+          excerpt: In the early 13th century, under the leadership of Genghis Khan,
+            they formed... a movement of global expansion... west into Islamdom.
+          validation: model_reported
+        - source_url: https://www.britannica.com/place/Iran/The-Mongol-invasion
+          excerpt: The terror his invasion brought must also be ascribed to his quest
+            for vengeance.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019faa6c998671f0a71f4505c07e5254
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Did the person play a significant role in African history or politics?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6d12f27751ba9dfc5951245d65
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019faa6d0dc2703d89e1a3d92710e3b3
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Was the person a leader in a country that gained independence from
+          colonial rule?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6d419d7655884cbdc4e998e7f9
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019faa6d3eff702a9503e291cce3358b
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Was the person known for significant military conquests or leadership?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6d77e1713eb8010ca0c9be9261
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.studentsofhistory.com/the-mongol-empire
+          excerpt: Under his rule, the Mongol Empire grew rapidly through conquest.
+            The Mongol armies attacked in all directions from the Mongolian Steppe
+            and penetrated into China, Korea, Turkistan, Samarkand, and Russia.
+          validation: model_reported
+        - source_url: https://courses.lumenlearning.com/suny-hccc-worldcivilization/chapter/genghis-khan
+          excerpt: This ruler used groundbreaking siege warfare and spy techniques
+            to understand his enemies and more successfully conquer and subsume them
+            under his rule.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019faa6d74ca7179bbc831f6c12a1cdb
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: GUESS
+        question: null
+        name: Tamerlane
+        description: Turco-Mongol conqueror
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa6d964e750795665a276e058850
+        answer: 'NO'
+        evidence: []
+        explanation: Tamerlane (Timur) is a different historical person from Genghis
+          Khan.
+        oracle_quality: null
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-019faa6d940270dc94fa0736cb863ef1
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Did the person found or significantly expand a major empire?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa6d9d5771fab8335f02b23c89cb
+        answer: 'YES'
+        evidence:
+        - source_url: https://kids.britannica.com/students/article/Mongol-Empire/275900
+          excerpt: In 1206 Genghis Khan was elected head of the All the Mongols league
+            and founded the Mongol Dynasty. Between 1206 and 1227, the Mongols conquered
+            a dominion that stretched from the...
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-019faa6d9b2e7161a8d4d4740dacf677
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: GUESS
+        question: null
+        name: Genghis Khan
+        description: Mongol emperor and founder of the Mongol Empire
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa6db3a8705f9a539f30e4f785b1
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity names Genghis Khan, exactly matching the
+          trusted subject; the description is consistent.
+        oracle_quality: null
+      counted: false
+      counted_questions: 14
+      guesser_call_id: GC-019faa6db0eb75fe9d5f6b6df4d92661
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"EAQCORIU"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person male?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for work in entertainment?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person a historical figure?"}}'
+      turn_number: 3
+    - role: user
+      content: 'YES'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person hold a high-ranking political office?"}}'
+      turn_number: 4
+    - role: user
+      content: 'YES'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a head of state or government in the United States?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person serve as a head of state or government in a major European country?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person''s influence significant in a country outside of Europe and North
+        America?"}}'
+      turn_number: 7
+    - role: user
+      content: 'YES'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person rule or lead in Asia during the 20th century?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a leader in the Middle East or North Africa?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person play a significant role in African history or politics?"}}'
+      turn_number: 10
+    - role: user
+      content: UNKNOWN
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a leader in a country that gained independence from colonial rule?"}}'
+      turn_number: 11
+    - role: user
+      content: UNKNOWN
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person known for significant military conquests or leadership?"}}'
+      turn_number: 12
+    - role: user
+      content: 'YES'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Turco-Mongol conqueror","name":"Tamerlane","question":null}}'
+      turn_number: 13
+    - role: user
+      content: 'NO'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person found or significantly expand a major empire?"}}'
+      turn_number: 14
+    - role: user
+      content: 'YES'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Mongol emperor and founder
+        of the Mongol Empire","name":"Genghis Khan","question":null}}'
+      turn_number: 15
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0009
+          gateway: openrouter
+          model: meta-llama/llama-4-maverick
+          provider: parasail
+          reasoning_effort: none
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: supported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '0.35'
+            cached_input_usd_per_million: '0.17'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 15
+          cost_usd: '0.00237981'
+          latency_ms: 11781
+          total_tokens: 11053
+          input_tokens: 10583
+          cached_input_tokens: 9968
+          cache_write_tokens: 0
+          output_tokens: 470
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: '0.0017942400'
+          recovery:
+            request_attempts: 15
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: anthropic
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 13
+          cost_usd: '0.1194732999999999978'
+          latency_ms: 153865
+          total_tokens: 117971
+          input_tokens: 108922
+          cached_input_tokens: 38927
+          cache_write_tokens: 0
+          output_tokens: 9049
+          reasoning_tokens: 6203
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 26
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 2
+          cost_usd: '0.0005905'
+          latency_ms: 5930
+          total_tokens: 811
+          input_tokens: 737
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 74
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 2
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0009/BX-20260728-official-M0009-010/subjects/T-0006/trials/trial-001/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 42070a747c212a6c0c839bc034e3e558bc14919a57eaae78e34c41a75bafe0b9

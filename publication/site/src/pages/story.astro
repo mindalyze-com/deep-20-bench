@@ -1,0 +1,1168 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { illustrativeRound } from "../lib/illustrative-round";
+
+const base = import.meta.env.BASE_URL;
+const priorWork = [
+  {
+    year: "2018",
+    kind: "Question strategy",
+    title: "Learning-to-Ask: Knowledge Acquisition via 20 Questions",
+    authors: "Yihong Chen et al. · KDD",
+    description:
+      "Learns question strategies for finding an entity and gathering knowledge.",
+    href:
+      "https://www.microsoft.com/en-us/research/publication/learning-to-ask-knowledge-acquisition-via-20-questions/",
+    source: "Microsoft Research",
+  },
+  {
+    year: "2022",
+    kind: "World knowledge",
+    title: "20Q: Overlap-Free World Knowledge Benchmark for Language Models",
+    authors: "Maxime De Bruyn et al. · GEM",
+    description:
+      "Uses Twenty Questions to test world knowledge without train–test overlap.",
+    href: "https://aclanthology.org/2022.gem-1.46/",
+    source: "ACL Anthology",
+  },
+  {
+    year: "2024",
+    kind: "Planning benchmark",
+    title: "The Entity-Deduction Arena",
+    authors: "Yizhe Zhang, Jiarui Lu & Navdeep Jaitly · Apple · ACL",
+    description:
+      "Tests LLM planning and state tracking through a hidden-entity game.",
+    href: "https://machinelearning.apple.com/research/parlor-game-arena",
+    source: "Apple Machine Learning Research",
+  },
+  {
+    year: "2025",
+    kind: "Adaptive elicitation",
+    title: "Adaptive Elicitation of Latent Information Using Natural Language",
+    authors: "Jimmy Wang et al. · ICML",
+    description:
+      "Chooses natural-language questions by reducing uncertainty.",
+    href: "https://openreview.net/forum?id=I7N6vtUChM",
+    source: "OpenReview",
+  },
+  {
+    year: "2025",
+    kind: "Information gain",
+    title: "BED-LLM: Intelligent Information Gathering with LLMs",
+    authors: "Deepro Choudhury et al. · Apple · ICLR",
+    description:
+      "Uses expected information gain to choose questions.",
+    href: "https://machinelearning.apple.com/research/bed-llm",
+    source: "Apple Machine Learning Research",
+  },
+];
+---
+
+<BaseLayout
+  title="Story & prior work"
+  section="Story"
+  description="The origin of Deep20Bench, its creators, and related work."
+>
+  <section class="story-hero">
+    <div class="story-grid" aria-hidden="true"></div>
+    <div class="hero-number" aria-hidden="true">20</div>
+    <div class="hero-copy">
+      <p class="eyebrow">Origin · prior work</p>
+      <h1>A shared idea, built into a benchmark.</h1>
+      <p>
+        The idea for Deep20Bench was sparked during a holiday while Patrick Heusser and Markus
+        Tuor were playing Twenty Questions with the kids. Inspired by the game, Patrick went on
+        to design and build the benchmark from the ground up.
+      </p>
+    </div>
+    <a class="hero-jump" href="#origin">
+      Origin <span aria-hidden="true">↓</span>
+    </a>
+  </section>
+
+  <section class="origin section" id="origin">
+    <div class="section-inner origin-grid">
+      <div class="origin-marker">
+        <span>01</span>
+        <p class="eyebrow">Origin</p>
+      </div>
+      <div class="origin-story">
+        <p class="origin-lede">
+          The game needs world knowledge and a plan for the next question.
+        </p>
+        <div class="origin-columns">
+          <p>
+            One person chooses a subject. The others ask yes-or-no questions. Each answer should
+            narrow the options.
+          </p>
+          <p>
+            Deep20Bench gives that task to an LLM. It counts how many questions the model needs
+            to identify the subject.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="game-visual" aria-labelledby="game-visual-title">
+    <div class="visual-intro">
+      <div class="visual-index">
+        <span>02</span>
+        <p class="eyebrow">Example</p>
+      </div>
+      <div>
+        <h2 id="game-visual-title">One answer at a time.</h2>
+        <p>
+          Each YES, NO, or UNKNOWN should change the next question.
+        </p>
+      </div>
+    </div>
+
+    <div class="round-board">
+      <div class="round-heading">
+        <div>
+          <span class="live-mark"></span>
+          Illustrative round
+        </div>
+        <span>04 / 20</span>
+      </div>
+
+      <div class="round-body">
+        <ol class="question-chain" aria-label="Illustrative Twenty Questions sequence">
+          {
+            illustrativeRound.turns.map((turn, index) => (
+              <li class:list={[turn.kind === "guess" && "final-turn"]}>
+                <span class="turn-number">{String(index + 1).padStart(2, "0")}</span>
+                <p>{turn.prompt}</p>
+                <strong>{turn.answer}</strong>
+              </li>
+            ))
+          }
+        </ol>
+
+        <div class="subject-orbit" aria-hidden="true">
+          <span class="orbit orbit-outer"></span>
+          <span class="orbit orbit-inner"></span>
+          <div>
+            <small>Hidden subject</small>
+            <strong>?</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="round-footer">
+        <span>World knowledge</span>
+        <span>State tracking</span>
+        <span>Question strategy</span>
+      </div>
+    </div>
+
+    <p class="visual-note">
+      Example only. Published runs show their actual questions, answers, and evidence.
+    </p>
+  </section>
+
+  <section class="apple-spotlight">
+    <div class="apple-label">
+      <span class="spotlight-number">03</span>
+      <p class="eyebrow">Closest prior work</p>
+    </div>
+    <div class="apple-main">
+      <p class="apple-kicker">Apple Machine Learning Research · ACL 2024</p>
+      <h2>The Entity-Deduction Arena</h2>
+      <p class="apple-lede">
+        Apple published a related hidden-entity benchmark in 2024.
+      </p>
+      <p>
+        Yizhe Zhang, Jiarui Lu, and Navdeep Jaitly test multi-turn planning and state tracking.
+        They also study training through self-play.
+      </p>
+      <div class="source-links">
+        <a
+          class="button button-primary"
+          href="https://machinelearning.apple.com/research/parlor-game-arena"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Apple research page <span aria-hidden="true">↗</span>
+        </a>
+        <a
+          class="button button-secondary"
+          href="https://aclanthology.org/2024.acl-long.82/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          ACL paper <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+    <aside class="comparison" aria-label="How the projects relate">
+      <div>
+        <p class="comparison-label">Shared ground</p>
+        <p>Hidden entities, model questions, and a question limit.</p>
+      </div>
+      <div>
+        <p class="comparison-label">Deep20Bench</p>
+        <p>
+          Repeated trials, equal subject weight, Guesser isolation, and public run details.
+        </p>
+      </div>
+    </aside>
+  </section>
+
+  <section class="lineage section" aria-labelledby="lineage-title">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Prior work</p>
+          <h2 id="lineage-title">Related research.</h2>
+        </div>
+        <p>
+          Deep20Bench was developed independently. The work below is related.
+        </p>
+      </div>
+
+      <div class="work-list">
+        {
+          priorWork.map((work) => (
+            <article
+              class:list={[
+                "interactive-surface",
+                work.year === "2024" && "featured-work",
+              ]}
+            >
+              <div class="work-year">{work.year}</div>
+              <div class="work-kind">{work.kind}</div>
+              <div class="work-main">
+                <h3>{work.title}</h3>
+                <p class="work-authors">{work.authors}</p>
+                <p class="work-description">{work.description}</p>
+              </div>
+              <a
+                class="stretched-link"
+                href={work.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Read ${work.title}`}
+              >
+                <span>{work.source}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="positioning">
+    <div>
+      <p class="eyebrow">Scope</p>
+      <h2>What Deep20Bench measures.</h2>
+    </div>
+    <div class="positioning-list">
+      <article>
+        <span>01</span>
+        <h3>Model as questioner</h3>
+        <p>
+          The model chooses each question. This tests world knowledge and question planning.
+        </p>
+      </article>
+      <article>
+        <span>02</span>
+        <h3>Limited input</h3>
+        <p>
+          The Guesser sees a broad category, its prior actions, and YES, NO, or UNKNOWN. It does
+          not see the subject or Oracle data.
+        </p>
+      </article>
+      <article>
+        <span>03</span>
+        <h3>Public records</h3>
+        <p>
+          Each score links to its run, subject, transcript, evidence, and usage data.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="story-closing">
+    <div>
+      <p class="eyebrow">Next</p>
+      <h2>Method and results.</h2>
+    </div>
+    <div>
+      <p>
+        Read the rules or view the current runs.
+      </p>
+      <div class="button-row">
+        <a class="button button-primary" href={`${base}methodology/`}>Method</a>
+        <a class="button button-secondary" href={`${base}index.html#leaderboard`}>Results</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .story-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: clamp(5rem, 10vw, 9rem) var(--gutter) clamp(3rem, 6vw, 5rem);
+    overflow: hidden;
+    background: var(--ink);
+    color: white;
+  }
+
+  .story-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.13;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 28%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 28%) 1px, transparent 1px);
+    background-size: 88px 88px;
+    mask-image: linear-gradient(115deg, black, transparent 74%);
+  }
+
+  .hero-number {
+    position: absolute;
+    right: -0.06em;
+    bottom: -0.26em;
+    color: rgb(214 255 63 / 8%);
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: min(66vw, 46rem);
+    letter-spacing: -0.13em;
+    line-height: 0.8;
+  }
+
+  .hero-copy,
+  .hero-jump {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-copy {
+    align-self: center;
+    max-width: 72rem;
+  }
+
+  .hero-copy .eyebrow {
+    color: var(--acid);
+  }
+
+  .hero-copy h1 {
+    max-width: 10ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(4.2rem, 9vw, 9rem);
+    font-weight: 500;
+    letter-spacing: -0.072em;
+    line-height: 0.84;
+  }
+
+  .hero-copy > p:last-child {
+    max-width: 42rem;
+    margin: clamp(2rem, 5vw, 4rem) 0 0;
+    color: rgb(255 255 255 / 65%);
+    font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+    line-height: 1.6;
+  }
+
+  .hero-jump {
+    align-self: end;
+    padding-bottom: 0.4rem;
+    color: rgb(255 255 255 / 75%);
+    font-size: 0.78rem;
+    font-weight: 760;
+    text-decoration: none;
+  }
+
+  .origin {
+    background: var(--paper-bright);
+  }
+
+  .origin-grid {
+    display: grid;
+    grid-template-columns: minmax(9rem, 0.24fr) 1fr;
+    gap: clamp(2rem, 7vw, 8rem);
+  }
+
+  .origin-marker {
+    padding-top: 0.5rem;
+  }
+
+  .origin-marker > span {
+    display: block;
+    margin-bottom: 1.2rem;
+    color: var(--blue);
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(4rem, 7vw, 7rem);
+    letter-spacing: -0.07em;
+    line-height: 0.8;
+  }
+
+  .origin-lede {
+    max-width: 20ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(2.6rem, 5vw, 5.1rem);
+    letter-spacing: -0.055em;
+    line-height: 1;
+  }
+
+  .origin-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 6vw, 6rem);
+    margin-top: clamp(3rem, 7vw, 6rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  .origin-columns p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+
+  .game-visual {
+    display: grid;
+    grid-template-columns: minmax(17rem, 0.56fr) minmax(0, 1fr);
+    gap: clamp(3rem, 8vw, 9rem);
+    padding: clamp(5rem, 10vw, 9rem) var(--gutter);
+    overflow: hidden;
+    background: var(--ink);
+    color: white;
+  }
+
+  .visual-intro {
+    display: grid;
+    grid-template-columns: minmax(8rem, 0.28fr) 1fr;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-self: start;
+  }
+
+  .visual-index > span {
+    display: block;
+    margin-bottom: 1rem;
+    color: var(--acid);
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(4rem, 7vw, 7rem);
+    letter-spacing: -0.07em;
+    line-height: 0.8;
+  }
+
+  .visual-intro h2 {
+    max-width: 8ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(3.3rem, 6.5vw, 6.5rem);
+    font-weight: 500;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+  }
+
+  .visual-intro > div:last-child > p {
+    max-width: 31rem;
+    margin: 2rem 0 0;
+    color: rgb(255 255 255 / 62%);
+    line-height: 1.7;
+  }
+
+  .round-board {
+    position: relative;
+    align-self: start;
+    border: 1px solid rgb(255 255 255 / 24%);
+    background:
+      linear-gradient(rgb(255 255 255 / 7%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 7%) 1px, transparent 1px),
+      #191c27;
+    background-size: 52px 52px;
+    box-shadow: 1.25rem 1.25rem 0 rgb(78 100 255 / 36%);
+  }
+
+  .round-heading,
+  .round-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    font-size: 0.61rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .round-heading {
+    border-bottom: 1px solid rgb(255 255 255 / 18%);
+    color: rgb(255 255 255 / 55%);
+  }
+
+  .round-heading > div {
+    display: flex;
+    gap: 0.55rem;
+    align-items: center;
+  }
+
+  .live-mark {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--acid);
+    box-shadow: 0 0 0 4px rgb(214 255 63 / 10%);
+  }
+
+  .round-body {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(9rem, 0.42fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
+    min-height: 32rem;
+    padding: clamp(1.5rem, 4vw, 3.5rem);
+    overflow: hidden;
+  }
+
+  .question-chain {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .question-chain::before {
+    position: absolute;
+    top: 1.5rem;
+    bottom: 1.5rem;
+    left: 1.34rem;
+    width: 1px;
+    background: rgb(255 255 255 / 24%);
+    content: "";
+  }
+
+  .question-chain li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.7rem minmax(0, 1fr) auto;
+    gap: 0.8rem;
+    align-items: center;
+    min-height: 4.5rem;
+    padding: 0.85rem 1rem 0.85rem 0;
+    border: 1px solid rgb(255 255 255 / 16%);
+    background: rgb(17 19 28 / 84%);
+    transition:
+      border-color 180ms ease,
+      transform 180ms ease;
+  }
+
+  .question-chain li:nth-child(2) {
+    margin-left: 1rem;
+  }
+
+  .question-chain li:nth-child(3) {
+    margin-left: 2rem;
+  }
+
+  .question-chain li:nth-child(4) {
+    margin-left: 3rem;
+  }
+
+  .turn-number {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.7rem;
+    aspect-ratio: 1;
+    border: 1px solid rgb(255 255 255 / 25%);
+    border-radius: 50%;
+    background: var(--ink);
+    color: rgb(255 255 255 / 52%);
+    font-size: 0.58rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .question-chain p {
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(1.2rem, 2vw, 1.65rem);
+    letter-spacing: -0.025em;
+  }
+
+  .question-chain li > strong {
+    color: var(--acid);
+    font-size: 0.61rem;
+    letter-spacing: 0.12em;
+  }
+
+  .question-chain .final-turn {
+    border-color: var(--acid);
+    background: var(--acid);
+    color: var(--ink);
+  }
+
+  .question-chain .final-turn .turn-number {
+    border-color: var(--ink);
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .question-chain .final-turn > strong {
+    color: var(--ink);
+  }
+
+  .subject-orbit {
+    position: relative;
+    display: grid;
+    place-items: center;
+    align-self: center;
+    min-height: 17rem;
+  }
+
+  .subject-orbit .orbit {
+    position: absolute;
+    border: 1px solid rgb(214 255 63 / 24%);
+    border-radius: 50%;
+  }
+
+  .orbit-outer {
+    width: min(24vw, 19rem);
+    aspect-ratio: 1;
+  }
+
+  .orbit-inner {
+    width: min(15vw, 11rem);
+    aspect-ratio: 1;
+    border-style: dashed;
+  }
+
+  .subject-orbit::before,
+  .subject-orbit::after {
+    position: absolute;
+    z-index: 1;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--acid);
+    box-shadow: 0 0 0 5px rgb(214 255 63 / 10%);
+    content: "";
+  }
+
+  .subject-orbit::before {
+    top: 22%;
+    right: 7%;
+  }
+
+  .subject-orbit::after {
+    bottom: 13%;
+    left: 14%;
+    background: var(--blue);
+  }
+
+  .subject-orbit > div {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 7rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--paper-bright);
+    color: var(--ink);
+  }
+
+  .subject-orbit small {
+    align-self: end;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .subject-orbit strong {
+    align-self: start;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: 3.8rem;
+    font-weight: 500;
+    line-height: 0.8;
+  }
+
+  .round-footer {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    border-top: 1px solid rgb(255 255 255 / 18%);
+    color: rgb(255 255 255 / 42%);
+  }
+
+  .round-footer span {
+    display: inline-flex;
+    gap: 0.55rem;
+    align-items: center;
+  }
+
+  .round-footer span::before {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--acid);
+    content: "";
+  }
+
+  .visual-note {
+    grid-column: 2;
+    max-width: 38rem;
+    margin: 0;
+    color: rgb(255 255 255 / 42%);
+    font-size: 0.68rem;
+    line-height: 1.6;
+  }
+
+  .apple-spotlight {
+    display: grid;
+    grid-template-columns: minmax(12rem, 0.35fr) minmax(0, 1fr) minmax(17rem, 0.48fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    padding: clamp(5rem, 10vw, 9rem) var(--gutter);
+    background: var(--blue);
+    color: white;
+  }
+
+  .spotlight-number {
+    display: block;
+    margin-bottom: 1rem;
+    color: var(--acid);
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(4rem, 7vw, 7rem);
+    letter-spacing: -0.07em;
+    line-height: 0.8;
+  }
+
+  .apple-main h2 {
+    max-width: 10ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(3rem, 6vw, 6rem);
+    font-weight: 500;
+    letter-spacing: -0.06em;
+    line-height: 0.92;
+  }
+
+  .apple-kicker {
+    margin: 0 0 1.2rem;
+    color: var(--acid);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .apple-lede {
+    margin: 2.4rem 0 1rem;
+    color: white;
+    font-size: clamp(1.15rem, 1.7vw, 1.45rem);
+    line-height: 1.5;
+  }
+
+  .apple-main > p:last-of-type {
+    max-width: 45rem;
+    color: rgb(255 255 255 / 70%);
+    line-height: 1.75;
+  }
+
+  .source-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .apple-main .button-primary {
+    border-color: var(--acid);
+    background: var(--acid);
+    color: var(--ink);
+  }
+
+  .comparison {
+    align-self: end;
+    border-top: 1px solid rgb(255 255 255 / 55%);
+  }
+
+  .comparison > div {
+    padding: 1.2rem 0;
+    border-bottom: 1px solid rgb(255 255 255 / 28%);
+  }
+
+  .comparison-label {
+    margin: 0 0 0.7rem;
+    color: var(--acid);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .comparison > div > p:last-child {
+    margin: 0;
+    color: rgb(255 255 255 / 75%);
+    font-size: 0.85rem;
+    line-height: 1.65;
+  }
+
+  .lineage {
+    background: var(--paper);
+  }
+
+  .work-list {
+    border-top: 1px solid var(--ink);
+  }
+
+  .work-list article {
+    display: grid;
+    grid-template-columns: 0.18fr 0.35fr minmax(0, 1fr) minmax(10rem, 0.3fr);
+    gap: 1.5rem;
+    align-items: start;
+    padding: 1.8rem 0;
+    border-bottom: 1px solid var(--line);
+    transition:
+      background-color 180ms ease,
+      transform 180ms ease;
+  }
+
+  .work-list article.featured-work {
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    background: var(--paper-bright);
+    box-shadow: inset 4px 0 var(--blue);
+  }
+
+  .work-year {
+    color: var(--blue);
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: 1.7rem;
+    letter-spacing: -0.04em;
+  }
+
+  .work-kind,
+  .work-authors {
+    color: var(--muted);
+    font-size: 0.69rem;
+  }
+
+  .work-kind {
+    padding-top: 0.45rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .work-main h3 {
+    max-width: 27ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(1.5rem, 2.5vw, 2.3rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+  }
+
+  .work-authors {
+    margin: 0.7rem 0 0;
+  }
+
+  .work-description {
+    max-width: 46rem;
+    margin: 1rem 0 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.65;
+  }
+
+  .work-list article > a {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 760;
+    text-decoration: none;
+  }
+
+  @media (hover: hover) {
+    .question-chain li:not(.final-turn):hover {
+      border-color: rgb(214 255 63 / 55%);
+      transform: translateX(0.35rem);
+    }
+
+    .work-list article:not(.featured-work):hover {
+      background: rgb(255 255 255 / 40%);
+      transform: translateX(0.25rem);
+    }
+  }
+
+  .work-list article > a:hover span:first-child {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .work-list article:hover > a span:first-child,
+  .work-list article:has(a:focus-visible) > a span:first-child {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .positioning {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(3rem, 8vw, 9rem);
+    padding: clamp(5rem, 10vw, 9rem) var(--gutter);
+    background: #dedbd2;
+  }
+
+  .positioning > div:first-child {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+  }
+
+  .positioning h2 {
+    max-width: 12ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(3rem, 6vw, 6rem);
+    font-weight: 500;
+    letter-spacing: -0.06em;
+    line-height: 0.95;
+  }
+
+  .positioning-list {
+    border-top: 1px solid var(--ink);
+  }
+
+  .positioning-list article {
+    display: grid;
+    grid-template-columns: 3rem minmax(11rem, 0.55fr) 1fr;
+    gap: 1.5rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .positioning-list article > span {
+    color: var(--blue);
+    font-size: 0.68rem;
+    font-weight: 800;
+  }
+
+  .positioning-list h3,
+  .positioning-list p {
+    margin: 0;
+  }
+
+  .positioning-list h3 {
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(1.5rem, 2.3vw, 2.2rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+
+  .positioning-list p {
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .story-closing {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: clamp(3rem, 8vw, 8rem);
+    padding: clamp(5rem, 10vw, 9rem) var(--gutter);
+    background: var(--ink);
+    color: white;
+  }
+
+  .story-closing h2 {
+    max-width: 12ch;
+    margin: 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(3rem, 7vw, 7rem);
+    font-weight: 500;
+    letter-spacing: -0.06em;
+    line-height: 0.93;
+  }
+
+  .story-closing > div:last-child {
+    align-self: end;
+  }
+
+  .story-closing > div:last-child > p {
+    max-width: 32rem;
+    color: rgb(255 255 255 / 70%);
+    line-height: 1.7;
+  }
+
+  .story-closing .button-primary {
+    border-color: var(--acid);
+    background: var(--acid);
+  }
+
+  @media (max-width: 980px) {
+    .game-visual {
+      grid-template-columns: 1fr;
+    }
+
+    .visual-note {
+      grid-column: 1;
+    }
+
+    .apple-spotlight {
+      grid-template-columns: minmax(10rem, 0.25fr) 1fr;
+    }
+
+    .comparison {
+      grid-column: 2;
+    }
+
+    .work-list article {
+      grid-template-columns: 0.2fr 0.35fr 1fr;
+    }
+
+    .work-list article > a {
+      grid-column: 3;
+    }
+
+    .positioning {
+      grid-template-columns: 1fr;
+    }
+
+    .positioning > div:first-child {
+      position: static;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .story-hero {
+      grid-template-columns: 1fr;
+      padding-top: 5rem;
+    }
+
+    .hero-copy h1 {
+      font-size: clamp(3.8rem, 18vw, 6.4rem);
+    }
+
+    .hero-jump {
+      align-self: end;
+    }
+
+    .origin-grid,
+    .apple-spotlight,
+    .story-closing {
+      grid-template-columns: 1fr;
+    }
+
+    .origin-marker {
+      display: flex;
+      gap: 1rem;
+      align-items: baseline;
+    }
+
+    .origin-marker > span {
+      margin-bottom: 0;
+    }
+
+    .origin-columns {
+      grid-template-columns: 1fr;
+    }
+
+    .game-visual {
+      padding-inline: 1rem;
+    }
+
+    .visual-intro {
+      grid-template-columns: 1fr;
+    }
+
+    .visual-index {
+      display: flex;
+      gap: 1rem;
+      align-items: baseline;
+    }
+
+    .visual-index > span {
+      margin-bottom: 0;
+    }
+
+    .round-board {
+      box-shadow: 0.7rem 0.7rem 0 rgb(78 100 255 / 36%);
+    }
+
+    .round-body {
+      grid-template-columns: 1fr;
+      min-height: auto;
+      padding: 1rem;
+    }
+
+    .question-chain li:nth-child(n) {
+      margin-left: 0;
+    }
+
+    .question-chain li {
+      grid-template-columns: 2.5rem minmax(0, 1fr);
+      min-height: 4rem;
+      padding-right: 0.8rem;
+    }
+
+    .question-chain li > strong {
+      grid-column: 2;
+      margin-top: -0.45rem;
+    }
+
+    .turn-number {
+      grid-row: 1 / 3;
+      width: 2.5rem;
+    }
+
+    .subject-orbit {
+      min-height: 15rem;
+    }
+
+    .orbit-outer {
+      width: 15rem;
+    }
+
+    .orbit-inner {
+      width: 9rem;
+    }
+
+    .apple-spotlight .comparison {
+      grid-column: 1;
+    }
+
+    .work-list article,
+    .positioning-list article {
+      grid-template-columns: 1fr;
+      gap: 0.8rem;
+    }
+
+    .work-list article > a {
+      grid-column: 1;
+      margin-top: 0.6rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .positioning-list article > span {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .question-chain li,
+    .work-list article {
+      transition: none;
+    }
+  }
+</style>

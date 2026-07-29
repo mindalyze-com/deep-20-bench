@@ -1,0 +1,450 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260727-official-M0008-025
+    model_id: M-0008
+    target_id: T-0007
+    trial_id: trial-005
+    trial_number: 5
+    episode_run_id: BR-83071f846231ee5039550cd6050d9d2045320e5d
+  result:
+    schema_version: 6
+    run:
+      run_id: BR-83071f846231ee5039550cd6050d9d2045320e5d
+      episode_id: EP-019fa60b7ddb735a9e832c23978d4c78
+      subject:
+        target_id: T-0007
+        canonical_name: Mario
+        aliases:
+        - Super Mario
+        - Jumpman
+        entity_type: video_game_character
+        description: Mario, the fictional Nintendo video-game character created by
+          Shigeru Miyamoto and protagonist of the Mario franchise, identified by Wikidata
+          entity Q12379.
+        reference_url: https://en.wikipedia.org/wiki/Mario
+      started_at: '2026-07-28T00:06:38.811903+00:00'
+      completed_at: '2026-07-28T00:08:23.314264+00:00'
+      duration_ms: 104502
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 5
+      counted_questions: 4
+      guesser_call_count: 5
+      ask_count: 4
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      contract:
+        evaluated_outputs: 5
+        valid_outputs: 5
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: not_applicable
+      costs_usd:
+        guesser: '0.01332008'
+        oracle: '0.021576525'
+        validator: '0.0002925'
+        total: '0.035189105'
+      tokens:
+        guesser: 15317
+        oracle: 26426
+        validator: 400
+        total: 42143
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0008
+        requested_model: qwen/qwen3.6-35b-a3b
+        requested_provider: akashml
+        resolved_models:
+        - qwen/qwen3.6-35b-a3b
+        resolved_providers:
+        - AkashML
+        reasoning_effort: medium
+        prompt_version: stateful-category-guesser-v9-canonical-wire-history
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v5
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the character male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa60b875772d4ac672b458fd2e6cb
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.uvlist.net/characters/list/mario/male
+          excerpt: Mario | humanoid male | The hero of the Mushroom Kingdom
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fa60b7ddb735a9e832c25cfa33456
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the character human?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa60bb1ac7399a68e24fce888199c
+        answer: 'YES'
+        evidence:
+        - source_url: https://mario.fandom.com/wiki/Human
+          excerpt: Most humans in the Mario franchise have designs that are either
+            cartoonish (such as Mario, Luigi, and Princess Peach).
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fa60ba98075a7b3c53aff75faf6e8
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is the character from a Nintendo game?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa60cbf7574c9868652b731e8a8c7
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html
+          excerpt: Nintendo released "Super Mario Bros." as the centerpiece game for
+            its NES home-gaming console.
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fa60bef1d7053981d4d6479a5cc5e
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is the character a plumber?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fa60cdc737327b30b155a7369ee9f
+        answer: 'YES'
+        evidence:
+        - source_url: https://mario.nintendo.com/about
+          excerpt: You may know him as a famous plumber.
+          validation: model_reported
+        - source_url: https://www.nintendo.com/us/whatsnew/meet-mario-and-his-friends
+          excerpt: He's a plumber by profession.
+          validation: model_reported
+        explanation: null
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fa60cd0857772b03e98d6f507490f
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: GUESS
+        question: null
+        name: Mario
+        description: Italian-American plumber and protagonist of the Super Mario series.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fa60d11c27212a4a96ed866ab3e7f
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity matches Mario, the Nintendo video-game
+          character and protagonist of the Super Mario franchise.
+      counted: false
+      counted_questions: 4
+      guesser_call_id: GC-019fa60cf12373f196ade7f9909cb690
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the judge could not determine the proposition.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"video_game_character","event":"BEGIN","variation_token":"XSZW5TRZ"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character male?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character human?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a Nintendo game?"}}'
+      turn_number: 3
+    - role: user
+      content: 'YES'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character a plumber?"}}'
+      turn_number: 4
+    - role: user
+      content: 'YES'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Italian-American plumber
+        and protagonist of the Super Mario series.","name":"Mario","question":null}}'
+      turn_number: 5
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0008
+          gateway: openrouter
+          model: qwen/qwen3.6-35b-a3b
+          provider: akashml
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 16384
+          timeout_seconds: 600
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '0.14'
+            cached_input_usd_per_million: '0.14'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 5
+          cost_usd: '0.01332008'
+          latency_ms: 69251
+          total_tokens: 15317
+          input_tokens: 2322
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 12995
+          reasoning_tokens: 12023
+          estimated_cache_savings_usd: 0E-10
+          recovery:
+            request_attempts: 5
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          parallel_search: true
+          max_search_results: 5
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+        metrics:
+          calls: 4
+          cost_usd: '0.021576525'
+          latency_ms: 34002
+          total_tokens: 26426
+          input_tokens: 25475
+          cached_input_tokens: 10393
+          cache_write_tokens: 0
+          output_tokens: 951
+          reasoning_tokens: 403
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 4
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0002925'
+          latency_ms: 1068
+          total_tokens: 400
+          input_tokens: 363
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 37
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0008/BX-20260727-official-M0008-025/subjects/T-0007/trials/trial-005/result.yml
+      record_count: 1
+      integrity_hash: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: e9ee4012455aaed5ff19e12ee8b2678d24c0f6022d93978ee2d733f928a1b675

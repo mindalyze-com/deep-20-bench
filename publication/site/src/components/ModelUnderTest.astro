@@ -1,0 +1,256 @@
+---
+import type {
+  PublicEpisodeModelVersion,
+  PublicModel,
+  PublicOracleSupportUsage,
+} from "../lib/data";
+import ReasoningEffort from "./ReasoningEffort.astro";
+
+interface Props {
+  model: PublicModel;
+  roles?: PublicEpisodeModelVersion[];
+  oracleSupport?: PublicOracleSupportUsage | undefined;
+}
+
+const { model, roles = [], oracleSupport } = Astro.props;
+const oracle = roles.find((role) => role.role === "oracle");
+const validator = roles.find((role) => role.role === "validator");
+const provider = model.provider.charAt(0).toUpperCase() + model.provider.slice(1);
+const supportRoles = [
+  {
+    label: "Oracle",
+    model: oracleSupport?.oracle.requested_model ?? oracle?.requested_model ?? "Answers questions",
+    description: "Searches evidence and proposes YES, NO, or UNKNOWN.",
+  },
+  {
+    label: "Reviewer",
+    model: oracleSupport?.reviewer.requested_model ?? "Checks Oracle answers",
+    description: "Independently checks every Oracle YES or NO.",
+  },
+  {
+    label: "Judge",
+    model: oracleSupport?.judge.requested_model ?? "Resolves disagreements",
+    description: "Decides when the Oracle and Reviewer disagree.",
+  },
+  {
+    label: "Validator",
+    model: validator?.requested_model ?? "Checks final guesses",
+    description: "Decides whether a proposed identity matches the hidden subject.",
+  },
+];
+---
+
+<section class="model-under-test" aria-labelledby="model-under-test-heading">
+  <div class="model-under-test__primary">
+    <div class="model-under-test__label">
+      <span class="model-under-test__signal" aria-hidden="true"></span>
+      <span>Model under test</span>
+      <strong>Guesser · scored</strong>
+    </div>
+    <p id="model-under-test-heading" class="model-under-test__name">{model.display_name}</p>
+    <div class="model-under-test__meta">
+      <code>{model.route}</code>
+      <span>{provider}</span>
+      <ReasoningEffort effort={model.reasoning_effort} compact />
+    </div>
+    <p class="model-under-test__description">
+      This is the contestant. It asked every question, made every final guess, and earned the
+      B20 score shown on this page.
+    </p>
+  </div>
+
+  <div class="model-under-test__support">
+    <div class="model-under-test__support-head">
+      <span>Benchmark support</span>
+      <strong>Not scored</strong>
+    </div>
+    <div class="model-under-test__support-roles">
+      {
+        supportRoles.map((role) => (
+          <div>
+            <span>{role.label}</span>
+            <strong>{role.model}</strong>
+            <small>{role.description}</small>
+          </div>
+        ))
+      }
+    </div>
+    <p>
+      Oracle UNKNOWN is final. Other Oracle answers are reviewed; the Judge resolves
+      disagreements. The Validator checks the final guess.
+    </p>
+  </div>
+</section>
+
+<style>
+  .model-under-test {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+    width: min(calc(100% - 2 * var(--gutter)), var(--max));
+    margin: clamp(1.5rem, 4vw, 3rem) auto 0;
+    border: 1px solid var(--ink);
+    background: var(--paper-bright);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+
+  .model-under-test__primary,
+  .model-under-test__support {
+    padding: clamp(1.35rem, 3.5vw, 2.6rem);
+  }
+
+  .model-under-test__primary {
+    background: var(--acid);
+  }
+
+  .model-under-test__label,
+  .model-under-test__support-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem 0.8rem;
+    align-items: center;
+    font-size: 0.64rem;
+    font-weight: 850;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .model-under-test__label strong,
+  .model-under-test__support-head strong {
+    padding: 0.32rem 0.5rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    letter-spacing: 0.06em;
+  }
+
+  .model-under-test__signal {
+    width: 0.62rem;
+    height: 0.62rem;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper-bright);
+    box-shadow: 0 0 0 3px rgb(17 19 28 / 12%);
+  }
+
+  .model-under-test__name {
+    max-width: 13ch;
+    margin: clamp(1.5rem, 4vw, 3rem) 0 0;
+    font-family: Iowan Old Style, "Palatino Linotype", Georgia, serif;
+    font-size: clamp(2.7rem, 6vw, 6rem);
+    font-weight: 500;
+    letter-spacing: -0.065em;
+    line-height: 0.9;
+  }
+
+  .model-under-test__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    align-items: center;
+    margin-top: 1.4rem;
+  }
+
+  .model-under-test__meta > code,
+  .model-under-test__meta > span {
+    font-size: 0.72rem;
+  }
+
+  .model-under-test__meta > code {
+    padding: 0.48rem 0.6rem;
+    border: 1px solid rgb(17 19 28 / 28%);
+    background: rgb(255 255 255 / 48%);
+    overflow-wrap: anywhere;
+  }
+
+  .model-under-test__description {
+    max-width: 45rem;
+    margin: 1.5rem 0 0;
+    font-size: clamp(0.95rem, 1.25vw, 1.08rem);
+    line-height: 1.65;
+  }
+
+  .model-under-test__support {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .model-under-test__support-head {
+    justify-content: space-between;
+    padding-bottom: 1.1rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  .model-under-test__support-roles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 0.3rem;
+  }
+
+  .model-under-test__support-roles > div {
+    min-width: 0;
+    padding: 1.15rem 1rem 1.15rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .model-under-test__support-roles > div:nth-child(even) {
+    padding-right: 0;
+    padding-left: 1rem;
+    border-left: 1px solid var(--line);
+  }
+
+  .model-under-test__support-roles span,
+  .model-under-test__support-roles small {
+    display: block;
+    color: var(--muted);
+  }
+
+  .model-under-test__support-roles span {
+    font-size: 0.61rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .model-under-test__support-roles strong {
+    display: block;
+    margin-top: 0.65rem;
+    font-size: 0.78rem;
+    overflow-wrap: anywhere;
+  }
+
+  .model-under-test__support-roles small {
+    margin-top: 0.55rem;
+    font-size: 0.66rem;
+    line-height: 1.45;
+  }
+
+  .model-under-test__support > p {
+    margin: auto 0 0;
+    padding-top: 1.2rem;
+    color: var(--muted);
+    font-size: 0.76rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 860px) {
+    .model-under-test {
+      grid-template-columns: 1fr;
+      box-shadow: 5px 5px 0 var(--ink);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .model-under-test__support-roles {
+      grid-template-columns: 1fr;
+    }
+
+    .model-under-test__support-roles > div {
+      padding-right: 0;
+    }
+
+    .model-under-test__support-roles > div {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>

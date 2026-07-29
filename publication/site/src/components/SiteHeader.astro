@@ -1,0 +1,59 @@
+---
+import { sourceRepositoryUrl } from "../lib/project-links";
+
+interface Props {
+  active?: "Overview" | "Results" | "Method" | "Story" | "Data" | undefined;
+}
+
+const base = import.meta.env.BASE_URL;
+const path = Astro.url.pathname;
+const { active } = Astro.props;
+const nav = [
+  { label: "Overview", href: base },
+  { label: "Results", href: `${base}index.html#leaderboard` },
+  { label: "Method", href: `${base}methodology/` },
+  { label: "Story", href: `${base}story/` },
+  { label: "Data", href: `${base}data/` },
+];
+---
+
+<header class="site-header">
+  <a class="wordmark" href={base} aria-label="Deep20Bench home">
+    <span aria-hidden="true">D20</span>
+    <span>Deep20Bench</span>
+  </a>
+  <nav aria-label="Primary navigation">
+    {
+      nav.map((item) => (
+        <a
+          href={item.href}
+          aria-current={
+            active
+              ? item.label === active
+                ? "page"
+                : undefined
+              : item.label === "Overview"
+                ? path === base
+                  ? "page"
+                  : undefined
+                : item.label !== "Results" && path.startsWith(item.href)
+                  ? "page"
+                  : undefined
+          }
+        >
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+  <a
+    class="repository-link"
+    href={sourceRepositoryUrl}
+    target="_blank"
+    rel="noreferrer"
+    aria-label="View the Deep20Bench source repository on GitHub"
+  >
+    <span>Source</span>
+    <span aria-hidden="true">↗</span>
+  </a>
+</header>

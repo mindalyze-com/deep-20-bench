@@ -1,0 +1,2231 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260728-official-M0002-011
+    model_id: M-0002
+    target_id: T-0002
+    trial_id: trial-004
+    trial_number: 4
+    episode_run_id: BR-02ab348194772676716e711c6106bfd9209688fa
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-02ab348194772676716e711c6106bfd9209688fa
+      episode_id: EP-019faa77873676f5ba2df00e524779ba
+      subject:
+        target_id: T-0002
+        canonical_name: Albert Schweitzer
+        aliases:
+        - Schweitzer
+        - Dr. Albert Schweitzer
+        entity_type: person
+        description: Albert Schweitzer, the Alsatian physician, theologian, philosopher,
+          organist, and 1952 Nobel Peace Prize laureate known for founding a hospital
+          at Lambaréné, identified by Wikidata entity Q49325.
+        reference_url: https://en.wikipedia.org/wiki/Albert_Schweitzer
+      started_at: '2026-07-28T20:43:07.958059+00:00'
+      completed_at: '2026-07-28T20:53:44.288834+00:00'
+      duration_ms: 636331
+    outcome:
+      success: false
+      terminal_reason: guesser_protocol_failure
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 51
+      counted_questions: 50
+      guesser_call_count: 51
+      ask_count: 34
+      guess_count: 1
+      rejected_guess_count: 1
+      oracle_unknown_count: 3
+      oracle_quality:
+        reviewed_questions: 32
+        agreements: 21
+        disagreements: 11
+        judge_invocations: 11
+        oracle_answers_changed: 1
+        final_unknown_answers: 3
+        judge_yes_answers: 0
+        judge_no_answers: 10
+        judge_unknown_answers: 1
+        reviewer_cost_usd: '0.0569231'
+        judge_cost_usd: '0.131350'
+        quality_control_cost_usd: '0.1882731'
+        question_types:
+        - question_type: other
+          reviewed_questions: 29
+          disagreements: 11
+        - question_type: temporal_comparison
+          reviewed_questions: 3
+          disagreements: 0
+      contract:
+        evaluated_outputs: 51
+        valid_outputs: 36
+        violations: 15
+        counted_penalties: 15
+        affected_trials: 1
+        compliance_rate: '0.7058823529411764705882352941'
+        status: breached
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.24005790'
+        oracle: '0.3549129500000000002'
+        validator: '0.000308'
+        total: '0.5952788500000000002'
+      tokens:
+        guesser: 378114
+        oracle: 255391
+        validator: 426
+        total: 633931
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0002
+        requested_model: openai/gpt-oss-120b
+        requested_provider: cerebras
+        resolved_models:
+        - openai/gpt-oss-120b
+        resolved_providers:
+        - Cerebras
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the person male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa778a0b7223a7bea0cd8a1e0df5
+        answer: 'YES'
+        evidence:
+        - source_url: https://kids.britannica.com/students/article/Albert-Schweitzer/276946
+          excerpt: In 1912 he and Hélène Bresslau were married, and his wife studied
+            nursing to help her husband.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019faa77873676f5ba2df010687c936e
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the person currently alive?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa77c1ec759ab942ba694d9c00be
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Albert Schweitzer Born: 14 January 1875... Died: 4 September 1965,
+            Lambaréné, Gabon'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019faa77bf917602aa097a39a2440b38
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is the person primarily known for political leadership or being
+          a head of state?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa77e040760fb2a4183db23901a8
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019faa77da7271338ce073192e9563d4
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is the person primarily known for contributions to science?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa77ffff7568bc291c6298355eb5
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019faa77fd90779aadd6bcfc7a5779d6
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is the person primarily known for contributions to music (as a composer,
+          musician, or singer)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7833f17373aed48e9eedfd92c0
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: A world-renowned organist, his biography of Bach (1908) revived
+            interest in the composer. He is best known for founding the mission hospital
+            at Lambaréné.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/nomination/archive/show.php?id=9734
+          excerpt: Albert Schweitzer was nominated for his humanitarian work... In
+            1913 he arrived at Lambaréné where he and his wife set up a hospital.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019faa7830887499a617f779e3ec368f
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is the person primarily known for contributions to literature (as
+          a writer, poet, or playwright)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa78552d70fabf822746785691e8
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://www.michiganpublic.org/health/2016-01-14/the-complicated-history-of-dr-albert-schweitzer-medical-missionary
+          excerpt: Dr. Schweitzer was a physician, philosopher, theologian, organist
+            and humanitarian... known for his charitable work including opening a
+            hospital in Africa.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019faa7852c373069b9c6bba9d9020dd
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is the person primarily known as an actor (including film, television,
+          or theater)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa78878b753ea627a35f41efbc84
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://www.lbi.org/griffinger/record/229888
+          excerpt: Albert Schweitzer was a physician, Protestant theologian, organist,
+            and missionary, who was awarded the Nobel Peace Prize for 1952, primarily
+            for his work at his hospital at Lambaréné.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019faa787eef7588b984f9055c6ba3ae
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Is the person primarily known for achievements in sports (as an
+          athlete, competitor, or sports figure)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa78a1f97006a063207dae3cba92
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands. He was awarded the Nobel Peace Prize
+            in 1952.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019faa789dc870169ea77a951dd0aca4
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Is the person primarily known for visual arts (e.g., painting, sculpture,
+          or related fields)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa78c98376e0a79ae376150f9333
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019faa78c2387486afe6a741506e6dd8
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Is the person primarily known for contributions to philosophy?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa78f1a076b9967d5cfba7c3c0fd
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019faa78e90074c78a4ed3a2ef8961c9
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Is the person primarily known for their role as a religious or spiritual
+          leader?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa792cd8751e9c59d2123091328e
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019faa79280577f6bc34ca64925f39b2
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Is the person primarily known for military leadership or being a
+          commander in warfare?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa795a3a75c9a773c0981e6581ba
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: Doctor, Missionary, Philosopher and Musician; he built and ran
+            a hospital at Lambarene in Gabon.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019faa7951ea7340afd16f2d07216bc3
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Is the person primarily known for being an explorer?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa79903475cab5be4b91279ab399
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-019faa7982ba74e4a12660946bb9ba44
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Is the person primarily known for founding a major corporation or
+          business?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa79b5ad773384b3206b03e9899c
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: Doctor, Missionary, Philosopher and Musician... Albert Schweitzer
+            received the Nobel Peace Prize for tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/nomination/archive/show.php?id=8412
+          excerpt: 'Profession: Doctor of Philosophy, Theology and Medicine. Musician
+            and missionary... nominated for his humanitarian work... he and his wife
+            set up a hospital.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-019faa79a720778f89407f4f9def33c3
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: ASK
+        question: Did the person live before the year 1000 AD?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa79f87374db9de45b965328bf63
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Albert Schweitzer Born: 14 January 1875 ... Died: 4 September
+            1965'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-019faa79eaf6763582a4ed5a324bbf8e
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: ASK
+        question: Did the person die before the year 1500 AD?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7a2bb570f6a255af62a314354f
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Died: 4 September 1965, Lambaréné, Gabon'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 16
+      guesser_call_id: GC-019faa7a20057390821d65e52c4b618a
+    - turn_type: action
+      turn_number: 17
+      action:
+        action: ASK
+        question: Is the person primarily known as a philosopher?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7a4fc27448931b27b568d794f8
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 17
+      guesser_call_id: GC-019faa7a40b4728da97088d3e91fc0cf
+    - turn_type: action
+      turn_number: 18
+      action:
+        action: ASK
+        question: Did the person die before the year 1900?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7a86a875438857961d1ab51f68
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Died: 4 September 1965, Lambaréné, Gabon'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 18
+      guesser_call_id: GC-019faa7a6f3173f18dbed88ec1d112a5
+    - turn_type: action
+      turn_number: 19
+      action:
+        action: ASK
+        question: Is the person primarily known for being a criminal (e.g., gangster,
+          serial killer, or similar)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7ab4d1724c9c428949ed404a83
+        answer: 'NO'
+        evidence:
+        - source_url: https://history.rcp.ac.uk/blog/albert-schweitzer-marriage-theology-and-medicine
+          excerpt: Albert Schweitzer ... contributed significantly to the field of
+            medicine and theology ... was also an esteemed organist and musician.
+            His achievements include the establishment of the Albert Schweitzer Hospital
+            ... Schweitzer received the Nobel Peace Prize in 1952.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/nomination/archive/show.php?id=7905
+          excerpt: 'Profession: Doctor of Philosophy, Theology and Medicine. Musician
+            and missionary ... Awarded the Nobel Peace Prize 1952 ... nominated ...
+            for his humanitarian work.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 19
+      guesser_call_id: GC-019faa7aa00e76bdb7e61a0a61181851
+    - turn_type: action
+      turn_number: 20
+      action:
+        action: ASK
+        question: Is the person primarily known for being a magician or illusionist?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7b003872bf8f819827931ec9da
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: 'Role: Missionary surgeon; Founder of Lambaréné. Prize motivation:
+            “for his altruism, reverence for life”'
+          validation: model_reported
+        - source_url: https://www.npg.org.uk/collections/search/person/mp144365/albert-schweitzer
+          excerpt: Physician, musician and philosopher
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 20
+      guesser_call_id: GC-019faa7aecbe766d80f594d9658b07e9
+    - turn_type: action
+      turn_number: 21
+      action:
+        action: ASK
+        question: Is the person primarily known for being a film director?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7b405e73e1b61c41bad7c471ba
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.history.com/videos/this-day-in-history-01141875-albert-schweitzer-born
+          excerpt: The theologian, musician, philosopher and Nobel Prize-winning physician
+            Albert Schweitzer...
+          validation: model_reported
+        - source_url: https://history.rcp.ac.uk/blog/albert-schweitzer-marriage-theology-and-medicine
+          excerpt: His achievements include the establishment of the Albert Schweitzer
+            Hospital... Schweitzer received the Nobel Peace Prize in 1952.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 21
+      guesser_call_id: GC-019faa7b348d72a6afa3233d0459bcda
+    - turn_type: action
+      turn_number: 22
+      action:
+        action: ASK
+        question: Is the person primarily known for work in the legal field (as a
+          lawyer, judge, or jurist)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7b8856719bae117729f91c2ee2
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Albert-Schweitzer
+          excerpt: Albert Schweitzer | Alsatian Theologian, Philosopher & Physician
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.michiganpublic.org/health/2016-01-14/the-complicated-history-of-dr-albert-schweitzer-medical-missionary
+          excerpt: Dr. Schweitzer was a physician, philosopher, theologian, organist
+            and humanitarian ... known for his charitable work including opening a
+            hospital in Africa.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 22
+      guesser_call_id: GC-019faa7b7e1b7033913ebe03392b9892
+    - turn_type: contract_violation
+      turn_number: 23
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 23
+      guesser_call_id: GC-019faa7bbd6d71769287bc129d6864f5
+    - turn_type: action
+      turn_number: 24
+      action:
+        action: ASK
+        question: Is the person primarily known for work in the legal field (as a
+          lawyer, judge, or jurist)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7be0d375849540a2537dcdd20e
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/nomination/archive/show.php?id=9734
+          excerpt: 'Profession: Doctor of Philosophy, Theology and Medicine. Musician
+            and missionary. He was nominated for his humanitarian work... and set
+            up a hospital.'
+          validation: model_reported
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 24
+      guesser_call_id: GC-019faa7bd5c973f0945709208b2253ff
+    - turn_type: action
+      turn_number: 25
+      action:
+        action: ASK
+        question: Is the person primarily known as a religious evangelist or prominent
+          preacher?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7c0ea577089cc5e1337a45969d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Minister turned doctor in Africa; Theologian and philosopher. Schweitzer
+            was awarded the Nobel Peace Prize for his philosophy of “reverence for
+            life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: The mere mention of Schweitzer instantly conjured up images of
+            selflessness, heroism and the very model of a modern, humane physician.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 25
+      guesser_call_id: GC-019faa7c053f736281db19b653554604
+    - turn_type: action
+      turn_number: 26
+      action:
+        action: ASK
+        question: Is the person primarily known for being a news anchor on the CBS
+          Evening News?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7c6047762c8950c7d449ea5bad
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: Doctor, Missionary, Philosopher and Musician... he built and ran
+            a hospital at the mission station Lambarene in Gabon.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.britannica.com/topic/CBS-Evening-News
+          excerpt: Following Cronkite, other anchors have helmed the program, including
+            Katie Couric.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 26
+      guesser_call_id: GC-019faa7c5282767f9f1d2c55f2aa4b7f
+    - turn_type: action
+      turn_number: 27
+      action:
+        action: ASK
+        question: Is the person primarily known as a journalist?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7cc8a872ca970838eb81b841d1
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 27
+      guesser_call_id: GC-019faa7cb4927314a04755aba73a4ca8
+    - turn_type: action
+      turn_number: 28
+      action:
+        action: ASK
+        question: Is the person primarily known as a business executive or chief executive
+          officer (CEO)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7cf9c07004a73b9976ef55cb89
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: 'Albert Schweitzer – Facts: Doctor, Missionary, Philosopher and
+            Musician.'
+          validation: model_reported
+        - source_url: https://www.lbi.org/griffinger/record/229888
+          excerpt: Albert Schweitzer was a physician, Protestant theologian, organist,
+            and missionary, awarded the Nobel Peace Prize primarily for his work at
+            his hospital at Lambaréné.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 28
+      guesser_call_id: GC-019faa7ce8957113a7b807826a05f235
+    - turn_type: action
+      turn_number: 29
+      action:
+        action: ASK
+        question: Is the person primarily known as an American?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7d49fc76d3ac02e69a89ca22bd
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/nomination/archive/show.php?id=9734
+          excerpt: 'Country: FRANCE (FR) ... Albert Schweitzer was nominated ... for
+            his humanitarian work ... In 1913 he arrived at Lambaréné where he and
+            his wife set up a hospital.'
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Albert Schweitzer ... Born: 14 January 1875, Kaysersberg, Germany
+            (now France) ... awarded the Nobel Peace Prize for his philosophy of “reverence
+            for life” and tireless humanitarian work.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 29
+      guesser_call_id: GC-019faa7d369175939fcc9adf97c9e36b
+    - turn_type: contract_violation
+      turn_number: 30
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 30
+      guesser_call_id: GC-019faa7d87c077049c520c1d7c74d95b
+    - turn_type: action
+      turn_number: 31
+      action:
+        action: ASK
+        question: Is the person primarily known as a Pope?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7db09273bb9f60116cc42bcdb6
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://history.rcp.ac.uk/blog/albert-schweitzer-marriage-theology-and-medicine
+          excerpt: Schweitzer contributed significantly to the field of medicine and
+            theology... He received the Nobel Peace Prize in 1952.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 31
+      guesser_call_id: GC-019faa7da15b754c8d0c9a2b08c76a4f
+    - turn_type: action
+      turn_number: 32
+      action:
+        action: GUESS
+        question: null
+        name: Sherlock Holmes
+        description: Fictional British consulting detective created by Sir Arthur
+          Conan Doyle
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa7dfbe0767188845ddfcaf6eb27
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Albert Schweitzer, while the proposed
+          identity is Sherlock Holmes, a different entity.
+        oracle_quality: null
+      counted: true
+      counted_questions: 32
+      guesser_call_id: GC-019faa7de7d876839948aa9869e1439e
+    - turn_type: contract_violation
+      turn_number: 33
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 33
+      guesser_call_id: GC-019faa7e002170c5a1d8b826ef56e22c
+    - turn_type: contract_violation
+      turn_number: 34
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 34
+      guesser_call_id: GC-019faa7e140970c8829929dcae98d9ca
+    - turn_type: contract_violation
+      turn_number: 35
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 35
+      guesser_call_id: GC-019faa7e2e5f71eb8ba8e4fac0914883
+    - turn_type: action
+      turn_number: 36
+      action:
+        action: ASK
+        question: Is the person primarily known for being a chef?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7e5674761ebf40556856732ce6
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.lbi.org/griffinger/record/229888
+          excerpt: Albert Schweitzer was a physician, Protestant theologian, organist,
+            and missionary, who was awarded the Nobel Peace Prize for 1952, primarily
+            for his work at his hospital at Lambaréné.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 36
+      guesser_call_id: GC-019faa7e43a477b5892d7fc94e3e128d
+    - turn_type: action
+      turn_number: 37
+      action:
+        action: ASK
+        question: Is the person primarily known as a physician (doctor) by profession?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa7e8a1573efb15a1f1b627d0dcd
+        answer: UNKNOWN
+        evidence:
+        - source_url: https://www.nobelprize.org/?np-year=1952
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: His theology writings made his reputation as a major theologian.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          disagreement: true
+          judge_invoked: true
+          final_answer: UNKNOWN
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 37
+      guesser_call_id: GC-019faa7e72ea7114858f0b178adb53e7
+    - turn_type: contract_violation
+      turn_number: 38
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 38
+      guesser_call_id: GC-019faa7ee39976608123f072f8959f58
+    - turn_type: contract_violation
+      turn_number: 39
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 39
+      guesser_call_id: GC-019faa7fe381741fb3b7824740e5a1b4
+    - turn_type: contract_violation
+      turn_number: 40
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 40
+      guesser_call_id: GC-019faa7ff87775b8afce239c7a76161f
+    - turn_type: action
+      turn_number: 41
+      action:
+        action: ASK
+        question: Is the person primarily known as a fictional detective?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa801e1075d2a8dc0c3d676a84d1
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://www.npg.org.uk/collections/search/person/mp144365/albert-schweitzer
+          excerpt: (1875-1965), Physician, musician and philosopher
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 41
+      guesser_call_id: GC-019faa800d767481bce74bf158d89bbf
+    - turn_type: contract_violation
+      turn_number: 42
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 42
+      guesser_call_id: GC-019faa803cde7773872a04bf807bfd46
+    - turn_type: contract_violation
+      turn_number: 43
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 43
+      guesser_call_id: GC-019faa80510b7480ac3ae9ce27412619
+    - turn_type: contract_violation
+      turn_number: 44
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 44
+      guesser_call_id: GC-019faa8066e57426966757b1a3e72bb5
+    - turn_type: contract_violation
+      turn_number: 45
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 45
+      guesser_call_id: GC-019faa807c8775e2ba896f9bb8f4def6
+    - turn_type: action
+      turn_number: 46
+      action:
+        action: ASK
+        question: Is the person primarily known as an architect?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa80a488719ca95ae1f3447b36a0
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://www.lbi.org/griffinger/record/229888
+          excerpt: Albert Schweitzer was a physician, Protestant theologian, organist,
+            and missionary, ... primarily for his work at his hospital at Lambaréné.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 46
+      guesser_call_id: GC-019faa809319759395eba185c11b4359
+    - turn_type: contract_violation
+      turn_number: 47
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 47
+      guesser_call_id: GC-019faa80c15375fd801bc87b63609c9b
+    - turn_type: contract_violation
+      turn_number: 48
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 48
+      guesser_call_id: GC-019faa80d66677f891d7bf14aaf01e67
+    - turn_type: action
+      turn_number: 49
+      action:
+        action: ASK
+        question: Is the person primarily known as a mathematician?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa80f767741499cc6943e62acda1
+        answer: 'NO'
+        evidence:
+        - source_url: https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238
+          excerpt: He is best known for founding the mission hospital at Lambaréné,
+            providing medical aid to thousands.
+          validation: model_reported
+        - source_url: https://sk.sagepub.com/ency/edvol/globalhealth/chpt/schweitzer-albert-1875-1965
+          excerpt: Albert Schweitzer was an Alsatian born physician, theologian, musician,
+            and philosopher.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 49
+      guesser_call_id: GC-019faa80eb2f70378451fdda44bd1a66
+    - turn_type: contract_violation
+      turn_number: 50
+      violation_code: invalid_guesser_output
+      violation_kind: output_limit_exceeded
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 50
+      guesser_call_id: GC-019faa81141f748aa0579d32615b5581
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"BYOMPCJW"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person male?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person currently alive?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for political leadership or being a head of state?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for contributions to science?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for contributions to music (as a composer, musician,
+        or singer)?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for contributions to literature (as a writer, poet,
+        or playwright)?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as an actor (including film, television, or theater)?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for achievements in sports (as an athlete, competitor,
+        or sports figure)?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for visual arts (e.g., painting, sculpture, or
+        related fields)?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for contributions to philosophy?"}}'
+      turn_number: 10
+    - role: user
+      content: UNKNOWN
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for their role as a religious or spiritual leader?"}}'
+      turn_number: 11
+    - role: user
+      content: UNKNOWN
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for military leadership or being a commander in
+        warfare?"}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for being an explorer?"}}'
+      turn_number: 13
+    - role: user
+      content: 'NO'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for founding a major corporation or business?"}}'
+      turn_number: 14
+    - role: user
+      content: 'NO'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person live before the year 1000 AD?"}}'
+      turn_number: 15
+    - role: user
+      content: 'NO'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die before the year 1500 AD?"}}'
+      turn_number: 16
+    - role: user
+      content: 'NO'
+      turn_number: 16
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as a philosopher?"}}'
+      turn_number: 17
+    - role: user
+      content: 'NO'
+      turn_number: 17
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die before the year 1900?"}}'
+      turn_number: 18
+    - role: user
+      content: 'NO'
+      turn_number: 18
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for being a criminal (e.g., gangster, serial killer,
+        or similar)?"}}'
+      turn_number: 19
+    - role: user
+      content: 'NO'
+      turn_number: 19
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for being a magician or illusionist?"}}'
+      turn_number: 20
+    - role: user
+      content: 'NO'
+      turn_number: 20
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for being a film director?"}}'
+      turn_number: 21
+    - role: user
+      content: 'NO'
+      turn_number: 21
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for work in the legal field (as a lawyer, judge,
+        or jurist)?"}}'
+      turn_number: 22
+    - role: user
+      content: 'NO'
+      turn_number: 22
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 23
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for work in the legal field (as a lawyer, judge,
+        or jurist)?"}}'
+      turn_number: 24
+    - role: user
+      content: 'NO'
+      turn_number: 24
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as a religious evangelist or prominent preacher?"}}'
+      turn_number: 25
+    - role: user
+      content: 'NO'
+      turn_number: 25
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for being a news anchor on the CBS Evening News?"}}'
+      turn_number: 26
+    - role: user
+      content: 'NO'
+      turn_number: 26
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as a journalist?"}}'
+      turn_number: 27
+    - role: user
+      content: 'NO'
+      turn_number: 27
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as a business executive or chief executive officer
+        (CEO)?"}}'
+      turn_number: 28
+    - role: user
+      content: 'NO'
+      turn_number: 28
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as an American?"}}'
+      turn_number: 29
+    - role: user
+      content: 'NO'
+      turn_number: 29
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 30
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as a Pope?"}}'
+      turn_number: 31
+    - role: user
+      content: 'NO'
+      turn_number: 31
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Fictional British consulting
+        detective created by Sir Arthur Conan Doyle","name":"Sherlock Holmes","question":null}}'
+      turn_number: 32
+    - role: user
+      content: 'NO'
+      turn_number: 32
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 33
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 34
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 35
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for being a chef?"}}'
+      turn_number: 36
+    - role: user
+      content: 'NO'
+      turn_number: 36
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as a physician (doctor) by profession?"}}'
+      turn_number: 37
+    - role: user
+      content: UNKNOWN
+      turn_number: 37
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 38
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 39
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 40
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as a fictional detective?"}}'
+      turn_number: 41
+    - role: user
+      content: 'NO'
+      turn_number: 41
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 42
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 43
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 44
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 45
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as an architect?"}}'
+      turn_number: 46
+    - role: user
+      content: 'NO'
+      turn_number: 46
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 47
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 48
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as a mathematician?"}}'
+      turn_number: 49
+    - role: user
+      content: 'NO'
+      turn_number: 49
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 50
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person receive a Nobel Peace Prize?"}}'
+      turn_number: 51
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0002
+          gateway: openrouter
+          model: openai/gpt-oss-120b
+          provider: cerebras
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: supported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '0.35'
+            cached_input_usd_per_million: '0.35'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 51
+          cost_usd: '0.24005790'
+          latency_ms: 259020
+          total_tokens: 378114
+          input_tokens: 108819
+          cached_input_tokens: 95104
+          cache_write_tokens: 0
+          output_tokens: 269295
+          reasoning_tokens: 267758
+          estimated_cache_savings_usd: 0E-10
+          recovery:
+            request_attempts: 52
+            retried_calls: 1
+            recovered_calls: 0
+            exhausted_retries: 15
+            reasons:
+            - reason: provider_http_429
+              count: 1
+            - reason: provider_output_limit_exceeded
+              count: 15
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 65180
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: anthropic
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 34
+          cost_usd: '0.3549129500000000002'
+          latency_ms: 375137
+          total_tokens: 255391
+          input_tokens: 224208
+          cached_input_tokens: 56557
+          cache_write_tokens: 0
+          output_tokens: 31183
+          reasoning_tokens: 23544
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 77
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.000308'
+          latency_ms: 1079
+          total_tokens: 426
+          input_tokens: 388
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 38
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+    failure:
+      code: ask_after_question_limit
+      type: GuesserProtocolError
+      message: ASK is forbidden on the final guess-only opportunity
+      call_id: GC-019faa81299376289520c4928f902214
+      diagnostics:
+        causes:
+        - exception_type: GuesserProtocolError
+          module: deep20_game.errors
+          message: ASK is forbidden on the final guess-only opportunity
+        frames: []
+        provider: null
+        metadata: {}
+  failure:
+    code: ask_after_question_limit
+    type: GuesserProtocolError
+    message: ASK is forbidden on the final guess-only opportunity
+    call_id: GC-019faa81299376289520c4928f902214
+    diagnostics:
+      causes:
+      - exception_type: GuesserProtocolError
+        module: deep20_game.errors
+        message: ASK is forbidden on the final guess-only opportunity
+      frames: []
+      provider: null
+      metadata: {}
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0002/BX-20260728-official-M0002-011/subjects/T-0002/trials/trial-004/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 8747830622d1cec4414286a81e46a8c2e3ef414cc842a925b0c7d5851223935c

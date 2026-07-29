@@ -1,0 +1,960 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260728-official-M0005-010
+    model_id: M-0005
+    target_id: T-0006
+    trial_id: trial-003
+    trial_number: 3
+    episode_run_id: BR-053025f6c37b8497e6b46b216887a68020e20949
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-053025f6c37b8497e6b46b216887a68020e20949
+      episode_id: EP-019faa1b01827132adc8a5b8aef7ce17
+      subject:
+        target_id: T-0006
+        canonical_name: Genghis Khan
+        aliases:
+        - Chinggis Khan
+        - Temüjin
+        - Temujin
+        entity_type: person
+        description: Genghis Khan, the founder and first khan of the Mongol Empire,
+          identified by Wikidata entity Q720.
+        reference_url: https://en.wikipedia.org/wiki/Genghis_Khan
+      started_at: '2026-07-28T19:02:04.418707+00:00'
+      completed_at: '2026-07-28T19:05:34.881337+00:00'
+      duration_ms: 210463
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 13
+      counted_questions: 12
+      guesser_call_count: 13
+      ask_count: 12
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      oracle_quality:
+        reviewed_questions: 12
+        agreements: 10
+        disagreements: 2
+        judge_invocations: 2
+        oracle_answers_changed: 1
+        final_unknown_answers: 0
+        judge_yes_answers: 1
+        judge_no_answers: 1
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0200430'
+        judge_cost_usd: '0.022575'
+        quality_control_cost_usd: '0.0426180'
+        question_types:
+        - question_type: other
+          reviewed_questions: 11
+          disagreements: 2
+        - question_type: temporal_comparison
+          reviewed_questions: 1
+          disagreements: 0
+      contract:
+        evaluated_outputs: 13
+        valid_outputs: 13
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.0213705'
+        oracle: '0.1060823749999999993'
+        validator: '0.0003125'
+        total: '0.1277653749999999993'
+      tokens:
+        guesser: 22866
+        oracle: 89597
+        validator: 425
+        total: 112888
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0005
+        requested_model: anthropic/claude-sonnet-5
+        requested_provider: anthropic
+        resolved_models:
+        - anthropic/claude-sonnet-5
+        resolved_providers:
+        - Anthropic
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is this person currently alive?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1b0d3772f5b459128191ab5065
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/facts/Genghis-Khan
+          excerpt: Died | August 18, 1227 (aged 65)
+          validation: model_reported
+        - source_url: https://www.history.com/this-day-in-history/August-18/genghis-khan-dies
+          excerpt: On August 18, 1227, while putting down a revolt in the kingdom
+            of Xi Xia, Genghis Khan died.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019faa1b01827132adc8a5ba02bd1883
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Was this person primarily known for achievements in politics or
+          government (e.g., as a leader, president, or monarch)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1b316677e693786dda7ca02f31
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan was a Mongolian warrior-ruler, one of the most famous
+            conquerors of history.
+          validation: model_reported
+        - source_url: https://www.who2.com/bio/genghis-khan-temujin
+          excerpt: 'Best known as: 13th century Mongolian conqueror.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019faa1b24e970ebb5fa70c31b84fe30
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Did this person live and serve mainly in the 20th century (roughly
+          1900-2000)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1b7cf370ca844d91c8e86f3439
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan (born 1162...died August 18, 1227) was a Mongolian
+            warrior-ruler.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019faa1b6bad7410b81d5304424f59db
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Did this person live primarily before the 19th century (i.e., before
+          the 1800s)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1baf1e762985f861d18fd0f45b
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/facts/Genghis-Khan
+          excerpt: Born | 1162 • near Lake Baikal; Died | August 18, 1227
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019faa1b908a72ed8d598e01cdecc814
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Was this person primarily associated with Europe?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1bd5a07132ba5c739fd6127819
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/summary/Genghis-Khan
+          excerpt: Genghis Khan ... (born 1162, near Lake Baikal, Mongolia ...), Mongolian
+            warrior-ruler who consolidated nomadic tribes into a unified Mongolia
+          validation: model_reported
+        - source_url: https://www.livescience.com/43260-genghis-khan.html
+          excerpt: Genghis Khan founded the Mongol Empire, which covered much of Asia
+            and parts of Europe.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019faa1bc705779fb1cb1c119b874b8c
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Was this person primarily associated with Asia?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1c2132775ba813efb181da4fec
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.livescience.com/43260-genghis-khan.html
+          excerpt: Genghis Khan founded the Mongol Empire, which covered much of Asia
+            and parts of Europe.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan was a Mongolian warrior-ruler ... who consolidated
+            tribes into a unified Mongolia and then extended his empire.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019faa1c14ba76c6bc7ce13dc9de70ed
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Was this person primarily associated with China (i.e., a Chinese
+          ruler or emperor)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1c89017086abd426e536de0f39
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/facts/Genghis-Khan
+          excerpt: Title / Office | khan (1206-1227), Mongol empire
+          validation: model_reported
+        - source_url: https://www.britannica.com/summary/Genghis-Khan
+          excerpt: Mongolian warrior-ruler who consolidated nomadic tribes into a
+            unified Mongolia
+          validation: model_reported
+        - source_url: https://www.britannica.com/question/Who-was-Kublai-Khan
+          excerpt: Kublai Khan ... became the first Yuan ruler of all of China
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019faa1c799d756691ef57e2c610570c
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Was this person primarily associated with the Middle East or the
+          Islamic world (e.g., an Ottoman, Persian, or Arab ruler)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1cc0977458850f836b9f8ffff9
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.worldhistory.org/Genghis_Khan
+          excerpt: Genghis Khan ... was the founder of the Mongol Empire.
+          validation: model_reported
+        - source_url: https://www.jstor.org/stable/3269384
+          excerpt: The Religion of Genghis Khan ... The Shamanist Mongols also worshipped
+            ...
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019faa1cb30c709b9d134c6c5cadabfb
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Was this person primarily associated with India (e.g., a Mughal
+          or other Indian ruler)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1d2f88759d81ec868ee1c07890
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan was the founder of the Mongol Empire.
+          validation: model_reported
+        - source_url: https://kids.britannica.com/kids/article/Mughal-Empire/353501
+          excerpt: The founder of the Mughal Empire was named Babur; he was descended
+            from Genghis Khan, who had founded the Mongol Empire in Mongolia more
+            than 300 years earlier.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019faa1d216871c0a6a301064ec846db
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Was this person primarily associated with Japan (e.g., a shogun
+          or emperor)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1d62c67737acaae87fe1771bf9
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.worldhistory.org/Genghis_Khan
+          excerpt: Genghis Khan (aka Chinggis Khan) was the founder of the Mongol
+            Empire.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Genghis-Khan/Rise-to-power
+          excerpt: Rise to power of Genghis Khan in Mongol Empire.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019faa1d55a973fa87a3bd57bfff5d54
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Was this person primarily associated with Mongolia or the Mongol
+          Empire (e.g., a Mongol khan)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1db2197377bc4876f5b097571c
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.livescience.com/43260-genghis-khan.html
+          excerpt: Genghis Khan ... founded the Mongol Empire, which covered much
+            of Asia and parts of Europe.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Genghis-Khan/Rise-to-power
+          excerpt: Genghis Khan - Mongol Empire, Conqueror, Warrior
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019faa1da77674abba52f90fcc636223
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Was this person the founder of the Mongol Empire (i.e., the one
+          who first united the Mongol tribes)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019faa1ddf377182830defb0bbfd2c92
+        answer: 'YES'
+        evidence:
+        - source_url: https://kids.britannica.com/kids/article/Mongol-empire/353483
+          excerpt: In the early 1200s a warrior named Genghis Khan united the tribes
+            and built a mighty empire.
+          validation: model_reported
+        - source_url: https://kids.britannica.com/students/article/Mongol-Empire/275900
+          excerpt: In 1206 Genghis (or Chinggis) Khan was elected head of the All
+            the Mongols league, a confederation of Mongol tribes, and founded the
+            Mongol Dynasty.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019faa1dccf474cfadfec11d8e78f7c5
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: GUESS
+        question: null
+        name: Genghis Khan
+        description: Founder and first Great Khan of the Mongol Empire, who united
+          the Mongol tribes in the early 13th century.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019faa1e3312763587ff690340ebfdbe
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity exactly matches Genghis Khan, the founder
+          and first khan of the Mongol Empire.
+        oracle_quality: null
+      counted: false
+      counted_questions: 12
+      guesser_call_id: GC-019faa1e291372239ee68d354ced671c
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"AMZAISLM"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person currently alive?"}}'
+      turn_number: 1
+    - role: user
+      content: 'NO'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known for achievements in politics or government (e.g.,
+        as a leader, president, or monarch)?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live and serve mainly in the 20th century (roughly 1900-2000)?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live primarily before the 19th century (i.e., before the 1800s)?"}}'
+      turn_number: 4
+    - role: user
+      content: 'YES'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with Europe?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with Asia?"}}'
+      turn_number: 6
+    - role: user
+      content: 'YES'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with China (i.e., a Chinese ruler or emperor)?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with the Middle East or the Islamic world
+        (e.g., an Ottoman, Persian, or Arab ruler)?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with India (e.g., a Mughal or other Indian
+        ruler)?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with Japan (e.g., a shogun or emperor)?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with Mongolia or the Mongol Empire (e.g.,
+        a Mongol khan)?"}}'
+      turn_number: 11
+    - role: user
+      content: 'YES'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person the founder of the Mongol Empire (i.e., the one who first united
+        the Mongol tribes)?"}}'
+      turn_number: 12
+    - role: user
+      content: 'YES'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Founder and first Great
+        Khan of the Mongol Empire, who united the Mongol tribes in the early 13th
+        century.","name":"Genghis Khan","question":null}}'
+      turn_number: 13
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0005
+          gateway: openrouter
+          model: anthropic/claude-sonnet-5
+          provider: anthropic
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '2.00'
+            cached_input_usd_per_million: '0.20'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 13
+          cost_usd: '0.0213705'
+          latency_ms: 49669
+          total_tokens: 22866
+          input_tokens: 21640
+          cached_input_tokens: 19555
+          cache_write_tokens: 2059
+          output_tokens: 1226
+          reasoning_tokens: 437
+          estimated_cache_savings_usd: '0.03416950'
+          recovery:
+            request_attempts: 13
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: anthropic
+            reasoning_effort: medium
+            allow_fallbacks: false
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 12
+          cost_usd: '0.1060823749999999993'
+          latency_ms: 158807
+          total_tokens: 89597
+          input_tokens: 78826
+          cached_input_tokens: 18620
+          cache_write_tokens: 0
+          output_tokens: 10771
+          reasoning_tokens: 8162
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 26
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0003125'
+          latency_ms: 1117
+          total_tokens: 425
+          input_tokens: 385
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 40
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0005/BX-20260728-official-M0005-010/subjects/T-0006/trials/trial-003/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 69c70d649dede7e3de7d0ee75d6366468c250591b1718160f57ac0367b323d52
