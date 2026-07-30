@@ -8,11 +8,13 @@ from typing import Literal
 
 import pytest
 
-from deep20_publication.cli import _read_yaml
+from deep20_publication.cli import _load_run, _read_yaml
 from deep20_publication.compiler import (
-    _b20_score,
+    _average,
+    _public_run_comparison,
     _public_run_totals,
     _rank,
+    _rank_efficiency,
     _reason_codes,
     _select_latest_qualified_runs,
     _trial,
@@ -38,6 +40,7 @@ from deep20_publication.models import (
     PartialTrialMetrics,
     PublicModel,
     PublicRun,
+    PublicRunComparison,
     PublicRunCostTotals,
     PublicRunTotals,
     PublishedDataset,
@@ -110,7 +113,7 @@ def _public_run(
     model_id: str,
     execution_id: str,
     completed_at: datetime,
-    penalized_score: Decimal | None,
+    question_score: Decimal | None,
     classification: Literal["official", "lab"] = "official",
 ) -> PublicRun:
     return PublicRun(
@@ -130,10 +133,7 @@ def _public_run(
         base_seed=0,
         max_questions=50,
         success_rate=Decimal("0.5"),
-        descriptive_score=penalized_score,
-        descriptive_b20_score=Decimal(10) if penalized_score is not None else None,
-        penalized_score=penalized_score if classification == "official" else None,
-        b20_score=Decimal(10) if classification == "official" else None,
+        question_score=question_score if classification == "official" else None,
         total_cost_usd=Decimal(1),
         successful=1,
         model_failed=1,
@@ -152,6 +152,26 @@ def _public_run(
             total_tokens=100,
             runtime_ms=1_000,
             guesser_think_time_ms=500,
+            guesser_calls=10,
+        ),
+        comparison=PublicRunComparison(
+            guesser_cost_per_episode_usd=Decimal("0.5"),
+            full_cost_per_episode_usd=Decimal("0.5"),
+            support_cost_per_episode_usd=Decimal(0),
+            support_cost_share=Decimal(0),
+            runtime_per_episode_ms=Decimal(500),
+            guesser_think_time_per_episode_ms=Decimal(250),
+            guesser_latency_per_call_ms=Decimal(50),
+            cost_adjusted_question_score=(
+                question_score * Decimal("0.5")
+                if classification == "official" and question_score is not None
+                else None
+            ),
+            efficiency_status=(
+                "ranked"
+                if classification == "official" and question_score is not None
+                else "question_score_unavailable"
+            ),
         ),
         subjects=(),
     )
@@ -567,13 +587,11 @@ def test_failed_completed_trial_keeps_contract_breach_and_receives_penalty() -> 
     projected = _trial(
         trial,
         failure_penalty=Decimal(51),
-        b20_target_questions=20,
     )
 
     assert projected.status == "model_failure"
     assert projected.counted_questions == 7
-    assert projected.scored_questions == Decimal(51)
-    assert projected.b20_score == Decimal(0)
+    assert projected.penalized_questions == Decimal(51)
     assert projected.contract is not None
     assert projected.contract.status == "breached"
     assert projected.contract.violations == 1
@@ -599,11 +617,10 @@ def test_successful_completed_trial_still_keeps_contract_breach() -> None:
     projected = _trial(
         trial,
         failure_penalty=Decimal(51),
-        b20_target_questions=20,
     )
 
     assert projected.status == "success"
-    assert projected.scored_questions == Decimal(30)
+    assert projected.penalized_questions == Decimal(30)
     assert projected.contract is not None
     assert projected.contract.status == "breached"
     assert projected.contract.counted_penalties == 1
@@ -662,7 +679,6 @@ def test_repair_metrics_are_typed_and_counted_without_entering_public_trials() -
     projected = _trial(
         repaired_trial,
         failure_penalty=Decimal(51),
-        b20_target_questions=20,
         episode=loaded.episodes[0],
     )
 
@@ -690,24 +706,13 @@ def test_contract_reliability_counts_are_strict() -> None:
         raise AssertionError("inconsistent contract reliability was accepted")
 
 
-def test_b20_score_is_linear_and_anchored_to_twenty_questions() -> None:
-    failure_penalty = Decimal(51)
-
-    assert _b20_score(
-        Decimal(20),
-        failure_penalty=failure_penalty,
-        target_questions=20,
-    ) == Decimal(20)
-    assert _b20_score(
-        Decimal(51),
-        failure_penalty=failure_penalty,
-        target_questions=20,
-    ) == Decimal(0)
-    assert _b20_score(
-        Decimal(0),
-        failure_penalty=failure_penalty,
-        target_questions=20,
-    ) == Decimal(1020) / Decimal(31)
+def test_average_uses_exact_decimal_values() -> None:
+    assert _average(
+        (Decimal(51), Decimal(4), Decimal(10), Decimal(8), Decimal(7))
+    ) == Decimal(16)
+    assert _average(
+        (Decimal(51), Decimal(4), Decimal(10), Decimal(8))
+    ) == Decimal("18.25")
 
 
 def test_rank_preserves_exact_joint_ties_and_places_awaiting_last() -> None:
@@ -716,14 +721,14 @@ def test_rank_preserves_exact_joint_ties_and_places_awaiting_last() -> None:
             rank=None,
             model=_model("M-0001", "Beta"),
             status="evaluated",
-            penalized_score=Decimal("12.00"),
+            question_score=Decimal("12.00"),
             contract=_contract(),
         ),
         LeaderboardRow(
             rank=None,
             model=_model("M-0002", "Alpha"),
             status="evaluated",
-            penalized_score=Decimal("12.00"),
+            question_score=Decimal("12.00"),
             contract=_contract(),
         ),
         LeaderboardRow(
@@ -739,18 +744,115 @@ def test_rank_preserves_exact_joint_ties_and_places_awaiting_last() -> None:
     assert tuple(row.rank for row in ranked) == (1, 1, None)
 
 
+def test_run_comparison_uses_terminal_episode_and_guesser_cost_basis() -> None:
+    comparison = _public_run_comparison(
+        totals=PublicRunTotals(
+            costs_usd=PublicRunCostTotals(
+                guesser=Decimal(2),
+                primary_oracle=Decimal(1),
+                reviewer=Decimal("0.5"),
+                judge=Decimal("0.25"),
+                validator=Decimal("0.25"),
+                total=Decimal(4),
+            ),
+            total_tokens=1_000,
+            runtime_ms=20_000,
+            guesser_think_time_ms=8_000,
+            guesser_calls=20,
+        ),
+        terminal_trials=10,
+        question_score=Decimal("12.5"),
+    )
+
+    assert comparison.guesser_cost_per_episode_usd == Decimal("0.2")
+    assert comparison.full_cost_per_episode_usd == Decimal("0.4")
+    assert comparison.support_cost_per_episode_usd == Decimal("0.2")
+    assert comparison.support_cost_share == Decimal("0.5")
+    assert comparison.runtime_per_episode_ms == Decimal(2_000)
+    assert comparison.guesser_think_time_per_episode_ms == Decimal(800)
+    assert comparison.guesser_latency_per_call_ms == Decimal(400)
+    assert comparison.cost_adjusted_question_score == Decimal("2.50")
+    assert comparison.efficiency_status == "ranked"
+
+
+def test_run_comparison_does_not_treat_zero_recorded_cost_as_free() -> None:
+    comparison = _public_run_comparison(
+        totals=PublicRunTotals(
+            costs_usd=PublicRunCostTotals(
+                guesser=Decimal(0),
+                primary_oracle=Decimal(0),
+                reviewer=Decimal(0),
+                judge=Decimal(0),
+                validator=Decimal(0),
+                total=Decimal(0),
+            ),
+            total_tokens=10,
+            runtime_ms=100,
+            guesser_think_time_ms=50,
+            guesser_calls=1,
+        ),
+        terminal_trials=1,
+        question_score=Decimal(10),
+    )
+
+    assert comparison.efficiency_status == "recorded_guesser_cost_unavailable"
+    assert comparison.cost_adjusted_question_score is None
+
+
+def test_efficiency_rank_and_pareto_frontier_are_independent_of_question_rank() -> None:
+    rows = (
+        LeaderboardRow(
+            rank=1,
+            model=_model("M-0001", "Quality"),
+            status="evaluated",
+            question_score=Decimal(10),
+            guesser_cost_per_episode_usd=Decimal("0.10"),
+            cost_adjusted_question_score=Decimal("1.0"),
+            efficiency_status="ranked",
+        ),
+        LeaderboardRow(
+            rank=2,
+            model=_model("M-0002", "Value"),
+            status="evaluated",
+            question_score=Decimal(12),
+            guesser_cost_per_episode_usd=Decimal("0.05"),
+            cost_adjusted_question_score=Decimal("0.6"),
+            efficiency_status="ranked",
+        ),
+        LeaderboardRow(
+            rank=3,
+            model=_model("M-0003", "Dominated"),
+            status="evaluated",
+            question_score=Decimal(14),
+            guesser_cost_per_episode_usd=Decimal("0.20"),
+            cost_adjusted_question_score=Decimal("2.8"),
+            efficiency_status="ranked",
+        ),
+    )
+
+    ranked = _rank_efficiency(rows)
+    by_id = {row.model.model_id: row for row in ranked}
+
+    assert by_id["M-0002"].efficiency_rank == 1
+    assert by_id["M-0001"].efficiency_rank == 2
+    assert by_id["M-0003"].efficiency_rank == 3
+    assert by_id["M-0001"].pareto_efficient
+    assert by_id["M-0002"].pareto_efficient
+    assert not by_id["M-0003"].pareto_efficient
+
+
 def test_latest_qualified_run_wins_without_score_selection() -> None:
     prior_better = _public_run(
         model_id="M-0001",
         execution_id="BX-prior-better",
         completed_at=datetime(2026, 1, 1, tzinfo=UTC),
-        penalized_score=Decimal(5),
+        question_score=Decimal(5),
     )
     newer_worse = _public_run(
         model_id="M-0001",
         execution_id="BX-newer-worse",
         completed_at=datetime(2026, 1, 2, tzinfo=UTC),
-        penalized_score=Decimal(30),
+        question_score=Decimal(30),
     )
 
     selected = _select_latest_qualified_runs(
@@ -766,20 +868,20 @@ def test_newer_unqualified_run_is_ignored_and_distinct_models_stay_distinct() ->
         model_id="M-0001",
         execution_id="BX-qualified",
         completed_at=datetime(2026, 1, 1, tzinfo=UTC),
-        penalized_score=Decimal(20),
+        question_score=Decimal(20),
     )
     newer_lab = _public_run(
         model_id="M-0001",
         execution_id="BX-newer-lab",
         completed_at=datetime(2026, 1, 2, tzinfo=UTC),
-        penalized_score=Decimal(10),
+        question_score=Decimal(10),
         classification="lab",
     )
     same_route_different_id = _public_run(
         model_id="M-0002",
         execution_id="BX-other-model",
         completed_at=datetime(2026, 1, 3, tzinfo=UTC),
-        penalized_score=Decimal(15),
+        question_score=Decimal(15),
     )
 
     selected = _select_latest_qualified_runs(
@@ -796,13 +898,13 @@ def test_latest_qualified_timestamp_tie_is_rejected() -> None:
         model_id="M-0001",
         execution_id="BX-left",
         completed_at=completed_at,
-        penalized_score=Decimal(10),
+        question_score=Decimal(10),
     )
     right = _public_run(
         model_id="M-0001",
         execution_id="BX-right",
         completed_at=completed_at,
-        penalized_score=Decimal(20),
+        question_score=Decimal(20),
     )
 
     with pytest.raises(ValueError, match="official run timestamp tie"):
@@ -993,7 +1095,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
     source = "\n".join(
         path.read_text(encoding="utf-8")
         for source_root in source_roots
-        for suffix in ("*.py", "*.ts", "*.astro")
+        for suffix in ("*.py", "*.ts", "*.vue")
         for path in sorted(source_root.rglob(suffix))
     )
 
@@ -1015,7 +1117,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
 
     report_source = "\n".join(
         path.read_text(encoding="utf-8")
-        for suffix in ("*.ts", "*.astro")
+        for suffix in ("*.ts", "*.vue")
         for path in sorted((REPOSITORY / "publication" / "site" / "src").rglob(suffix))
     )
     assert "guesser_conversation" not in report_source
@@ -1028,14 +1130,24 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
     assert "Contract compliance" in report_source
     assert "Awaiting official run" not in report_source
     assert "Earlier official runs" not in report_source
-    assert not (REPOSITORY / "publication" / "site" / "src" / "pages" / "lab.astro").exists()
-
     route_source = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in sorted(
-            (REPOSITORY / "publication" / "site" / "src" / "pages" / "runs").rglob(
-                "*.astro"
-            )
+        for path in (
+            REPOSITORY
+            / "publication"
+            / "site"
+            / "src"
+            / "views"
+            / "workspace"
+            / "BenchmarkWorkspaceView.vue",
+            REPOSITORY
+            / "publication"
+            / "site"
+            / "src"
+            / "views"
+            / "workspace"
+            / "SubjectWorkspaceView.vue",
+            REPOSITORY / "publication" / "site" / "src" / "views" / "EpisodeView.vue",
         )
     )
     assert "dataset.lab_runs" not in route_source
@@ -1056,53 +1168,51 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
         "provider_trace",
         "session_id",
         "cache_key",
+        "error_output_preview",
+        "error_outputs",
     ):
         assert forbidden_field not in public_schema
 
 
 def test_report_cost_labels_define_episode_and_run_scope() -> None:
-    pages = REPOSITORY / "publication" / "site" / "src" / "pages"
-    episode_source = (
-        pages
-        / "runs"
-        / "[execution_id]"
-        / "subjects"
-        / "[target_id]"
-        / "episodes"
-        / "[trial_id].astro"
-    ).read_text(encoding="utf-8")
-    subject_source = (
-        pages / "runs" / "[execution_id]" / "subjects" / "[target_id]" / "index.astro"
-    ).read_text(encoding="utf-8")
-    run_source = (pages / "runs" / "[execution_id]" / "index.astro").read_text(
+    views = REPOSITORY / "publication" / "site" / "src" / "views"
+    episode_source = (views / "EpisodeView.vue").read_text(encoding="utf-8")
+    workspace = views / "workspace"
+    subject_source = (workspace / "SubjectWorkspaceView.vue").read_text(
         encoding="utf-8"
     )
-    leaderboard_source = (pages / "index.astro").read_text(encoding="utf-8")
+    run_source = "\n".join(
+        (workspace / filename).read_text(encoding="utf-8")
+        for filename in ("BenchmarkWorkspaceView.vue", "RunOverviewPane.vue")
+    )
+    leaderboard_source = (views / "HomeView.vue").read_text(encoding="utf-8")
 
     assert "Episode cost" in episode_source
-    assert "All {episode.total_turns} turns" in episode_source
-    assert "Full run {money(run.total_cost_usd)}" in episode_source
+    assert "All {{ episode.total_turns }} turns" in episode_source
+    assert "Full run {{ money(run.total_cost_usd) }}" in episode_source
     assert 'role: "Judge"' in episode_source
-    assert "Oracle support role breakdown" in episode_source
+    assert "Blind review roles." in episode_source
     assert "Exact Guesser setup" in episode_source
     assert "Recorded Guesser output" in episode_source
-    assert "Original provider bytes and hidden reasoning are not retained." in (
-        episode_source
+    assert "Why this output was rejected" in episode_source
+    assert "owner-only" in episode_source
+    assert "1 · Guesser asks" in episode_source
+    assert '2 · {{ turn.adjudicator === "oracle" ? "Oracle" : "Validator" }} answers' in episode_source
+    assert episode_source.index("Recorded Guesser output") < episode_source.rindex(
+        "Oracle evidence"
     )
-    assert "<th>Latency (s)</th>" in episode_source
+    assert "<th data-numeric>Latency</th>" in episode_source
     assert "seconds(row.values.latency_ms)" in episode_source
     assert "`Q${turn.counted_questions}`" in episode_source
     assert "No question charge" in episode_source
-    assert "counted question ${turn.counted_questions}" not in episode_source
-    assert "Episode cost" in subject_source
+    assert "money(trial.cost_usd)" in subject_source
     assert "<dt>Run cost</dt>" not in run_source
-    assert "Total benchmark cost" in run_source
-    assert "Model cost" in run_source
-    assert "cost-row-guesser" in run_source
-    assert 'variant="hero"' in run_source
-    assert 'class="run-facts"' in run_source
-    assert "Full run totals." in run_source
-    assert "Guesser think time" in run_source
+    assert "Complete benchmark" in run_source
+    assert "Model under test" in run_source
+    assert 'label="Question score"' in run_source
+    assert 'class="workspace-metrics"' in run_source
+    assert "Run ledger." in run_source
+    assert "Guesser time" in run_source
     assert "Primary Oracle" in run_source
     assert "run.totals.total_tokens" in run_source
     assert "run.totals.guesser_think_time_ms" in run_source
@@ -1116,23 +1226,320 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
         / "site"
         / "public"
         / "data"
-        / "deep20bench-v3.json"
+        / "deep20bench-v5.json"
     )
     dataset = json.loads(dataset_path.read_text(encoding="utf-8"))
     evaluated = [
         row for row in dataset["leaderboard"] if row["status"] == "evaluated"
     ]
-    homepage = (REPOSITORY / "docs" / "index.html").read_text(encoding="utf-8")
+    homepage = (
+        REPOSITORY / "publication" / "site" / "src" / "views" / "HomeView.vue"
+    ).read_text(encoding="utf-8")
 
     assert "Can an LLM ask its way to the answer?" in homepage
     assert "Simple rules. Several abilities." in homepage
     assert "The same game, made comparable." in homepage
     if evaluated:
-        assert 'class="data-table leaderboard-table"' in homepage
-        assert "Official comparison in progress." not in homepage
+        assert '<template v-if="evaluated.length > 0">' in homepage
+        assert '<table class="data-table">' in homepage
     else:
-        assert "Official comparison in progress." in homepage
-        assert 'class="data-table leaderboard-table"' not in homepage
+        assert '<article v-else class="empty-results">' in homepage
+    assert "Official comparison in progress." in homepage
+
+
+def test_generated_drilldown_pages_keep_current_location_visible() -> None:
+    views = REPOSITORY / "publication" / "site" / "src" / "views"
+    workspace = views / "workspace"
+    run_source = (workspace / "BenchmarkWorkspaceView.vue").read_text(
+        encoding="utf-8"
+    )
+    subject_source = (workspace / "SubjectWorkspaceView.vue").read_text(
+        encoding="utf-8"
+    )
+    episode_source = (views / "EpisodeView.vue").read_text(encoding="utf-8")
+
+    assert 'level: "Run workspace"' in run_source
+    assert 'id="route-content"' in run_source
+    assert 'class="model-rail"' in run_source
+    assert "<RouterView v-else />" in run_source
+    assert 'level: "Subject workspace"' in subject_source
+    assert 'class="episode-rail"' in subject_source
+    assert "`${index + 1} of ${subjects.value.length}`" in subject_source
+    assert "<RouterView v-else />" in subject_source
+    assert "hash:" not in run_source
+    assert "hash:" not in subject_source
+    assert 'level: "Episode"' in episode_source
+    assert 'id="episode-overview"' in episode_source
+    assert "previous: previousTrial" in episode_source
+    assert "next: nextTrial" in episode_source
+    assert episode_source.index('id="transcript"') < episode_source.index(
+        'id="technical"'
+    )
+    assert "model-under-test" not in episode_source
+
+
+def test_drilldown_navigation_is_sticky_and_scroll_safe() -> None:
+    source_root = REPOSITORY / "publication" / "site" / "src"
+    component = (
+        source_root / "components" / "DrilldownBar.vue"
+    ).read_text(encoding="utf-8")
+    global_css = (source_root / "styles" / "app.css").read_text(encoding="utf-8")
+    app_source = (source_root / "App.vue").read_text(encoding="utf-8")
+    episode_page = (source_root / "views" / "EpisodeView.vue").read_text(
+        encoding="utf-8"
+    )
+
+    assert 'class="drilldown-bar"' in component
+    assert 'aria-label="Current location"' in component
+    assert 'aria-current="page"' in component
+    assert 'rel="prev"' in component
+    assert 'rel="next"' in component
+    assert "overflow-x: clip" in global_css
+    assert "overflow-y: auto" in global_css
+    assert "prefers-reduced-motion: reduce" in global_css
+    assert "scrollPositions" in app_source
+    assert "app-viewport--workspace" in app_source
+    assert "<Transition" not in app_source
+    assert "panel-deeper" not in global_css
+    assert "panel-back" not in global_css
+    assert "<KeepAlive" in app_source
+    assert 'class="episode-tabs"' in episode_page
+    assert "overflow-y: auto" in episode_page
+    assert "ModelUnderTest" not in episode_page
+
+
+def test_generated_question_scores_use_subject_averages_then_average() -> None:
+    dataset_path = (
+        REPOSITORY
+        / "publication"
+        / "site"
+        / "public"
+        / "data"
+        / "deep20bench-v5.json"
+    )
+    dataset = json.loads(dataset_path.read_text(encoding="utf-8"))
+
+    assert dataset["score_policy"]["version"] == "average-then-average-v1"
+    for run in dataset["official_runs"]:
+        subject_averages: list[Decimal] = []
+        for subject in run["subjects"]:
+            trial_values = tuple(
+                Decimal(trial["penalized_questions"])
+                for trial in subject["trials"]
+            )
+            subject_average = _average(trial_values)
+            assert Decimal(subject["average_questions"]) == subject_average
+            subject_averages.append(subject_average)
+        expected_score = sum(subject_averages, start=Decimal(0)) / Decimal(
+            len(subject_averages)
+        )
+        assert Decimal(run["question_score"]) == expected_score
+
+    leaderboard_by_model = {
+        row["model"]["model_id"]: row for row in dataset["leaderboard"]
+    }
+    opus = leaderboard_by_model["M-0006"]
+    kimi = leaderboard_by_model["M-0007"]
+    assert Decimal(opus["question_score"]) == Decimal(
+        "12.34285714285714285714285714"
+    )
+    assert Decimal(kimi["question_score"]) == Decimal(
+        "12.74285714285714285714285714"
+    )
+    assert opus["rank"] == 1
+    assert kimi["rank"] == 2
+
+
+def test_pre_question_score_run_compiles_without_migration() -> None:
+    execution_id = "BX-20260728-official-M0001-010"
+    summary_path = REPOSITORY / "runs" / "M-0001" / execution_id / "summary.yml"
+    loaded = _load_run(summary_path, REPOSITORY)
+    config = parse_publication_config(
+        _read_yaml(REPOSITORY / "publication" / "publication.yml"),
+        "publication/publication.yml",
+    )
+    subjects, subject_hash = parse_subject_catalog(
+        _read_yaml(REPOSITORY / "config" / "subjects.yaml"),
+        "config/subjects.yaml",
+    )
+
+    dataset = compile_publication(
+        runs=(loaded,),
+        config=config,
+        subject_catalog=subjects,
+        subject_catalog_hash=subject_hash,
+    )
+
+    assert tuple(run.execution_id for run in dataset.official_runs) == (execution_id,)
+    assert dataset.official_runs[0].question_score == Decimal(
+        "17.74285714285714285714285714"
+    )
+    assert all(
+        trial.penalized_questions is not None
+        for subject in dataset.official_runs[0].subjects
+        for trial in subject.trials
+    )
+
+
+def test_result_metric_charts_use_tree_shaken_echarts() -> None:
+    source_root = REPOSITORY / "publication" / "site" / "src"
+    component = (source_root / "components" / "MetricBars.vue").read_text(
+        encoding="utf-8"
+    )
+    responsive_runtime = (
+        source_root / "lib" / "use-responsive-echart.ts"
+    ).read_text(encoding="utf-8")
+    cost_donut = (source_root / "components" / "CostDonut.vue").read_text(
+        encoding="utf-8"
+    )
+    info_popover = (
+        source_root / "components" / "InfoPopover.vue"
+    ).read_text(encoding="utf-8")
+    question_score = (
+        source_root / "components" / "QuestionScore.vue"
+    ).read_text(encoding="utf-8")
+    stacked_costs = (
+        source_root / "components" / "StackedMetricBars.vue"
+    ).read_text(encoding="utf-8")
+    efficiency_scatter = (
+        source_root / "components" / "EfficiencyScatter.vue"
+    ).read_text(encoding="utf-8")
+    score_dot_plot = (
+        source_root / "components" / "ScoreDotPlot.vue"
+    ).read_text(encoding="utf-8")
+    homepage = (
+        source_root / "views" / "HomeView.vue"
+    ).read_text(encoding="utf-8")
+    package = (
+        REPOSITORY / "publication" / "site" / "package.json"
+    ).read_text(encoding="utf-8")
+
+    assert '"echarts": "6.1.0"' in package
+    assert 'from "echarts/core"' in component
+    assert "BarChart" in component
+    assert "SVGRenderer" in component
+    assert 'renderer: "svg"' in component
+    assert "xAxis:" in component
+    assert "max: maximum * 1.12" in component
+    assert "aria:" in component
+    assert "tooltip:" in component
+    assert "useResponsiveEChart" in component
+    assert 'name: "Open model details"' in component
+    assert 'barGap: "-100%"' in component
+    assert "Select anywhere on a bar row for details" in component
+    assert "ResizeObserver" in responsive_runtime
+    assert 'chart.on("click", options.onClick)' in responsive_runtime
+    assert "PieChart" in cost_donut
+    assert "<InfoPopover" in question_score
+    assert 'event.key === "Escape"' in info_popover
+    assert 'document.addEventListener("pointerdown"' in info_popover
+    assert "position: absolute;" in info_popover
+    assert "position: fixed;" in info_popover
+    assert 'radius: ["58%", "83%"]' in cost_donut
+    assert "BarChart" in stacked_costs
+    assert 'stack: "full-cost"' in stacked_costs
+    assert "ScatterChart" in efficiency_scatter
+    assert "LineChart" in efficiency_scatter
+    assert "Pareto frontier guide" in efficiency_scatter
+    assert "ScatterChart" in score_dot_plot
+    assert "scoreDomain.value.minimum" in score_dot_plot
+    assert 'lineStyle: { color: "rgba(17,19,28,.16)", width: 2 }' in score_dot_plot
+    for chart_source in (
+        component,
+        cost_donut,
+        stacked_costs,
+        efficiency_scatter,
+        score_dot_plot,
+    ):
+        assert "aria:" in chart_source
+        assert 'renderer: "svg"' in chart_source
+    assert "Question score · lower is better" in score_dot_plot
+    assert "<ScoreDotPlot" in homepage
+    assert "@media (max-width: 620px)" in component
+
+
+def test_results_pages_keep_model_metrics_explicit() -> None:
+    source_root = REPOSITORY / "publication" / "site" / "src"
+    results = source_root / "views" / "results"
+    overview = (results / "ResultsOverviewView.vue").read_text(encoding="utf-8")
+    cost = (results / "ResultsCostView.vue").read_text(encoding="utf-8")
+    time = (results / "ResultsTimeView.vue").read_text(encoding="utf-8")
+    efficiency = (results / "ResultsEfficiencyView.vue").read_text(encoding="utf-8")
+
+    assert "<MetricBars" in overview
+    assert "<MetricBars" in cost
+    assert "<MetricBars" in time
+    assert "<MetricBars" in efficiency
+    assert "<StackedMetricBars" in cost
+    assert "<EfficiencyScatter" in efficiency
+    assert 'value-format="currency"' in cost
+    assert 'value-format="duration"' in time
+    assert "results-table--overview" in overview
+    for table_source in (overview, cost, time, efficiency):
+        assert "result-row--clickable" in table_source
+        assert "result-row-link" in table_source
+        assert "Open full details for" in table_source
+    assert "Guesser time / episode" in overview
+    assert (
+        "Number(left.totals.costs_usd.total) - "
+        "Number(right.totals.costs_usd.total)"
+    ) in cost
+    assert "`value-signal value-signal--${costBand(index)}`" in cost
+    assert "Guesser response time." in time
+    assert "runtime_per_episode_ms" not in time
+    assert "run.totals.runtime_ms" not in time
+    assert "Average penalized trial values within each subject" in efficiency
+    assert "12.3 questions × $0.0500 per episode" in efficiency
+
+
+def test_mobile_drilldowns_keep_all_facts_and_compact_turn_navigation() -> None:
+    source_root = REPOSITORY / "publication" / "site" / "src"
+    episode = (source_root / "views" / "EpisodeView.vue").read_text(
+        encoding="utf-8"
+    )
+    drilldown = (source_root / "components" / "DrilldownBar.vue").read_text(
+        encoding="utf-8"
+    )
+    app_css = (source_root / "styles" / "app.css").read_text(encoding="utf-8")
+    run_overview = (
+        source_root / "views" / "workspace" / "RunOverviewPane.vue"
+    ).read_text(encoding="utf-8")
+    subject_workspace = (
+        source_root / "views" / "workspace" / "SubjectWorkspaceView.vue"
+    ).read_text(encoding="utf-8")
+    results_nav = (
+        source_root / "components" / "ResultsNav.vue"
+    ).read_text(encoding="utf-8")
+
+    assert 'class="turn-map"' in episode
+    assert 'id="turn-map-title"' in episode
+    assert "jumpToTurn(turn.turnNumber)" in episode
+    assert ':id="`turn-${turn.turn_number}`"' in episode
+    assert "answerCounts" in episode
+    assert ".episode-facts > div:nth-child(even)" in episode
+    assert "display: block;" in episode
+    assert "grid-template-columns: repeat(5, minmax(0, 1fr));" in episode
+    assert "flex: 1 1 0;" in episode
+    assert "grid-template-columns: 2.3rem minmax(0, 1fr) auto;" in episode
+    assert ".answer span" in episode
+    assert 'role="tablist"' in episode
+    assert ':aria-selected="activeTab === \'transcript\'"' in episode
+    assert "@keydown=\"onEpisodeTabKeydown($event, 'transcript')\"" in episode
+    assert "@media (max-height: 520px)" in episode
+    assert 'class="drilldown-mobile-crumbs"' in drilldown
+    assert "crumbs.value.slice(-2)" in drilldown
+    assert ".drilldown-mobile-crumbs" in app_css
+    assert "font-size: 1.25rem;" in app_css
+    assert "<CostDonut" in run_overview
+    assert "run.totals.costs_usd.guesser" in run_overview
+    assert "Recorded total" not in run_overview
+    assert "grid-template-columns: repeat(4, minmax(0, 1fr));" in run_overview
+    assert 'class="attempt-score-track"' in subject_workspace
+    assert 'class="eyebrow rail-section-label"' in subject_workspace
+    assert 'aria-label="Runs for this subject"' in subject_workspace
+    assert "{{ trials.length }} attempts" in subject_workspace
+    assert "@media (max-height: 520px) and (min-width: 761px)" in subject_workspace
+    assert 'exact-active-class="active"' in results_nav
 
 
 def test_homepage_and_story_share_one_typed_illustrative_round() -> None:
@@ -1140,9 +1547,9 @@ def test_homepage_and_story_share_one_typed_illustrative_round() -> None:
     shared_round = (
         source_root / "lib" / "illustrative-round.ts"
     ).read_text(encoding="utf-8")
-    homepage = (source_root / "pages" / "index.astro").read_text(encoding="utf-8")
-    story = (source_root / "pages" / "story.astro").read_text(encoding="utf-8")
+    homepage = (source_root / "views" / "HomeView.vue").read_text(encoding="utf-8")
+    story = (source_root / "views" / "StoryView.vue").read_text(encoding="utf-8")
 
     assert "satisfies IllustrativeRound" in shared_round
-    assert 'from "../lib/illustrative-round"' in homepage
-    assert 'from "../lib/illustrative-round"' in story
+    assert 'from "@/lib/illustrative-round"' in homepage
+    assert 'from "@/lib/illustrative-round"' in story

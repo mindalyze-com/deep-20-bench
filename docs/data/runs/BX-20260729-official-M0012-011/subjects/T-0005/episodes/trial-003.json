@@ -1,0 +1,369 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260729-official-M0012-011",
+  "target_id": "T-0005",
+  "trial_id": "trial-003",
+  "episode": {
+    "episode_run_id": "BR-9f49599c877505d18de1b3c378e6167d0dee0d3e",
+    "episode_id": "EP-019fafa19aae7362963059a0b6b29fb5",
+    "subject_name": "Achilles",
+    "subject_description": "Achilles, the Greek mythological hero and greatest Greek warrior of the Trojan War in Homer's Iliad, identified by Wikidata entity Q41746.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Achilles",
+    "started_at": "2026-07-29T20:47:11.534094Z",
+    "completed_at": "2026-07-29T20:51:27.711748Z",
+    "duration_ms": 256178,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 10,
+    "counted_questions": 9,
+    "ask_count": 8,
+    "guess_count": 2,
+    "rejected_guess_count": 1,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1046784749999999999",
+    "total_tokens": 57170,
+    "contract": {
+      "evaluated_outputs": 10,
+      "valid_outputs": 10,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0012",
+        "requested_model": "mistralai/mistral-medium-3-5",
+        "requested_provider": "mistral",
+        "resolved_models": [
+          "mistralai/mistral-medium-3-5"
+        ],
+        "resolved_providers": [
+          "Mistral"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 8,
+        "cost_usd": "0.0324821749999999999"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 8,
+        "cost_usd": "0.0064048"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"mythological_figure\",\"event\":\"BEGIN\",\"variation_token\":\"AMZAISLM\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 10,
+        "cost_usd": "0.0651675",
+        "latency_ms": 161490,
+        "total_tokens": 13217,
+        "input_tokens": 5660,
+        "cached_input_tokens": 1314,
+        "cache_write_tokens": 0,
+        "output_tokens": 7557,
+        "reasoning_tokens": 7191,
+        "estimated_cache_savings_usd": "0E-9"
+      },
+      "oracle": {
+        "calls": 8,
+        "cost_usd": "0.0388869749999999999",
+        "latency_ms": 91879,
+        "total_tokens": 43130,
+        "input_tokens": 39593,
+        "cached_input_tokens": 8496,
+        "cache_write_tokens": 0,
+        "output_tokens": 3537,
+        "reasoning_tokens": 2228,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 2,
+        "cost_usd": "0.0006240",
+        "latency_ms": 2478,
+        "total_tokens": 823,
+        "input_tokens": 738,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 85,
+        "reasoning_tokens": 17,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the subject a deity?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Achilles was a mortal hero rather than a god.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.cornellcollege.edu/classical_studies/myth/achilles",
+            "excerpt": "A hero for all times, a mortal man favored by the immortal gods.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the subject a deity?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the subject humanoid in form?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles, in Greek mythology, son of the mortal Peleus ... and the Nereid, or sea nymph, Thetis.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the subject humanoid in form?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the subject from Greek mythology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/video/did-you-know-Achilles/-255375",
+            "excerpt": "In Greek mythology, Achilles was the greatest warrior of the Greek army in the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the subject from Greek mythology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the subject female?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.encyclopedia.com/literature-and-arts/classical-literature-mythology-and-folklore/folklore-and-mythology/achilles",
+            "excerpt": "Achilles is one of the most important warriors in Greek mythology... qualities that the ancient Greeks prized as manly virtues.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/articles/achilles",
+            "excerpt": "The warrior Achilles is one of the great heroes of Greek mythology.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the subject female?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is the subject a demigod?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.nationalgeographic.com/history/history-magazine/article/arms-armor-ancient-greece-full-display-the-iliad",
+            "excerpt": "Born of the goddess Thetis and the mortal king Peleus, Achilles is a demigod.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the subject a demigod?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Heracles",
+        "guess_description": "Greek demigod known for his Twelve Labors",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Heracles, while the trusted subject is Achilles.",
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek demigod known for his Twelve Labors\",\"name\":\"Heracles\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is Zeus one of the subject's parents?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles, in Greek mythology, son of the mortal Peleus ... and the Nereid, or sea nymph, Thetis.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/students/article/Achilles/272697",
+            "excerpt": "His mother was the goddess Thetis ... His father was Peleus, king of Thessaly and a grandson of Zeus.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is Zeus one of the subject's parents?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the subject associated with the Trojan War?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles was ... the greatest warrior of the army of Agamemnon in the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the subject associated with the Trojan War?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Does the subject fight on the Trojan side?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.infoplease.com/culture-entertainment/mythology-folklore/heroes-greek-mythology",
+            "excerpt": "Achilles was the strongest and most fearless warrior in the Greek war against the Trojans.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles ... was ... the greatest warrior of the army of Agamemnon in the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the subject fight on the Trojan side?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Achilles",
+        "guess_description": "Greek demigod and hero of the Trojan War, son of Peleus and Thetis",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity is Achilles, matching the trusted mythological figure and Trojan War hero.",
+        "counted": false,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek demigod and hero of the Trojan War, son of Peleus and Thetis\",\"name\":\"Achilles\",\"question\":null}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+var e={category:`Fictional character`,subject:`Garfield`,turns:[{kind:`question`,prompt:`Is the character human?`,answer:`NO`},{kind:`question`,prompt:`Is it an animal?`,answer:`YES`},{kind:`question`,prompt:`Is it known for comic strips?`,answer:`YES`},{kind:`guess`,prompt:`Garfield`,answer:`IDENTIFIED`}]};export{e as t};

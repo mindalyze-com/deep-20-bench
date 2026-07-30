@@ -1,0 +1,566 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0002-011",
+  "target_id": "T-0002",
+  "trial_id": "trial-001",
+  "episode": {
+    "episode_run_id": "BR-02bd7fead6318127ad06c7bf7965f80041776d2e",
+    "episode_id": "EP-019faa60392d7357a465dd1eba98cc6e",
+    "subject_name": "Albert Schweitzer",
+    "subject_description": "Albert Schweitzer, the Alsatian physician, theologian, philosopher, organist, and 1952 Nobel Peace Prize laureate known for founding a hospital at Lambaréné, identified by Wikidata entity Q49325.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Albert_Schweitzer",
+    "started_at": "2026-07-28T20:17:40.653726Z",
+    "completed_at": "2026-07-28T20:23:17.556342Z",
+    "duration_ms": 336903,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": false,
+    "total_turns": 18,
+    "counted_questions": 17,
+    "ask_count": 16,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "noncompliant",
+    "total_cost_usd": "0.2350153499999999993",
+    "total_tokens": 223972,
+    "contract": {
+      "evaluated_outputs": 18,
+      "valid_outputs": 17,
+      "violations": 1,
+      "counted_penalties": 1,
+      "affected_trials": 1,
+      "compliance_rate": "0.9444444444444444444444444444",
+      "status": "breached"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0002",
+        "requested_model": "openai/gpt-oss-120b",
+        "requested_provider": "cerebras",
+        "resolved_models": [
+          "openai/gpt-oss-120b"
+        ],
+        "resolved_providers": [
+          "Cerebras"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 16,
+        "cost_usd": "0.0872728999999999993"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 16,
+        "cost_usd": "0.0246444"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 6,
+        "cost_usd": "0.069705"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"EAQCORIU\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 18,
+        "cost_usd": "0.05306955",
+        "latency_ms": 57021,
+        "total_tokens": 82297,
+        "input_tokens": 21633,
+        "cached_input_tokens": 18176,
+        "cache_write_tokens": 0,
+        "output_tokens": 60664,
+        "reasoning_tokens": 59948,
+        "estimated_cache_savings_usd": "0E-10"
+      },
+      "oracle": {
+        "calls": 16,
+        "cost_usd": "0.1816222999999999993",
+        "latency_ms": 277628,
+        "total_tokens": 141238,
+        "input_tokens": 127459,
+        "cached_input_tokens": 39433,
+        "cache_write_tokens": 0,
+        "output_tokens": 13779,
+        "reasoning_tokens": 10217,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0003235",
+        "latency_ms": 1918,
+        "total_tokens": 437,
+        "input_tokens": 395,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 42,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the person currently alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer Born: 14 January 1875... Died: 4 September 1965, Lambaréné, Gabon",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person currently alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the person primarily known for political leadership, such as being a head of state or prominent government official?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/nomination/archive/show.php?id=8412",
+            "excerpt": "Profession: Doctor of Philosophy, Theology and Medicine. Musician and missionary. Albert Schweitzer was nominated for his humanitarian work...",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.interlochenpublicradio.org/michigan-arts-culture/2016-01-14/the-complicated-history-of-dr-albert-schweitzer-medical-missionary",
+            "excerpt": "Dr. Schweitzer was a physician, philosopher, theologian, organist and humanitarian... known for his charitable work including opening a hospital in Africa.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for political leadership, such as being a head of state or prominent government official?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the person primarily known for contributions to the sciences (including natural sciences, engineering, or mathematics)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238",
+            "excerpt": "He is best known for founding the mission hospital at Lambaréné, providing medical aid to thousands.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for contributions to the sciences (including natural sciences, engineering, or mathematics)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the person primarily known for contributions to the arts (including visual arts, literature, music, or performing arts)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238",
+            "excerpt": "He is best known for founding the mission hospital at Lambaréné, providing medical aid to thousands.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Doctor, Missionary, Philosopher and Musician",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for contributions to the arts (including visual arts, literature, music, or performing arts)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is the person primarily known for achievements in sports?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.npg.org.uk/collections/search/person/mp144365/albert-schweitzer",
+            "excerpt": "He is best known for founding the mission hospital at Lambaréné, providing medical aid to thousands. He was awarded the Nobel Peace Prize in 1952.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Role: Missionary surgeon; Founder of Lambaréné (République de Gabon)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for achievements in sports?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the person primarily known as a religious or spiritual leader?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.dw.com/en/albert-schweitzer-and-his-controversial-legacy/a-71292959",
+            "excerpt": "Albert Schweitzer is remembered as a great humanist who helped heal the sick and poor over decades in Africa.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Doctor, Missionary, Philosopher and Musician",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known as a religious or spiritual leader?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is the person primarily known for business or entrepreneurship, such as founding a company or being a corporate leader?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.michiganpublic.org/health/2016-01-14/the-complicated-history-of-dr-albert-schweitzer-medical-missionary",
+            "excerpt": "Dr. Schweitzer was a physician, philosopher, theologian, organist and humanitarian, and is known for his charitable work including opening a hospital in Africa.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/nomination/archive/show.php?id=7905",
+            "excerpt": "Profession: Doctor of Philosophy, Theology and Medicine. Musician and missionary.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for business or entrepreneurship, such as founding a company or being a corporate leader?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the person primarily known for contributions to philosophy?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/nomination/archive/show.php?id=9737&mode",
+            "excerpt": "Albert Schweitzer was nominated for his humanitarian work... In 1913 he arrived at Lambaréné where he and his wife set up a hospital.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Albert Schweitzer received his Nobel Prize... Doctor, Missionary, Philosopher and Musician... he built and ran a hospital at the mission station Lambarene in Gabon.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for contributions to philosophy?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is the person primarily known for military leadership or involvement in wars?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://artuk.org/discover/artworks/albert-schweitzer-18751965-282238",
+            "excerpt": "He is best known for founding the mission hospital at Lambaréné, providing medical aid to thousands.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/students/article/Albert-Schweitzer/276946",
+            "excerpt": "During World War I Schweitzer and his wife... were interned in France as German subjects.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for military leadership or involvement in wars?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Is the person primarily known for activism, humanitarian work, or campaigning for social or civil causes?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/?np-year=1952",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for activism, humanitarian work, or campaigning for social or civil causes?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Did the person receive the Nobel Peace Prize?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/summary/1000/",
+            "excerpt": "The Nobel Peace Prize 1952 was awarded to Albert Schweitzer.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person receive the Nobel Peace Prize?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Is the person primarily known for civil rights activism?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Doctor, Missionary, Philosopher and Musician... he built and ran a hospital at the mission station Lambarene in Gabon.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for civil rights activism?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Did the person found the International Red Cross?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://avarchives.icrc.org/Picture/126699",
+            "excerpt": "The exhibition starts with the five founders of the ICRC - Gustave Moynier, Dr Louis Appia, Henry Dunant, Dr Théodore Maunoir and General Henri Dufour.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person found the International Red Cross?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Was the person female?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/students/article/Albert-Schweitzer/276946",
+            "excerpt": "In 1912 he and Hélène Bresslau were married, and his wife studied nursing to help her husband.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical",
+            "excerpt": "The Nobel Peace Prize for 1952 ... was given to him on December 10, 1953.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person female?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Did the person serve as Secretary-General of the United Nations?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.vedantu.com/general-knowledge/list-of-secretaries-general-of-the-united-nations",
+            "excerpt": "The following is the complete list of UN Secretaries-General in chronological order: Trygve Lie ...",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://jewishvirtuallibrary.org/united-nations-secretaries-general",
+            "excerpt": "Secretary-General | Country | Term ... António Guterres ... Trygve Lie ...",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person serve as Secretary-General of the United Nations?\"}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 16,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "output_limit_exceeded",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 16
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Is the person a medical doctor (physician)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/students/article/Albert-Schweitzer/276946",
+            "excerpt": "In 1913 Schweitzer received his medical degree.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person a medical doctor (physician)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Albert Schweitzer",
+        "guess_description": "Swiss physician, humanitarian, and Nobel Peace Prize laureate known for his medical missionary work in Africa",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity names Albert Schweitzer, matching the trusted subject exactly; the differing nationality wording does not change the identification.",
+        "counted": false,
+        "counted_questions": 17,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Swiss physician, humanitarian, and Nobel Peace Prize laureate known for his medical missionary work in Africa\",\"name\":\"Albert Schweitzer\",\"question\":null}}"
+      }
+    ]
+  }
+}

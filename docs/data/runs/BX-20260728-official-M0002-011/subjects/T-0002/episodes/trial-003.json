@@ -1,0 +1,533 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0002-011",
+  "target_id": "T-0002",
+  "trial_id": "trial-003",
+  "episode": {
+    "episode_run_id": "BR-cb9b4026ae1064eb1f557d0a3623caddd1251b6e",
+    "episode_id": "EP-019faa74038d7147b273e021381bb92c",
+    "subject_name": "Albert Schweitzer",
+    "subject_description": "Albert Schweitzer, the Alsatian physician, theologian, philosopher, organist, and 1952 Nobel Peace Prize laureate known for founding a hospital at Lambaréné, identified by Wikidata entity Q49325.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Albert_Schweitzer",
+    "started_at": "2026-07-28T20:39:17.645824Z",
+    "completed_at": "2026-07-28T20:43:07.871944Z",
+    "duration_ms": 230226,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 18,
+    "counted_questions": 17,
+    "ask_count": 15,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 1,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1618256249999999993",
+    "total_tokens": 233100,
+    "contract": {
+      "evaluated_outputs": 18,
+      "valid_outputs": 16,
+      "violations": 2,
+      "counted_penalties": 2,
+      "affected_trials": 1,
+      "compliance_rate": "0.8888888888888888888888888889",
+      "status": "breached"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0002",
+        "requested_model": "openai/gpt-oss-120b",
+        "requested_provider": "cerebras",
+        "resolved_models": [
+          "openai/gpt-oss-120b"
+        ],
+        "resolved_providers": [
+          "Cerebras"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 15,
+        "cost_usd": "0.0987063749999999993"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 14,
+        "cost_usd": "0.0152164"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"AMZAISLM\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 18,
+        "cost_usd": "0.04752485",
+        "latency_ms": 46042,
+        "total_tokens": 74719,
+        "input_tokens": 21286,
+        "cached_input_tokens": 18432,
+        "cache_write_tokens": 0,
+        "output_tokens": 53433,
+        "reasoning_tokens": 52792,
+        "estimated_cache_savings_usd": "0E-10"
+      },
+      "oracle": {
+        "calls": 15,
+        "cost_usd": "0.1139227749999999993",
+        "latency_ms": 182404,
+        "total_tokens": 157915,
+        "input_tokens": 147332,
+        "cached_input_tokens": 70595,
+        "cache_write_tokens": 0,
+        "output_tokens": 10583,
+        "reasoning_tokens": 7478,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.000378",
+        "latency_ms": 1409,
+        "total_tokens": 466,
+        "input_tokens": 408,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 58,
+        "reasoning_tokens": 12,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the person male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/students/article/Albert-Schweitzer/276946",
+            "excerpt": "In 1912 he and Hélène Bresslau were married, and his wife studied nursing to help her husband.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the person alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer Born: 14 January 1875... Died: 4 September 1965, Lambaréné, Gabon",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Did the person receive a Nobel Prize?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Albert Schweitzer Nobel Peace Prize 1952.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person receive a Nobel Prize?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the person known for formulating the equation E = mc^2?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/question/What-is-Albert-Einstein-known-for",
+            "excerpt": "Albert Einstein is best known for his equation E = mc².",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person known for formulating the equation E = mc^2?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Did the person win the Nobel Prize in Physics?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/lists/all-nobel-prizes/1959-1950",
+            "excerpt": "Nobel Peace Prize 1952 — Albert Schweitzer “for his altruism, reverence for life, and tireless humanitarian work...”",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person win the Nobel Prize in Physics?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Did the person win the Nobel Prize in Physiology or Medicine?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/lists/all-nobel-prizes/1959-1950",
+            "excerpt": "Nobel Prize in Physiology or Medicine 1952 — Selman A. Waksman ... Nobel Peace Prize 1952 — Albert Schweitzer",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/summary",
+            "excerpt": "The Nobel Peace Prize 1952 was awarded to Albert Schweitzer",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person win the Nobel Prize in Physiology or Medicine?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Did the person win the Nobel Prize in Chemistry?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person win the Nobel Prize in Chemistry?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Did the person win the Nobel Prize in Literature?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/nominations/",
+            "excerpt": "Nominated for the Nobel Prize in Literature 1952, by Nils Ahnlund.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person win the Nobel Prize in Literature?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Did the person win the Nobel Peace Prize?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/summary/1000/",
+            "excerpt": "The Nobel Peace Prize 1952 was awarded to Albert Schweitzer.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person win the Nobel Peace Prize?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Was the person a United States President?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.archives.gov/research/census/presidents",
+            "excerpt": "The National Archives' list of U.S. presidents begins with George Washington and enumerates the presidents in office; Albert Schweitzer is not included.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical",
+            "excerpt": "Albert Schweitzer is documented as the 1952 Nobel Peace Prize laureate, not as a U.S. president.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person a United States President?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Did the person receive the Nobel Peace prize before 1970?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/summary/1000/",
+            "excerpt": "Albert Schweitzer received his Nobel Prize one year later, in 1953.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person receive the Nobel Peace prize before 1970?\"}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 12,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "output_limit_exceeded",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 12
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Is the person known for civil rights activism?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.interlochenpublicradio.org/michigan-arts-culture/2016-01-14/the-complicated-history-of-dr-albert-schweitzer-medical-missionary",
+            "excerpt": "He is known for his charitable work including opening a hospital in Africa.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Doctor, Missionary, Philosopher and Musician ... tireless humanitarian work",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person known for civil rights activism?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Is the person a chemist?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/nomination/archive/show.php?id=9256",
+            "excerpt": "Profession: Doctor of Philosophy, Theology and Medicine. Musician and missionary",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.npg.org.uk/collections/search/person/mp144365/albert-schweitzer",
+            "excerpt": "(1875-1965), Physician, musician and philosopher",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person a chemist?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Did the person co‑found the International Committee of the Red Cross?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://avarchives.icrc.org/Film/23836",
+            "excerpt": "The five founders of the ICRC: Gustave Moynier, Théodore Maunoir, Guillaume Dufour, Henry Dunant, and Louis Appia.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://blogs.icrc.org/ilot/discover-the-icrc/",
+            "excerpt": "This commission – made up of Gustave Moynier, Guillaume-Henri Dufour, Louis Appia, Théodore Maunoir and Dunant himself – founded the International Committee for Relief to the Wounded, which later became the International Committee of the Red Cross (ICRC).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person co‑found the International Committee of the Red Cross?\"}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 16,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "output_limit_exceeded",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 16
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Did the person establish a hospital in Lambaréné?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/documentary",
+            "excerpt": "Lambaréné in the heart of equatorial Africa. Lambaréné, a hospital and medical mission, was founded and built in 1913 by Dr Schweitzer and his wife Helene.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person establish a hospital in Lambaréné?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Albert Schweitzer",
+        "guess_description": "German-French physician, theologian, and humanitarian who founded the Hôpital Albert Schweitzer in Lambaréné and won the 1952 Nobel Peace Prize.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity exactly matches Albert Schweitzer, including his profession, Lambaréné hospital, and 1952 Nobel Peace Prize.",
+        "counted": false,
+        "counted_questions": 17,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"German-French physician, theologian, and humanitarian who founded the Hôpital Albert Schweitzer in Lambaréné and won the 1952 Nobel Peace Prize.\",\"name\":\"Albert Schweitzer\",\"question\":null}}"
+      }
+    ]
+  }
+}

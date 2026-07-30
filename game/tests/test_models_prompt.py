@@ -280,7 +280,7 @@ def test_repository_model_catalog_has_expected_active_ids() -> None:
     catalog = load_model_catalog(root / "config/models.yaml")
 
     assert tuple(catalog.models) == (
-        *(f"M-{number:04d}" for number in range(1, 12)),
+        *(f"M-{number:04d}" for number in range(1, 13)),
         "M-0101",
         "M-0104",
     )
@@ -435,6 +435,19 @@ def test_gpt_5_nano_benchmark_route_has_reasoning_output_headroom() -> None:
             1_024,
         ),
         (
+            "M-0012",
+            "Mistral Medium 3.5 (high)",
+            "mistralai/mistral-medium-3-5",
+            "mistral",
+            "high",
+            32_768,
+            300,
+            "supported",
+            Decimal("1.50"),
+            Decimal("1.50"),
+            1_024,
+        ),
+        (
             "M-0101",
             "GPT-5.6 Luna (medium)",
             "openai/gpt-5.6-luna",
@@ -525,6 +538,7 @@ def test_active_benchmark_model_routes_are_fully_pinned(
         "M-0008",
         "M-0009",
         "M-0010",
+        "M-0012",
         "M-0101",
         "M-0104",
     ],

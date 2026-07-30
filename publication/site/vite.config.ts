@@ -1,0 +1,24 @@
+import { fileURLToPath, URL } from "node:url";
+
+import vue from "@vitejs/plugin-vue";
+import { defineConfig } from "vite";
+
+const configuredBase = process.env.DEEP20_BASE_PATH ?? "/deep-20-bench/";
+const base = configuredBase.endsWith("/") ? configuredBase : `${configuredBase}/`;
+
+export default defineConfig({
+  base,
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
+  build: {
+    assetsDir: "_assets",
+    chunkSizeWarningLimit: 550,
+    emptyOutDir: true,
+    outDir: process.env.DEEP20_OUTPUT_DIR ?? "./dist",
+    sourcemap: false,
+  },
+});

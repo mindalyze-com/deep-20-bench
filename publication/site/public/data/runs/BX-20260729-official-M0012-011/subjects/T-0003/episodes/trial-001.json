@@ -1,0 +1,831 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260729-official-M0012-011",
+  "target_id": "T-0003",
+  "trial_id": "trial-001",
+  "episode": {
+    "episode_run_id": "BR-f64e0700a94127767a4cada72f2e513e16819645",
+    "episode_id": "EP-019faf18356c703787ea1dc3bcf26c79",
+    "subject_name": "Stephen King",
+    "subject_description": "Stephen King, the American author known for horror, supernatural fiction, suspense, and novels including Carrie, The Shining, and It, identified by Wikidata entity Q39829.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Stephen_King",
+    "started_at": "2026-07-29T18:17:07.180132Z",
+    "completed_at": "2026-07-29T18:58:17.987306Z",
+    "duration_ms": 2470807,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 31,
+    "counted_questions": 30,
+    "ask_count": 27,
+    "guess_count": 4,
+    "rejected_guess_count": 3,
+    "oracle_unknown_count": 2,
+    "cache_status": "noncompliant",
+    "total_cost_usd": "0.9527825750000000017",
+    "total_tokens": 367897,
+    "contract": {
+      "evaluated_outputs": 31,
+      "valid_outputs": 31,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0012",
+        "requested_model": "mistralai/mistral-medium-3-5",
+        "requested_provider": "mistral",
+        "resolved_models": [
+          "mistralai/mistral-medium-3-5"
+        ],
+        "resolved_providers": [
+          "Mistral"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 27,
+        "cost_usd": "0.1709515750000000017"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 25,
+        "cost_usd": "0.0257765"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 3,
+        "cost_usd": "0.039145"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"EAQCORIU\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 31,
+        "cost_usd": "0.7157085",
+        "latency_ms": 2086116,
+        "total_tokens": 118315,
+        "input_tokens": 28609,
+        "cached_input_tokens": 4165,
+        "cache_write_tokens": 0,
+        "output_tokens": 89706,
+        "reasoning_tokens": 87440,
+        "estimated_cache_savings_usd": "0E-9"
+      },
+      "oracle": {
+        "calls": 27,
+        "cost_usd": "0.2358730750000000017",
+        "latency_ms": 375625,
+        "total_tokens": 247900,
+        "input_tokens": 230290,
+        "cached_input_tokens": 86094,
+        "cache_write_tokens": 0,
+        "output_tokens": 17610,
+        "reasoning_tokens": 12282,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 4,
+        "cost_usd": "0.0012010",
+        "latency_ms": 8421,
+        "total_tokens": 1682,
+        "input_tokens": 1538,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 144,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the person alive today?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://stephenking.com/news/index.html",
+            "excerpt": "The Institute Season Two — Posted: February 4th, 2026. Production has begun on The Institute Season 2 at MGM.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person alive today?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the person a public figure?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://newengland.com/travel/maine/up-close-and-personal-with-stephen-king/",
+            "excerpt": "Stephen King, the mega-popular author and one of the most famous Maine personalities ever.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nytimes.com/2000/07/24/business/media-stephen-king-sows-dread-in-publishers-with-his-latest-e-tale.html",
+            "excerpt": "Exploring the power of celebrity in the digital age.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person a public figure?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the person primarily known for their work in the entertainment industry?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Stephen-King",
+            "excerpt": "Stephen King ... is an American novelist and short-story writer whose books are credited with reviving the genre of horror fiction in the late 20th century.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.thefactsite.com/interesting-facts-about-horror-author",
+            "excerpt": "His primary occupation is a novelist, but he has also produced shows for television and other such media.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for their work in the entertainment industry?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the person a politician?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.centralmaine.com/2015/03/20/the-case-for-stephen-king-politician/",
+            "excerpt": "King’s no politician, but he is a politically active Democrat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person a politician?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is the person primarily known for their work in science or technology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "He is best known for his works in the horror and fantasy genres.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "U.S. writer of horror stories.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for their work in science or technology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the person primarily known for their involvement in sports?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "Best-selling author Stephen King ... is best known for his works in the horror and fantasy genres.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King ... U.S. writer of horror stories ... one of the world’s best-selling writers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for their involvement in sports?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is the person primarily known for their work in business or entrepreneurship?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "U.S. writer of horror stories... one of the world’s best-selling writers.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.biography.com/authors-writers/stephen-king",
+            "excerpt": "Stephen King is a 'New York Times'-bestselling novelist who made his name in the horror and fantasy genres.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for their work in business or entrepreneurship?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the person a religious leader?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen King, U.S. writer of horror stories... one of the world’s best-selling writers.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.popmythology.com/10-most-spiritual-stephen-king-books",
+            "excerpt": "It’s not that he’s religious, and the beloved author has even said in an interview that he believes religion can be a dangerous tool.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person a religious leader?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is the person a journalist or writer?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King ... U.S. writer of horror stories.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person a journalist or writer?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Is the person primarily known as a journalist rather than a writer of books or literature?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Stephen-King",
+            "excerpt": "Stephen King ... is an American novelist and short-story writer whose books are credited with reviving the genre of horror fiction.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nationalbook.org/people/stephen-king",
+            "excerpt": "Stephen King is the author of more than fifty books, all of them worldwide bestsellers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known as a journalist rather than a writer of books or literature?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Is the person male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.nndb.com/people/221/000024149",
+            "excerpt": "Stephen King ... Gender: Male",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Is the person primarily known as a novelist?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Stephen-King",
+            "excerpt": "Stephen King ... is an American novelist and short-story writer whose books are credited with reviving the genre of horror fiction.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.bookrags.com/biography/stephen-edwin-king-dlb/",
+            "excerpt": "King is best known as a best-selling novelist.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known as a novelist?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Has the person won a major literary award such as the Nobel Prize, Booker Prize, or Pulitzer Prize?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.nationalbook.org/people/stephen-king",
+            "excerpt": "He is the recipient of the 2003 National Book Foundation Medal for Distinguished Contribution to American Letters.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has the person won a major literary award such as the Nobel Prize, Booker Prize, or Pulitzer Prize?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Is the person British?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Stephen-King",
+            "excerpt": "Stephen King (born September 21, 1947, Portland, Maine, U.S.) is an American novelist.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person British?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Is the person from North or South America?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person from North or South America?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Is the person from the United States?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.), U.S. writer of horror stories.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person from the United States?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Is the person known for writing works published primarily in the 21st century?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.standard.co.uk/shopping/esbest/books-dvds/best-stephen-king-novels-b1164791.html",
+            "excerpt": "King's oeuvre [was] written mostly throughout the late 1970s and 1980s.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Carrie (1974) ... The Shining (1977) ... Pet Sematary (1983), It (1986), Misery (1987), [followed by] 11/22/63 (2011), Doctor Sleep (2013), The Outsider (2018), The Institute (2019), and Later (2021).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person known for writing works published primarily in the 21st century?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Did the person win the Pulitzer Prize?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://thereadingtub.com/has-stephen-king-won-a-pulitzer/",
+            "excerpt": "While Stephen King has never won a Pulitzer Prize, it’s essential to highlight the numerous accolades he has received throughout his career.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person win the Pulitzer Prize?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Was the person's most famous novel published before the year 2000?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person's most famous novel published before the year 2000?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Is the person's most famous work primarily about the experience of war?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [
+          {
+            "source_url": "https://study.com/academy/lesson/stephen-king-biography-books-short-stories.html",
+            "excerpt": "“The Shining” is Stephen King's most popular and best-selling story.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.hachette.co.uk/titles/stephen-king-3/the-shining/9781444720723",
+            "excerpt": "One of the true classics of horror, THE SHINING is regarded as one of Stephen King’s masterpieces.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://stephenking.com/works/audiobook/shining.html",
+            "excerpt": "This tale of a troubled man hired to care for a remote mountain resort ... unfolds as secrets from the Overlook Hotel's past are revealed, and the hotel itself attempts to claim the very souls of the Torrance family.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person's most famous work primarily about the experience of war?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "ASK",
+        "question": "Did the person win the Nobel Prize in Literature?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [
+          {
+            "source_url": "https://www.dw.com/en/why-stephen-king-will-never-win-the-nobel-prize/video-63074287",
+            "excerpt": "Why Stephen King will never win a Nobel Prize.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person win the Nobel Prize in Literature?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "ASK",
+        "question": "Has the person won the National Book Award for Fiction?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [
+          {
+            "source_url": "https://www.nytimes.com/2003/09/15/books/a-literary-award-for-stephen-king.html",
+            "excerpt": "None of Mr. King's books has ever won a National Book Award.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "http://archivenews.bookweb.org/news/2003-national-book-awards-finalists-announced.html",
+            "excerpt": "The National Book Foundation will present its 2003 Medal for Distinguished Contribution to American Letters to Stephen King.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has the person won the National Book Award for Fiction?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Salman Rushdie",
+        "guess_description": "Indian-born British-American novelist and winner of the Booker Prize for 'Midnight's Children'",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Stephen King, while the proposed identity is Salman Rushdie, a different author.",
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Indian-born British-American novelist and winner of the Booker Prize for 'Midnight's Children'\",\"name\":\"Salman Rushdie\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "ASK",
+        "question": "Is the person primarily known as a literary fiction novelist rather than genre fiction?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Stephen-King",
+            "excerpt": "Stephen King ... is an American novelist and short-story writer whose books are credited with reviving the genre of horror fiction in the late 20th century.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/students/article/Stephen-King/275279",
+            "excerpt": "Carrie ... helped to establish King’s reputation as a master of horror literature.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known as a literary fiction novelist rather than genre fiction?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "ASK",
+        "question": "Is the person primarily known for writing science fiction or fantasy?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "He is best known for his works in the horror and fantasy genres.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for writing science fiction or fantasy?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "William Gibson",
+        "guess_description": "American-Canadian science fiction writer, pioneer of the cyberpunk genre, author of Neuromancer",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Stephen King, while the proposed identity is William Gibson, a different author.",
+        "counted": true,
+        "counted_questions": 26,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American-Canadian science fiction writer, pioneer of the cyberpunk genre, author of Neuromancer\",\"name\":\"William Gibson\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 27,
+        "action": "ASK",
+        "question": "Did the person's most famous work win the Hugo Award for Best Novel?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 27,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person's most famous work win the Hugo Award for Best Novel?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 28,
+        "action": "ASK",
+        "question": "Is the person primarily known for writing science fiction?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 28,
+        "evidence": [
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "He is best known for his works in the horror and fantasy genres.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for writing science fiction?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 29,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "George R.R. Martin",
+        "guess_description": "American fantasy novelist and author of A Song of Ice and Fire series",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies George R.R. Martin, while the trusted subject is Stephen King.",
+        "counted": true,
+        "counted_questions": 29,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American fantasy novelist and author of A Song of Ice and Fire series\",\"name\":\"George R.R. Martin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 30,
+        "action": "ASK",
+        "question": "Is the person the author of 'American Gods'?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 30,
+        "evidence": [
+          {
+            "source_url": "https://nebulas.sfwa.org/nominated-work/american-gods",
+            "excerpt": "Neil Gaiman ... rocked the literary world with American Gods.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person the author of 'American Gods'?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 31,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Stephen King",
+        "guess_description": "American author of horror, supernatural fiction, suspense, and fantasy, known for novels such as 'It' and 'The Shining'",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Stephen King, the American author described in the trusted subject.",
+        "counted": false,
+        "counted_questions": 30,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American author of horror, supernatural fiction, suspense, and fantasy, known for novels such as 'It' and 'The Shining'\",\"name\":\"Stephen King\",\"question\":null}}"
+      }
+    ]
+  }
+}

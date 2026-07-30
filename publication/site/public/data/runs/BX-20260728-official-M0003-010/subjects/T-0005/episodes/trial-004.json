@@ -1,0 +1,328 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0003-010",
+  "target_id": "T-0005",
+  "trial_id": "trial-004",
+  "episode": {
+    "episode_run_id": "BR-47d4d902db0d42281bda6b7ba2cd34e0fbaa283c",
+    "episode_id": "EP-019faa50108c72f4b29999bf4c509a93",
+    "subject_name": "Achilles",
+    "subject_description": "Achilles, the Greek mythological hero and greatest Greek warrior of the Trojan War in Homer's Iliad, identified by Wikidata entity Q41746.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Achilles",
+    "started_at": "2026-07-28T20:00:01.676928Z",
+    "completed_at": "2026-07-28T20:03:03.511525Z",
+    "duration_ms": 181835,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 8,
+    "counted_questions": 7,
+    "ask_count": 7,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "not_applicable",
+    "total_cost_usd": "0.0403702000000000018",
+    "total_tokens": 62717,
+    "contract": {
+      "evaluated_outputs": 8,
+      "valid_outputs": 8,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0003",
+        "requested_model": "openai/gpt-5-nano",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5-nano"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 7,
+        "cost_usd": "0.0311270500000000018"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 7,
+        "cost_usd": "0.0037882"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"mythological_figure\",\"event\":\"BEGIN\",\"variation_token\":\"BYOMPCJW\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 8,
+        "cost_usd": "0.00516095",
+        "latency_ms": 121225,
+        "total_tokens": 17945,
+        "input_tokens": 5763,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 12182,
+        "reasoning_tokens": 11584,
+        "estimated_cache_savings_usd": "0E-10"
+      },
+      "oracle": {
+        "calls": 7,
+        "cost_usd": "0.0349152500000000018",
+        "latency_ms": 59269,
+        "total_tokens": 44354,
+        "input_tokens": 42012,
+        "cached_input_tokens": 13231,
+        "cache_write_tokens": 0,
+        "output_tokens": 2342,
+        "reasoning_tokens": 1227,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.000294",
+        "latency_ms": 899,
+        "total_tokens": 418,
+        "input_tokens": 384,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 34,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the figure a deity (a god or goddess)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Though Achilles was a mortal hero rather than a god",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure a deity (a god or goddess)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the figure male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "The man who led the Greeks to victory after ten years of war.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles, in Greek mythology, son of the mortal Peleus...",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the figure associated with Greek mythology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "Achilles is a central figure in Greek mythology.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure associated with Greek mythology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the figure the son of Zeus?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "He was the son of the mortal king Peleus and the sea nymph Thetis.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.theoi.com/Pontios/NereisThetis3.html",
+            "excerpt": "When Thetis had a baby [Achilles] by Peleus...",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure the son of Zeus?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Did the figure participate in the Trojan War?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles was ... the greatest warrior of the army of Agamemnon in the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the figure participate in the Trojan War?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the figure credited with conceiving the plan of the Trojan Horse?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/question/What-is-the-story-of-the-Trojan-horse",
+            "excerpt": "The stratagem was devised by Odysseus, and the horse was constructed by Epeius.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.bbc.co.uk/teach/school-radio/articles/zhbdd6f",
+            "excerpt": "The creation of the Trojan horse by Odysseus...",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure credited with conceiving the plan of the Trojan Horse?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Did the figure kill Hector?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/students/article/Hector/274815",
+            "excerpt": "Hector killed Patroclus, a friend of the Greek hero Achilles, and in revenge Achilles killed Hector.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the figure kill Hector?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Achilles",
+        "guess_description": "Greek hero, central figure of the Trojan War; son of Peleus and Thetis; known for his near invulnerability and for killing Hector.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Achilles, the Greek mythological hero of the Trojan War.",
+        "counted": false,
+        "counted_questions": 7,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek hero, central figure of the Trojan War; son of Peleus and Thetis; known for his near invulnerability and for killing Hector.\",\"name\":\"Achilles\",\"question\":null}}"
+      }
+    ]
+  }
+}

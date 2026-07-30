@@ -1,0 +1,365 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0004-010",
+  "target_id": "T-0005",
+  "trial_id": "trial-003",
+  "episode": {
+    "episode_run_id": "BR-a1cf0b94679d63266830c5999396c4a7df22b4d6",
+    "episode_id": "EP-019fa9faa02a736e95aa4a27fb78fdae",
+    "subject_name": "Achilles",
+    "subject_description": "Achilles, the Greek mythological hero and greatest Greek warrior of the Trojan War in Homer's Iliad, identified by Wikidata entity Q41746.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Achilles",
+    "started_at": "2026-07-28T18:26:42.346138Z",
+    "completed_at": "2026-07-28T18:28:38.202135Z",
+    "duration_ms": 115856,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 10,
+    "counted_questions": 9,
+    "ask_count": 9,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "not_applicable",
+    "total_cost_usd": "0.0895241250000000002",
+    "total_tokens": 60114,
+    "contract": {
+      "evaluated_outputs": 10,
+      "valid_outputs": 10,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0004",
+        "requested_model": "google/gemini-3.6-flash",
+        "requested_provider": "google-vertex",
+        "resolved_models": [
+          "google/gemini-3.6-flash"
+        ],
+        "resolved_providers": [
+          "Google"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 9,
+        "cost_usd": "0.0354217250000000002"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 9,
+        "cost_usd": "0.0052864"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"mythological_figure\",\"event\":\"BEGIN\",\"variation_token\":\"AMZAISLM\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 10,
+        "cost_usd": "0.0484170",
+        "latency_ms": 36741,
+        "total_tokens": 13670,
+        "input_tokens": 9018,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 4652,
+        "reasoning_tokens": 4384,
+        "estimated_cache_savings_usd": "0E-9"
+      },
+      "oracle": {
+        "calls": 9,
+        "cost_usd": "0.0407081250000000002",
+        "latency_ms": 76662,
+        "total_tokens": 46006,
+        "input_tokens": 42799,
+        "cached_input_tokens": 8762,
+        "cache_write_tokens": 0,
+        "output_tokens": 3207,
+        "reasoning_tokens": 1886,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.000399",
+        "latency_ms": 1879,
+        "total_tokens": 438,
+        "input_tokens": 366,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 72,
+        "reasoning_tokens": 31,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is this figure from Greek or Roman mythology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "Achilles is a central figure in Greek mythology.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure from Greek or Roman mythology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is this figure considered a god or goddess?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Achilles was a mortal hero rather than a god.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure considered a god or goddess?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is this figure a mortal or demigod?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://worldhistoryedu.com/achilles-greek-mythology-story-and-facts/",
+            "excerpt": "Largely considered a demigod, Achilles was the son of Peleus, a mortal man, and Thetis a Nereid (sea nymph).",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "He was the son of the mortal king Peleus and the sea nymph Thetis.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure a mortal or demigod?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is this figure male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "the man who led the Greeks to victory after ten years of war",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Did this figure participate in the Trojan War?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/event/Trojan-War",
+            "excerpt": "The death of Achilles, the greatest Greek warrior of the Trojan War, is not described in Homeric works.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this figure participate in the Trojan War?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Did this figure fight on the Greek side in the Trojan War?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "Achilles is renowned as the greatest warrior of the Greek army during the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this figure fight on the Greek side in the Trojan War?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Did this figure survive the Trojan War?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/event/Trojan-War",
+            "excerpt": "The death of Achilles, the greatest Greek warrior of the Trojan War... Achilles is said to have been killed by Paris of Troy.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this figure survive the Trojan War?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Did this figure commit suicide?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.encyclopedia.com/literature-and-arts/classical-literature-mythology-and-folklore/folklore-and-mythology/achilles",
+            "excerpt": "An arrow shot by Paris struck his heel and killed him.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this figure commit suicide?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Was this figure killed by Paris?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.factmonster.com/encyclopedia/arts/classical-lit/myths-folklore/achilles",
+            "excerpt": "Achilles died of a wound inflicted by Paris.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.greeklegendsandmyths.com/paris.html",
+            "excerpt": "Paris killed Achilles by shooting him in the heel.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this figure killed by Paris?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Achilles",
+        "guess_description": "Greek hero of the Trojan War who was killed by Paris",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity names Achilles, matching the trusted subject; the description is consistent with the mythological figure.",
+        "counted": false,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek hero of the Trojan War who was killed by Paris\",\"name\":\"Achilles\",\"question\":null}}"
+      }
+    ]
+  }
+}

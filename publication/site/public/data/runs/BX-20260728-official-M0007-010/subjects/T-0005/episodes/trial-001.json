@@ -1,0 +1,352 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0007-010",
+  "target_id": "T-0005",
+  "trial_id": "trial-001",
+  "episode": {
+    "episode_run_id": "BR-66d64f9a3d601a442c8b124506026eb16c58710b",
+    "episode_id": "EP-019faa95387572c89cb4a87d819f1d54",
+    "subject_name": "Achilles",
+    "subject_description": "Achilles, the Greek mythological hero and greatest Greek warrior of the Trojan War in Homer's Iliad, identified by Wikidata entity Q41746.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Achilles",
+    "started_at": "2026-07-28T21:15:33.877822Z",
+    "completed_at": "2026-07-28T21:19:54.833942Z",
+    "duration_ms": 260956,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 10,
+    "counted_questions": 9,
+    "ask_count": 8,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 1,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1387373749999999983",
+    "total_tokens": 64716,
+    "contract": {
+      "evaluated_outputs": 10,
+      "valid_outputs": 9,
+      "violations": 1,
+      "counted_penalties": 1,
+      "affected_trials": 1,
+      "compliance_rate": "0.9",
+      "status": "breached"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0007",
+        "requested_model": "moonshotai/kimi-k3",
+        "requested_provider": "moonshotai",
+        "resolved_models": [
+          "moonshotai/kimi-k3"
+        ],
+        "resolved_providers": [
+          "Moonshot AI"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 8,
+        "cost_usd": "0.0397306749999999983"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 7,
+        "cost_usd": "0.0062458"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"mythological_figure\",\"event\":\"BEGIN\",\"variation_token\":\"EAQCORIU\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 10,
+        "cost_usd": "0.0924624",
+        "latency_ms": 169116,
+        "total_tokens": 15788,
+        "input_tokens": 10705,
+        "cached_input_tokens": 5888,
+        "cache_write_tokens": 0,
+        "output_tokens": 5083,
+        "reasoning_tokens": 4619,
+        "estimated_cache_savings_usd": "0.01589760"
+      },
+      "oracle": {
+        "calls": 8,
+        "cost_usd": "0.0459764749999999983",
+        "latency_ms": 90219,
+        "total_tokens": 48511,
+        "input_tokens": 44602,
+        "cached_input_tokens": 7426,
+        "cache_write_tokens": 0,
+        "output_tokens": 3909,
+        "reasoning_tokens": 2600,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0002985",
+        "latency_ms": 1075,
+        "total_tokens": 417,
+        "input_tokens": 381,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 36,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the figure from Greek mythology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/video/did-you-know-Achilles/-255375",
+            "excerpt": "In Greek mythology, Achilles was the greatest warrior of the Greek army in the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure from Greek mythology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the figure one of the Twelve Olympians?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.theoi.com/greek-mythology/olympian-gods.html",
+            "excerpt": "The Twelve great gods of the Greeks were known as the Olympians: Aphrodite, Apollo, Ares, Artemis, Athena, Demeter, Dionysus, Hephaestus, Hera, Hermes, Poseidon, and Zeus.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://historylink101.com/2/greece2/titans.htm",
+            "excerpt": "Heroes Achilles | Aeneas | Diomedes | Hector | Hercules | Jason | Odysseus | Perseus | Theseus",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure one of the Twelve Olympians?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the figure primarily depicted as a monster or non-human creature?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Achilles was a mortal hero rather than a god.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.worldhistory.org/achilles",
+            "excerpt": "The Greek hero is a popular subject in ancient Greek art.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure primarily depicted as a monster or non-human creature?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the figure male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.wikipedia.org/wiki/Achilles_(son_of_Zeus)",
+            "excerpt": "Achilles was a man of an...",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "the man who led the Greeks to victory after ten years of war",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is the figure strongly associated with the underworld or the dead?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure strongly associated with the underworld or the dead?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the figure a mortal hero rather than a god or Titan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Though Achilles was a mortal hero rather than a god",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure a mortal hero rather than a god or Titan?\"}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 7,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 7
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the figure strongly associated with the Trojan War?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "Achilles is a central figure in Greek mythology, renowned as the greatest warrior of the Greek army during the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure strongly associated with the Trojan War?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is the figure said to have been made nearly invulnerable by being dipped in the River Styx?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/video/did-you-know-Achilles/-255375",
+            "excerpt": "Achilles was dipped in the magical River Styx as a child by his mother, an act that rendered his body invulnerable to harm.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure said to have been made nearly invulnerable by being dipped in the River Styx?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Achilles",
+        "guess_description": "Greek mortal hero of the Trojan War, famed for being nearly invulnerable after his mother dipped him in the River Styx.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity names Achilles and matches the trusted mythological Greek hero of the Trojan War.",
+        "counted": false,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek mortal hero of the Trojan War, famed for being nearly invulnerable after his mother dipped him in the River Styx.\",\"name\":\"Achilles\",\"question\":null}}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1177 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0007-010",
+  "target_id": "T-0004",
+  "trial_id": "trial-003",
+  "episode": {
+    "episode_run_id": "BR-0f8c5b16ccd2f5a41917f8bc4a159f286b6c63a1",
+    "episode_id": "EP-019faa3be8c073b9b3e29af46393ebf3",
+    "subject_name": "Garfield",
+    "subject_description": "Garfield, the lazy, cynical, lasagna-loving orange cat created by Jim Davis and protagonist of the Garfield comic strip, identified by Wikidata entity Q767120.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Garfield_(character)",
+    "started_at": "2026-07-28T19:38:00.768970Z",
+    "completed_at": "2026-07-28T21:07:05.604966Z",
+    "duration_ms": 5344836,
+    "success": false,
+    "terminal_reason": "guesser_protocol_failure",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 51,
+    "counted_questions": 50,
+    "ask_count": 42,
+    "guess_count": 6,
+    "rejected_guess_count": 6,
+    "oracle_unknown_count": 14,
+    "cache_status": "compliant",
+    "total_cost_usd": "2.9435971500000000054",
+    "total_tokens": 814944,
+    "contract": {
+      "evaluated_outputs": 51,
+      "valid_outputs": 49,
+      "violations": 2,
+      "counted_penalties": 2,
+      "affected_trials": 1,
+      "compliance_rate": "0.9607843137254901960784313725",
+      "status": "breached"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0007",
+        "requested_model": "moonshotai/kimi-k3",
+        "requested_provider": "moonshotai",
+        "resolved_models": [
+          "moonshotai/kimi-k3"
+        ],
+        "resolved_providers": [
+          "Moonshot AI"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 42,
+        "cost_usd": "0.3580808500000000054"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 28,
+        "cost_usd": "0.0307234"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 2,
+        "cost_usd": "0.024555"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"fictional_character\",\"event\":\"BEGIN\",\"variation_token\":\"AMZAISLM\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 51,
+        "cost_usd": "2.5279464",
+        "latency_ms": 4784391,
+        "total_tokens": 287928,
+        "input_tokens": 130643,
+        "cached_input_tokens": 82688,
+        "cache_write_tokens": 0,
+        "output_tokens": 157285,
+        "reasoning_tokens": 154763,
+        "estimated_cache_savings_usd": "0.22325760"
+      },
+      "oracle": {
+        "calls": 42,
+        "cost_usd": "0.4133592500000000054",
+        "latency_ms": 547279,
+        "total_tokens": 524278,
+        "input_tokens": 497291,
+        "cached_input_tokens": 228242,
+        "cache_write_tokens": 0,
+        "output_tokens": 26987,
+        "reasoning_tokens": 17855,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 6,
+        "cost_usd": "0.0022915",
+        "latency_ms": 10672,
+        "total_tokens": 2738,
+        "input_tokens": 2369,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 369,
+        "reasoning_tokens": 91,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Did the character first appear in a printed work such as a novel, short story, comic, or manga rather than first appearing in film, television, or a video game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "The first panel of the first Garfield strip [appeared] on 19 June 1978.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203",
+            "excerpt": "Garfield ... debuted ... on June 19, 1978, in a comic strip published in 41 newspapers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear in a printed work such as a novel, short story, comic, or manga rather than first appearing in film, television, or a video game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Did the character first appear in a comic book, manga, or graphic novel?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "Garfield made his debut in the panels of his first comic strip on 19 June 1978.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203",
+            "excerpt": "Garfield debuted on June 19, 1978, in a comic strip published in 41 newspapers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear in a comic book, manga, or graphic novel?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Was the character's first printed appearance published before 1900?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "The first panel of the first Garfield strip, from 19 June 1978.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character's first printed appearance published before 1900?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Was the character's first printed appearance published in 1950 or later?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.dailycartoonist.com/index.php/2026/01/30/missed-it-garfields-50th",
+            "excerpt": "Jim Davis introduced Garfield ... on January 8, 1976 as a weekly strip in The Pendleton Times.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character's first printed appearance published in 1950 or later?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Does the character come from a fantasy or science fiction story?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.illustrationhistory.org/genres/comics-comic-strips",
+            "excerpt": "Comic strips have included themes such as: Light humor - Peanuts, Nancy, Blondie, Garfield, and Beetle Bailey.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character come from a fantasy or science fiction story?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the character associated with crime, detective, mystery, or spy fiction?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://search.worldcat.org/title/Garfield's-tales-of-mystery/oclc/31315273",
+            "excerpt": "Summary: “Garfield the detective is on the case in five action-packed mysteries.”",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://thrillingdetective.com/2021/04/10/sam-spayed-garfield",
+            "excerpt": "The page identifies “Sam Spayed (Garfield)” as a detective cartoon parody.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character associated with crime, detective, mystery, or spy fiction?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is the character primarily a professional spy, secret agent, or intelligence officer rather than a police detective, private investigator, or amateur sleuth?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield",
+            "excerpt": "Garfield is a round-bodied, orange and black tabby cat... He loves eating fatty foods—especially lasagna—and causing trouble.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-and-Friends",
+            "excerpt": "The show featured Garfield, a lazy, lasagna-loving orange tabby cat, his owner Jon Arbuckle, and the dim-witted dog Odie.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily a professional spy, secret agent, or intelligence officer rather than a police detective, private investigator, or amateur sleuth?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the character a police detective or police officer?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-character",
+            "excerpt": "Garfield is a cartoon character whose costars include Jon, a fictional cartoonist, and Odie, a dog.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://comicvine.gamespot.com/garfield/4050-39429/characters",
+            "excerpt": "Garfield is the titular main character of the comic strip and one of the most popular and well known cartoon cats.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a police detective or police officer?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is the character a private investigator or detective who works independently rather than for a police force?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://thrillingdetective.com/2021/04/10/sam-spayed-garfield",
+            "excerpt": "Garfield as Spayed... investigating the murder... The last scene has Spayed getting cozy with his long-suffering secretary Kitty.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.whatsafterthemovie.com/summary/garfields-babes-andbullets-1989",
+            "excerpt": "Garfield... drifts into a film-noir persona... as if he were Sam Spayed, a down-on-his-luck private investigator.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a private investigator or detective who works independently rather than for a police force?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Is the character famously associated with cannibalism?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character famously associated with cannibalism?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Hannibal Lecter",
+        "guess_description": "Brilliant forensic psychiatrist and cannibalistic serial killer introduced in Thomas Harris’s 1981 crime novel Red Dragon.",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Garfield, a fictional orange cat, while the proposal is Hannibal Lecter, a human fictional psychiatrist and serial killer.",
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Brilliant forensic psychiatrist and cannibalistic serial killer introduced in Thomas Harris’s 1981 crime novel Red Dragon.\",\"name\":\"Hannibal Lecter\",\"question\":null}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 12,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 12
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Was the character's first printed appearance published before 1970?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.dailycartoonist.com/index.php/2026/01/30/missed-it-garfields-50th",
+            "excerpt": "Jim Davis introduced Garfield and Jon on January 8, 1976 as a weekly strip in The Pendleton Times.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pm-universe.fandom.com/wiki/Garfield",
+            "excerpt": "First appearance: Jon #1 (January 8, 1976).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character's first printed appearance published before 1970?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Is the character portrayed as a murderer or serial killer?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character portrayed as a murderer or serial killer?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Is the character male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.keycollectorcomics.com/character/garfield,13370/",
+            "excerpt": "Species: Cat Gender: Male",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://mashable.com/article/garfield-gender-debate-rages-on",
+            "excerpt": "Garfield is a tabby cat. Garfield is male.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Is the character a former U.S. Army military police officer?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Jim-Davis-American-cartoonist",
+            "excerpt": "The strip’s titular character, a sardonic, lazy, lasagna-loving, Monday-hating, orange tabby cat.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a former U.S. Army military police officer?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Is the character a journalist or reporter?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a journalist or reporter?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Is the character the principal protagonist or lead character of the work or series in which they appear?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-character",
+            "excerpt": "Garfield cartoon character",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character the principal protagonist or lead character of the work or series in which they appear?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Is the character a professor or university academic?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a professor or university academic?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Is the character a lawyer or attorney?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a lawyer or attorney?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "ASK",
+        "question": "Is the character based in or strongly associated with the United States?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [
+          {
+            "source_url": "https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203",
+            "excerpt": "The character created by US cartoonist Jim Davis debuted in a comic strip published in 41 newspapers.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://indianahistory.org/education/education-resources/educator-resources/famous-hoosiers/jim-davis",
+            "excerpt": "The comic strip first appeared in 41 newspapers in U.S. cities like Boston, Chicago and Dallas.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character based in or strongly associated with the United States?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "ASK",
+        "question": "Does the character work for or with a police department in a forensic, consulting, or other non-officer capacity?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character work for or with a police department in a forensic, consulting, or other non-officer capacity?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "ASK",
+        "question": "Was the character's first printed appearance published in 1990 or later?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "The first panel of the first Garfield strip, from 19 June 1978.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203",
+            "excerpt": "The character created by US cartoonist Jim Davis debuted 40 years ago, on June 19, 1978, in a comic strip published in 41 newspapers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character's first printed appearance published in 1990 or later?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "ASK",
+        "question": "Does the character suffer from amnesia or major memory loss as a central part of their story?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character suffer from amnesia or major memory loss as a central part of their story?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "ASK",
+        "question": "Does the character work for the CIA or another U.S. intelligence agency, though not as a field spy or secret agent?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character work for the CIA or another U.S. intelligence agency, though not as a field spy or secret agent?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "ASK",
+        "question": "Is the character a psychologist?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 26,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield ... is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-character",
+            "excerpt": "Garfield — cartoon character.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a psychologist?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 27,
+        "action": "ASK",
+        "question": "Is the character a professional criminal, thief, or burglar rather than someone who solves crimes?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 27,
+        "evidence": [
+          {
+            "source_url": "https://www.oxfordlearnersdictionaries.com/us/definition/english/garfieldtm",
+            "excerpt": "Garfield is a very lazy cat who eats a lot of lasagne and hates Mondays.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://search.worldcat.org/title/Garfield's-tales-of-mystery/oclc/31315273",
+            "excerpt": "Garfield the detective is on the case in five action-packed mysteries.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a professional criminal, thief, or burglar rather than someone who solves crimes?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 28,
+        "action": "ASK",
+        "question": "Is the character an agent or employee of the FBI?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 28,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character an agent or employee of the FBI?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 29,
+        "action": "ASK",
+        "question": "Is the character known for profiling serial killers?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 29,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Jim-Davis-American-cartoonist",
+            "excerpt": "Garfield is described as a sardonic, lazy, lasagna-loving, Monday-hating orange tabby cat.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203",
+            "excerpt": "Garfield is characterized as a lazy, lasagna-loving, Monday-hating comic-strip character.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character known for profiling serial killers?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 30,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Travis McGee",
+        "guess_description": "John D. MacDonald’s Florida “salvage consultant” and knight-errant lead of the Travis McGee crime novels, first appearing in The Deep Blue Good-by (1964).",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Travis McGee, a fictional crime-novel protagonist, while the trusted subject is Garfield, the fictional cat.",
+        "counted": true,
+        "counted_questions": 30,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"John D. MacDonald’s Florida “salvage consultant” and knight-errant lead of the Travis McGee crime novels, first appearing in The Deep Blue Good-by (1964).\",\"name\":\"Travis McGee\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 31,
+        "action": "ASK",
+        "question": "Does the character frequently adopt false identities or disguises as part of his investigations?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 31,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character frequently adopt false identities or disguises as part of his investigations?\"}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 32,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "output_limit_exceeded",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 32
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 33,
+        "action": "ASK",
+        "question": "Was the character's first printed appearance published before 1980?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 33,
+        "evidence": [
+          {
+            "source_url": "https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203",
+            "excerpt": "The character created by US cartoonist Jim Davis debuted 40 years ago, on June 19, 1978, in a comic strip published in 41 newspapers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character's first printed appearance published before 1980?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 34,
+        "action": "ASK",
+        "question": "Is the character a veteran of the Vietnam War?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 34,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a veteran of the Vietnam War?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 35,
+        "action": "ASK",
+        "question": "Is the character strongly associated with Los Angeles?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 35,
+        "evidence": [
+          {
+            "source_url": "https://the-official-gocomics.fandom.com/wiki/Garfield_(comic_strip)",
+            "excerpt": "Garfield is set in Jim Davis' hometown of Muncie, Indiana.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.concordtheatricals.com/a/119419/jim-davis",
+            "excerpt": "Davis oversees all of Garfield's endeavors via his licensing and creative studio, Paws, Inc., located near Muncie, Indiana.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character strongly associated with Los Angeles?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 36,
+        "action": "ASK",
+        "question": "Was the character formerly employed as a police officer or police detective before the main events of the story?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 36,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character formerly employed as a police officer or police detective before the main events of the story?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 37,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Matthew Scudder",
+        "guess_description": "Lawrence Block’s alcoholic ex-NYPD officer turned unlicensed New York investigator, introduced in the 1976 crime novel The Sins of the Fathers.",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Garfield, the fictional cat created by Jim Davis; the proposal identifies Matthew Scudder, a fictional investigator created by Lawrence Block.",
+        "counted": true,
+        "counted_questions": 37,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Lawrence Block’s alcoholic ex-NYPD officer turned unlicensed New York investigator, introduced in the 1976 crime novel The Sins of the Fathers.\",\"name\":\"Matthew Scudder\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 38,
+        "action": "ASK",
+        "question": "Is the character an amateur sleuth?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 38,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character an amateur sleuth?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 39,
+        "action": "ASK",
+        "question": "Is the character a former U.S. Marine who later works as a CIA analyst?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 39,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a former U.S. Marine who later works as a CIA analyst?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 40,
+        "action": "ASK",
+        "question": "Is the character a marine engineer or underwater adventurer associated with a U.S. oceanographic agency?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 40,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a marine engineer or underwater adventurer associated with a U.S. oceanographic agency?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 41,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Fletch",
+        "guess_description": "Gregory Mcdonald’s wisecracking American investigative reporter Irwin Maurice Fletcher, lead of the crime-mystery series that began with the 1974 novel Fletch.",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Irwin Maurice Fletcher (“Fletch”), a fictional investigative reporter, not Garfield, the fictional cat.",
+        "counted": true,
+        "counted_questions": 41,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Gregory Mcdonald’s wisecracking American investigative reporter Irwin Maurice Fletcher, lead of the crime-mystery series that began with the 1974 novel Fletch.\",\"name\":\"Fletch\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 42,
+        "action": "ASK",
+        "question": "Was the character's first printed appearance published before 1975?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 42,
+        "evidence": [
+          {
+            "source_url": "https://www.dailycartoonist.com/index.php/2026/01/30/missed-it-garfields-50th",
+            "excerpt": "Jim Davis introduced Garfield and Jon on January 8, 1976 as a weekly strip in The Pendleton Times.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://news.justcollecting.com/jim-davis-original-garfield-artwork-archive-heritage-auctions/",
+            "excerpt": "Davis created Garfield in 1976, and he originally appeared in the Pendleton Times-Post as a character in the comic strip ‘Jon’.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character's first printed appearance published before 1975?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 43,
+        "action": "ASK",
+        "question": "Was the character created by Evan Hunter, the author who wrote crime fiction under the name Ed McBain?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 43,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features and created one of the most popular animals in the comic world.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/print/article/276994",
+            "excerpt": "More than 50 books are crime stories published under the pseudonym Ed McBain.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character created by Evan Hunter, the author who wrote crime fiction under the name Ed McBain?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 44,
+        "action": "ASK",
+        "question": "Is the character a playwright, novelist, or other professional writer?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 44,
+        "evidence": [
+          {
+            "source_url": "https://americanhistory.si.edu/collections/object/nmah_1367415",
+            "excerpt": "Davis continues to write Garfield today.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-character",
+            "excerpt": "Garfield — cartoon character",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a playwright, novelist, or other professional writer?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 45,
+        "action": "ASK",
+        "question": "Is the character a medical doctor, physician, surgeon, or medical examiner?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 45,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield ... is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://comicvine.gamespot.com/garfield/4050-39429/characters",
+            "excerpt": "Liz Wilson [is] Garfield’s veterinarian ... Garfield [is] the titular main character ... a well known cartoon cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a medical doctor, physician, surgeon, or medical examiner?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 46,
+        "action": "ASK",
+        "question": "Was the character created by John Grisham?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 46,
+        "evidence": [
+          {
+            "source_url": "https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203",
+            "excerpt": "The character created by US cartoonist Jim Davis debuted 40 years ago, on June 19, 1978.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://indianahistory.org/education/education-resources/educator-resources/famous-hoosiers/jim-davis",
+            "excerpt": "Jim created a new character – a fat, lasagna-loving cat named Garfield.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character created by John Grisham?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 47,
+        "action": "ASK",
+        "question": "Was the character created by Stephen King?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 47,
+        "evidence": [
+          {
+            "source_url": "https://www.americanhistory.si.edu/collections/object/nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features and created one of the most popular animals in the comic world.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Jim-Davis-American-cartoonist",
+            "excerpt": "Jim Davis ... created comics ...",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character created by Stephen King?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 48,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Yakov (Ezra) Lieberman",
+        "guess_description": "The elderly Nazi-hunting protagonist of Ira Levin’s 1976 thriller The Boys from Brazil, called Yakov Liebermann in the novel and Ezra Lieberman in the film adaptation.",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposed identity is Yakov/Ezra Lieberman, a character from The Boys from Brazil, not Garfield the Cat.",
+        "counted": true,
+        "counted_questions": 48,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"The elderly Nazi-hunting protagonist of Ira Levin’s 1976 thriller The Boys from Brazil, called Yakov Liebermann in the novel and Ezra Lieberman in the film adaptation.\",\"name\":\"Yakov (Ezra) Lieberman\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 49,
+        "action": "ASK",
+        "question": "Is the character a Catholic priest?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 49,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield ... is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Jim-Davis-American-cartoonist",
+            "excerpt": "The grumpy orange cat was named ... Garfield.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a Catholic priest?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 50,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Noel Holcroft",
+        "guess_description": "The American architect protagonist of Robert Ludlum’s 1978 thriller The Holcroft Covenant, an ordinary man drawn into a Nazi inheritance conspiracy.",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Garfield, a fictional cat character; the proposed identity is Noel Holcroft, a human protagonist from Robert Ludlum’s novel.",
+        "counted": true,
+        "counted_questions": 50,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"The American architect protagonist of Robert Ludlum’s 1978 thriller The Holcroft Covenant, an ordinary man drawn into a Nazi inheritance conspiracy.\",\"name\":\"Noel Holcroft\",\"question\":null}}"
+      }
+    ]
+  }
+}

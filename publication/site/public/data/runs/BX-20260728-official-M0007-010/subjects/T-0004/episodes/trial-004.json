@@ -1,0 +1,390 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0007-010",
+  "target_id": "T-0004",
+  "trial_id": "trial-004",
+  "episode": {
+    "episode_run_id": "BR-16b8609d23404f527c4e6e83650b8e64b6791e8c",
+    "episode_id": "EP-019faa8d77a0704a8a60b537efe3fdf6",
+    "subject_name": "Garfield",
+    "subject_description": "Garfield, the lazy, cynical, lasagna-loving orange cat created by Jim Davis and protagonist of the Garfield comic strip, identified by Wikidata entity Q767120.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Garfield_(character)",
+    "started_at": "2026-07-28T21:07:05.760422Z",
+    "completed_at": "2026-07-28T21:11:46.731402Z",
+    "duration_ms": 280971,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 10,
+    "counted_questions": 9,
+    "ask_count": 9,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1448125499999999986",
+    "total_tokens": 76289,
+    "contract": {
+      "evaluated_outputs": 10,
+      "valid_outputs": 10,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0007",
+        "requested_model": "moonshotai/kimi-k3",
+        "requested_provider": "moonshotai",
+        "resolved_models": [
+          "moonshotai/kimi-k3"
+        ],
+        "resolved_providers": [
+          "Moonshot AI"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 9,
+        "cost_usd": "0.0475105499999999986"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 9,
+        "cost_usd": "0.0087901"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"fictional_character\",\"event\":\"BEGIN\",\"variation_token\":\"BYOMPCJW\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 10,
+        "cost_usd": "0.0882144",
+        "latency_ms": 193786,
+        "total_tokens": 15524,
+        "input_tokens": 10729,
+        "cached_input_tokens": 5888,
+        "cache_write_tokens": 0,
+        "output_tokens": 4795,
+        "reasoning_tokens": 4314,
+        "estimated_cache_savings_usd": "0.01589760"
+      },
+      "oracle": {
+        "calls": 9,
+        "cost_usd": "0.0563006499999999986",
+        "latency_ms": 85827,
+        "total_tokens": 60350,
+        "input_tokens": 55261,
+        "cached_input_tokens": 12311,
+        "cache_write_tokens": 0,
+        "output_tokens": 5089,
+        "reasoning_tokens": 3354,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0002975",
+        "latency_ms": 918,
+        "total_tokens": 415,
+        "input_tokens": 379,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 36,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the character a human (rather than an animal, alien, robot, monster, or other non-human being)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://americanhistory.si.edu/collections/object/nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "an orange tabby cat peered lugubriously at the world from the panels of his first comic strip.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a human (rather than an animal, alien, robot, monster, or other non-human being)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the character an animal, including an anthropomorphic or talking animal?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-character",
+            "excerpt": "Garfield is a cartoon character, and Odie is described as the dopey dog who costars with him.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikipedia.org/wiki/List_of_fictional_felines",
+            "excerpt": "Garfield is an orange tabby cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character an animal, including an anthropomorphic or talking animal?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the character a mammal?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip ... the title character, a tabby cat",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.merriam-webster.com/dictionary/cat",
+            "excerpt": "cat: a carnivorous mammal (Felis catus)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a mammal?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the character a mouse or rat?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a mouse or rat?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is the character a domestic dog?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-character",
+            "excerpt": "Garfield’s costars include ... the dopey dog Odie.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a domestic dog?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the character a member of the cat family, including domestic cats, lions, or tigers?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a member of the cat family, including domestic cats, lions, or tigers?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is the character ordinarily depicted as a domestic house cat rather than a big cat such as a lion, tiger, panther, or leopard?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-and-Friends",
+            "excerpt": "The show featured Garfield, a lazy, lasagna-loving orange tabby cat, his owner Jon Arbuckle, and the dim-witted dog Odie.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "The character Garfield is lazy and fat, and ... looks down on his owner, Jon.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character ordinarily depicted as a domestic house cat rather than a big cat such as a lion, tiger, panther, or leopard?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Did the character originate in animated cartoons, comics, or animation?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://us-public-domain.fandom.com/wiki/Garfield",
+            "excerpt": "First Appearance: Jon (January 8, 1976)",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features and created one of the most popular animals in the comic world.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in animated cartoons, comics, or animation?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is the character primarily known from newspaper comic strips?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "Garfield ... would go on to become the most widely syndicated comic strip in the world.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features ... Garfield (1978- ) is a comic strip which looks at the life of the title character.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily known from newspaper comic strips?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Garfield",
+        "guess_description": "The lasagna-loving orange tabby house cat from Jim Davis's long-running newspaper comic strip.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Garfield, the fictional lasagna-loving orange cat created by Jim Davis.",
+        "counted": false,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"The lasagna-loving orange tabby house cat from Jim Davis's long-running newspaper comic strip.\",\"name\":\"Garfield\",\"question\":null}}"
+      }
+    ]
+  }
+}

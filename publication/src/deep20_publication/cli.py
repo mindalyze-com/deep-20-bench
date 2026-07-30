@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import filecmp
 import os
-import re
 import shutil
 import subprocess
 import tempfile
@@ -26,8 +25,15 @@ from .loader import (
     parse_run,
     parse_subject_catalog,
 )
-from .models import CompletedTrialSummary, LoadedEpisode, LoadedRun, PublishedDataset
-from .serialize import dataset_json, leaderboard_csv
+from .models import (
+    CompletedTrialSummary,
+    LoadedEpisode,
+    LoadedRun,
+    PublicationDataBundle,
+    PublishedDataset,
+)
+from .serialize import dataset_json, leaderboard_csv, publication_document_json
+from .split import split_publication
 
 app = typer.Typer(help="Compile and render the independent Deep20Bench publication site.")
 
@@ -151,71 +157,150 @@ def _directories_equal(left: Path, right: Path) -> bool:
 
 
 def _ensure_site_dependencies(site_root: Path) -> None:
-    if (site_root / "node_modules").is_dir():
+    required = (
+        site_root / "node_modules" / ".bin" / "vite",
+        site_root / "node_modules" / ".bin" / "vue-tsc",
+        site_root / "node_modules" / "vue",
+        site_root / "node_modules" / "vue-router",
+    )
+    if all(path.exists() for path in required):
         return
     subprocess.run(["npm", "ci"], cwd=site_root, check=True)
 
 
 def _write_public_data(public_directory: Path, dataset: PublishedDataset) -> None:
+    public_directory.mkdir(parents=True, exist_ok=True)
     data_directory = public_directory / "data"
-    data_directory.mkdir(parents=True, exist_ok=True)
-    (data_directory / "deep20bench-v3.json").write_text(
-        dataset_json(dataset),
-        encoding="utf-8",
+    bundle = split_publication(dataset)
+    staged_directory = Path(
+        tempfile.mkdtemp(prefix=".deep20-data-", dir=public_directory)
     )
-    (data_directory / "leaderboard.csv").write_text(
-        leaderboard_csv(dataset),
-        encoding="utf-8",
-    )
+    backup_directory = public_directory / ".deep20-data-previous"
+    try:
+        (staged_directory / "deep20bench-v5.json").write_text(
+            dataset_json(dataset),
+            encoding="utf-8",
+        )
+        (staged_directory / "leaderboard.csv").write_text(
+            leaderboard_csv(dataset),
+            encoding="utf-8",
+        )
+        (staged_directory / "manifest.json").write_text(
+            publication_document_json(bundle.manifest),
+            encoding="utf-8",
+        )
+        (staged_directory / "leaderboard.json").write_text(
+            publication_document_json(bundle.leaderboard),
+            encoding="utf-8",
+        )
+        for run_document in bundle.runs:
+            path = (
+                staged_directory
+                / "runs"
+                / f"{run_document.run.execution_id}.json"
+            )
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                publication_document_json(run_document),
+                encoding="utf-8",
+            )
+        for subject_document in bundle.subjects:
+            path = (
+                staged_directory
+                / "runs"
+                / subject_document.execution_id
+                / "subjects"
+                / f"{subject_document.target_id}.json"
+            )
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                publication_document_json(subject_document),
+                encoding="utf-8",
+            )
+        for episode_document in bundle.episodes:
+            path = (
+                staged_directory
+                / "runs"
+                / episode_document.execution_id
+                / "subjects"
+                / episode_document.target_id
+                / "episodes"
+                / f"{episode_document.trial_id}.json"
+            )
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                publication_document_json(episode_document),
+                encoding="utf-8",
+            )
+
+        if backup_directory.exists():
+            shutil.rmtree(backup_directory)
+        if data_directory.exists():
+            data_directory.rename(backup_directory)
+        try:
+            staged_directory.rename(data_directory)
+        except BaseException:
+            if backup_directory.exists() and not data_directory.exists():
+                backup_directory.rename(data_directory)
+            raise
+        if backup_directory.exists():
+            shutil.rmtree(backup_directory)
+    finally:
+        if staged_directory.exists():
+            shutil.rmtree(staged_directory)
 
 
-def _build_site(site_root: Path, output_root: Path, base_path: str) -> None:
+def _route_shells(bundle: PublicationDataBundle) -> tuple[str, ...]:
+    editorial = (
+        "results",
+        "results/cost",
+        "results/time",
+        "results/efficiency",
+        "methodology",
+        "story",
+        "data",
+    )
+    runs = tuple(f"runs/{document.run.execution_id}" for document in bundle.runs)
+    subjects = tuple(
+        f"runs/{document.execution_id}/subjects/{document.target_id}"
+        for document in bundle.subjects
+    )
+    episodes = tuple(
+        (
+            f"runs/{document.execution_id}/subjects/{document.target_id}"
+            f"/episodes/{document.trial_id}"
+        )
+        for document in bundle.episodes
+    )
+    return (*editorial, *runs, *subjects, *episodes)
+
+
+def _write_route_shells(output_root: Path, bundle: PublicationDataBundle) -> None:
+    entry = output_root / "index.html"
+    entry_html = entry.read_text(encoding="utf-8")
+    for route in _route_shells(bundle):
+        shell = output_root / route / "index.html"
+        shell.parent.mkdir(parents=True, exist_ok=True)
+        shell.write_text(entry_html, encoding="utf-8")
+    (output_root / "404.html").write_text(entry_html, encoding="utf-8")
+
+
+def _build_site(
+    site_root: Path,
+    output_root: Path,
+    base_path: str,
+    bundle: PublicationDataBundle,
+) -> None:
     environment = dict(os.environ)
     environment["DEEP20_OUTPUT_DIR"] = str(output_root)
     environment["DEEP20_BASE_PATH"] = base_path
-    environment["ASTRO_TELEMETRY_DISABLED"] = "1"
     subprocess.run(
         ["npm", "run", "build"],
         cwd=site_root,
         env=environment,
         check=True,
     )
-    _make_output_portable(output_root, base_path)
-
-
-def _make_output_portable(output_root: Path, base_path: str) -> None:
-    """Make prerendered pages work over GitHub Pages, HTTP, and direct file access."""
-    base_url = re.compile(
-        rf'(?P<quote>["\']){re.escape(base_path)}(?P<suffix>[^"\']*)(?P=quote)'
-    )
-    chart_module = re.compile(
-        r'<script type="module" src="(?P<src>[^"]*PublicationChart[^"]*)"></script>'
-    )
-    for html_path in sorted(output_root.rglob("*.html")):
-        relative_root = os.path.relpath(output_root, start=html_path.parent)
-        root_prefix = (
-            "./"
-            if relative_root == "."
-            else f"{relative_root.replace(os.sep, '/')}/"
-        )
-
-        def portable_url(
-            match: re.Match[str],
-            root_prefix: str = root_prefix,
-        ) -> str:
-            suffix = match.group("suffix")
-            if not suffix or suffix.endswith("/"):
-                suffix = f"{suffix}index.html"
-            quote = match.group("quote")
-            return f"{quote}{root_prefix}{suffix}{quote}"
-
-        source = html_path.read_text(encoding="utf-8")
-        portable = base_url.sub(portable_url, source)
-        portable = chart_module.sub(
-            r'<script defer src="\g<src>"></script>',
-            portable,
-        )
-        html_path.write_text(portable, encoding="utf-8")
+    _write_route_shells(output_root, bundle)
 
 
 @app.command("build")
@@ -247,18 +332,19 @@ def build(
             subject_catalog=subjects,
             subject_catalog_hash=subject_hash,
         )
+        bundle = split_publication(dataset)
         _write_public_data(site_root / "public", dataset)
         _ensure_site_dependencies(site_root)
         if check:
             with tempfile.TemporaryDirectory(prefix="deep20-publication-") as temporary:
                 candidate = Path(temporary) / "docs"
-                _build_site(site_root, candidate, config.site.base_path)
+                _build_site(site_root, candidate, config.site.base_path, bundle)
                 if not _directories_equal(candidate, root / "docs"):
                     raise PublicationInputError("committed docs output is stale")
         else:
             with tempfile.TemporaryDirectory(prefix="deep20-publication-") as temporary:
                 candidate = Path(temporary) / "docs"
-                _build_site(site_root, candidate, config.site.base_path)
+                _build_site(site_root, candidate, config.site.base_path, bundle)
                 output = root / "docs"
                 backup = Path(temporary) / "previous-docs"
                 if output.exists():

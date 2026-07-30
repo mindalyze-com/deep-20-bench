@@ -192,73 +192,52 @@ artifacts fail the build.
 
 ## Winner and scoring rule
 
-The homepage winner is the model with the lowest penalized question score in the active
-official cohort. The site presents the equivalent higher-is-better B20 Score as the headline
-number while retaining the penalized-question value as the exact ranking source.
+The homepage winner is the model with the lowest question score in the active official cohort.
+The headline number stays in the same unit as the game: questions. Lower is better.
 
 For a benchmark with question limit `Q`:
 
 ```text
 failure penalty = Q + 1
 trial value = counted questions when successful, otherwise failure penalty
-subject score = arithmetic mean of all trial values for that subject
-model score = arithmetic mean of all subject scores
+subject value = average of all trial values for that subject
+model score = average of all subject averages
 ```
 
 This calculation:
 
 - Uses exact `Decimal` arithmetic.
 - Gives every subject equal weight.
+- Gives every completed trial equal weight within its subject.
 - Ensures every failed trial affects the score.
 - Treats protocol failures and early Validator `UNKNOWN` results as failures rather than
   artificially cheap trials.
 - Produces an exact tie when unrounded scores are equal.
 
-The site displays the penalized-question score rounded to two decimal places in technical
-details but ranks on the unrounded value. It calls the raw metric a **penalized question
-score**, because `Q + 1` is a declared penalty rather than an observed time-to-success.
+The overview displays the question score to one decimal place and ranks on the exact unrounded
+value. Detailed run and subject views show the model score and subject averages. Episode views
+show both counted questions and penalized questions. A model failure shows both its observed
+count and the declared penalty so 51 is never mistaken for an observed question count.
 
-The publication layer derives a versioned B20 Score without changing any benchmark artifact or
-producer:
-
-```text
-reference target R = 20
-failure penalty F = Q + 1
-B20 Score = R × (F - penalized question score) / (F - R)
-```
-
-For the current `Q = 50` protocol, 20 penalized questions map to B20 `20`, values below 20
-questions map above B20 `20`, values above 20 questions map below B20 `20`, and the failure
-penalty of 51 maps to B20 `0`. Infrastructure failures map to no score. The transformation is
-linear, so it preserves the canonical ordering and exact ties; ranking nevertheless remains
-defined on the unrounded raw value.
-
-The overview displays B20 to one decimal place without a percentage sign or denominator.
-Detailed run, subject, and episode views retain counted questions and penalized questions. A
-model failure shows both its observed count and the declared penalty so 51 is never mistaken for
-an observed question count.
-
-Every B20 presentation includes a plain-language state: **Above target**, **On target**,
-**Below target**, **Failed**, or **Not scored**. Blue represents above-target values, coral
-represents below-target values, and gray represents unavailable infrastructure-failed results.
-Text, position on a linear scale, and texture repeat the meaning so color is never the only cue.
-The score explanation uses a focusable disclosure that works by click, keyboard, or tap; mobile
-does not depend on hover.
+Every score presentation states that lower is better. Model failures and unavailable
+infrastructure results also have explicit text states. Text, position on a linear scale, and
+texture repeat the meaning so color is never the only cue. The score explanation uses a
+focusable disclosure that works by click, keyboard, or tap; mobile does not depend on hover.
 
 The winner never appears without adjacent success rate, trial and subject counts, and a link to
 the scoring explanation. Cost is a separate comparison and may support a separate “best value”
 label; it is not a hidden tie-breaker. Recorded historical cost and dated catalog pricing must
 remain distinguishable.
 
-Version 2 shows B20 beside raw subject scores, individual trial values, ranges, and denominators
-instead of adding a fragile confidence interval. It does not average precomputed run averages,
-remove outliers, or create a cohort-relative composite score.
+Version 5 shows the model question score beside subject averages and individual trial values
+instead of adding a fragile confidence interval. It does not remove outliers or create a
+cohort-relative composite score.
 
 ## Public website
 
 The site is a focused multipage publication:
 
-- Homepage with B20 winner, leaderboard, methodology summary, and limitations.
+- Homepage with question-score winner, leaderboard, methodology summary, and limitations.
 - A dedicated Story & prior work page that records the benchmark's human origin, credits its
   makers, and links directly to the research lineage it belongs to.
 - Explorer with score comparison, subject-by-model heatmap, raw trial spread, and cost
@@ -376,7 +355,7 @@ Implemented Python tests cover:
   protocol versions.
 - Duplicate-key and integrity-tampering rejection.
 - Full completed-trial qualification and latest-qualified-run selection invariants.
-- Penalized failures, B20 reference points, infrastructure `N/A`, and exact joint ranking ties.
+- Penalized failures, average aggregation, infrastructure `N/A`, and exact joint ranking ties.
 - Deterministic public JSON.
 - A public-field allowlist regression check.
 - A dependency-boundary check proving the package does not import benchmark, game, Oracle,

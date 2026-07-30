@@ -1,0 +1,655 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0003-010",
+  "target_id": "T-0005",
+  "trial_id": "trial-001",
+  "episode": {
+    "episode_run_id": "BR-56b6c1d7a1a847b36ab26f60beb5830adeaeaa9c",
+    "episode_id": "EP-019faa37ea8572c9974198aa2d2857f9",
+    "subject_name": "Achilles",
+    "subject_description": "Achilles, the Greek mythological hero and greatest Greek warrior of the Trojan War in Homer's Iliad, identified by Wikidata entity Q41746.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Achilles",
+    "started_at": "2026-07-28T19:33:39.077187Z",
+    "completed_at": "2026-07-28T19:50:41.105989Z",
+    "duration_ms": 1022029,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": false,
+    "total_turns": 22,
+    "counted_questions": 21,
+    "ask_count": 20,
+    "guess_count": 2,
+    "rejected_guess_count": 1,
+    "oracle_unknown_count": 1,
+    "cache_status": "noncompliant",
+    "total_cost_usd": "0.200809699999999995",
+    "total_tokens": 346172,
+    "contract": {
+      "evaluated_outputs": 22,
+      "valid_outputs": 22,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0003",
+        "requested_model": "openai/gpt-5-nano",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5-nano"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 20,
+        "cost_usd": "0.141933799999999995"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 19,
+        "cost_usd": "0.0183444"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 1,
+        "cost_usd": "0.010485"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"mythological_figure\",\"event\":\"BEGIN\",\"variation_token\":\"EAQCORIU\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 22,
+        "cost_usd": "0.02938850",
+        "latency_ms": 758699,
+        "total_tokens": 93315,
+        "input_tokens": 21938,
+        "cached_input_tokens": 5760,
+        "cache_write_tokens": 0,
+        "output_tokens": 71377,
+        "reasoning_tokens": 69696,
+        "estimated_cache_savings_usd": "0.0002592000"
+      },
+      "oracle": {
+        "calls": 20,
+        "cost_usd": "0.170763199999999995",
+        "latency_ms": 259203,
+        "total_tokens": 252011,
+        "input_tokens": 239142,
+        "cached_input_tokens": 123871,
+        "cache_write_tokens": 0,
+        "output_tokens": 12869,
+        "reasoning_tokens": 8656,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 2,
+        "cost_usd": "0.0006580",
+        "latency_ms": 2926,
+        "total_tokens": 846,
+        "input_tokens": 752,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 94,
+        "reasoning_tokens": 16,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the figure associated with Greek mythology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "Achilles is a central figure in Greek mythology, renowned as the greatest warrior of the Greek army during the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure associated with Greek mythology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the figure a god or goddess?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Though Achilles was a mortal hero rather than a god",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "He was the son of the mortal king Peleus and the sea nymph Thetis.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure a god or goddess?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the figure a monster?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "Achilles is a central figure in Greek mythology, renowned as the greatest warrior of the Greek army during the Trojan War.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Achilles was a mortal hero rather than a god.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure a monster?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the figure mortal?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Though Achilles was a mortal hero rather than a god",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure mortal?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is the figure associated with a famous set of twelve labors in Greek mythology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles was the bravest, handsomest, and greatest warrior of the army of Agamemnon in the Trojan War.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://human.libretexts.org/Courses/Arapahoe_Community_College/Hum_115:_World_Mythology_(Stafinbil)/03:_Classical_Greece_and_Rome/3.08:_Names_and_Key_Concepts/3.8.32:_The_Twelve_Labors_of_Heracles",
+            "excerpt": "Heracles had to perform any twelve tasks that Eurystheus set for him.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure associated with a famous set of twelve labors in Greek mythology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the figure associated with the city of Athens?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/achilles/",
+            "excerpt": "The Greek hero is a popular subject in ancient Greek art, appearing on vases from all over Greece, from Athens to Mykonos.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.hellenicaworld.com/Greece/Museum/NationalMuseumAthens/en/NAMAML5746.html",
+            "excerpt": "National Archaeological Museum, Athens ... Male Statue, possibly Achilles.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure associated with the city of Athens?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Theseus",
+        "guess_description": "Legendary mortal hero and king of Athens who defeated the Minotaur and helped shape Attica.",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposed identity is Theseus; they are distinct mythological figures.",
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Legendary mortal hero and king of Athens who defeated the Minotaur and helped shape Attica.\",\"name\":\"Theseus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the figure a king?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure a king?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is the figure the father of Theseus?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "Achilles ... was the son of the mortal king Peleus and the sea nymph Thetis.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Theseus-Greek-hero",
+            "excerpt": "Theseus, great hero of Attic legend, son of Aegeus ... and Aethra ... or of the sea god, Poseidon, and Aethra.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure the father of Theseus?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Is the figure considered autochthonous (born from the earth)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "He was the son of the mortal king Peleus and the sea nymph Thetis.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.maicar.com/GML/AUTOCHTHONOUS.html",
+            "excerpt": "AUTOCHTHONOUS are called those who are said to be the children of the soil.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure considered autochthonous (born from the earth)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Is the figure a king of Athens?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.thecollector.com/who-was-achilles-greek-mythology-warrior",
+            "excerpt": "Achilles was the son of ... the renowned king of Phthia, Peleus.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Peleus",
+            "excerpt": "Peleus, in Greek mythology, king of the Myrmidons of Thessaly ... and the father of the hero Achilles.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure a king of Athens?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Is the figure male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/students/article/Achilles/272697",
+            "excerpt": "Thetis tried to outwit the Fates, who had foretold that war would cut down her son in his prime.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Is the figure primarily known as a hunter?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles was the bravest, handsomest, and greatest warrior of the army of Agamemnon in the Trojan War.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/articles/achilles",
+            "excerpt": "The warrior Achilles is one of the great heroes of Greek mythology.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure primarily known as a hunter?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Is the figure a demigod (a child of a god and a mortal)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "He was the son of the mortal king Peleus and the sea nymph Thetis.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.theoi.com/Pontios/NereisThetis3.html",
+            "excerpt": "Achilles, the son of a goddess [Thetis] and of Peleus.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure a demigod (a child of a god and a mortal)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Is the figure the son of Zeus?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "He was the son of the mortal king Peleus and the sea nymph Thetis.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.theoi.com/Pontios/NereisThetis3.html",
+            "excerpt": "Akhilleus (Achilles), the son of a goddess [Thetis] and of Peleus",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure the son of Zeus?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Is the figure the son of Poseidon?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "He was the son of the mortal king Peleus and the sea nymph Thetis.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure the son of Poseidon?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Is the figure the son of Apollo?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "He was the son of the mortal king Peleus and the sea nymph Thetis.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure the son of Apollo?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Is the figure the child of a god other than Zeus, Poseidon, or Apollo?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/students/article/Achilles/272697",
+            "excerpt": "His mother was the goddess Thetis, a Nereid (sea nymph).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure the child of a god other than Zeus, Poseidon, or Apollo?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Is the figure the son of Hephaestus?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/students/article/Achilles/272697",
+            "excerpt": "His mother was the goddess Thetis... His father was Peleus, king of Thessaly.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Peleus",
+            "excerpt": "Peleus... was most famous as the husband of Thetis (a sea nymph) and the father of the hero Achilles.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure the son of Hephaestus?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Is the figure the son of a goddess?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [
+          {
+            "source_url": "https://www.theoi.com/Pontios/NereisThetis3.html",
+            "excerpt": "Achilles, the son of a goddess [Thetis] and of Peleus.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.merriam-webster.com/dictionary/Peleus",
+            "excerpt": "Achilles, the son of the sea goddess Thetis and the king Peleus.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the figure the son of a goddess?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "ASK",
+        "question": "Is the mother goddess Thetis?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/students/article/Achilles/272697",
+            "excerpt": "His mother was the goddess Thetis, a Nereid (sea nymph).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mother goddess Thetis?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Achilles",
+        "guess_description": "Legendary demigod hero, son of Thetis and Peleus, central figure in the Trojan War.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity is Achilles, matching the trusted mythological figure and the described Trojan War context.",
+        "counted": false,
+        "counted_questions": 21,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Legendary demigod hero, son of Thetis and Peleus, central figure in the Trojan War.\",\"name\":\"Achilles\",\"question\":null}}"
+      }
+    ]
+  }
+}

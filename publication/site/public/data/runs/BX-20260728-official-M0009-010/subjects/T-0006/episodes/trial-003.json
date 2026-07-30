@@ -1,0 +1,369 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0009-010",
+  "target_id": "T-0006",
+  "trial_id": "trial-003",
+  "episode": {
+    "episode_run_id": "BR-efc49b7007caef6e25e0ade6ade696bb3b9fdfd9",
+    "episode_id": "EP-019faa6ffd6476759efa0d732d7c6797",
+    "subject_name": "Genghis Khan",
+    "subject_description": "Genghis Khan, the founder and first khan of the Mongol Empire, identified by Wikidata entity Q720.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Genghis_Khan",
+    "started_at": "2026-07-28T20:34:53.924889Z",
+    "completed_at": "2026-07-28T20:36:11.096021Z",
+    "duration_ms": 77171,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 10,
+    "counted_questions": 9,
+    "ask_count": 8,
+    "guess_count": 2,
+    "rejected_guess_count": 1,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.0391573550000000023",
+    "total_tokens": 48186,
+    "contract": {
+      "evaluated_outputs": 10,
+      "valid_outputs": 10,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0009",
+        "requested_model": "meta-llama/llama-4-maverick",
+        "requested_provider": "parasail",
+        "resolved_models": [
+          "meta-llama/llama-4-maverick"
+        ],
+        "resolved_providers": [
+          "Parasail"
+        ],
+        "reasoning_effort": "none",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 8,
+        "cost_usd": "0.0322676250000000023"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 8,
+        "cost_usd": "0.0048858"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"AMZAISLM\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 10,
+        "cost_usd": "0.00138943",
+        "latency_ms": 7480,
+        "total_tokens": 6277,
+        "input_tokens": 5973,
+        "cached_input_tokens": 5584,
+        "cache_write_tokens": 0,
+        "output_tokens": 304,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0010051200"
+      },
+      "oracle": {
+        "calls": 8,
+        "cost_usd": "0.0371534250000000023",
+        "latency_ms": 64725,
+        "total_tokens": 41090,
+        "input_tokens": 38007,
+        "cached_input_tokens": 7915,
+        "cache_write_tokens": 0,
+        "output_tokens": 3083,
+        "reasoning_tokens": 1688,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 2,
+        "cost_usd": "0.0006145",
+        "latency_ms": 4189,
+        "total_tokens": 819,
+        "input_tokens": 737,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 82,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the person male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan/Legacy",
+            "excerpt": "He was above all adaptable, a man who could learn.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the person primarily known for their work in the entertainment industry?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan/Rise-to-power",
+            "excerpt": "Genghis Khan - Mongol Empire, Conqueror, Warrior",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.encyclopedia.com/people/history/chinese-and-taiwanese-history-biographies/genghis-khan",
+            "excerpt": "His greatest skill, though, was as a military leader",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for their work in the entertainment industry?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the person a historical figure?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/kids/article/Genghis-Khan/353171",
+            "excerpt": "Genghis Khan was born in about 1162 in northern Mongolia.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person a historical figure?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Did the person hold a high-ranking political office?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/timeline/Genghis_Khan",
+            "excerpt": "Genghis Khan ... was the founder of the Mongol Empire which he ruled from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.vikidia.org/wiki/Genghis_Khan",
+            "excerpt": "Genghis Khan ... was the first Great Khan of the Mongol Empire from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person hold a high-ranking political office?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Was the person a president of the United States?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/timeline/Genghis_Khan",
+            "excerpt": "Genghis Khan ... was the founder of the Mongol Empire which he ruled from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://obamawhitehouse.archives.gov/photos-and-video/photos/1-george-washington",
+            "excerpt": "George Washington — President from 1789 to 1797.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person a president of the United States?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Was the person known for a significant military role or conquest?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a Mongolian warrior-ruler, one of the most famous conquerors of history.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Genghis-Khan",
+            "excerpt": "His troops fought from China’s Pacific coast to Europe’s Adriatic Sea, creating the basis for one of the...",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person known for a significant military role or conquest?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Did the person live before the 20th century?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan (born 1162, near Lake Baikal, Mongolia—died August 18, 1227)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person live before the 20th century?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Napoleon Bonaparte",
+        "guess_description": "French military leader and emperor",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Genghis Khan (Temüjin), while the proposal identifies Napoleon Bonaparte, a different person.",
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French military leader and emperor\",\"name\":\"Napoleon Bonaparte\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Was the person a leader or prominent figure in a major historical conflict or empire outside of Europe?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/timeline/Genghis_Khan",
+            "excerpt": "Genghis Khan was the founder of the Mongol Empire which he ruled from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person a leader or prominent figure in a major historical conflict or empire outside of Europe?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Genghis Khan",
+        "guess_description": "Mongol emperor and founder of the Mongol Empire",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity exactly matches the trusted subject, Genghis Khan, and the description is consistent.",
+        "counted": false,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Mongol emperor and founder of the Mongol Empire\",\"name\":\"Genghis Khan\",\"question\":null}}"
+      }
+    ]
+  }
+}

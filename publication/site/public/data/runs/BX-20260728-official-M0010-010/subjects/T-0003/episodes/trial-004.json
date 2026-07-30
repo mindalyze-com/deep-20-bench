@@ -1,0 +1,941 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0010-010",
+  "target_id": "T-0003",
+  "trial_id": "trial-004",
+  "episode": {
+    "episode_run_id": "BR-a0fa7b24ef247307e4048a8a722f5f2b2a7cac00",
+    "episode_id": "EP-019faa6929d670188f2dec19dc9efe86",
+    "subject_name": "Stephen King",
+    "subject_description": "Stephen King, the American author known for horror, supernatural fiction, suspense, and novels including Carrie, The Shining, and It, identified by Wikidata entity Q39829.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Stephen_King",
+    "started_at": "2026-07-28T20:27:26.550893Z",
+    "completed_at": "2026-07-28T20:50:51.817071Z",
+    "duration_ms": 1405266,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 34,
+    "counted_questions": 33,
+    "ask_count": 32,
+    "guess_count": 2,
+    "rejected_guess_count": 1,
+    "oracle_unknown_count": 3,
+    "cache_status": "compliant",
+    "total_cost_usd": "1.3864502249999999996",
+    "total_tokens": 641540,
+    "contract": {
+      "evaluated_outputs": 34,
+      "valid_outputs": 34,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0010",
+        "requested_model": "openai/gpt-5.6-sol",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-sol"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 32,
+        "cost_usd": "0.2988545749999999996"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 30,
+        "cost_usd": "0.0290484"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 1,
+        "cost_usd": "0.017395"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"BYOMPCJW\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 34,
+        "cost_usd": "1.04054875",
+        "latency_ms": 924463,
+        "total_tokens": 73829,
+        "input_tokens": 41626,
+        "cached_input_tokens": 30230,
+        "cache_write_tokens": 1891,
+        "output_tokens": 32203,
+        "reasoning_tokens": 30766,
+        "estimated_cache_savings_usd": "0.13367125"
+      },
+      "oracle": {
+        "calls": 32,
+        "cost_usd": "0.3452979749999999996",
+        "latency_ms": 477019,
+        "total_tokens": 566859,
+        "input_tokens": 543006,
+        "cached_input_tokens": 320064,
+        "cache_write_tokens": 0,
+        "output_tokens": 23853,
+        "reasoning_tokens": 15691,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 2,
+        "cost_usd": "0.0006035",
+        "latency_ms": 2173,
+        "total_tokens": 852,
+        "input_tokens": 781,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 71,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is this person currently alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://stephenking.com/news/index.html",
+            "excerpt": "The Institute Season Two — Posted: February 4th, 2026. Production has begun on The Institute Season 2 at MGM. Stephen's Post on Twitter.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.gamereactor.eu/stephen-king-talks-upcoming-books-in-new-interview-off-the-warranty-and-cant-take-anything-for-granted-1618703",
+            "excerpt": "Stephen King talks upcoming books in new interview... 2025-10-16.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person currently alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is this person a woman?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://stephenking.com/the-author",
+            "excerpt": "Stephen Edwin King was born in Portland, Maine in 1947, the second son of Donald and Nellie Ruth Pillsbury King.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person a woman?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Has he held elected political office?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.centralmaine.com/2015/03/20/the-case-for-stephen-king-politician/",
+            "excerpt": "King’s no politician, but he is a politically active Democrat.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.washingtonpost.com/lifestyle/magazine/just-asking-congressman-steve-king-is-not-stephen-king/2014/04/11/21de3d04-a87c-11e3-8d62-419db477a0e6_story.html",
+            "excerpt": "Congressman Steve King is not Stephen King.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he held elected political office?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Has he appeared as an actor in commercially released films?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.penfaulkner.org/2020/10/19/stephen-king",
+            "excerpt": "He has ... been doing cameos in several of the film adaptations of his works as well as a bit part in a George Romero picture, “Knightriders.” ... He also appeared in “Creepshow,” which was released in 1982.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://catalog.afi.com/Catalog/moviedetails/59499",
+            "excerpt": "King’s cameo appearance in Romero’s Knightriders (1981) ... Creepshow (1982) and Creepshow 2 (1987).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he appeared as an actor in commercially released films?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Has he won an Academy Award for acting?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://screenrant.com/stephen-king-movie-adaptations-oscar-nomination/",
+            "excerpt": "This singular win came in the form of Best Actress, awarded to Kathy Bates for her portrayal of Annie Wilkes.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://comicbook.com/movies/news/the-only-stephen-king-movie-to-ever-win-an-oscar-is-leaving-netflix-in-less-than-24-hours",
+            "excerpt": "The Only Stephen King Movie To Ever Win an Oscar",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he won an Academy Award for acting?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Was he born in the United States?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://superstarsbio.com/bios/stephen-king/",
+            "excerpt": "Birthplace: Maine Medical Center, Portland, Maine, United States",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born in the United States?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Has he released a studio music album?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.allmusic.com/artist/mn0000024991",
+            "excerpt": "1999 | Stranger Than Fiction — Wrockers — Primary Artist",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://web.archive.org/web/20030210084953/http://www.dqydj.com/rbr.htm",
+            "excerpt": "Performances on the Stranger Than Fiction CD: Stephen King ...",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he released a studio music album?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Was he born before 1970?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born before 1970?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Has he been nominated for an Academy Award for acting?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he been nominated for an Academy Award for acting?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Was he born before 1960?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born before 1960?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Was he born before 1950?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born before 1950?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Was he born before 1940?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born before 1940?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Did he have a starring role in a television series that aired before 2000?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://the-line-up.com/stephen-king-film-tv-cameos",
+            "excerpt": "Every Stephen King Cameo on Film and TV—Ever ... his cameos are memorable ... [the article covers] every movie, show, and commercial that Stephen King has appeared in.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://the-line-up.com/stephen-king-film-tv-cameos",
+            "excerpt": "Frasier – Brian – 1999 ... a man named Brian calls into the show.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://stephenking.com/works/television/storm-of-the-century.html",
+            "excerpt": "Stephen had a cameo as a “sleazy” lawyer in a TV commercial which can be seen in the background.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did he have a starring role in a television series that aired before 2000?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Has he directed a feature film?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.nytimes.com/1986/07/25/movies/film-by-stephen-king-maximum-overdrive.html",
+            "excerpt": "Maximum Overdrive Directed by Stephen King",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "1986 - Makes his directorial debut with the release of “Maximum Overdrive”",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he directed a feature film?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Has he won an Academy Award for Best Director?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://variety.com/2015/film/news/misery-25th-anniversary-steven-king-kathy-bates-1201650177",
+            "excerpt": "The Rob Reiner-directed ... film adaptation of Stephen King's novel \"Misery\" ... Kathy Bates won the 1991 Oscar for best actress.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://nextbestpicture.com/the-oscar-history-of-stephen-king-adaptations-and-what-it-means-for-the-life-of-chuck/",
+            "excerpt": "1990: “Misery” Winner for Best Actress Kathy Bates",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he won an Academy Award for Best Director?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Has he portrayed the same fictional boxer in multiple feature films?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://the-dead-meat.fandom.com/wiki/Stephen_King",
+            "excerpt": "Acting Work: Creepshow [Jordy Verrill]; Maximum Overdrive [Man at ATM]; Creepshow 2 [Truck Driver]; Pet Sematary [Minister]; Sleepwalkers [Cemetery Caretaker]; Diary of the Dead [Newsreader Voice]; It Chapter Two [Shopkeeper].",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.saltypopcorn.co.uk/stars/Stephen%20King",
+            "excerpt": "Stephen King plays Cemetery Caretaker, Minister, Truck Driver, Man at Bank ATM, Jordy Verrill, Hoagie Man, and Shopkeeper.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he portrayed the same fictional boxer in multiple feature films?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Has he played a leading role in a comedy film released by a major Hollywood studio?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.slashfilm.com/799616/every-stephen-king-movie-cameo-ranked/",
+            "excerpt": "The 1982 horror anthology saw King ... as the leading man this time around, starring in a segment ... 'The Lonesome Death of Jordy Verrill.'",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.rottentomatoes.com/m/creepshow/cast-and-crew",
+            "excerpt": "Creepshow: 1982 Horror/Comedy/Fantasy ... Actor Stephen King Jordy Verrill.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://tv.apple.com/us/movie/creepshow/umc.cmc.2uo7z9l6n0ivkfivgy4zw2kw5",
+            "excerpt": "Studio Warner Bros. Released 1982 ... © 1982 Warner Bros. All Rights Reserved.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he played a leading role in a comedy film released by a major Hollywood studio?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Has he been a cast member of Saturday Night Live?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://www.snlarchives.net/Episodes/?19871212",
+            "excerpt": "Jon Lovitz | ... | Stephen King",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.yahoo.com/entertainment/saturday-night-live-tbt-stephen-king-cant-stop-writing-130010793.html",
+            "excerpt": "Jon Lovitz impersonates the author",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he been a cast member of Saturday Night Live?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Did he voice a character in the animated film Finding Nemo?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [
+          {
+            "source_url": "https://www.imdb.com/title/tt0266543/fullcredits",
+            "excerpt": "Finding Nemo — Full cast & crew ... Cast (24)",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.moviemeter.com/movies/animation/finding-nemo",
+            "excerpt": "Finding Nemo voice cast includes Albert Brooks, Ellen DeGeneres, Alexander Gould, Willem Dafoe, Geoffrey Rush, Brad Garrett, Allison Janney, Austin Pendleton, Stephen Root, and Vicki Lewis.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did he voice a character in the animated film Finding Nemo?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Has he directed and acted in a mockumentary-style comedy film?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [
+          {
+            "source_url": "https://time.com/7315750/best-stephen-king-movie-adaptations",
+            "excerpt": "Maximum Overdrive, the only movie that King directed",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nytimes.com/1986/07/25/movies/film-by-stephen-king-maximum-overdrive.html",
+            "excerpt": "Maximum Overdrive Directed by Stephen King Action, Comedy, Horror, Sci-Fi",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://movieweb.com/giancarlo-esposito-stephen-king-maximum-overdrive/",
+            "excerpt": "Stephen King himself appearing in a cameo role as ‘ATM man.’",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he directed and acted in a mockumentary-style comedy film?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "ASK",
+        "question": "Has he directed a feature film in which he also played a leading role?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [
+          {
+            "source_url": "https://www.tcm.com/watchtcm/titles/4708",
+            "excerpt": "DIRECTOR Stephen King; CAST Emilio Estevez, Pat Hingle, Laura Harrington...",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.rottentomatoes.com/m/maximum_overdrive/cast-and-crew",
+            "excerpt": "Stephen King Director, Screenwriter; Emilio Estevez Bill Robinson Actor",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://movieweb.com/giancarlo-esposito-stephen-king-maximum-overdrive/",
+            "excerpt": "Stephen King himself appearing in a cameo role as ‘ATM man.’",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he directed a feature film in which he also played a leading role?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "ASK",
+        "question": "Is he African American?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [
+          {
+            "source_url": "https://www.nndb.com/people/221/000024149",
+            "excerpt": "Stephen King — Race or Ethnicity: White",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is he African American?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "ASK",
+        "question": "Was he a member of the Monty Python comedy troupe?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Monty-Python",
+            "excerpt": "Monty Python comprised Graham Chapman, John Cleese, Eric Idle, Terry Jones, Michael Palin, and Terry Gilliam.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he a member of the Monty Python comedy troupe?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "ASK",
+        "question": "Did he co-create a television sitcom that premiered in the 1980s?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did he co-create a television sitcom that premiered in the 1980s?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "ASK",
+        "question": "Was he born in Chicago?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "Birth place: Portland, Maine",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born in Chicago?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Larry David",
+        "guess_description": "American comedian, actor, writer, and co-creator of Seinfeld who created and stars in Curb Your Enthusiasm.",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Larry David, while the trusted subject is Stephen King.",
+        "counted": true,
+        "counted_questions": 26,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American comedian, actor, writer, and co-creator of Seinfeld who created and stars in Curb Your Enthusiasm.\",\"name\":\"Larry David\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 27,
+        "action": "ASK",
+        "question": "Was he born before 1945?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 27,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born before 1945?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 28,
+        "action": "ASK",
+        "question": "Was he born before 1947?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 28,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born before 1947?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 29,
+        "action": "ASK",
+        "question": "Was he born before 1948?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 29,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born before 1948?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 30,
+        "action": "ASK",
+        "question": "Did he direct the film When Harry Met Sally...?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 30,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/When-Harry-Met-Sally",
+            "excerpt": "Written by Nora Ephron and directed by Rob Reiner, the film explores the age-old question of whether a man and woman can truly be only friends.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did he direct the film When Harry Met Sally...?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 31,
+        "action": "ASK",
+        "question": "Did he have a credited acting role in a feature film released before 1970?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 31,
+        "evidence": [
+          {
+            "source_url": "https://www.denofgeek.com/movies/every-stephen-king-movie-cameo",
+            "excerpt": "He’s appeared in quite a few himself, starting in 1981 with a cameo ... in Knightriders (he’s billed as “Hoagie Man”).",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.gamespot.com/gallery/all-24-stephen-king-cameos-from-it-2-to-the-simpso/2900-3016",
+            "excerpt": "It all started with the 1981 George A. Romero movie Knightriders, in which he played ... “Hoagie Man.”",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did he have a credited acting role in a feature film released before 1970?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 32,
+        "action": "ASK",
+        "question": "Has he written a novel that was adapted into a feature film?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 32,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Carrie-film-by-De-Palma",
+            "excerpt": "Brian De Palma’s horror classic Carrie (1976), based on a Stephen King novel.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he written a novel that was adapted into a feature film?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 33,
+        "action": "ASK",
+        "question": "Has he published multiple novels in the horror genre?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 33,
+        "evidence": [
+          {
+            "source_url": "https://www.smithsonianmag.com/air-space-magazine/stephen-king-horror-story-180978177/",
+            "excerpt": "Stephen King has published 62 novels, including Carrie and The Shining.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Carrie ... was followed by such works as The Shining, ... Pet Sematary, ... It, ... and Misery.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he published multiple novels in the horror genre?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 34,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Stephen King",
+        "guess_description": "American horror novelist whose books include Carrie, The Shining, and It; he has also acted in screen adaptations and directed Maximum Overdrive.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Stephen King, the American author known for Carrie, The Shining, and It.",
+        "counted": false,
+        "counted_questions": 33,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American horror novelist whose books include Carrie, The Shining, and It; he has also acted in screen adaptations and directed Maximum Overdrive.\",\"name\":\"Stephen King\",\"question\":null}}"
+      }
+    ]
+  }
+}

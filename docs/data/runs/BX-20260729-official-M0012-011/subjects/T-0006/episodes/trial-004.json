@@ -1,0 +1,971 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260729-official-M0012-011",
+  "target_id": "T-0006",
+  "trial_id": "trial-004",
+  "episode": {
+    "episode_run_id": "BR-3a0f82d4326f5817ba5ff944bf6bc7acd4b60495",
+    "episode_id": "EP-019fafd4228c7694b6144e202b60cea4",
+    "subject_name": "Genghis Khan",
+    "subject_description": "Genghis Khan, the founder and first khan of the Mongol Empire, identified by Wikidata entity Q720.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Genghis_Khan",
+    "started_at": "2026-07-29T21:42:23.116985Z",
+    "completed_at": "2026-07-29T22:08:07.802932Z",
+    "duration_ms": 1544686,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 39,
+    "counted_questions": 38,
+    "ask_count": 25,
+    "guess_count": 14,
+    "rejected_guess_count": 13,
+    "oracle_unknown_count": 0,
+    "cache_status": "noncompliant",
+    "total_cost_usd": "0.6331014500000000045",
+    "total_tokens": 292210,
+    "contract": {
+      "evaluated_outputs": 39,
+      "valid_outputs": 39,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0012",
+        "requested_model": "mistralai/mistral-medium-3-5",
+        "requested_provider": "mistral",
+        "resolved_models": [
+          "mistralai/mistral-medium-3-5"
+        ],
+        "resolved_providers": [
+          "Mistral"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 25,
+        "cost_usd": "0.1349598500000000045"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 25,
+        "cost_usd": "0.0238396"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 2,
+        "cost_usd": "0.03359"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"BYOMPCJW\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 39,
+        "cost_usd": "0.4362810",
+        "latency_ms": 1236347,
+        "total_tokens": 92178,
+        "input_tokens": 42509,
+        "cached_input_tokens": 4404,
+        "cache_write_tokens": 0,
+        "output_tokens": 49669,
+        "reasoning_tokens": 38958,
+        "estimated_cache_savings_usd": "0E-9"
+      },
+      "oracle": {
+        "calls": 25,
+        "cost_usd": "0.1923894500000000045",
+        "latency_ms": 287752,
+        "total_tokens": 194120,
+        "input_tokens": 178867,
+        "cached_input_tokens": 58342,
+        "cache_write_tokens": 0,
+        "output_tokens": 15253,
+        "reasoning_tokens": 9748,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 14,
+        "cost_usd": "0.0044310",
+        "latency_ms": 19207,
+        "total_tokens": 5912,
+        "input_tokens": 5322,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 590,
+        "reasoning_tokens": 46,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is this person alive today?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/this-day-in-history/August-18/genghis-khan-dies",
+            "excerpt": "On August 18, 1227, while putting down a revolt in the kingdom of Xi Xia, Genghis Khan died.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person alive today?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is this person male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan/Legacy",
+            "excerpt": "He was above all adaptable, a man who could learn.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Was this person born before 1900?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://afe.easia.columbia.edu/mongols/figures/figures.htm",
+            "excerpt": "Chinggis (Genghis) Khan was born probably in 1167, though Mongol tradition has it that he was born in 1162.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person born before 1900?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is this person primarily known for being a political leader or government figure?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "Mongol leader Genghis Khan ... rose from humble beginnings to establish the largest land empire in history.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.worldhistory.org/Mongol_Empire",
+            "excerpt": "Genghis Khan ... first Great Khan or 'universal ruler' of the Mongol peoples.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known for being a political leader or government figure?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Was this person a head of state (e.g., king, president, prime minister)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://openwa.pressbooks.pub/mcleanworldcivilization/chapter/genghis-khan",
+            "excerpt": "Genghis Khan was the first leader, or Khan, of the Mongol Empire, from 1206 CE–1227 CE.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.worldhistory.org/Genghis_Khan",
+            "excerpt": "Genghis Khan ... was the founder of the Mongol Empire which he ruled from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a head of state (e.g., king, president, prime minister)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Was this person born in the 19th century?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.wikidata.org/wiki/Q720",
+            "excerpt": "date of birth 31 May 1162",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://afe.easia.columbia.edu/mongols/figures/figures.htm",
+            "excerpt": "Chinggis (Genghis) Khan was born probably in 1167, though Mongol tradition has it that he was born in 1162.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person born in the 19th century?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Was this person a monarch (king, emperor, etc.)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a warrior and ruler of genius who ... brought all the nomadic tribes of Mongolia under the rule of himself and his family.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Genghis-Khan",
+            "excerpt": "Genghis Khan ... Mongolian warrior-ruler who consolidated nomadic tribes into a unified Mongolia.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a monarch (king, emperor, etc.)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Did this person rule in Europe?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://pressbooks.ccconline.org/his111ppcc/chapter/genghis-khan",
+            "excerpt": "Genghis Khan ruled between 1206 and 1227, expanding trade across Asia and into eastern Europe.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person rule in Europe?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Did this person rule in Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "He conquered huge chunks of central Asia and China.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.historytoday.com/archive/months-past/genghis-khan-takes-beijing",
+            "excerpt": "In his last years Genghis Khan extended his sway over northern China... his empire stretched from the Pacific to the Black Sea.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person rule in Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Did this person rule during the 18th century?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/timeline/Genghis_Khan",
+            "excerpt": "Genghis Khan ... ruled from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person rule during the 18th century?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Was this person born in the 17th century or earlier?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://afe.easia.columbia.edu/mongols/figures/figures.htm",
+            "excerpt": "Chinggis (Genghis) Khan was born probably in 1167, though Mongol tradition has it that he was born in 1162.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person born in the 17th century or earlier?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Did this person rule in the Indian subcontinent?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://superkalam.com/upsc-prelims/previous-year-question-paper/2021/consider-the-following-statements-it-was-during-the-reign-of-iltutmish-that-chengiz-khan-reached-the-indus-in-pursuit-of-2ff58193-db5c-47da-93e4-6cc56758d167",
+            "excerpt": "Genghis Khan reached the banks of the Indus while pursuing Jalal-ad-Din Mangubarni; Iltutmish's refusal of asylum saved the Delhi Sultanate from a direct Mongol invasion.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://byjus.com/free-ias-prep/mongol-invasions-of-india-1221-1327",
+            "excerpt": "Genghis Khan made incursions into the Indian subcontinent when he chased Jalal al-Din all the way to the Indus river in 1221.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person rule in the Indian subcontinent?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Did this person rule in China?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.historytoday.com/archive/months-past/genghis-khan-takes-beijing",
+            "excerpt": "In his last years Genghis Khan extended his sway over northern China.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.kids.britannica.com/students/article/Genghis-Khan/274521",
+            "excerpt": "On his march of conquest Genghis Khan overran North China from 1208 to 1215.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person rule in China?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Was this person an emperor of the Ming Dynasty?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/this-day-in-history/August-18/genghis-khan-dies",
+            "excerpt": "On August 18, 1227, ... Genghis Khan died.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Ming-dynasty-Chinese-history",
+            "excerpt": "Ming dynasty, (1368–1644) Chinese dynasty",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person an emperor of the Ming Dynasty?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Qin Shi Huang",
+        "guess_description": "First Emperor of China, founder of the Qin Dynasty",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Qin Shi Huang, while the trusted subject is Genghis Khan.",
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"First Emperor of China, founder of the Qin Dynasty\",\"name\":\"Qin Shi Huang\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Was this person an emperor of the Qing Dynasty?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://en.chinaculture.org/gb/en_aboutchina/2003-09/24/content_22889.htm",
+            "excerpt": "Genghis Khan died in August, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Qing-dynasty",
+            "excerpt": "The Qing dynasty was established in 1636 by the Manchus.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person an emperor of the Qing Dynasty?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Was this person an emperor of the Tang Dynasty?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/Genghis_Khan",
+            "excerpt": "Genghis Khan was the founder of the Mongol Empire which he ruled from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/students/article/Tang-dynasty/631216",
+            "excerpt": "The Tang (or T’ang) dynasty ruled China from 618 to 907.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person an emperor of the Tang Dynasty?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Did this person rule during the Yuan Dynasty?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/this-day-in-history/August-18/genghis-khan-dies",
+            "excerpt": "On August 18, 1227 ... Genghis Khan died.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.metmuseum.org/essays/the-legacy-of-genghis-khan",
+            "excerpt": "The Yuan dynasty in China (1271–1368) is part of Genghis Khan’s legacy through its founder, his grandson Khubilai Khan.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person rule during the Yuan Dynasty?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Was this person an emperor of the Han Dynasty?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "Mongol leader Genghis Khan (1162-1227) rose from humble beginnings to establish the largest land empire in history.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/place/China/The-Han-dynasty",
+            "excerpt": "The Han dynasty ... [lasted] until 220, when the rule of a single empire was replaced by that of three.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person an emperor of the Han Dynasty?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Was this person an emperor of the Song Dynasty?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a warrior and ruler who brought the nomadic tribes of Mongolia under his rule and created the basis of the Mongol Empire.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/articles/kublai-khan",
+            "excerpt": "Kublai Khan ... was the first Mongol to rule over China when he conquered the Song Dynasty ... in 1279.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person an emperor of the Song Dynasty?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "ASK",
+        "question": "Was this person an emperor of the Zhou Dynasty?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Genghis-Khan",
+            "excerpt": "Genghis Khan ... (born 1162 ... died Aug. 18, 1227), Mongolian warrior-ruler",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Wenwang",
+            "excerpt": "the founder of the Zhou dynasty (1046–256 bc)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person an emperor of the Zhou Dynasty?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "ASK",
+        "question": "Was this person an emperor of the Sui Dynasty?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [
+          {
+            "source_url": "https://www.berkshirepublishing.com/ecph-china/2018/01/13/sui-dynasty-581-618",
+            "excerpt": "The dynasty was ruled by three emperors: Emperor Wen (Yang Jian), Emperor Yang (Yang Guang) ... and Emperor Gong (Yang You).",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Genghis_Khan",
+            "excerpt": "Genghis Khan ... was the founder and first khan of the Mongol Empire.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person an emperor of the Sui Dynasty?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "ASK",
+        "question": "Was this person a ruler of the Shang Dynasty?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Shang-dynasty",
+            "excerpt": "Shang dynasty summary 1600–1046 bc.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a warrior and ruler ... who brought all the nomadic tribes of Mongolia under the rule of himself and his family.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a ruler of the Shang Dynasty?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "ASK",
+        "question": "Did this person rule during the Jin Dynasty?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/Mongol_Empire",
+            "excerpt": "1206 - 1227 Reign of Genghis Khan as the ruler of the Mongol Empire.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Jin-dynasty-China-Mongolia-1115-1234/additional-info",
+            "excerpt": "the Jin (1115–1234) dynasties",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person rule during the Jin Dynasty?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Wu of Jin",
+        "guess_description": "Founder and first emperor of the Jin Dynasty (265-420)",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Emperor Wu of Jin, a different historical person from Genghis Khan.",
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Founder and first emperor of the Jin Dynasty (265-420)\",\"name\":\"Emperor Wu of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Taizu of Jin",
+        "guess_description": "Founder and first emperor of the Jurchen Jin Dynasty",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Emperor Taizu of Jin, a different historical figure from Genghis Khan.",
+        "counted": true,
+        "counted_questions": 26,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Founder and first emperor of the Jurchen Jin Dynasty\",\"name\":\"Emperor Taizu of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 27,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Hui of Jin",
+        "guess_description": "Second emperor of the Jin Dynasty, known for his intellectual disability and the War of the Eight Princes",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Emperor Hui of Jin, not Genghis Khan.",
+        "counted": true,
+        "counted_questions": 27,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Second emperor of the Jin Dynasty, known for his intellectual disability and the War of the Eight Princes\",\"name\":\"Emperor Hui of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 28,
+        "action": "ASK",
+        "question": "Did this person rule during the 12th or 13th century?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 28,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/timeline/Genghis_Khan",
+            "excerpt": "Genghis Khan ... was the founder of the Mongol Empire which he ruled from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person rule during the 12th or 13th century?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 29,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Shizong of Jin",
+        "guess_description": "Emperor of the Jurchen Jin Dynasty who ruled from 1161 to 1189",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Emperor Shizong of Jin, a different historical person from Genghis Khan (Temüjin).",
+        "counted": true,
+        "counted_questions": 29,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Emperor of the Jurchen Jin Dynasty who ruled from 1161 to 1189\",\"name\":\"Emperor Shizong of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 30,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Zhangzong of Jin",
+        "guess_description": "Emperor of the Jurchen Jin Dynasty who ruled from 1189 to 1208",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Emperor Zhangzong of Jin, a different historical person from Genghis Khan.",
+        "counted": true,
+        "counted_questions": 30,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Emperor of the Jurchen Jin Dynasty who ruled from 1189 to 1208\",\"name\":\"Emperor Zhangzong of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 31,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Taizong of Jin",
+        "guess_description": "Second emperor of the Jurchen Jin Dynasty, ruled from 1123 to 1135",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Genghis Khan, while the proposal identifies Emperor Taizong of Jin, a different historical person.",
+        "counted": true,
+        "counted_questions": 31,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Second emperor of the Jurchen Jin Dynasty, ruled from 1123 to 1135\",\"name\":\"Emperor Taizong of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 32,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Xizong of Jin",
+        "guess_description": "Third emperor of the Jurchen Jin Dynasty, ruled from 1135 to 1150",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Genghis Khan (Temüjin), while the proposal identifies Emperor Xizong of Jin, a different historical person.",
+        "counted": true,
+        "counted_questions": 32,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Third emperor of the Jurchen Jin Dynasty, ruled from 1135 to 1150\",\"name\":\"Emperor Xizong of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 33,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Aizong of Jin",
+        "guess_description": "Last emperor of the Jurchen Jin Dynasty, ruled from 1224 to 1234",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Emperor Aizong of Jin, a different historical person from Genghis Khan.",
+        "counted": true,
+        "counted_questions": 33,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Last emperor of the Jurchen Jin Dynasty, ruled from 1224 to 1234\",\"name\":\"Emperor Aizong of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 34,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Hailingwang of Jin",
+        "guess_description": "Emperor of the Jurchen Jin Dynasty who ruled from 1150 to 1161",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Emperor Hailingwang of Jin, a different historical person from Genghis Khan.",
+        "counted": true,
+        "counted_questions": 34,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Emperor of the Jurchen Jin Dynasty who ruled from 1150 to 1161\",\"name\":\"Emperor Hailingwang of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 35,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Xuanzong of Jin",
+        "guess_description": "Emperor of the Jurchen Jin Dynasty who ruled from 1213 to 1224",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Emperor Xuanzong of Jin, a different historical person from Genghis Khan.",
+        "counted": true,
+        "counted_questions": 35,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Emperor of the Jurchen Jin Dynasty who ruled from 1213 to 1224\",\"name\":\"Emperor Xuanzong of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 36,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Weishaowang of Jin",
+        "guess_description": "Emperor of the Jurchen Jin Dynasty who ruled from 1208 to 1213",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Emperor Weishaowang of Jin, a different historical person from Genghis Khan.",
+        "counted": true,
+        "counted_questions": 36,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Emperor of the Jurchen Jin Dynasty who ruled from 1208 to 1213\",\"name\":\"Emperor Weishaowang of Jin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 37,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Emperor Tianzuo of Liao",
+        "guess_description": "Last emperor of the Liao Dynasty, ruled 1101-1125 during the early Jin Dynasty period",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Emperor Tianzuo of Liao, whereas the trusted subject is Genghis Khan.",
+        "counted": true,
+        "counted_questions": 37,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Last emperor of the Liao Dynasty, ruled 1101-1125 during the early Jin Dynasty period\",\"name\":\"Emperor Tianzuo of Liao\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 38,
+        "action": "ASK",
+        "question": "Was this person a Mongol ruler?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 38,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/timeline/Genghis_Khan",
+            "excerpt": "Genghis Khan (aka Chinggis Khan) was the founder of the Mongol Empire which he ruled from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a Mongol ruler?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 39,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Genghis Khan",
+        "guess_description": "Mongol ruler and founder of the Mongol Empire, who reigned from 1206 to 1227",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity exactly matches Genghis Khan, the founder of the Mongol Empire.",
+        "counted": false,
+        "counted_questions": 38,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Mongol ruler and founder of the Mongol Empire, who reigned from 1206 to 1227\",\"name\":\"Genghis Khan\",\"question\":null}}"
+      }
+    ]
+  }
+}

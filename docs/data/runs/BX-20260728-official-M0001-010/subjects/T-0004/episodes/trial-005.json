@@ -1,0 +1,702 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0001-010",
+  "target_id": "T-0004",
+  "trial_id": "trial-005",
+  "episode": {
+    "episode_run_id": "BR-f1b7df6d79471accbd42735253dd27a3b0d18267",
+    "episode_id": "EP-019fa9eaef43712cbb30d7d5446c5559",
+    "subject_name": "Garfield",
+    "subject_description": "Garfield, the lazy, cynical, lasagna-loving orange cat created by Jim Davis and protagonist of the Garfield comic strip, identified by Wikidata entity Q767120.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Garfield_(character)",
+    "started_at": "2026-07-28T18:09:34.019259Z",
+    "completed_at": "2026-07-28T18:14:41.864903Z",
+    "duration_ms": 307846,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 22,
+    "counted_questions": 21,
+    "ask_count": 21,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1857731750000000030",
+    "total_tokens": 176927,
+    "contract": {
+      "evaluated_outputs": 22,
+      "valid_outputs": 22,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0001",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 21,
+        "cost_usd": "0.1108957250000000030"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 21,
+        "cost_usd": "0.0255736"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 3,
+        "cost_usd": "0.033595"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"fictional_character\",\"event\":\"BEGIN\",\"variation_token\":\"XSZW5TRZ\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 22,
+        "cost_usd": "0.015390350",
+        "latency_ms": 85268,
+        "total_tokens": 25755,
+        "input_tokens": 22590,
+        "cached_input_tokens": 12407,
+        "cache_write_tokens": 1468,
+        "output_tokens": 3165,
+        "reasoning_tokens": 2181,
+        "estimated_cache_savings_usd": "0.01079930"
+      },
+      "oracle": {
+        "calls": 21,
+        "cost_usd": "0.1700643250000000030",
+        "latency_ms": 220430,
+        "total_tokens": 150745,
+        "input_tokens": 135731,
+        "cached_input_tokens": 32807,
+        "cache_write_tokens": 0,
+        "output_tokens": 15014,
+        "reasoning_tokens": 10378,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0003185",
+        "latency_ms": 900,
+        "total_tokens": 427,
+        "input_tokens": 385,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 42,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the character human?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-character",
+            "excerpt": "Garfield — cartoon character.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "The title character, a tabby cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character human?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the character primarily known from an animated film or television series?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features... Garfield (1978- ) is a comic strip... Garfield has been represented in books, films, television specials, video games...",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-A-Tail-of-Two-Kitties",
+            "excerpt": "The comic strip, which debuted in 1978... The franchise has expanded to include merchandise, television shows, and movies.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily known from an animated film or television series?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the character primarily known from a video game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield... Garfield (1978- ) is a comic strip... Garfield has been represented in books, films, television specials, video games...",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-character",
+            "excerpt": "Garfield | cartoon character",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily known from a video game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the character primarily known from a live-action film or television series?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features and created one of the most popular animals in the comic world. Garfield (1978- ) is a comic strip.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-A-Tail-of-Two-Kitties",
+            "excerpt": "The franchise has expanded to include merchandise, television shows, and movies; the comic strip debuted in 1978.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily known from a live-action film or television series?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is the character primarily known from a novel or a series of novels?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield",
+            "excerpt": "Garfield, American newspaper comic strip featuring a fat, lazy cat... Garfield became the most widely syndicated comic strip of its era.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Jim-Davis-American-cartoonist",
+            "excerpt": "Jim Davis... is best known as the creator of the comic strip Garfield.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily known from a novel or a series of novels?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the character primarily known from a comic book or graphic novel?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "Garfield ... would go on to become the most widely syndicated comic strip in the world.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily known from a comic book or graphic novel?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Does the character originate in mythology, folklore, or legend?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://americanhistory.si.edu/collections/object/nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features... Garfield (1978- ) is a comic strip.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nydailynews.com/2012/06/19/garfield-turns-34-famed-comic-strip-cat-made-cartoon-debut-in-1978",
+            "excerpt": "Jim Davis... culled Garfield from his imagination after abandoning another comic strip, “Gnorm the Gnat.”",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character originate in mythology, folklore, or legend?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Does the character originate in a children's picture book or illustrated storybook?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "Garfield made his debut ... in the panels of his first comic strip ... on 19 June 1978.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://indianahistory.org/education/education-resources/educator-resources/famous-hoosiers/jim-davis",
+            "excerpt": "On June 19, 1978, the comic strip first appeared in 41 newspapers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character originate in a children's picture book or illustrated storybook?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Did the character originate in a short story or other prose work that is not a novel?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203",
+            "excerpt": "The character created by US cartoonist Jim Davis debuted 40 years ago, on June 19, 1978, in a comic strip published in 41 newspapers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in a short story or other prose work that is not a novel?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Is the character an animal or animal-like creature?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-character",
+            "excerpt": "Garfield is a cartoon character and his costars include the dopey dog Odie.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikipedia.org/wiki/List_of_fictional_felines",
+            "excerpt": "Garfield is an orange tabby cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character an animal or animal-like creature?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Is the character primarily associated with a stage play or musical?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "Garfield is the eponymous hero of what would go on to become the most widely syndicated comic strip in the world.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily associated with a stage play or musical?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Did the character originate in a song, music video, or other musical work?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features... Garfield (1978- ) is a comic strip.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.dailycartoonist.com/index.php/2026/01/30/missed-it-garfields-50th",
+            "excerpt": "Jim Davis introduced Garfield and Jon... as a weekly strip in The Pendleton Times.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in a song, music video, or other musical work?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Is the character primarily used as a mascot for a company, product, or organization?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features... Garfield is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://americanhistory.si.edu/collections/object/nmah_1367415",
+            "excerpt": "Garfield has been represented in books, films, television specials, video games, amusement park attractions, and merchandise.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily used as a mascot for a company, product, or organization?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Is the character a robot or other artificial mechanical being?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.petplace.com/article/cats/just-for-fun/garfield-history-facts",
+            "excerpt": "Davis said, “I thought if I could create a convincing cat, I could say and do anything I wanted on the human condition.”",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://us-public-domain.fandom.com/wiki/Garfield",
+            "excerpt": "Species: Cat",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a robot or other artificial mechanical being?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Did the character originate in an internet-based work, such as a web series, webcomic, or online animation?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "Garfield made his debut in just 41 newspapers, all in the US.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features ... Garfield (1978- ) is a comic strip.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in an internet-based work, such as a web series, webcomic, or online animation?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Did the character originate in a tabletop game, such as a board game, card game, or role-playing game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features... Garfield (1978- ) is a comic strip.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.dw.com/en/lazy-lasagna-loving-monday-hating-garfield-turns-40/a-44287203",
+            "excerpt": "The character created by US cartoonist Jim Davis debuted 40 years ago, on June 19, 1978, in a comic strip published in 41 newspapers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in a tabletop game, such as a board game, card game, or role-playing game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Did the character originate in a poem or poetic work?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features... Garfield (1978- ) is a comic strip.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://indianahistory.org/education/education-resources/educator-resources/famous-hoosiers/jim-davis",
+            "excerpt": "On June 19, 1978, the comic strip first appeared in 41 newspapers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in a poem or poetic work?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Is the character primarily known from a radio program or broadcast?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years",
+            "excerpt": "Garfield is the eponymous hero of what would go on to become the most widely syndicated comic strip in the world.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features... Garfield (1978- ) is a comic strip.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily known from a radio program or broadcast?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Did the character originate in a newspaper comic strip or gag cartoon?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [
+          {
+            "source_url": "https://indianahistory.org/education/education-resources/educator-resources/famous-hoosiers/jim-davis",
+            "excerpt": "On June 19, 1978, the comic strip first appeared in 41 newspapers in U.S. cities.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in a newspaper comic strip or gag cartoon?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Is the character a cat?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [
+          {
+            "source_url": "https://americanhistory.si.edu/collections/object/nmah_1367415",
+            "excerpt": "Garfield (1978- ) is a comic strip which looks at the life of the title character, a tabby cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a cat?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "ASK",
+        "question": "Is the character depicted with orange fur?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-A-Tail-of-Two-Kitties",
+            "excerpt": "The comic strip features a lazy, lasagna-loving orange tabby cat named Garfield.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/The-Garfield-Movie",
+            "excerpt": "The 2024 animated film featured ... the beloved orange fur ball.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character depicted with orange fur?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Garfield",
+        "guess_description": "The orange tabby cat from Jim Davis's newspaper comic strip, known for his love of lasagna and dislike of Mondays.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Garfield, the fictional orange cat created by Jim Davis and known for lasagna and dislike of Mondays.",
+        "counted": false,
+        "counted_questions": 21,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"The orange tabby cat from Jim Davis's newspaper comic strip, known for his love of lasagna and dislike of Mondays.\",\"name\":\"Garfield\",\"question\":null}}"
+      }
+    ]
+  }
+}

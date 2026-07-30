@@ -1,0 +1,296 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0003-010",
+  "target_id": "T-0007",
+  "trial_id": "trial-001",
+  "episode": {
+    "episode_run_id": "BR-ad43b1a59961c1326f0f2ae67c43d6354d6032eb",
+    "episode_id": "EP-019faa7d994f71c783841fbed4e3cba7",
+    "subject_name": "Mario",
+    "subject_description": "Mario, the fictional Nintendo video-game character created by Shigeru Miyamoto and protagonist of the Mario franchise, identified by Wikidata entity Q12379.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Mario",
+    "started_at": "2026-07-28T20:49:45.807120Z",
+    "completed_at": "2026-07-28T20:52:54.878131Z",
+    "duration_ms": 189071,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 7,
+    "counted_questions": 6,
+    "ask_count": 6,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 1,
+    "cache_status": "not_applicable",
+    "total_cost_usd": "0.044952200",
+    "total_tokens": 71097,
+    "contract": {
+      "evaluated_outputs": 7,
+      "valid_outputs": 7,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0003",
+        "requested_model": "openai/gpt-5-nano",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5-nano"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 6,
+        "cost_usd": "0.037545400"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 5,
+        "cost_usd": "0.0024582"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"video_game_character\",\"event\":\"BEGIN\",\"variation_token\":\"EAQCORIU\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 7,
+        "cost_usd": "0.00465210",
+        "latency_ms": 125359,
+        "total_tokens": 15874,
+        "input_tokens": 4850,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 11024,
+        "reasoning_tokens": 10432,
+        "estimated_cache_savings_usd": "0E-10"
+      },
+      "oracle": {
+        "calls": 6,
+        "cost_usd": "0.040003600",
+        "latency_ms": 60507,
+        "total_tokens": 54815,
+        "input_tokens": 52649,
+        "cached_input_tokens": 23273,
+        "cache_write_tokens": 0,
+        "output_tokens": 2166,
+        "reasoning_tokens": 1073,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0002965",
+        "latency_ms": 2725,
+        "total_tokens": 408,
+        "input_tokens": 371,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 37,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the character human?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.vice.com/en/article/nintendo-finally-answers-is-mario-human",
+            "excerpt": "Mario is human.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character human?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the character male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.nintendo.com/us/whatsnew/meet-mario-and-his-friends",
+            "excerpt": "Mario has pretty much done it all over the years... the man with the mustache. ... he has been running, jumping, and spinning through dozens of classic games",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the character from a Nintendo game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/electronic-game/The-return-of-video-consoles",
+            "excerpt": "The fictional character Mario from Nintendo's Super Mario Bros. video game franchise.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html",
+            "excerpt": "Nintendo released \"Super Mario Bros.\" as the centerpiece game for its NES home-gaming console.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character from a Nintendo game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the character from the Mario series?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Mario",
+            "excerpt": "Mario is a character created by Japanese video game designer Shigeru Miyamoto. He is the star of the Mario franchise.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character from the Mario series?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is the character primarily known as a plumber?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily known as a plumber?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the character primarily associated with the color red?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.bbc.co.uk/bitesize/articles/z7dgnk7",
+            "excerpt": "Mario is recognisable across the globe for his iconic moustache, overalls and red cap and shirt.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://thenvm.org/objects/mario-and-cappy",
+            "excerpt": "Super Mario is instantly recognisable by his red overalls... perhaps the most explicit expression of the Italian plumber’s identity is his iconic red cap.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily associated with the color red?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Mario",
+        "guess_description": "The main character of the Super Mario series; a human male plumber associated with the color red.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Mario, the Nintendo video-game character and protagonist of the Super Mario franchise.",
+        "counted": false,
+        "counted_questions": 6,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"The main character of the Super Mario series; a human male plumber associated with the color red.\",\"name\":\"Mario\",\"question\":null}}"
+      }
+    ]
+  }
+}

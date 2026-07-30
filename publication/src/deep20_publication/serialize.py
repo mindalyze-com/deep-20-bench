@@ -3,11 +3,15 @@ from __future__ import annotations
 import csv
 import io
 
-from .models import PublishedDataset
+from .models import PublicationDocument, PublishedDataset
 
 
 def dataset_json(dataset: PublishedDataset) -> str:
     return dataset.model_dump_json(indent=2) + "\n"
+
+
+def publication_document_json(document: PublicationDocument) -> str:
+    return document.model_dump_json(indent=2) + "\n"
 
 
 def leaderboard_csv(dataset: PublishedDataset) -> str:
@@ -16,12 +20,13 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
     writer.writerow(
         (
             "rank",
+            "efficiency_rank",
+            "pareto_efficient",
             "model_id",
             "model_name",
             "status",
             "execution_id",
-            "b20_score",
-            "penalized_score",
+            "question_score",
             "success_rate",
             "contract_status",
             "contract_compliance_rate",
@@ -31,18 +36,26 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
             "successful",
             "terminal_trials",
             "total_cost_usd",
+            "guesser_cost_per_episode_usd",
+            "full_cost_per_episode_usd",
+            "runtime_per_episode_ms",
+            "guesser_think_time_per_episode_ms",
+            "guesser_latency_per_call_ms",
+            "cost_adjusted_question_score",
+            "efficiency_status",
         )
     )
     for row in dataset.leaderboard:
         writer.writerow(
             (
                 row.rank or "",
+                row.efficiency_rank or "",
+                row.pareto_efficient,
                 row.model.model_id,
                 row.model.display_name,
                 row.status,
                 row.execution_id or "",
-                row.b20_score if row.b20_score is not None else "",
-                row.penalized_score if row.penalized_score is not None else "",
+                row.question_score if row.question_score is not None else "",
                 row.success_rate if row.success_rate is not None else "",
                 row.contract.status if row.contract is not None else "",
                 (
@@ -57,6 +70,37 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
                 row.successful,
                 row.terminal_trials,
                 row.total_cost_usd if row.total_cost_usd is not None else "",
+                (
+                    row.guesser_cost_per_episode_usd
+                    if row.guesser_cost_per_episode_usd is not None
+                    else ""
+                ),
+                (
+                    row.full_cost_per_episode_usd
+                    if row.full_cost_per_episode_usd is not None
+                    else ""
+                ),
+                (
+                    row.runtime_per_episode_ms
+                    if row.runtime_per_episode_ms is not None
+                    else ""
+                ),
+                (
+                    row.guesser_think_time_per_episode_ms
+                    if row.guesser_think_time_per_episode_ms is not None
+                    else ""
+                ),
+                (
+                    row.guesser_latency_per_call_ms
+                    if row.guesser_latency_per_call_ms is not None
+                    else ""
+                ),
+                (
+                    row.cost_adjusted_question_score
+                    if row.cost_adjusted_question_score is not None
+                    else ""
+                ),
+                row.efficiency_status,
             )
         )
     return buffer.getvalue()

@@ -1,0 +1,463 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0006-010",
+  "target_id": "T-0003",
+  "trial_id": "trial-005",
+  "episode": {
+    "episode_run_id": "BR-26dd2dad7dd3af39a3440ffaec25b42645485528",
+    "episode_id": "EP-019fa9b0ef25747d9f1c21a24f6a1beb",
+    "subject_name": "Stephen King",
+    "subject_description": "Stephen King, the American author known for horror, supernatural fiction, suspense, and novels including Carrie, The Shining, and It, identified by Wikidata entity Q39829.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Stephen_King",
+    "started_at": "2026-07-28T17:06:12.901882Z",
+    "completed_at": "2026-07-28T17:09:06.575224Z",
+    "duration_ms": 173673,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 13,
+    "counted_questions": 12,
+    "ask_count": 12,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1289378750000000007",
+    "total_tokens": 117083,
+    "contract": {
+      "evaluated_outputs": 13,
+      "valid_outputs": 13,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0006",
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "resolved_models": [
+          "anthropic/claude-opus-5"
+        ],
+        "resolved_providers": [
+          "Anthropic"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 12,
+        "cost_usd": "0.0611212250000000007"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 12,
+        "cost_usd": "0.0096229"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 1,
+        "cost_usd": "0.01033"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"XSZW5TRZ\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 13,
+        "cost_usd": "0.04755675",
+        "latency_ms": 63004,
+        "total_tokens": 22065,
+        "input_tokens": 21035,
+        "cached_input_tokens": 19066,
+        "cache_write_tokens": 1943,
+        "output_tokens": 1030,
+        "reasoning_tokens": 301,
+        "estimated_cache_savings_usd": "0.08336825"
+      },
+      "oracle": {
+        "calls": 12,
+        "cost_usd": "0.0810741250000000007",
+        "latency_ms": 108680,
+        "total_tokens": 94599,
+        "input_tokens": 88488,
+        "cached_input_tokens": 33302,
+        "cache_write_tokens": 0,
+        "output_tokens": 6111,
+        "reasoning_tokens": 3966,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.000307",
+        "latency_ms": 1409,
+        "total_tokens": 419,
+        "input_tokens": 380,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 39,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is this person currently alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://stephenking.com/news/2026.html",
+            "excerpt": "Posted: February 9th, 2026 ... Stephen tells Esquire about Other Worlds Than These",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://stephenking.com/news/stephen-is-still-alive-524.html",
+            "excerpt": "Please be assured that this is just a hoax and Stephen is very much alive and well.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person currently alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is this person male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.nndb.com/people/221/000024149",
+            "excerpt": "Gender: Male",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is this person primarily known for work in entertainment (such as acting, music, or film)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.arts.gov/honors/medals/stephen-king",
+            "excerpt": "Stephen King received the award for his contributions as an author. One of the most popular and prolific writers of our time.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "U.S. writer of horror stories ... a prolific writer of enormously popular books.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known for work in entertainment (such as acting, music, or film)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is this person primarily known for achievements in sports?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King ... U.S. writer of horror stories ... one of the world’s best-selling writers.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known for achievements in sports?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is this person primarily known for politics or government leadership?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King ... U.S. writer of horror stories.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "He is best known for his works in the horror and fantasy genres.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known for politics or government leadership?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is this person primarily known for business or technology (e.g., as a founder, executive, or investor)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "U.S. writer of horror stories... one of the world’s best-selling writers.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "Best-selling author Stephen King... best known for his works in the horror and fantasy genres.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known for business or technology (e.g., as a founder, executive, or investor)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is this person primarily known for science, academic research, or scholarship?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "He is best known for his works in the horror and fantasy genres.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "U.S. writer of horror stories.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known for science, academic research, or scholarship?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is this person primarily known as a writer, author, or journalist?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "U.S. writer of horror stories... a prolific writer... one of the world’s best-selling writers.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://stephenking.com/the-author",
+            "excerpt": "Stephen Edwin King...",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known as a writer, author, or journalist?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is this person primarily known for writing fiction (novels or short stories)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King ... U.S. writer of horror stories ... one of the world’s best-selling writers.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://stephenkingbooks.co.uk/about-stephen-king",
+            "excerpt": "His acclaimed novels and short story collections include Carrie, The Shining, The Stand, Misery and 11.22.63.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known for writing fiction (novels or short stories)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Does this person write primarily in English?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://wiki.kidzsearch.com/wiki/Stephen_King",
+            "excerpt": "Language | English",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://archive.org/details/threecompletenov0000king",
+            "excerpt": "Language English",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does this person write primarily in English?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Is this person from the United States?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.), U.S. writer of horror stories.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person from the United States?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Is this person primarily known for writing in the genres of horror, fantasy, or science fiction?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "He is best known for his works in the horror and fantasy genres.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King ... U.S. writer of horror stories. His books blend horror, the macabre, fantasy, and science fiction.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known for writing in the genres of horror, fantasy, or science fiction?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Stephen King",
+        "guess_description": "American horror and suspense novelist, author of It, The Shining, and Carrie",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Stephen King, the American author associated with It, The Shining, and Carrie.",
+        "counted": false,
+        "counted_questions": 12,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American horror and suspense novelist, author of It, The Shining, and Carrie\",\"name\":\"Stephen King\",\"question\":null}}"
+      }
+    ]
+  }
+}

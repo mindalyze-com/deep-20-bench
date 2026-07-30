@@ -1,0 +1,716 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0010-010",
+  "target_id": "T-0003",
+  "trial_id": "trial-001",
+  "episode": {
+    "episode_run_id": "BR-d3a3ce43ba6fd86fa5a3f89570d8cc9d560a0fdd",
+    "episode_id": "EP-019faa4dce6171ec8f1bccee53721f34",
+    "subject_name": "Stephen King",
+    "subject_description": "Stephen King, the American author known for horror, supernatural fiction, suspense, and novels including Carrie, The Shining, and It, identified by Wikidata entity Q39829.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Stephen_King",
+    "started_at": "2026-07-28T19:57:33.665645Z",
+    "completed_at": "2026-07-28T20:10:11.716658Z",
+    "duration_ms": 758051,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 26,
+    "counted_questions": 25,
+    "ask_count": 24,
+    "guess_count": 2,
+    "rejected_guess_count": 1,
+    "oracle_unknown_count": 4,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.7685086750000000043",
+    "total_tokens": 560067,
+    "contract": {
+      "evaluated_outputs": 26,
+      "valid_outputs": 26,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0010",
+        "requested_model": "openai/gpt-5.6-sol",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-sol"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 24,
+        "cost_usd": "0.2591862750000000043"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 20,
+        "cost_usd": "0.0199409"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"EAQCORIU\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 26,
+        "cost_usd": "0.48878300",
+        "latency_ms": 418548,
+        "total_tokens": 41699,
+        "input_tokens": 27589,
+        "cached_input_tokens": 16536,
+        "cache_write_tokens": 1560,
+        "output_tokens": 14110,
+        "reasoning_tokens": 13028,
+        "estimated_cache_savings_usd": "0.07246200"
+      },
+      "oracle": {
+        "calls": 24,
+        "cost_usd": "0.2791271750000000043",
+        "latency_ms": 334854,
+        "total_tokens": 517536,
+        "input_tokens": 500018,
+        "cached_input_tokens": 309058,
+        "cache_write_tokens": 0,
+        "output_tokens": 17518,
+        "reasoning_tokens": 11485,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 2,
+        "cost_usd": "0.0005985",
+        "latency_ms": 3651,
+        "total_tokens": 832,
+        "input_tokens": 759,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 73,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is this person currently alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://stephenking.com/news/stephen-is-still-alive-524.html",
+            "excerpt": "Stephen is very much alive and well.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person currently alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is this person a woman?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.penfaulkner.org/2020/10/19/stephen-king",
+            "excerpt": "King, a White man wearing glasses and a blue collared shirt",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person a woman?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Has he held an elected political office?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.centralmaine.com/2015/03/20/the-case-for-stephen-king-politician/",
+            "excerpt": "King’s no politician, but he is a politically active Democrat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he held an elected political office?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is he a citizen of the United States?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.nndb.com/people/221/000024149",
+            "excerpt": "Nationality: United States",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is he a citizen of the United States?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Has he competed as a professional athlete?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he competed as a professional athlete?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Has he appeared as an actor in a feature film?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.rottentomatoes.com/m/creepshow/cast-and-crew",
+            "excerpt": "Creepshow (1982) is a single full-length feature; one story concerns a rural man (Stephen King).",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.mentalfloss.com/entertainment/every-stephen-king-cameo-his-adaptations",
+            "excerpt": "In Creepshow (1982), King plays a big role as Jordy Verrill; in Creepshow 2, he appears as a truck driver.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he appeared as an actor in a feature film?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Has he won an Academy Award for acting?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://screenrant.com/stephen-king-movie-adaptations-oscar-nomination",
+            "excerpt": "At the 63rd Academy Awards, a Stephen King film finally won an Oscar... Best Actress, awarded to Kathy Bates for her portrayal of Annie Wilkes.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://screenrant.com/stephen-king-carrie-movies-upcoming-show-adaptations",
+            "excerpt": "It remains the only Academy Award for acting in any screen adaptation of a Stephen King book; Sissy Spacek and Piper Laurie both got nominations for Carrie, but neither won.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he won an Academy Award for acting?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Has he released a studio album as a recording artist?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he released a studio album as a recording artist?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Was he born before 1960?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born before 1960?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Has he directed a feature film?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.nytimes.com/1986/07/25/movies/film-by-stephen-king-maximum-overdrive.html",
+            "excerpt": "Maximum Overdrive Directed by Stephen King",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he directed a feature film?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Has he won the Academy Award for Best Director?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://screenrant.com/stephen-king-movie-adaptations-oscar-nomination/",
+            "excerpt": "This singular win came in the form of Best Actress, awarded to Kathy Bates ... This makes the win from Misery ... the sole Oscar from a King film.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he won the Academy Award for Best Director?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Has he been nominated for an Academy Award for acting?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://nextbestpicture.com/the-oscar-history-of-stephen-king-adaptations-and-what-it-means-for-the-life-of-chuck/",
+            "excerpt": "Only five King adaptations have received Oscar nominations; the acting nominations cited are for performers such as Sissy Spacek, Kathy Bates, and Morgan Freeman.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.bbc.com/culture/article/20141031-is-stephen-king-a-great-writer",
+            "excerpt": "Sissy Spacek earned an Oscar nomination for Carrie—a film that brought both the actor and Stephen King to wide attention.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he been nominated for an Academy Award for acting?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "George Lucas",
+        "guess_description": "American filmmaker who created Star Wars and co-created Indiana Jones.",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies George Lucas, whereas the trusted subject is Stephen King.",
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American filmmaker who created Star Wars and co-created Indiana Jones.\",\"name\":\"George Lucas\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Is he African American?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://stephenking.com/promo/utd_widget/author_bio/bio.html",
+            "excerpt": "Stephen is of Scots-Irish ancestry",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://stephenkingbooks.co.uk/about-stephen-king/",
+            "excerpt": "Of Scot-Irish ancestry, Stephen Edwin King was born in Portland, Maine in 1947.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is he African American?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Has he won an Academy Award in any category?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Misery-novel-by-King",
+            "excerpt": "Kathy Bates’s performance in Misery earned her an Academy Award for best actress.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://slashfilm.com/1582162/stephen-king-horror-movie-1408-academy-award",
+            "excerpt": "Only one of King’s movie adaptations has achieved Oscar glory: Misery, which earned Kathy Bates a Best Actress Oscar.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he won an Academy Award in any category?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Has he ever been nominated for an Academy Award in any category?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he ever been nominated for an Academy Award in any category?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Was he born before 1940?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born before 1940?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Was he a regular cast member of a scripted television series before directing his first feature film?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "1986 - Makes his directorial debut with the release of “Maximum Overdrive.”",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://the-line-up.com/stephen-king-film-tv-cameos",
+            "excerpt": "While he doesn’t appear in every project he works on, he’s made an appearance either in person or via his voice in fourteen television shows, thirteen movies, and one American Express commercial.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.filmpittsburgh.org/films/creepshow",
+            "excerpt": "Creepshow ... was originally released on November 12th, 1982 ... with ... a cameo by King.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he a regular cast member of a scripted television series before directing his first feature film?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Has he received top billing in a theatrically released feature film?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he received top billing in a theatrically released feature film?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Has he been a cast member of Saturday Night Live?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [
+          {
+            "source_url": "https://www.yahoo.com/entertainment/saturday-night-live-tbt-stephen-king-cant-stop-writing-130010793.html",
+            "excerpt": "Jon Lovitz impersonates the author; video of King appears from his study in Maine.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he been a cast member of Saturday Night Live?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "ASK",
+        "question": "Has he directed an animated feature film?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [
+          {
+            "source_url": "https://www.starnewsonline.com/story/news/local/2026/01/27/wilmington-shot-cult-classic-celebrates-40th-anniversary-emilio-estevez/87981901007",
+            "excerpt": "\"Maximum Overdrive\" is the only film ever directed by horror author Stephen King.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nytimes.com/1986/07/25/movies/film-by-stephen-king-maximum-overdrive.html",
+            "excerpt": "Maximum Overdrive — Directed by Stephen King — Action, Comedy, Horror, Sci-Fi.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Has he directed an animated feature film?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "ASK",
+        "question": "Was he born in 1950 or later?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born in 1950 or later?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "ASK",
+        "question": "Did he direct a feature film released before 1970?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [
+          {
+            "source_url": "https://edition.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "1986 - Makes his directorial debut with the release of “Maximum Overdrive.”",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://catalog.afi.com/Catalog/moviedetails/57405",
+            "excerpt": "Maximum Overdrive (1986) ... 25 July 1986 ... Director: Stephen King",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did he direct a feature film released before 1970?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "ASK",
+        "question": "Was he born before 1945?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/summary/Stephen-King",
+            "excerpt": "Stephen (Edwin) King, (born Sept. 21, 1947, Portland, Maine, U.S.)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was he born before 1945?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "ASK",
+        "question": "Was a novel written by him adapted into a theatrically released film before he directed his first feature film?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [
+          {
+            "source_url": "https://www.moma.org/calendar/events/7970",
+            "excerpt": "Carrie (1976)... Screenplay by Lawrence D. Cohen, based on novel by Stephen King.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.moviefone.com/movie/carrie/10348/main/",
+            "excerpt": "Theatrical Release: November 16th, 1976",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.cnn.com/us/stephen-king-fast-facts",
+            "excerpt": "1986 - Makes his directorial debut with the release of “Maximum Overdrive,” which is based on one of his short stories.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was a novel written by him adapted into a theatrically released film before he directed his first feature film?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Stephen King",
+        "guess_description": "American horror author whose novels include Carrie and The Shining, and who directed Maximum Overdrive.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Stephen King, the American author associated with Carrie, The Shining, and Maximum Overdrive.",
+        "counted": false,
+        "counted_questions": 25,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American horror author whose novels include Carrie and The Shining, and who directed Maximum Overdrive.\",\"name\":\"Stephen King\",\"question\":null}}"
+      }
+    ]
+  }
+}

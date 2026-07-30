@@ -1,0 +1,499 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0001-010",
+  "target_id": "T-0007",
+  "trial_id": "trial-004",
+  "episode": {
+    "episode_run_id": "BR-9710bdc0db6a56c931fe9a8a4ac5c10368a879ea",
+    "episode_id": "EP-019faa0e2ba8739d9a224a45e91879d7",
+    "subject_name": "Mario",
+    "subject_description": "Mario, the fictional Nintendo video-game character created by Shigeru Miyamoto and protagonist of the Mario franchise, identified by Wikidata entity Q12379.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Mario",
+    "started_at": "2026-07-28T18:48:03.240383Z",
+    "completed_at": "2026-07-28T18:51:42.324505Z",
+    "duration_ms": 219084,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 14,
+    "counted_questions": 13,
+    "ask_count": 13,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1171285250000000014",
+    "total_tokens": 129277,
+    "contract": {
+      "evaluated_outputs": 14,
+      "valid_outputs": 14,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0001",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 13,
+        "cost_usd": "0.0812181500000000014"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 13,
+        "cost_usd": "0.0129967"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 1,
+        "cost_usd": "0.010715"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"video_game_character\",\"event\":\"BEGIN\",\"variation_token\":\"BYOMPCJW\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 14,
+        "cost_usd": "0.011848175",
+        "latency_ms": 53117,
+        "total_tokens": 14139,
+        "input_tokens": 11904,
+        "cached_input_tokens": 2106,
+        "cache_write_tokens": 1111,
+        "output_tokens": 2235,
+        "reasoning_tokens": 1624,
+        "estimated_cache_savings_usd": "0.00161765"
+      },
+      "oracle": {
+        "calls": 13,
+        "cost_usd": "0.1049298500000000014",
+        "latency_ms": 162534,
+        "total_tokens": 114707,
+        "input_tokens": 106269,
+        "cached_input_tokens": 34348,
+        "cache_write_tokens": 0,
+        "output_tokens": 8438,
+        "reasoning_tokens": 5492,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0003505",
+        "latency_ms": 2479,
+        "total_tokens": 431,
+        "input_tokens": 377,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 54,
+        "reasoning_tokens": 17,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the character human or human-like?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.vice.com/en/article/nintendo-finally-answers-is-mario-human/",
+            "excerpt": "Motokura confirms that Mario is human.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character human or human-like?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Did the character originate in a video game developed primarily in Japan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/electronic-game/The-return-of-video-consoles",
+            "excerpt": "Mario debuted as Jumpman in Donkey Kong (1981).",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.firstversions.com/2015/08/donkey-kong.html",
+            "excerpt": "Developer - Publisher: Nintendo Co., Ltd. - Kyoto, Japan",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in a video game developed primarily in Japan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the character male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://1980sgamer.fandom.com/wiki/Mario",
+            "excerpt": "Mario — Gender: Male",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the character the primary protagonist of the game or series in which he appears?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html",
+            "excerpt": "Miyamoto actually first created the Mario character to be the protagonist of \"Donkey Kong,\" the 1981 arcade game.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.guinnessworldrecords.com/news/icons/mario-best-selling-videogame-character",
+            "excerpt": "Mario ... is ... the protagonist of the world-renowned Mario franchise.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character the primary protagonist of the game or series in which he appears?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Did the character first appear in a game released for a Nintendo console or handheld?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html",
+            "excerpt": "Miyamoto first created the Mario character to be the protagonist of Donkey Kong, the 1981 arcade game.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.ssbwiki.com/Donkey_Kong_(game)",
+            "excerpt": "Donkey Kong was released for the arcade on July 9, 1981; its Nintendo Entertainment System release came later, in 1983.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear in a game released for a Nintendo console or handheld?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Did the character first appear on a PlayStation console?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://mario.fandom.com/wiki/Donkey_Kong_(video_game)",
+            "excerpt": "This title marks the very first appearance of Mario ... Donkey Kong ... was an arcade game that was released by Nintendo in 1981.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.firstversions.com/2015/08/donkey-kong.html",
+            "excerpt": "Released: July 9, 1981 ... Platform: Arcade ... Mario (original name Jumpman).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear on a PlayStation console?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Did the character first appear in a game released for a Sega console or arcade system?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://mario.fandom.com/wiki/Donkey_Kong_(video_game)",
+            "excerpt": "This title marks the very first appearance of Mario ... is an arcade game that was released by Nintendo in 1981.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html",
+            "excerpt": "Miyamoto actually first created the Mario character to be the protagonist of Donkey Kong, the 1981 arcade game.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear in a game released for a Sega console or arcade system?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the character primarily associated with stealth-action games?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.merriam-webster.com/dictionary/platformer",
+            "excerpt": "Mario games have traditionally been platformers, where the character has to run and jump, collect items and fight enemies.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nintendolife.com/guides/nintendo-switch-mario-games",
+            "excerpt": "Mario stars in a variety of spin-off games outside of his mainline series of platform games.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily associated with stealth-action games?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Did the character first appear in a game released for a Microsoft Xbox console?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html",
+            "excerpt": "Shigeru Miyamoto actually first created the Mario character to be the protagonist of Donkey Kong, the 1981 arcade game.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://time.com/3901489/donkey-kong-anniversary",
+            "excerpt": "When Americans first encountered him in arcades ... in 1981, Jumpman’s best friend ... had turned on his owner.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear in a game released for a Microsoft Xbox console?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Is the character primarily associated with fighting games?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/electronic-platform-game",
+            "excerpt": "Nintendo continued with its official mascot, Mario, in Super Mario World (1990).",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Mario-Bros",
+            "excerpt": "Super Mario Bros. (1985), a platform game, made Mario the star of the best-selling video game.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.mariowiki.com/Genre",
+            "excerpt": "The first Super Mario games were platformers, but the series has since spun off into various other genres.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily associated with fighting games?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Did the character first appear in a role-playing game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html",
+            "excerpt": "Miyamoto first created the Mario character to be the protagonist of Donkey Kong, the 1981 arcade game.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Donkey-Kong",
+            "excerpt": "The arcade machine marked the first appearance of ... Jumpman, better known as Mario.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear in a role-playing game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Did the character first appear in an arcade video game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html",
+            "excerpt": "Miyamoto first created the Mario character to be the protagonist of Donkey Kong, the 1981 arcade game.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://time.com/3901489/donkey-kong-anniversary",
+            "excerpt": "When Americans first encountered him in arcades on this day, June 2, in 1981, Jumpman’s best friend ... had turned on his owner.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear in an arcade video game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Is the character primarily associated with platform games?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.shacknews.com/article/106032/super-smash-bros-ultimate-character-profiles-mario",
+            "excerpt": "Mario has mostly been about platforming his way to rescue Princess Peach from Bowser.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Mario-Bros",
+            "excerpt": "Super Mario Bros. (1985) ... [was] a vastly improved version ... [and] the best-selling video game.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character primarily associated with platform games?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Mario",
+        "guess_description": "Nintendo's iconic mustachioed human plumber and platform-game protagonist, who first appeared in the arcade game Donkey Kong.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposal identifies Mario, the same Nintendo video-game character described in the trusted subject.",
+        "counted": false,
+        "counted_questions": 13,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Nintendo's iconic mustachioed human plumber and platform-game protagonist, who first appeared in the arcade game Donkey Kong.\",\"name\":\"Mario\",\"question\":null}}"
+      }
+    ]
+  }
+}

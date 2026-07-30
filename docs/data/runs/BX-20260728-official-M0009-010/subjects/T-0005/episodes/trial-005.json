@@ -1,0 +1,627 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0009-010",
+  "target_id": "T-0005",
+  "trial_id": "trial-005",
+  "episode": {
+    "episode_run_id": "BR-bb7ad396022fdee9ea64ca26b5cfe85651b8db45",
+    "episode_id": "EP-019faa68873571a5a980b30a8b5e9e54",
+    "subject_name": "Achilles",
+    "subject_description": "Achilles, the Greek mythological hero and greatest Greek warrior of the Trojan War in Homer's Iliad, identified by Wikidata entity Q41746.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Achilles",
+    "started_at": "2026-07-28T20:26:44.917045Z",
+    "completed_at": "2026-07-28T20:29:35.832961Z",
+    "duration_ms": 170916,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 26,
+    "counted_questions": 25,
+    "ask_count": 12,
+    "guess_count": 14,
+    "rejected_guess_count": 13,
+    "oracle_unknown_count": 1,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.0974024899999999997",
+    "total_tokens": 124052,
+    "contract": {
+      "evaluated_outputs": 26,
+      "valid_outputs": 26,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0009",
+        "requested_model": "meta-llama/llama-4-maverick",
+        "requested_provider": "parasail",
+        "resolved_models": [
+          "meta-llama/llama-4-maverick"
+        ],
+        "resolved_providers": [
+          "Parasail"
+        ],
+        "reasoning_effort": "none",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 12,
+        "cost_usd": "0.0648361499999999997"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 11,
+        "cost_usd": "0.0086183"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 1,
+        "cost_usd": "0.014425"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"mythological_figure\",\"event\":\"BEGIN\",\"variation_token\":\"XSZW5TRZ\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 26,
+        "cost_usd": "0.00519204",
+        "latency_ms": 19610,
+        "total_tokens": 25256,
+        "input_tokens": 24412,
+        "cached_input_tokens": 23312,
+        "cache_write_tokens": 0,
+        "output_tokens": 844,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0041961600"
+      },
+      "oracle": {
+        "calls": 12,
+        "cost_usd": "0.0878794499999999997",
+        "latency_ms": 130792,
+        "total_tokens": 93054,
+        "input_tokens": 86981,
+        "cached_input_tokens": 30218,
+        "cache_write_tokens": 0,
+        "output_tokens": 6073,
+        "reasoning_tokens": 3975,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 14,
+        "cost_usd": "0.0043310",
+        "latency_ms": 18631,
+        "total_tokens": 5742,
+        "input_tokens": 5158,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 584,
+        "reasoning_tokens": 80,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the mythological figure male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Achilles ... the man who led the Greeks to victory after ten years of war.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the mythological figure from Greek mythology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/video/did-you-know-Achilles/-255375",
+            "excerpt": "In Greek mythology, Achilles was the greatest warrior of the Greek army in the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure from Greek mythology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the mythological figure a god?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Though Achilles was a mortal hero rather than a god, there is some evidence of Achillean cults.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure a god?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the mythological figure a hero?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/social-sciences-and-humanities/achilles-greek-mythology",
+            "excerpt": "Though Achilles was a mortal hero rather than a god",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure a hero?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is the mythological figure known for battling monsters?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "Achilles is ... renowned as the greatest warrior of the Greek army during the Trojan War.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/video/did-you-know-Achilles/-255375",
+            "excerpt": "In Greek mythology, Achilles was the greatest warrior of the Greek army in the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure known for battling monsters?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the mythological figure associated with a specific city or region in ancient Greece?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://library.willamette.edu/hfma/omeka/items/show/58",
+            "excerpt": "Thessaly claimed its founder was none other than Aiakos, the grandfather of Achilles, making it the Homeric Phthia, also the birthplace of Achilles.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure associated with a specific city or region in ancient Greece?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is the mythological figure associated with Athens?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://bmcr.brynmawr.edu/2003/2003.06.45",
+            "excerpt": "Although Achilles never became identified with Athens, he was used as a tool for propaganda.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure associated with Athens?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the mythological figure Theseus?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/video/did-you-know-Achilles/-255375",
+            "excerpt": "In Greek mythology, Achilles was the greatest warrior of the Greek army in the Trojan War.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.metmuseum.org/essays/theseus-hero-of-athens",
+            "excerpt": "Theseus became king and therefore part of the historical lineage of Athens.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure Theseus?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Was the mythological figure known for a specific journey or quest?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the mythological figure known for a specific journey or quest?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Did the mythological figure have a parent who was a god?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Thetis",
+            "excerpt": "Thetis | Sea Goddess, Sea Nymph, Achilles’ Mother",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/video/did-you-know-Achilles/-255375",
+            "excerpt": "Born to the mortal king Peleus and the sea nymph Thetis",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the mythological figure have a parent who was a god?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Perseus",
+        "guess_description": "Demigod hero famous for slaying Medusa",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposal identifies Perseus, a different mythological hero.",
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Demigod hero famous for slaying Medusa\",\"name\":\"Perseus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Is the mythological figure associated with a tragic story or fate?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "Achilles’ prowess and tragic fate have made him an enduring symbol of heroism and vulnerability in literature and culture.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure associated with a tragic story or fate?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Heracles",
+        "guess_description": "Demigod hero known for his twelve labors and tragic fate",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Heracles, a different mythological figure from Achilles.",
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Demigod hero known for his twelve labors and tragic fate\",\"name\":\"Heracles\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Orpheus",
+        "guess_description": "Musician and poet who journeyed to the underworld to reclaim his wife",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Orpheus, while the trusted subject is Achilles.",
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Musician and poet who journeyed to the underworld to reclaim his wife\",\"name\":\"Orpheus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Is the subject related to a familial or filial tragedy?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Neoptolemus",
+            "excerpt": "Neoptolemus, Achilles’ son, was murdered at Delphi, where he had gone to demand that Apollo atone for the death of Achilles.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikisource.org/wiki/1911_Encyclop%C3%A6dia_Britannica/Neoptolemus",
+            "excerpt": "Neoptolemus ... the son of Achilles and Deīdameia ... was murdered.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the subject related to a familial or filial tragedy?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Oedipus",
+        "guess_description": "Theban king infamous for unknowingly killing his father and marrying his mother",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Oedipus, while the trusted subject is Achilles; they are distinct mythological figures.",
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Theban king infamous for unknowingly killing his father and marrying his mother\",\"name\":\"Oedipus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Theseus",
+        "guess_description": "Athenian hero who defeated the Minotaur",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposal identifies Theseus, a different Greek mythological hero.",
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Athenian hero who defeated the Minotaur\",\"name\":\"Theseus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Hippolytus",
+        "guess_description": "Son of Theseus, known for his tragic fate due to family curses",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Hippolytus, while the trusted subject is Achilles, a different mythological figure.",
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Son of Theseus, known for his tragic fate due to family curses\",\"name\":\"Hippolytus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Phaethon",
+        "guess_description": "Son of Helios, known for his tragic fate after driving his father's chariot",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Phaethon, while the trusted subject is Achilles.",
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Son of Helios, known for his tragic fate after driving his father's chariot\",\"name\":\"Phaethon\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Narcissus",
+        "guess_description": "Beautiful youth who fell in love with his own reflection",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposal identifies Narcissus, a different mythological figure.",
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Beautiful youth who fell in love with his own reflection\",\"name\":\"Narcissus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Bellerophon",
+        "guess_description": "Hero who rode Pegasus and had a tragic downfall",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Bellerophon, a different Greek mythological hero from Achilles.",
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Hero who rode Pegasus and had a tragic downfall\",\"name\":\"Bellerophon\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Icarus",
+        "guess_description": "Son of Daedalus who flew too close to the sun",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Icarus, while the trusted subject is Achilles.",
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Son of Daedalus who flew too close to the sun\",\"name\":\"Icarus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Tantalus",
+        "guess_description": "King who was punished in the underworld for his crimes",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Tantalus, while the trusted subject is Achilles.",
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"King who was punished in the underworld for his crimes\",\"name\":\"Tantalus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Orion",
+        "guess_description": "Giant huntsman whom Artemis loved, placed among the stars as a constellation",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Orion, a mythological huntsman, whereas the trusted subject is Achilles.",
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Giant huntsman whom Artemis loved, placed among the stars as a constellation\",\"name\":\"Orion\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Meleager",
+        "guess_description": "Hero of the Calydonian Boar Hunt and victim of a familial curse",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Meleager, a different mythological figure from Achilles.",
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Hero of the Calydonian Boar Hunt and victim of a familial curse\",\"name\":\"Meleager\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Achilles",
+        "guess_description": "Hero of the Trojan War with a famous heel vulnerability",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Achilles, the Greek mythological hero of the Trojan War; the description is consistent.",
+        "counted": false,
+        "counted_questions": 25,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Hero of the Trojan War with a famous heel vulnerability\",\"name\":\"Achilles\",\"question\":null}}"
+      }
+    ]
+  }
+}

@@ -127,8 +127,15 @@ run, leaderboard row, Markdown report, and public web report carries:
 
 A successful 30-question episode with one earlier format failure remains successful, and its
 counted-question total already includes the lost turn. It is also permanently labeled
-`breached` with one violation. Reliability does not add a second B20 penalty; it exposes that
+`breached` with one violation. Reliability does not add a second score penalty; it exposes that
 the model was operationally unreliable.
+
+The contract is short, explicit, and fixed for the whole episode. Compliance therefore tests
+whether the model can retain and apply a clear instruction as the conversation grows. A
+violation can show that the model lost track of the required action format, returned an invalid
+or incomplete action, or stopped before completing one. This is distinct from gameplay
+accuracy: a model can identify the subject and still break the protocol, or fail to identify it
+while following the protocol correctly.
 
 The episode transcript contains a distinct violation card in the exact turn position. Reports
 use the explicit wording “Model broke the output contract” for breached trials.

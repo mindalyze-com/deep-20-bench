@@ -1,0 +1,393 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0005-012",
+  "target_id": "T-0007",
+  "trial_id": "trial-004",
+  "episode": {
+    "episode_run_id": "BR-af6d2d681b76724de4d8e212425734d8e09b569d",
+    "episode_id": "EP-019fab2900c7745c8867ab59bd56b7c7",
+    "subject_name": "Mario",
+    "subject_description": "Mario, the fictional Nintendo video-game character created by Shigeru Miyamoto and protagonist of the Mario franchise, identified by Wikidata entity Q12379.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Mario",
+    "started_at": "2026-07-28T23:56:58.951993Z",
+    "completed_at": "2026-07-28T23:59:49.238757Z",
+    "duration_ms": 170287,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 12,
+    "counted_questions": 11,
+    "ask_count": 11,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 4,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.0949253749999999985",
+    "total_tokens": 121186,
+    "contract": {
+      "evaluated_outputs": 12,
+      "valid_outputs": 12,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0005",
+        "requested_model": "anthropic/claude-sonnet-5",
+        "requested_provider": "anthropic",
+        "resolved_models": [
+          "anthropic/claude-sonnet-5"
+        ],
+        "resolved_providers": [
+          "Anthropic"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 11,
+        "cost_usd": "0.0682082749999999985"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 7,
+        "cost_usd": "0.0066366"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"video_game_character\",\"event\":\"BEGIN\",\"variation_token\":\"BYOMPCJW\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 12,
+        "cost_usd": "0.0198000",
+        "latency_ms": 37619,
+        "total_tokens": 20350,
+        "input_tokens": 19191,
+        "cached_input_tokens": 17285,
+        "cache_write_tokens": 1882,
+        "output_tokens": 1159,
+        "reasoning_tokens": 431,
+        "estimated_cache_savings_usd": "0.03017200"
+      },
+      "oracle": {
+        "calls": 11,
+        "cost_usd": "0.0748448749999999985",
+        "latency_ms": 131446,
+        "total_tokens": 100430,
+        "input_tokens": 95149,
+        "cached_input_tokens": 43063,
+        "cache_write_tokens": 0,
+        "output_tokens": 5281,
+        "reasoning_tokens": 3405,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0002805",
+        "latency_ms": 1028,
+        "total_tokens": 406,
+        "input_tokens": 375,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 31,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the character human (as opposed to an animal, robot, monster, or other non-human creature)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://1980sgamer.fandom.com/wiki/Mario",
+            "excerpt": "Species: Human",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nintendo.com/us/whatsnew/meet-mario-and-his-friends",
+            "excerpt": "He's a plumber by profession but is really a jack of all trades.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character human (as opposed to an animal, robot, monster, or other non-human creature)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the character male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://mario.nintendo.com/about/",
+            "excerpt": "Meet Mario, the mustached hero of the Mushroom Kingdom. You may know him as a famous plumber, but he’s also a kart racer, sports star, caped hero, and more!",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the character the main protagonist of the game he appears in?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character the main protagonist of the game he appears in?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Does the character primarily appear in a first-person or third-person shooter game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "http://www.shacknews.com/article/106032/super-smash-bros-ultimate-character-profiles-mario",
+            "excerpt": "Mario has mostly been about platforming his way to rescue Princess Peach from Bowser.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kotaku.com/first-person-mario-lets-you-shoot-goombas-in-the-dang-f-1842244569",
+            "excerpt": "Developer Sean Noonan has released a beautiful rendition of Super Mario Bros. as a first-person shooter.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character primarily appear in a first-person or third-person shooter game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "placeholder",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"placeholder\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Does the character primarily appear in a role-playing game (RPG)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://gameinformer.com/b/features/archive/2016/01/22/taking-turns-mario-s-rpg-history.aspx",
+            "excerpt": "Mario ... is closely associated with the [platformer] genre.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "http://www.shacknews.com/article/106032/super-smash-bros-ultimate-character-profiles-mario",
+            "excerpt": "Mario has mostly been about platforming his way to rescue Princess Peach from Bowser.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character primarily appear in a role-playing game (RPG)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "placeholder",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"placeholder\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Does the character primarily appear in a platformer game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.merriam-webster.com/dictionary/platformer",
+            "excerpt": "Mario games have traditionally been platformers, where the character has to run and jump, collect items and fight enemies.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Mario-Bros",
+            "excerpt": "A vastly improved version for the NES, Super Mario Bros. (1985), sold more than 40 million copies, making it the best-selling video game.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character primarily appear in a platformer game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Does the character wear a hat as part of his signature outfit?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.nintendo.com/en-za/Iwata-Asks/Iwata-Asks-New-Super-Mario-Bros-Wii/Iwata-Asks-New-Super-Mario-Bros-Wii-Vol1/2-The-Reason-Mario-Wears-Overalls/2-The-Reason-Mario-Wears-Overalls-210759.html",
+            "excerpt": "Mario’s trademarks are his moustache, his hat and his overalls.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character wear a hat as part of his signature outfit?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "placeholder",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"placeholder\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Is the character Italian or does he have an Italian-sounding name/heritage?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://lrmonline.com/news/mario-of-super-mario-bros-fame-isnt-italian",
+            "excerpt": "The name Mario sounds Italian, but he isn’t Italian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character Italian or does he have an Italian-sounding name/heritage?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Mario",
+        "guess_description": "Iconic Italian plumber, star of Nintendo's platformer franchise, known for his red hat and blue overalls.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity clearly matches Mario, the Nintendo video-game character.",
+        "counted": false,
+        "counted_questions": 11,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Iconic Italian plumber, star of Nintendo's platformer franchise, known for his red hat and blue overalls.\",\"name\":\"Mario\",\"question\":null}}"
+      }
+    ]
+  }
+}

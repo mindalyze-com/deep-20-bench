@@ -31,6 +31,7 @@ from .models import (
     PublicOracleSupportRole,
     PublicOracleSupportUsage,
     PublicRun,
+    PublicRunComparison,
     PublicRunCostTotals,
     PublicRunTotals,
     PublicSubject,
@@ -61,21 +62,10 @@ def _contract(
     return contract.model_copy()
 
 
-def _b20_score(
-    penalized_questions: Decimal | None,
-    *,
-    failure_penalty: Decimal,
-    target_questions: int,
-) -> Decimal | None:
-    if penalized_questions is None:
-        return None
-    target = Decimal(target_questions)
-    denominator = failure_penalty - target
-    if denominator <= 0:
-        raise ValueError("B20 target must be below the failure penalty")
-    if penalized_questions < 0 or penalized_questions > failure_penalty:
-        raise ValueError("penalized questions fall outside the B20 scale")
-    return target * (failure_penalty - penalized_questions) / denominator
+def _average(values: tuple[Decimal, ...]) -> Decimal:
+    if not values:
+        raise ValueError("average requires at least one value")
+    return sum(values, start=Decimal(0)) / Decimal(len(values))
 
 
 def _reason_codes(
@@ -113,14 +103,13 @@ def _trial(
     trial: CompletedTrialSummary | InfrastructureFailedTrialSummary,
     *,
     failure_penalty: Decimal,
-    b20_target_questions: int,
     episode: LoadedEpisode | None = None,
 ) -> PublicTrial:
     if isinstance(trial, CompletedTrialSummary):
         status: Literal["success", "model_failure"] = (
             "success" if trial.success else "model_failure"
         )
-        scored_questions = (
+        penalized_questions = (
             Decimal(trial.counted_questions) if trial.success else failure_penalty
         )
         return PublicTrial(
@@ -128,12 +117,7 @@ def _trial(
             trial_number=trial.identity.trial_number,
             status=status,
             counted_questions=trial.counted_questions,
-            scored_questions=scored_questions,
-            b20_score=_b20_score(
-                scored_questions,
-                failure_penalty=failure_penalty,
-                target_questions=b20_target_questions,
-            ),
+            penalized_questions=penalized_questions,
             cost_usd=trial.cost_usd,
             duration_ms=trial.duration_ms,
             contract=_contract(trial.contract),
@@ -145,8 +129,7 @@ def _trial(
         trial_number=trial.identity.trial_number,
         status="infrastructure_failure",
         counted_questions=trial.partial_metrics.counted_questions,
-        scored_questions=None,
-        b20_score=None,
+        penalized_questions=None,
         cost_usd=trial.partial_metrics.cost_usd,
         duration_ms=trial.partial_metrics.duration_ms,
         contract=None,
@@ -343,26 +326,26 @@ def _subject(
     subject: SubjectSummary,
     *,
     failure_penalty: Decimal,
-    b20_target_questions: int,
     episodes: dict[tuple[str, str], LoadedEpisode],
 ) -> PublicSubject:
     trials = tuple(
         _trial(
             trial,
             failure_penalty=failure_penalty,
-            b20_target_questions=b20_target_questions,
             episode=episodes.get(
                 (trial.identity.target_id, trial.identity.trial_id)
             ),
         )
         for trial in subject.trials
     )
-    scored = tuple(
-        trial.scored_questions for trial in trials if trial.scored_questions is not None
+    penalized = tuple(
+        trial.penalized_questions
+        for trial in trials
+        if trial.penalized_questions is not None
     )
-    subject_score = (
-        sum(scored, start=Decimal(0)) / Decimal(len(scored))
-        if len(scored) == len(trials) and scored
+    average_questions = (
+        _average(penalized)
+        if len(penalized) == len(trials) and penalized
         else None
     )
     counts = subject.summary.counts
@@ -371,12 +354,7 @@ def _subject(
         display_name=subject.display_name,
         entity_type=subject.entity_type,
         success_rate=subject.summary.success_rate,
-        subject_score=subject_score,
-        b20_score=_b20_score(
-            subject_score,
-            failure_penalty=failure_penalty,
-            target_questions=b20_target_questions,
-        ),
+        average_questions=average_questions,
         successful=counts.successful,
         model_failed=counts.model_failed,
         infrastructure_failed=counts.infrastructure_failed,
@@ -397,6 +375,7 @@ def _public_run_totals(run: LoadedRun) -> PublicRunTotals:
     validator_cost = Decimal(0)
     total_tokens = 0
     guesser_think_time_ms = 0
+    guesser_calls = 0
 
     for episode in run.episodes:
         result = episode.result
@@ -411,6 +390,7 @@ def _public_run_totals(run: LoadedRun) -> PublicRunTotals:
         validator_cost += result.summary.costs_usd.validator
         total_tokens += result.summary.tokens.total
         guesser_think_time_ms += result.llm_details.guesser.metrics.latency_ms
+        guesser_calls += result.llm_details.guesser.metrics.calls
 
     for subject in run.summary.subjects:
         for trial in subject.trials:
@@ -467,6 +447,70 @@ def _public_run_totals(run: LoadedRun) -> PublicRunTotals:
             (run.state.updated_at - run.manifest.created_at).total_seconds() * 1_000
         ),
         guesser_think_time_ms=guesser_think_time_ms,
+        guesser_calls=guesser_calls,
+    )
+
+
+def _public_run_comparison(
+    *,
+    totals: PublicRunTotals,
+    terminal_trials: int,
+    question_score: Decimal | None,
+) -> PublicRunComparison:
+    if terminal_trials <= 0:
+        return PublicRunComparison(efficiency_status="no_terminal_episodes")
+
+    episodes = Decimal(terminal_trials)
+    guesser_cost_per_episode = totals.costs_usd.guesser / episodes
+    full_cost_per_episode = totals.costs_usd.total / episodes
+    support_cost = max(
+        totals.costs_usd.total - totals.costs_usd.guesser,
+        Decimal(0),
+    )
+    support_cost_per_episode = support_cost / episodes
+    support_cost_share = (
+        support_cost / totals.costs_usd.total
+        if totals.costs_usd.total > 0
+        else None
+    )
+    guesser_latency_per_call = (
+        Decimal(totals.guesser_think_time_ms) / Decimal(totals.guesser_calls)
+        if totals.guesser_calls > 0
+        else None
+    )
+
+    status: Literal[
+        "ranked",
+        "question_score_unavailable",
+        "recorded_guesser_cost_unavailable",
+        "no_terminal_episodes",
+        "no_guesser_calls",
+    ]
+    if question_score is None:
+        status = "question_score_unavailable"
+    elif totals.guesser_calls <= 0:
+        status = "no_guesser_calls"
+    elif totals.costs_usd.guesser <= 0:
+        status = "recorded_guesser_cost_unavailable"
+    else:
+        status = "ranked"
+
+    return PublicRunComparison(
+        guesser_cost_per_episode_usd=guesser_cost_per_episode,
+        full_cost_per_episode_usd=full_cost_per_episode,
+        support_cost_per_episode_usd=support_cost_per_episode,
+        support_cost_share=support_cost_share,
+        runtime_per_episode_ms=Decimal(totals.runtime_ms) / episodes,
+        guesser_think_time_per_episode_ms=(
+            Decimal(totals.guesser_think_time_ms) / episodes
+        ),
+        guesser_latency_per_call_ms=guesser_latency_per_call,
+        cost_adjusted_question_score=(
+            question_score * guesser_cost_per_episode
+            if status == "ranked" and question_score is not None
+            else None
+        ),
+        efficiency_status=status,
     )
 
 
@@ -475,7 +519,6 @@ def _public_run(
     *,
     reasons: tuple[str, ...],
     failure_penalty_offset: int,
-    b20_target_questions: int,
 ) -> PublicRun:
     penalty = Decimal(run.manifest.definition.game_policy.max_questions + failure_penalty_offset)
     completed_trial_count = sum(
@@ -493,26 +536,24 @@ def _public_run(
         _subject(
             subject,
             failure_penalty=penalty,
-            b20_target_questions=b20_target_questions,
             episodes=episodes,
         )
         for subject in run.summary.subjects
     )
-    subject_scores = tuple(
-        subject.subject_score for subject in subjects if subject.subject_score is not None
+    subject_averages = tuple(
+        subject.average_questions
+        for subject in subjects
+        if subject.average_questions is not None
     )
-    descriptive_score = (
-        sum(subject_scores, start=Decimal(0)) / Decimal(len(subject_scores))
-        if len(subject_scores) == len(subjects)
-        and subject_scores
+    question_score = (
+        _average(subject_averages)
+        if len(subject_averages) == len(subjects)
+        and subject_averages
         else None
     )
-    descriptive_b20_score = _b20_score(
-        descriptive_score,
-        failure_penalty=penalty,
-        target_questions=b20_target_questions,
-    )
     counts = run.summary.summary.counts
+    published_question_score = question_score if not reasons else None
+    totals = _public_run_totals(run)
     return PublicRun(
         execution_id=run.summary.execution_id,
         model_id=run.summary.model.model_id,
@@ -530,26 +571,28 @@ def _public_run(
         base_seed=run.manifest.request.base_seed,
         max_questions=run.manifest.definition.game_policy.max_questions,
         success_rate=run.summary.summary.success_rate,
-        descriptive_score=descriptive_score,
-        descriptive_b20_score=descriptive_b20_score,
-        penalized_score=descriptive_score if not reasons else None,
-        b20_score=descriptive_b20_score if not reasons else None,
+        question_score=published_question_score,
         total_cost_usd=_total_cost(run),
         successful=counts.successful,
         model_failed=counts.model_failed,
         infrastructure_failed=counts.infrastructure_failed,
         terminal_trials=counts.terminal,
         contract=_contract(run.summary.summary.contract),
-        totals=_public_run_totals(run),
+        totals=totals,
+        comparison=_public_run_comparison(
+            totals=totals,
+            terminal_trials=counts.terminal,
+            question_score=published_question_score,
+        ),
         subjects=subjects,
     )
 
 
 def _rank(rows: tuple[LeaderboardRow, ...]) -> tuple[LeaderboardRow, ...]:
     evaluated = sorted(
-        (row for row in rows if row.penalized_score is not None),
+        (row for row in rows if row.question_score is not None),
         key=lambda row: (
-            row.penalized_score,
+            row.question_score,
             row.model.display_name.casefold(),
             row.model.model_id,
         ),
@@ -558,15 +601,80 @@ def _rank(rows: tuple[LeaderboardRow, ...]) -> tuple[LeaderboardRow, ...]:
     prior_score: Decimal | None = None
     prior_rank = 0
     for index, row in enumerate(evaluated, start=1):
-        rank = prior_rank if prior_score == row.penalized_score else index
+        rank = prior_rank if prior_score == row.question_score else index
         ranked_by_id[row.model.model_id] = row.model_copy(update={"rank": rank})
         prior_rank = rank
-        prior_score = row.penalized_score
+        prior_score = row.question_score
     awaiting = sorted(
-        (row for row in rows if row.penalized_score is None),
+        (row for row in rows if row.question_score is None),
         key=lambda row: (row.model.display_name.casefold(), row.model.model_id),
     )
     return tuple(ranked_by_id[row.model.model_id] for row in evaluated) + tuple(awaiting)
+
+
+def _rank_efficiency(
+    rows: tuple[LeaderboardRow, ...],
+) -> tuple[LeaderboardRow, ...]:
+    eligible = tuple(
+        row
+        for row in rows
+        if row.cost_adjusted_question_score is not None
+        and row.guesser_cost_per_episode_usd is not None
+        and row.question_score is not None
+    )
+    sorted_by_efficiency = sorted(
+        eligible,
+        key=lambda row: (
+            row.cost_adjusted_question_score,
+            row.model.display_name.casefold(),
+            row.model.model_id,
+        ),
+    )
+    efficiency_rank_by_id: dict[str, int] = {}
+    prior_score: Decimal | None = None
+    prior_rank = 0
+    for index, row in enumerate(sorted_by_efficiency, start=1):
+        rank = (
+            prior_rank
+            if prior_score == row.cost_adjusted_question_score
+            else index
+        )
+        efficiency_rank_by_id[row.model.model_id] = rank
+        prior_rank = rank
+        prior_score = row.cost_adjusted_question_score
+
+    pareto_ids: set[str] = set()
+    for row in eligible:
+        row_score = row.question_score
+        row_cost = row.guesser_cost_per_episode_usd
+        assert row_score is not None
+        assert row_cost is not None
+        dominated = False
+        for other in eligible:
+            if other.model.model_id == row.model.model_id:
+                continue
+            other_score = other.question_score
+            other_cost = other.guesser_cost_per_episode_usd
+            assert other_score is not None
+            assert other_cost is not None
+            if (
+                other_score <= row_score
+                and other_cost <= row_cost
+                and (other_score < row_score or other_cost < row_cost)
+            ):
+                dominated = True
+                break
+        if not dominated:
+            pareto_ids.add(row.model.model_id)
+    return tuple(
+        row.model_copy(
+            update={
+                "efficiency_rank": efficiency_rank_by_id.get(row.model.model_id),
+                "pareto_efficient": row.model.model_id in pareto_ids,
+            }
+        )
+        for row in rows
+    )
 
 
 def _select_latest_qualified_runs(
@@ -621,7 +729,6 @@ def compile_publication(
                 loaded_run,
                 reasons=reasons,
                 failure_penalty_offset=config.score.failure_penalty_offset,
-                b20_target_questions=config.score.b20.target_questions,
             )
         )
 
@@ -653,35 +760,48 @@ def compile_publication(
                 status="evaluated",
                 execution_id=selected_run.execution_id,
                 completed_at=selected_run.completed_at,
-                penalized_score=selected_run.penalized_score,
-                b20_score=selected_run.b20_score,
+                question_score=selected_run.question_score,
                 success_rate=selected_run.success_rate,
                 total_cost_usd=selected_run.total_cost_usd,
+                guesser_cost_per_episode_usd=(
+                    selected_run.comparison.guesser_cost_per_episode_usd
+                ),
+                full_cost_per_episode_usd=(
+                    selected_run.comparison.full_cost_per_episode_usd
+                ),
+                runtime_per_episode_ms=(
+                    selected_run.comparison.runtime_per_episode_ms
+                ),
+                guesser_think_time_per_episode_ms=(
+                    selected_run.comparison.guesser_think_time_per_episode_ms
+                ),
+                guesser_latency_per_call_ms=(
+                    selected_run.comparison.guesser_latency_per_call_ms
+                ),
+                cost_adjusted_question_score=(
+                    selected_run.comparison.cost_adjusted_question_score
+                ),
+                efficiency_status=selected_run.comparison.efficiency_status,
                 successful=selected_run.successful,
                 terminal_trials=selected_run.terminal_trials,
                 contract=_contract(selected_run.contract),
             )
         )
-    leaderboard = _rank(tuple(rows))
-    evaluated = tuple(row for row in leaderboard if row.penalized_score is not None)
+    leaderboard = _rank_efficiency(_rank(tuple(rows)))
+    evaluated = tuple(row for row in leaderboard if row.question_score is not None)
     winner = None
     if evaluated:
         evaluated_scores = tuple(
-            row.penalized_score
+            row.question_score
             for row in evaluated
-            if row.penalized_score is not None
+            if row.question_score is not None
         )
         winning_score = min(evaluated_scores)
-        winners = tuple(row for row in evaluated if row.penalized_score == winning_score)
+        winners = tuple(row for row in evaluated if row.question_score == winning_score)
         winner = Winner(
             model_ids=tuple(row.model.model_id for row in winners),
             display_names=tuple(row.model.display_name for row in winners),
-            penalized_score=winning_score,
-            b20_score=next(
-                row.b20_score
-                for row in winners
-                if row.b20_score is not None
-            ),
+            question_score=winning_score,
             joint=len(winners) > 1,
         )
 

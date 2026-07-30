@@ -1,0 +1,379 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0009-010",
+  "target_id": "T-0001",
+  "trial_id": "trial-005",
+  "episode": {
+    "episode_run_id": "BR-0269015993e82b66dda940a6fb295da3293dc046",
+    "episode_id": "EP-019faa1ede7a75059a846ae976b4c6bf",
+    "subject_name": "Albert Einstein",
+    "subject_description": "Albert Einstein, the German-born theoretical physicist known for relativity, identified by Wikidata entity Q937.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Albert_Einstein",
+    "started_at": "2026-07-28T19:06:17.594439Z",
+    "completed_at": "2026-07-28T19:07:43.512359Z",
+    "duration_ms": 85918,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 10,
+    "counted_questions": 9,
+    "ask_count": 8,
+    "guess_count": 2,
+    "rejected_guess_count": 1,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.0449060600000000003",
+    "total_tokens": 61926,
+    "contract": {
+      "evaluated_outputs": 10,
+      "valid_outputs": 10,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0009",
+        "requested_model": "meta-llama/llama-4-maverick",
+        "requested_provider": "parasail",
+        "resolved_models": [
+          "meta-llama/llama-4-maverick"
+        ],
+        "resolved_providers": [
+          "Parasail"
+        ],
+        "reasoning_effort": "none",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 8,
+        "cost_usd": "0.0376973000000000003"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 8,
+        "cost_usd": "0.0052161"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"XSZW5TRZ\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 10,
+        "cost_usd": "0.00142866",
+        "latency_ms": 7256,
+        "total_tokens": 6383,
+        "input_tokens": 6058,
+        "cached_input_tokens": 5648,
+        "cache_write_tokens": 0,
+        "output_tokens": 325,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0010166400"
+      },
+      "oracle": {
+        "calls": 8,
+        "cost_usd": "0.0429134000000000003",
+        "latency_ms": 74764,
+        "total_tokens": 54760,
+        "input_tokens": 51215,
+        "cached_input_tokens": 18071,
+        "cache_write_tokens": 0,
+        "output_tokens": 3545,
+        "reasoning_tokens": 2028,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 2,
+        "cost_usd": "0.000564",
+        "latency_ms": 3660,
+        "total_tokens": 783,
+        "input_tokens": 714,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 69,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the person male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.uzh.ch/en/researchinnovation/excellence/nobelprize/einstein.html",
+            "excerpt": "because he often skipped classes... Einstein worked from 1902 to 1909...",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.archives.gov/nhprc/projects/catalog/albert-einstein",
+            "excerpt": "Albert Einstein (1879-1955) was a German-born theoretical physicist.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the person primarily known for their work in the entertainment industry?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.vision.org/biography-albert-einstein-father-relativity-not-relativism-444",
+            "excerpt": "Albert Einstein ... is best known for the special and general theories of relativity.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/contributor/Albert-Einstein/9536716",
+            "excerpt": "German-born physicist who developed the special and general theories of relativity and won the Nobel Prize for Physics.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for their work in the entertainment industry?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the person a historical figure?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://historic-figures.com/en/figures/albert-einstein",
+            "excerpt": "Albert Einstein (1879–1955) was a theoretical physicist and major figure in history.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person a historical figure?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Did the person hold significant political power or office?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.pbs.org/wgbh/aso/databank/entries/bpeins.html",
+            "excerpt": "In 1952 the young nation of Israel offered Einstein the presidency, but he declined.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/story/the-time-albert-einstein-was-asked-to-be-president-of-israel",
+            "excerpt": "Israeli presidents perform mostly ceremonial duties, so the role constitutes more of an honor than a position of power.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person hold significant political power or office?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Was the person known for achievements in science, technology, or exploration?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Einstein",
+            "excerpt": "Albert Einstein was a famous physicist. His research spanned from quantum mechanics to theories about gravity and motion.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/contributor/Albert-Einstein/9536716",
+            "excerpt": "German-born physicist who developed the special and general theories of relativity and won the Nobel Prize for Physics in 1921.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person known for achievements in science, technology, or exploration?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Did the person make significant discoveries or contributions to their field that were widely recognized during their lifetime or posthumously?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Einstein",
+            "excerpt": "Albert Einstein was a German-born physicist who developed the special and general theories of relativity and won the Nobel Prize for Physics in 1921 for his explanation of the photoelectric effect.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person make significant discoveries or contributions to their field that were widely recognized during their lifetime or posthumously?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is the person often credited with a major invention or groundbreaking theory?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Einstein",
+            "excerpt": "After publishing some groundbreaking papers, Einstein toured the world and gave speeches about his discoveries.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/contributor/Albert-Einstein/9536716",
+            "excerpt": "Albert Einstein ... developed the special and general theories of relativity.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person often credited with a major invention or groundbreaking theory?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Isaac Newton",
+        "guess_description": "English mathematician and physicist who formulated the laws of motion and universal gravitation",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposal identifies Isaac Newton, a different person.",
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"English mathematician and physicist who formulated the laws of motion and universal gravitation\",\"name\":\"Isaac Newton\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Was the person associated with the development of a major scientific theory or concept that fundamentally changed understanding in their field?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.nasa.gov/image-article/einstein-general-relativity",
+            "excerpt": "Einstein’s general theory of relativity ... revolutionized our understanding of gravity.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.pbs.org/wgbh/aso/databank/entries/dp15ei.html",
+            "excerpt": "The special theory of relativity ... introduced brand-new ideas to science. It opened up an entire field of physics.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person associated with the development of a major scientific theory or concept that fundamentally changed understanding in their field?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Albert Einstein",
+        "guess_description": "Theoretical physicist who developed the theory of relativity",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity names Albert Einstein and matches the trusted subject's defining description.",
+        "counted": false,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Theoretical physicist who developed the theory of relativity\",\"name\":\"Albert Einstein\",\"question\":null}}"
+      }
+    ]
+  }
+}

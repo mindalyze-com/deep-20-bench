@@ -1,0 +1,674 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0009-010",
+  "target_id": "T-0005",
+  "trial_id": "trial-002",
+  "episode": {
+    "episode_run_id": "BR-637020ff63cf226da3ef1a334f6ba2c445cdf602",
+    "episode_id": "EP-019faa5d9703703d89177ee51ab1c2c4",
+    "subject_name": "Achilles",
+    "subject_description": "Achilles, the Greek mythological hero and greatest Greek warrior of the Trojan War in Homer's Iliad, identified by Wikidata entity Q41746.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Achilles",
+    "started_at": "2026-07-28T20:14:48.067791Z",
+    "completed_at": "2026-07-28T20:18:52.738516Z",
+    "duration_ms": 244671,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 30,
+    "counted_questions": 29,
+    "ask_count": 11,
+    "guess_count": 19,
+    "rejected_guess_count": 18,
+    "oracle_unknown_count": 3,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1075531100000000006",
+    "total_tokens": 178716,
+    "contract": {
+      "evaluated_outputs": 30,
+      "valid_outputs": 30,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0009",
+        "requested_model": "meta-llama/llama-4-maverick",
+        "requested_provider": "parasail",
+        "resolved_models": [
+          "meta-llama/llama-4-maverick"
+        ],
+        "resolved_providers": [
+          "Parasail"
+        ],
+        "reasoning_effort": "none",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 11,
+        "cost_usd": "0.0872094500000000006"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 8,
+        "cost_usd": "0.0072828"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 0,
+        "cost_usd": "0"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"mythological_figure\",\"event\":\"BEGIN\",\"variation_token\":\"BKXG3AZI\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 30,
+        "cost_usd": "0.00651486",
+        "latency_ms": 29597,
+        "total_tokens": 32025,
+        "input_tokens": 31014,
+        "cached_input_tokens": 29728,
+        "cache_write_tokens": 0,
+        "output_tokens": 1011,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0053510400"
+      },
+      "oracle": {
+        "calls": 11,
+        "cost_usd": "0.0944922500000000006",
+        "latency_ms": 167398,
+        "total_tokens": 138679,
+        "input_tokens": 131989,
+        "cached_input_tokens": 67864,
+        "cache_write_tokens": 0,
+        "output_tokens": 6690,
+        "reasoning_tokens": 4456,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 19,
+        "cost_usd": "0.0065460",
+        "latency_ms": 45724,
+        "total_tokens": 8012,
+        "input_tokens": 6996,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 1016,
+        "reasoning_tokens": 234,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the mythological figure male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles, in Greek mythology, son of the mortal Peleus...",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the mythological figure associated with the underworld?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/article/29/the-after-life-in-ancient-greece/",
+            "excerpt": "Odysseus meets the spirit of the great warrior Achilles in the nether-world.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://ed.ted.com/lessons/a-tour-of-the-ancient-greek-underworld-iseult-gillespie/digdeeper",
+            "excerpt": "Achilles, just slain in the Trojan War, arrives in the Underworld.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure associated with the underworld?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the mythological figure from Greek mythology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/video/did-you-know-Achilles/-255375",
+            "excerpt": "In Greek mythology, Achilles was the greatest warrior of the Greek army in the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure from Greek mythology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Does the mythological figure have multiple names or aliases in different cultures or traditions?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.behindthename.com/name/achilles",
+            "excerpt": "Variants: Achilleus (Greek Mythology), Achilleus (Ancient Greek); Other Languages & Cultures: Achille (French, Italian), Aquiles (Portuguese, Spanish).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the mythological figure have multiple names or aliases in different cultures or traditions?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Hades",
+        "guess_description": "Greek god of the underworld",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposed identity is Hades, a different mythological figure.",
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek god of the underworld\",\"name\":\"Hades\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the mythological figure a ruler or king of the underworld?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "Achilles is renowned as the greatest warrior of the Greek army during the Trojan War.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Hades-Greek-mythology",
+            "excerpt": "There he ruled with his queen, Persephone, over the infernal powers and over the dead.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure a ruler or king of the underworld?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is the mythological figure related to or associated with the ferryman Charon?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure related to or associated with the ferryman Charon?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the mythological figure associated with death or dying?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.encyclopedia.com/literature-and-arts/classical-literature-mythology-and-folklore/folklore-and-mythology/achilles",
+            "excerpt": "An arrow shot by Paris struck his heel and killed him.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles’ spirit appears in the Odyssey, in which he discusses his death.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure associated with death or dying?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Thanatos",
+        "guess_description": "Greek personification of death",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Thanatos, the Greek personification of death, while the trusted subject is Achilles, a Greek mythological hero.",
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek personification of death\",\"name\":\"Thanatos\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Does the mythological figure have a role in guiding souls to the afterlife?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the mythological figure have a role in guiding souls to the afterlife?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Is the mythological figure one of the offspring of Nyx?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-fictional-character",
+            "excerpt": "He was the son of the mortal king Peleus and the sea nymph Thetis.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.maicar.com/GML/Nyx.html",
+            "excerpt": "Children and their parentage ... Nyx ... Apate, Ker, Momos, Moros, Oizys, Oniros, Philotes, Eris, Eros, Geras, Hemera, Hypnos, Hesperides, Lyssa.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure one of the offspring of Nyx?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Orpheus",
+        "guess_description": "Greek hero who journeyed to the underworld",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposed identity is Orpheus, a different Greek mythological figure.",
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek hero who journeyed to the underworld\",\"name\":\"Orpheus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Is the mythological figure associated with punishment or judgment in the underworld?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.theoi.com/Khthonios/Rhadamanthys.html",
+            "excerpt": "Rhadamanthys, Minos and Aiakos (Aeacus) were the judges of the dead.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.worldhistory.org/article/29/the-after-life-in-ancient-greece/",
+            "excerpt": "Odysseus meets the spirit of ... Achilles in the nether-world, where Achilles tells him he would rather be a landless slave on earth than a king in the underworld.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure associated with punishment or judgment in the underworld?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Cerberus",
+        "guess_description": "Three-headed dog guarding the gates of the underworld",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposal identifies Cerberus, a different mythological figure.",
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Three-headed dog guarding the gates of the underworld\",\"name\":\"Cerberus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Is the mythological figure associated with violence or bloodlust in the context of the underworld?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the mythological figure associated with violence or bloodlust in the context of the underworld?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Tantalus",
+        "guess_description": "Figure in Greek mythology punished in the underworld",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Tantalus, a different Greek mythological figure from Achilles.",
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Figure in Greek mythology punished in the underworld\",\"name\":\"Tantalus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Hermes Psychopompus",
+        "guess_description": "Greek god guiding souls to the underworld",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposal identifies Hermes Psychopompus, a different Greek mythological figure.",
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek god guiding souls to the underworld\",\"name\":\"Hermes Psychopompus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Keres",
+        "guess_description": "Greek female death spirits",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, a Greek mythological hero; the proposal identifies Keres, Greek female death spirits, which is a different entity.",
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek female death spirits\",\"name\":\"Keres\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Tartarus",
+        "guess_description": "Greek primordial deity or the deep abyss used as a dungeon of torment and suffering",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposed identity is Tartarus, a different mythological entity.",
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek primordial deity or the deep abyss used as a dungeon of torment and suffering\",\"name\":\"Tartarus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Erinyes",
+        "guess_description": "Greek goddesses of vengeance associated with the underworld",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies the Erinyes, while the trusted subject is Achilles.",
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek goddesses of vengeance associated with the underworld\",\"name\":\"Erinyes\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Charon",
+        "guess_description": "Ferryman of the dead in Greek mythology",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposed identity is Charon, a different mythological figure.",
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Ferryman of the dead in Greek mythology\",\"name\":\"Charon\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Lamia",
+        "guess_description": "A female spirit or monster in Greek mythology associated with the underworld and devouring young children",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Lamia, a Greek mythological spirit or monster, while the trusted subject is Achilles, the Greek hero of the Trojan War.",
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"A female spirit or monster in Greek mythology associated with the underworld and devouring young children\",\"name\":\"Lamia\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Hypnos",
+        "guess_description": "Greek god of sleep, often associated with the underworld",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Hypnos, the Greek god of sleep, while the trusted subject is Achilles, the mythological hero of the Trojan War.",
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek god of sleep, often associated with the underworld\",\"name\":\"Hypnos\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Melinoe",
+        "guess_description": "Greek goddess of ghosts and the underworld",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Melinoe, a Greek goddess, while the trusted subject is Achilles, the mythological hero.",
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek goddess of ghosts and the underworld\",\"name\":\"Melinoe\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Sisyphus",
+        "guess_description": "A figure from Greek mythology condemned to roll a boulder up a hill in the underworld",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Achilles, while the proposed identity is Sisyphus, a different mythological figure.",
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"A figure from Greek mythology condemned to roll a boulder up a hill in the underworld\",\"name\":\"Sisyphus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Tityus",
+        "guess_description": "Giant in Greek mythology punished in the underworld",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Tityus, a different Greek mythological figure from Achilles.",
+        "counted": true,
+        "counted_questions": 26,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Giant in Greek mythology punished in the underworld\",\"name\":\"Tityus\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 27,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Ixion",
+        "guess_description": "A figure from Greek mythology punished in the underworld by being bound to a wheel",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Ixion, whereas the trusted subject is Achilles.",
+        "counted": true,
+        "counted_questions": 27,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"A figure from Greek mythology punished in the underworld by being bound to a wheel\",\"name\":\"Ixion\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 28,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Lachesis",
+        "guess_description": "One of the three Moirai or Fates from Greek mythology, often associated with determining the length of a person's life thread, and sometimes linked to the underworld context through their role in deciding the fate of souls",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Lachesis, a Greek Fate, while the trusted subject is Achilles, the Trojan War hero.",
+        "counted": true,
+        "counted_questions": 28,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"One of the three Moirai or Fates from Greek mythology, often associated with determining the length of a person's life thread, and sometimes linked to the underworld context through their role in deciding the fate of souls\",\"name\":\"Lachesis\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 29,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Mormo",
+        "guess_description": "A female ghost or specter in Greek mythology associated with frightening children",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Mormo, a Greek mythological female specter, while the trusted subject is Achilles.",
+        "counted": true,
+        "counted_questions": 29,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"A female ghost or specter in Greek mythology associated with frightening children\",\"name\":\"Mormo\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 30,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Achilles",
+        "guess_description": "A hero from Greek mythology who was associated with the underworld after his death",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity names Achilles and describes a compatible Greek mythological hero; the added underworld detail does not conflict with the trusted subject.",
+        "counted": false,
+        "counted_questions": 29,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"A hero from Greek mythology who was associated with the underworld after his death\",\"name\":\"Achilles\",\"question\":null}}"
+      }
+    ]
+  }
+}

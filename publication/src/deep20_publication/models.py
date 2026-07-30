@@ -1050,15 +1050,9 @@ class SiteMetadata(FrozenModel):
     citation_label: str = Field(min_length=1, max_length=240)
 
 
-class B20ScorePolicy(FrozenModel):
-    version: Literal["b20-linear-v1"] = "b20-linear-v1"
-    target_questions: int = Field(default=20, ge=1, le=1_000)
-
-
 class ScorePolicy(FrozenModel):
-    version: Literal["penalized-mean-v1"] = "penalized-mean-v1"
+    version: Literal["average-then-average-v1"] = "average-then-average-v1"
     failure_penalty_offset: int = Field(default=1, ge=1, le=100)
-    b20: B20ScorePolicy
 
 
 class CohortConfig(FrozenModel):
@@ -1104,14 +1098,6 @@ class PublicationConfig(FrozenModel):
             raise ValueError("publication config requires exactly one active cohort")
         if len({cohort.cohort_id for cohort in self.cohorts}) != len(self.cohorts):
             raise ValueError("cohort IDs must be unique")
-        if any(
-            cohort.max_questions + self.score.failure_penalty_offset
-            <= self.score.b20.target_questions
-            for cohort in self.cohorts
-        ):
-            raise ValueError(
-                "B20 target must be below every cohort's failure penalty"
-            )
         return self
 
     @property
@@ -1297,31 +1283,35 @@ class PublicEpisodeDetail(FrozenModel):
     turns: tuple[PublicTurn, ...]
 
 
-class PublicTrial(FrozenModel):
+class PublicTrialSummary(FrozenModel):
     trial_id: str
     trial_number: int
     status: Literal["success", "model_failure", "infrastructure_failure"]
     counted_questions: int
-    scored_questions: Decimal | None
-    b20_score: Decimal | None
+    penalized_questions: Decimal | None
     cost_usd: Decimal
     duration_ms: int
     contract: ContractReliabilitySnapshot | None
     failure_code: str | None = None
+
+
+class PublicTrial(PublicTrialSummary):
     episode: PublicEpisodeDetail | None = None
 
 
-class PublicSubject(FrozenModel):
+class PublicSubjectSummary(FrozenModel):
     target_id: str
     display_name: str
     entity_type: str
     success_rate: Decimal | None
-    subject_score: Decimal | None
-    b20_score: Decimal | None
+    average_questions: Decimal | None
     successful: int
     model_failed: int
     infrastructure_failed: int
     contract: ContractReliabilitySnapshot
+
+
+class PublicSubject(PublicSubjectSummary):
     trials: tuple[PublicTrial, ...]
 
 
@@ -1352,9 +1342,28 @@ class PublicRunTotals(FrozenModel):
     total_tokens: int = Field(ge=0)
     runtime_ms: int = Field(ge=0)
     guesser_think_time_ms: int = Field(ge=0)
+    guesser_calls: int = Field(ge=0)
 
 
-class PublicRun(FrozenModel):
+class PublicRunComparison(FrozenModel):
+    guesser_cost_per_episode_usd: Decimal | None = Field(default=None, ge=0)
+    full_cost_per_episode_usd: Decimal | None = Field(default=None, ge=0)
+    support_cost_per_episode_usd: Decimal | None = Field(default=None, ge=0)
+    support_cost_share: Decimal | None = Field(default=None, ge=0, le=1)
+    runtime_per_episode_ms: Decimal | None = Field(default=None, ge=0)
+    guesser_think_time_per_episode_ms: Decimal | None = Field(default=None, ge=0)
+    guesser_latency_per_call_ms: Decimal | None = Field(default=None, ge=0)
+    cost_adjusted_question_score: Decimal | None = Field(default=None, ge=0)
+    efficiency_status: Literal[
+        "ranked",
+        "question_score_unavailable",
+        "recorded_guesser_cost_unavailable",
+        "no_terminal_episodes",
+        "no_guesser_calls",
+    ]
+
+
+class PublicRunSummary(FrozenModel):
     execution_id: str
     model_id: str
     model_name: str
@@ -1371,10 +1380,7 @@ class PublicRun(FrozenModel):
     base_seed: int
     max_questions: int
     success_rate: Decimal | None
-    descriptive_score: Decimal | None
-    descriptive_b20_score: Decimal | None
-    penalized_score: Decimal | None
-    b20_score: Decimal | None
+    question_score: Decimal | None
     total_cost_usd: Decimal
     successful: int
     model_failed: int
@@ -1382,13 +1388,17 @@ class PublicRun(FrozenModel):
     terminal_trials: int
     contract: ContractReliabilitySnapshot
     totals: PublicRunTotals
-    subjects: tuple[PublicSubject, ...]
+    comparison: PublicRunComparison
 
     @model_validator(mode="after")
-    def repeated_total_cost_matches(self) -> PublicRun:
+    def repeated_total_cost_matches(self) -> PublicRunSummary:
         if self.total_cost_usd != self.totals.costs_usd.total:
             raise ValueError("public run total cost fields disagree")
         return self
+
+
+class PublicRun(PublicRunSummary):
+    subjects: tuple[PublicSubject, ...]
 
 
 class PublicModel(FrozenModel):
@@ -1404,13 +1414,27 @@ class PublicModel(FrozenModel):
 class LeaderboardRow(FrozenModel):
     rank: int | None
     model: PublicModel
+    efficiency_rank: int | None = None
+    pareto_efficient: bool = False
     status: Literal["evaluated", "awaiting_official_run"]
     execution_id: str | None = None
     completed_at: datetime | None = None
-    penalized_score: Decimal | None = None
-    b20_score: Decimal | None = None
+    question_score: Decimal | None = None
     success_rate: Decimal | None = None
     total_cost_usd: Decimal | None = None
+    guesser_cost_per_episode_usd: Decimal | None = None
+    full_cost_per_episode_usd: Decimal | None = None
+    runtime_per_episode_ms: Decimal | None = None
+    guesser_think_time_per_episode_ms: Decimal | None = None
+    guesser_latency_per_call_ms: Decimal | None = None
+    cost_adjusted_question_score: Decimal | None = None
+    efficiency_status: Literal[
+        "ranked",
+        "question_score_unavailable",
+        "recorded_guesser_cost_unavailable",
+        "no_terminal_episodes",
+        "no_guesser_calls",
+    ] = "question_score_unavailable"
     successful: int = 0
     terminal_trials: int = 0
     contract: ContractReliabilitySnapshot | None = None
@@ -1419,8 +1443,7 @@ class LeaderboardRow(FrozenModel):
 class Winner(FrozenModel):
     model_ids: tuple[str, ...]
     display_names: tuple[str, ...]
-    penalized_score: Decimal
-    b20_score: Decimal
+    question_score: Decimal
     joint: bool
 
 
@@ -1433,7 +1456,7 @@ class DatasetProvenance(FrozenModel):
 
 
 class PublishedDataset(FrozenModel):
-    schema_version: Literal[3] = 3
+    schema_version: Literal[5] = 5
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig
@@ -1443,3 +1466,134 @@ class PublishedDataset(FrozenModel):
     models: tuple[PublicModel, ...]
     official_runs: tuple[PublicRun, ...]
     lab_runs: tuple[PublicRun, ...]
+
+
+class PublicationRunReference(FrozenModel):
+    execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
+    model_id: str = Field(pattern=MODEL_ID_PATTERN)
+    model_name: str = Field(min_length=1, max_length=160)
+    classification: Literal["official", "lab"]
+
+
+class PublicationManifestDocument(FrozenModel):
+    document_type: Literal["manifest"] = "manifest"
+    schema_version: Literal[1] = 1
+    dataset_schema_version: Literal[5] = 5
+    site: SiteMetadata
+    score_policy: ScorePolicy
+    active_cohort: CohortConfig
+    provenance: DatasetProvenance
+    winner: Winner | None
+    models: tuple[PublicModel, ...]
+    official_runs: tuple[PublicationRunReference, ...]
+    lab_runs: tuple[PublicationRunReference, ...]
+
+
+class PublicationLeaderboardDocument(FrozenModel):
+    document_type: Literal["leaderboard"] = "leaderboard"
+    schema_version: Literal[1] = 1
+    leaderboard: tuple[LeaderboardRow, ...]
+
+
+class PublicationRunDocument(FrozenModel):
+    document_type: Literal["run"] = "run"
+    schema_version: Literal[1] = 1
+    run: PublicRunSummary
+    subjects: tuple[PublicSubjectSummary, ...]
+
+    @model_validator(mode="after")
+    def matching_subjects(self) -> PublicationRunDocument:
+        target_ids = tuple(subject.target_id for subject in self.subjects)
+        if target_ids != self.run.target_ids:
+            raise ValueError("run document subjects differ from run target_ids")
+        return self
+
+
+class PublicationSubjectProfile(FrozenModel):
+    subject_name: str = Field(min_length=1, max_length=200)
+    subject_description: str = Field(min_length=1, max_length=2_000)
+    subject_reference_url: HttpUrl | None
+
+
+class PublicationSubjectDocument(FrozenModel):
+    document_type: Literal["subject"] = "subject"
+    schema_version: Literal[1] = 1
+    execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
+    target_id: str = Field(pattern=TARGET_ID_PATTERN)
+    profile: PublicationSubjectProfile
+    trials: tuple[PublicTrialSummary, ...]
+
+    @model_validator(mode="after")
+    def unique_trials(self) -> PublicationSubjectDocument:
+        identities = tuple(trial.trial_id for trial in self.trials)
+        if len(identities) != len(set(identities)):
+            raise ValueError("subject document trial IDs must be unique")
+        return self
+
+
+class PublicationEpisodeDocument(FrozenModel):
+    document_type: Literal["episode"] = "episode"
+    schema_version: Literal[1] = 1
+    execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
+    target_id: str = Field(pattern=TARGET_ID_PATTERN)
+    trial_id: str = Field(pattern=TRIAL_ID_PATTERN)
+    episode: PublicEpisodeDetail
+
+
+PublicationDocument = Annotated[
+    PublicationManifestDocument
+    | PublicationLeaderboardDocument
+    | PublicationRunDocument
+    | PublicationSubjectDocument
+    | PublicationEpisodeDocument,
+    Field(discriminator="document_type"),
+]
+
+
+class PublicationDataBundle(FrozenModel):
+    manifest: PublicationManifestDocument
+    leaderboard: PublicationLeaderboardDocument
+    runs: tuple[PublicationRunDocument, ...]
+    subjects: tuple[PublicationSubjectDocument, ...]
+    episodes: tuple[PublicationEpisodeDocument, ...]
+
+    @model_validator(mode="after")
+    def matching_document_graph(self) -> PublicationDataBundle:
+        run_documents = {document.run.execution_id: document for document in self.runs}
+        if len(run_documents) != len(self.runs):
+            raise ValueError("publication data bundle run IDs must be unique")
+        references = (*self.manifest.official_runs, *self.manifest.lab_runs)
+        if tuple(reference.execution_id for reference in references) != tuple(
+            document.run.execution_id for document in self.runs
+        ):
+            raise ValueError("publication manifest references differ from run documents")
+
+        subject_documents = {
+            (document.execution_id, document.target_id): document
+            for document in self.subjects
+        }
+        if len(subject_documents) != len(self.subjects):
+            raise ValueError("publication data bundle subject IDs must be unique")
+        expected_subjects = {
+            (run.run.execution_id, subject.target_id)
+            for run in self.runs
+            for subject in run.subjects
+        }
+        if set(subject_documents) != expected_subjects:
+            raise ValueError("publication subject documents differ from run documents")
+
+        episode_documents = {
+            (document.execution_id, document.target_id, document.trial_id): document
+            for document in self.episodes
+        }
+        if len(episode_documents) != len(self.episodes):
+            raise ValueError("publication data bundle episode IDs must be unique")
+        expected_episodes = {
+            (subject.execution_id, subject.target_id, trial.trial_id)
+            for subject in self.subjects
+            for trial in subject.trials
+            if trial.status != "infrastructure_failure"
+        }
+        if set(episode_documents) != expected_episodes:
+            raise ValueError("publication episode documents differ from subject documents")
+        return self

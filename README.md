@@ -32,6 +32,12 @@ receives subject details, evidence, adjudicator state, provider traces, or priva
 See the [architecture](documentation/architecture.md) and
 [output-contract specification](documentation/guesser-output-contract.md).
 
+The Question Score uses averages. Lower is better. A successful trial contributes its
+counted questions. A model failure contributes 51, one above the 50-question limit. For each
+subject, the publication averages its five trial values. It then averages the seven subject
+averages. Because every subject has five trials, this is also the average of all 35 penalized
+trial values. Every model failure therefore affects the score.
+
 ## Quick start
 
 Python 3.14.6 and [uv](https://docs.astral.sh/uv/) are required.

@@ -1,0 +1,582 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0010-010",
+  "target_id": "T-0007",
+  "trial_id": "trial-002",
+  "episode": {
+    "episode_run_id": "BR-82fbd7bc4146d889375e10a1401809ef1c4f3c65",
+    "episode_id": "EP-019faab5ba7f716199a33686599e55ed",
+    "subject_name": "Mario",
+    "subject_description": "Mario, the fictional Nintendo video-game character created by Shigeru Miyamoto and protagonist of the Mario franchise, identified by Wikidata entity Q12379.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Mario",
+    "started_at": "2026-07-28T21:51:04.319327Z",
+    "completed_at": "2026-07-28T21:57:18.247548Z",
+    "duration_ms": 373928,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 18,
+    "counted_questions": 17,
+    "ask_count": 16,
+    "guess_count": 2,
+    "rejected_guess_count": 1,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.3409312249999999987",
+    "total_tokens": 165678,
+    "contract": {
+      "evaluated_outputs": 18,
+      "valid_outputs": 18,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0010",
+        "requested_model": "openai/gpt-5.6-sol",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-sol"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 16,
+        "cost_usd": "0.0976188749999999987"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 16,
+        "cost_usd": "0.0188931"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 2,
+        "cost_usd": "0.02683"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"video_game_character\",\"event\":\"BEGIN\",\"variation_token\":\"BKXG3AZI\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 18,
+        "cost_usd": "0.19695275",
+        "latency_ms": 166161,
+        "total_tokens": 21509,
+        "input_tokens": 16775,
+        "cached_input_tokens": 6788,
+        "cache_write_tokens": 1283,
+        "output_tokens": 4734,
+        "reasoning_tokens": 3945,
+        "estimated_cache_savings_usd": "0.02894225"
+      },
+      "oracle": {
+        "calls": 16,
+        "cost_usd": "0.1433419749999999987",
+        "latency_ms": 204207,
+        "total_tokens": 143336,
+        "input_tokens": 131985,
+        "cached_input_tokens": 43875,
+        "cache_write_tokens": 0,
+        "output_tokens": 11351,
+        "reasoning_tokens": 7630,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 2,
+        "cost_usd": "0.0006365",
+        "latency_ms": 2386,
+        "total_tokens": 833,
+        "input_tokens": 745,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 88,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Did the character first appear in a video game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.bbc.co.uk/newsround/articles/ce845p9de3xo",
+            "excerpt": "Mario was actually first introduced to the world in the 1981 arcade game, Donkey Kong.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear in a video game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Was the character's debut video game published by Nintendo?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.ssbwiki.com/Donkey_Kong_(game)",
+            "excerpt": "Publisher(s) | Nintendo; Donkey Kong is an arcade game released by Nintendo on July 9, 1981.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://mario.fandom.com/wiki/Donkey_Kong_(video_game)",
+            "excerpt": "This title marks the very first appearance of Mario.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character's debut video game published by Nintendo?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Was the character's debut game released before 1990?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://mario.fandom.com/wiki/Donkey_Kong_(video_game)",
+            "excerpt": "This title marks the very first appearance of Mario... Donkey Kong... was released by Nintendo in 1981.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://time.com/3901489/donkey-kong-anniversary",
+            "excerpt": "Before Mario was Mario, he was Jumpman... Americans first encountered him in arcades... in 1981.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character's debut game released before 1990?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Did the character debut in a game from the Mario franchise?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html",
+            "excerpt": "Miyamoto first created the Mario character to be the protagonist of Donkey Kong, the 1981 arcade game.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nintendo.com/en-gb/Iwata-Asks/Super-Mario-Bros-25th-Anniversary/Vol-3-The-Developers-1-/2-First-Encounters-with-Super-Mario/2-First-Encounters-with-Super-Mario-222084.html",
+            "excerpt": "Mario Bros.: An action game that appeared in arcades in 1983.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character debut in a game from the Mario franchise?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Did the character debut in a game from The Legend of Zelda series?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://time.com/3901489/donkey-kong-anniversary",
+            "excerpt": "Before Mario was Mario, he was Jumpman. ... Americans first encountered him ... in 1981 ... Donkey Kong.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://zelda.fandom.com/wiki/Mario",
+            "excerpt": "First game: Donkey Kong (1981, overall); The Legend of Zelda: A Link to the Past (1991, The Legend of Zelda series, cameo).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character debut in a game from The Legend of Zelda series?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Does the character wear a powered armored suit in their debut game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.nintendo.com/jp/character/mario/en/index.html",
+            "excerpt": "Mario is always bright and cheerful and instantly recognizable with his blue overalls, red cap, and trademark moustache.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://time.com/3901489/donkey-kong-anniversary",
+            "excerpt": "Before Mario was Mario, he was Jumpman... in 1981... on a construction site.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character wear a powered armored suit in their debut game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is the character human?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.vice.com/en/article/nintendo-finally-answers-is-mario-human/",
+            "excerpt": "Motokura ... answered the question: is Mario human?",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://nintendosoup.com/super-mario-odyssey-director-says-mario-human-explains-hes-different",
+            "excerpt": "Is Mario human? Mario is human.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character human?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Little Mac",
+        "guess_description": "The undersized human boxer and player character from Nintendo's Punch-Out!! series.",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Mario, while the proposal identifies Little Mac from the Punch-Out!! series, a different video-game character.",
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"The undersized human boxer and player character from Nintendo's Punch-Out!! series.\",\"name\":\"Little Mac\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is the character female?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://mario.nintendo.com/characters",
+            "excerpt": "He's a trusted friend of Princess Peach, and he and his brother Luigi are known across the land for their acts of bravery.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character female?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Did the character debut in a Game & Watch title?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Super-Mario-Bros",
+            "excerpt": "Mario debuted as Jumpman in Donkey Kong (1981) before appearing in Mario Bros. (1983).",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nintendo.com/us/whatsnew/get-to-know-the-king-of-swing",
+            "excerpt": "Donkey Kong made his debut in 1981 with Mario, who—at the time—was called Jumpman.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character debut in a Game & Watch title?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Was the character's debut game released for the Nintendo Entertainment System or Famicom?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html",
+            "excerpt": "Mario was first created as the protagonist of Donkey Kong, the 1981 arcade game.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.ssbwiki.com/Donkey_Kong_(game)",
+            "excerpt": "Donkey Kong was released for Arcade in 1981; its Nintendo Entertainment System release followed in Japan in 1983.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character's debut game released for the Nintendo Entertainment System or Famicom?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Did the character debut in an arcade game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://time.com/3901489/donkey-kong-anniversary",
+            "excerpt": "Before Mario was Mario, he was Jumpman. And when Americans first encountered him in arcades... in 1981.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.firstversions.com/2015/08/donkey-kong.html",
+            "excerpt": "Donkey Kong ... Platform: Arcade ... Mario (original name Jumpman).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character debut in an arcade game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Is the character a playable protagonist in Ice Climber?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://vgcdatabase.fandom.com/wiki/Ice_Climbers",
+            "excerpt": "The Ice Climbers are the pair of playable protagonists from the game Ice Climber. When playing a one player game, the player plays as Popo; in two-player mode, player two plays as Nana.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a playable protagonist in Ice Climber?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Is the character depicted as an Old West lawman in their debut game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.npr.org/sections/alltechconsidered/2015/06/19/415568892/q-a-shigeru-miyamoto-on-the-origins-of-nintendos-famous-characters",
+            "excerpt": "In Donkey Kong, Mario was actually a carpenter, and he was working on a building.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/electronic-game/The-return-of-video-consoles",
+            "excerpt": "Mario debuted as Jumpman in Donkey Kong (1981).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character depicted as an Old West lawman in their debut game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Did the character debut in a Donkey Kong game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Donkey-Kong",
+            "excerpt": "The arcade machine marked the first appearance of ... Jumpman, better known as Mario.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/electronic-game/The-return-of-video-consoles",
+            "excerpt": "Mario debuted as Jumpman in Donkey Kong (1981).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character debut in a Donkey Kong game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Does the character fight Donkey Kong using insecticide?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.mariowiki.com/Donkey_Kong_3",
+            "excerpt": "Characters | Donkey Kong • Stanley ... Items and objects | Beehive • Flower • Sprayer • Super Sprayer",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.ssbwiki.com/Stanley",
+            "excerpt": "Stanley ... in Donkey Kong 3, where Donkey Kong raids his greenhouse ... Stanley must simultaneously ward off bugs and prevent Donkey Kong from descending a rope.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character fight Donkey Kong using insecticide?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Is the character a mustachioed plumber who later became the central hero of the Super Mario series?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.nintendo.com/us/whatsnew/meet-mario-and-his-friends",
+            "excerpt": "The main hero of the Mushroom Kingdom... instantly recognizable with his... trademark moustache... He's a plumber by profession.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.bbc.co.uk/newsround/articles/ce845p9de3xo",
+            "excerpt": "In Donkey Kong, Mario's role... led to him being described as a carpenter. But when he popped up again in Mario Bros... Miyamoto decided that he should be a plumber.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a mustachioed plumber who later became the central hero of the Super Mario series?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Mario",
+        "guess_description": "Nintendo's mustachioed plumber, who debuted as Jumpman in the 1981 arcade game Donkey Kong.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposal identifies Mario, the Nintendo video-game character; the description and Jumpman/Donkey Kong debut align with the trusted subject.",
+        "counted": false,
+        "counted_questions": 17,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Nintendo's mustachioed plumber, who debuted as Jumpman in the 1981 arcade game Donkey Kong.\",\"name\":\"Mario\",\"question\":null}}"
+      }
+    ]
+  }
+}

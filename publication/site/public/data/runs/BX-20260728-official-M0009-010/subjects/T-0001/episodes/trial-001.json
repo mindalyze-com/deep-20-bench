@@ -1,0 +1,1022 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0009-010",
+  "target_id": "T-0001",
+  "trial_id": "trial-001",
+  "episode": {
+    "episode_run_id": "BR-c23b482c590b6057d993cad7c0d182475df4353f",
+    "episode_id": "EP-019faa1400b2730e9d3ed554c67fd6cd",
+    "subject_name": "Albert Einstein",
+    "subject_description": "Albert Einstein, the German-born theoretical physicist known for relativity, identified by Wikidata entity Q937.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Albert_Einstein",
+    "started_at": "2026-07-28T18:54:25.458928Z",
+    "completed_at": "2026-07-28T18:59:16.729104Z",
+    "duration_ms": 291270,
+    "success": false,
+    "terminal_reason": "limit_exhausted",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 51,
+    "counted_questions": 50,
+    "ask_count": 12,
+    "guess_count": 39,
+    "rejected_guess_count": 39,
+    "oracle_unknown_count": 1,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1551919249999999992",
+    "total_tokens": 204127,
+    "contract": {
+      "evaluated_outputs": 51,
+      "valid_outputs": 51,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0009",
+        "requested_model": "meta-llama/llama-4-maverick",
+        "requested_provider": "parasail",
+        "resolved_models": [
+          "meta-llama/llama-4-maverick"
+        ],
+        "resolved_providers": [
+          "Parasail"
+        ],
+        "reasoning_effort": "none",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 12,
+        "cost_usd": "0.0739126749999999992"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 11,
+        "cost_usd": "0.0148388"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 3,
+        "cost_usd": "0.039595"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"EAQCORIU\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 51,
+        "cost_usd": "0.01483945",
+        "latency_ms": 45457,
+        "total_tokens": 76531,
+        "input_tokens": 74883,
+        "cached_input_tokens": 72320,
+        "cache_write_tokens": 0,
+        "output_tokens": 1648,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0130176000"
+      },
+      "oracle": {
+        "calls": 12,
+        "cost_usd": "0.1283464749999999992",
+        "latency_ms": 179824,
+        "total_tokens": 112009,
+        "input_tokens": 102135,
+        "cached_input_tokens": 39261,
+        "cache_write_tokens": 0,
+        "output_tokens": 9874,
+        "reasoning_tokens": 7148,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 39,
+        "cost_usd": "0.0120060",
+        "latency_ms": 65213,
+        "total_tokens": 15587,
+        "input_tokens": 13902,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 1685,
+        "reasoning_tokens": 275,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the person male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.notablebiographies.com/Du-Fi/Einstein-Albert.html",
+            "excerpt": "The German-born American physicist... He is best known for his theory of relativity.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the person primarily known for work in entertainment?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/question/What-is-Albert-Einstein-known-for",
+            "excerpt": "Einstein developed a theory of special and general relativity... He is also known for his explanation of the photoelectric effect.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.notablebiographies.com/Du-Fi/Einstein-Albert.html",
+            "excerpt": "The German-born American physicist... is best known for his theory of relativity.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known for work in entertainment?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the person a historical figure?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://historic-figures.com/en/figures/albert-einstein",
+            "excerpt": "Albert Einstein (1879 – 1955) was a theoretical physicist and major figure in history.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person a historical figure?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Did the person hold a high-ranking political office?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://content.time.com/time/subscriber/article/0,33009,817454,00.html",
+            "excerpt": "Einstein ... gave his regretful no. The next day he wrote to Eban that he was deeply touched by the Israeli offer, but never undertook functions he could not fill to his satisfaction.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/articles/albert-einstein-presidency-israel",
+            "excerpt": "He had no interest in leaving the United States, becoming an Israeli citizen and serving in a political capacity.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person hold a high-ranking political office?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Was the person known for achievements in science or invention?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.amacad.org/person/albert-einstein",
+            "excerpt": "Albert Einstein was a German-born theoretical physicist, widely acknowledged to be one of the greatest physicists of all time.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person known for achievements in science or invention?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Did the person invent or develop something related to electricity or electronics?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://physics.aps.org/articles/v18/15",
+            "excerpt": "This became known as the photoelectric effect, and it would be understood in 1905 by a young scientist named Albert Einstein.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://educationalgames.nobelprize.org/educational/physics/quantised_world/waves-particles-3.html",
+            "excerpt": "Einstein's explanation of the photoelectric effect assumes that the photons of light transfer their energy to the electrons in the metal target.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person invent or develop something related to electricity or electronics?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Thomas Edison",
+        "guess_description": "Inventor of the light bulb and other electrical devices",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Thomas Edison, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Inventor of the light bulb and other electrical devices\",\"name\":\"Thomas Edison\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Was the person Nikola Tesla?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/contributor/Albert-Einstein/9536716",
+            "excerpt": "Albert Einstein ... German-born physicist who developed the special and general theories of relativity.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Nikola-Tesla",
+            "excerpt": "Nikola Tesla was an eccentric genius...",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person Nikola Tesla?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Did the person work on the development of telecommunications or radio communication?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person work on the development of telecommunications or radio communication?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Did the person hold a university professorship or have a significant academic career?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://library.ethz.ch/en/collections-and-archives/short-portraits/einstein-albert-1879-1955.html",
+            "excerpt": "He was an associate professor at the University of Zurich from 1909, a professor at the Karl-Ferdinand University in Prague from 1911 and taught at ETH Zurich as a professor of theoretical physics from 1912 to 1914.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.uzh.ch/en/researchinnovation/excellence/nobelprize/einstein.html",
+            "excerpt": "In 1909 the University of Zurich created an associate professorship in theoretical physics for him. This was Einstein’s first academic position; he left it in 1911 for a professorship in Prague.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person hold a university professorship or have a significant academic career?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "André-Marie Ampère",
+        "guess_description": "Physicist who contributed significantly to the study of electricity",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies André-Marie Ampère, whereas the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Physicist who contributed significantly to the study of electricity\",\"name\":\"André-Marie Ampère\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Was the person involved in the discovery or formulation of fundamental principles related to electricity?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/On-a-Heuristic-Point-of-View-about-the-Creation-and-Conversion-of-Light",
+            "excerpt": "This concept was crucial in explaining the photoelectric effect, where light striking a metal surface causes the emission of electrons.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://physics.aps.org/articles/v18/15",
+            "excerpt": "In March 1905, Einstein ... published a paper explaining the photoelectric effect.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person involved in the discovery or formulation of fundamental principles related to electricity?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Alessandro Volta",
+        "guess_description": "Italian physicist known for inventing the first electrical battery",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Alessandro Volta, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Italian physicist known for inventing the first electrical battery\",\"name\":\"Alessandro Volta\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Did the person's work significantly influence the development of electrical systems or technology beyond their initial discovery or invention?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.environmentandsociety.org/tools/keywords/photoelectric-effect",
+            "excerpt": "Einstein was able to explain the photoelectric effect... further developments in photovoltaics laid the foundations for modern solar energy research.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.connect4climate.org/infographics/albert-einstein-father-solar-cells-solar-energy",
+            "excerpt": "Einstein's theory of the photoelectric effect... makes it possible for today's solar panels to work.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person's work significantly influence the development of electrical systems or technology beyond their initial discovery or invention?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Michael Faraday",
+        "guess_description": "English chemist and physicist who discovered electromagnetic induction",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Michael Faraday, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"English chemist and physicist who discovered electromagnetic induction\",\"name\":\"Michael Faraday\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Was the person's work primarily theoretical, focusing on the underlying principles of electricity rather than practical applications or inventions?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.archives.gov/nhprc/projects/catalog/albert-einstein",
+            "excerpt": "Albert Einstein (1879-1955) was a German-born theoretical physicist, best known for developing the theory of relativity and important contributions to quantum mechanics.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.alberteinstein.com/",
+            "excerpt": "Albert Einstein was a theoretical physicist... He developed the general theory of relativity... [and] received the Nobel Prize in Physics... for... the photoelectric effect.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person's work primarily theoretical, focusing on the underlying principles of electricity rather than practical applications or inventions?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "James Clerk Maxwell",
+        "guess_description": "Scottish physicist known for formulating the classical theory of electromagnetic radiation",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies James Clerk Maxwell, whereas the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Scottish physicist known for formulating the classical theory of electromagnetic radiation\",\"name\":\"James Clerk Maxwell\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Georg Ohm",
+        "guess_description": "German physicist known for Ohm's law",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposal identifies Georg Ohm, a different physicist.",
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"German physicist known for Ohm's law\",\"name\":\"Georg Ohm\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Heinrich Hertz",
+        "guess_description": "German physicist who demonstrated the existence of electromagnetic waves",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposed identity is Heinrich Hertz, a different physicist.",
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"German physicist who demonstrated the existence of electromagnetic waves\",\"name\":\"Heinrich Hertz\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Charles Coulomb",
+        "guess_description": "French physicist known for Coulomb's law describing electrostatic interaction",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Charles Coulomb, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French physicist known for Coulomb's law describing electrostatic interaction\",\"name\":\"Charles Coulomb\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Benjamin Franklin",
+        "guess_description": "American polymath and scientist known for his experiments with electricity",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Benjamin Franklin, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American polymath and scientist known for his experiments with electricity\",\"name\":\"Benjamin Franklin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Hans Christian Ørsted",
+        "guess_description": "Danish physicist and chemist who discovered the relationship between electricity and magnetism",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Hans Christian Ørsted, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Danish physicist and chemist who discovered the relationship between electricity and magnetism\",\"name\":\"Hans Christian Ørsted\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Alessandro Volta",
+        "guess_description": "Italian physicist known for his work on electricity",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposal identifies Alessandro Volta, a different physicist.",
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Italian physicist known for his work on electricity\",\"name\":\"Alessandro Volta\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Luigi Galvani",
+        "guess_description": "Italian physician and physicist known for his work on bioelectricity",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposed identity is Luigi Galvani, a different person.",
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Italian physician and physicist known for his work on bioelectricity\",\"name\":\"Luigi Galvani\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Charles-Augustin de Coulomb",
+        "guess_description": "French military engineer and physicist known for his work on electricity and magnetism",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposed identity is Charles-Augustin de Coulomb, a different physicist.",
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French military engineer and physicist known for his work on electricity and magnetism\",\"name\":\"Charles-Augustin de Coulomb\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Heinrich Hertz",
+        "guess_description": "German physicist who demonstrated the existence of electromagnetic waves",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposal identifies Heinrich Hertz, a different physicist.",
+        "counted": true,
+        "counted_questions": 26,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"German physicist who demonstrated the existence of electromagnetic waves\",\"name\":\"Heinrich Hertz\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 27,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Michael Faraday",
+        "guess_description": "English chemist and physicist known for discovering electromagnetic induction",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposed identity is Michael Faraday, a different person.",
+        "counted": true,
+        "counted_questions": 27,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"English chemist and physicist known for discovering electromagnetic induction\",\"name\":\"Michael Faraday\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 28,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Georg Simon Ohm",
+        "guess_description": "German physicist known for his work on electrical resistance",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal names Georg Simon Ohm, a different physicist from the trusted subject Albert Einstein.",
+        "counted": true,
+        "counted_questions": 28,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"German physicist known for his work on electrical resistance\",\"name\":\"Georg Simon Ohm\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 29,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Joseph Henry",
+        "guess_description": "American scientist who discovered electromagnetic induction independently of Michael Faraday",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposed identity is Joseph Henry, a different scientist.",
+        "counted": true,
+        "counted_questions": 29,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American scientist who discovered electromagnetic induction independently of Michael Faraday\",\"name\":\"Joseph Henry\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 30,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "André-Marie Ampère",
+        "guess_description": "French physicist who contributed significantly to the understanding of electricity and magnetism",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies André-Marie Ampère, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 30,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French physicist who contributed significantly to the understanding of electricity and magnetism\",\"name\":\"André-Marie Ampère\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 31,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Benjamin Franklin",
+        "guess_description": "American polymath and statesman known for his experiments with electricity",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Benjamin Franklin, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 31,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American polymath and statesman known for his experiments with electricity\",\"name\":\"Benjamin Franklin\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 32,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Joseph Henry",
+        "guess_description": "American scientist known for work on electromagnetic induction",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Joseph Henry, an American scientist, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 32,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American scientist known for work on electromagnetic induction\",\"name\":\"Joseph Henry\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 33,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Michael Faraday",
+        "guess_description": "English chemist and physicist known for discovering electromagnetic induction",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposal identifies Michael Faraday.",
+        "counted": true,
+        "counted_questions": 33,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"English chemist and physicist known for discovering electromagnetic induction\",\"name\":\"Michael Faraday\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 34,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Heinrich Hertz",
+        "guess_description": "German physicist who demonstrated the existence of electromagnetic waves",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposal identifies Heinrich Hertz, a different physicist.",
+        "counted": true,
+        "counted_questions": 34,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"German physicist who demonstrated the existence of electromagnetic waves\",\"name\":\"Heinrich Hertz\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 35,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "James Clerk Maxwell",
+        "guess_description": "Scottish physicist known for formulating the classical theory of electromagnetic radiation",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposal identifies James Clerk Maxwell, a different physicist.",
+        "counted": true,
+        "counted_questions": 35,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Scottish physicist known for formulating the classical theory of electromagnetic radiation\",\"name\":\"James Clerk Maxwell\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 36,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Georg Simon Ohm",
+        "guess_description": "German physicist known for Ohm's law",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Georg Simon Ohm, whereas the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 36,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"German physicist known for Ohm's law\",\"name\":\"Georg Simon Ohm\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 37,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Hans Christian Ørsted",
+        "guess_description": "Danish physicist and chemist known for discovering the relationship between electricity and magnetism",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Hans Christian Ørsted, whereas the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 37,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Danish physicist and chemist known for discovering the relationship between electricity and magnetism\",\"name\":\"Hans Christian Ørsted\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 38,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Alessandro Volta",
+        "guess_description": "Italian physicist known for the invention of the voltaic pile",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Alessandro Volta, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 38,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Italian physicist known for the invention of the voltaic pile\",\"name\":\"Alessandro Volta\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 39,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Luigi Galvani",
+        "guess_description": "Italian physician and physicist known for pioneering bioelectricity",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Luigi Galvani, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 39,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Italian physician and physicist known for pioneering bioelectricity\",\"name\":\"Luigi Galvani\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 40,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Michael Faraday",
+        "guess_description": "English chemist and physicist known for discovering electromagnetic induction",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposal identifies Michael Faraday.",
+        "counted": true,
+        "counted_questions": 40,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"English chemist and physicist known for discovering electromagnetic induction\",\"name\":\"Michael Faraday\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 41,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Joseph Henry",
+        "guess_description": "American scientist known for work on electromagnetic induction",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Joseph Henry, an American scientist, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 41,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American scientist known for work on electromagnetic induction\",\"name\":\"Joseph Henry\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 42,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Nikola Tesla",
+        "guess_description": "Serbian-American inventor and electrical engineer known for contributions to the development of electrical power systems",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposed identity is Nikola Tesla, a different person.",
+        "counted": true,
+        "counted_questions": 42,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Serbian-American inventor and electrical engineer known for contributions to the development of electrical power systems\",\"name\":\"Nikola Tesla\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 43,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "James Clerk Maxwell",
+        "guess_description": "Scottish physicist known for formulating the classical theory of electromagnetic radiation",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies James Clerk Maxwell, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 43,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Scottish physicist known for formulating the classical theory of electromagnetic radiation\",\"name\":\"James Clerk Maxwell\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 44,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Michael Faraday",
+        "guess_description": "English chemist and physicist known for discovering electromagnetic induction",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Michael Faraday, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 44,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"English chemist and physicist known for discovering electromagnetic induction\",\"name\":\"Michael Faraday\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 45,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Heinrich Hertz",
+        "guess_description": "German physicist who demonstrated the existence of electromagnetic waves",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Heinrich Hertz, whereas the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 45,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"German physicist who demonstrated the existence of electromagnetic waves\",\"name\":\"Heinrich Hertz\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 46,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Georg Simon Ohm",
+        "guess_description": "German physicist known for Ohm's law",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposal identifies Georg Simon Ohm, a different physicist.",
+        "counted": true,
+        "counted_questions": 46,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"German physicist known for Ohm's law\",\"name\":\"Georg Simon Ohm\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 47,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "André-Marie Ampère",
+        "guess_description": "French physicist who significantly contributed to the study of electricity and magnetism",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies André-Marie Ampère, a different physicist from the trusted subject, Albert Einstein.",
+        "counted": true,
+        "counted_questions": 47,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French physicist who significantly contributed to the study of electricity and magnetism\",\"name\":\"André-Marie Ampère\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 48,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Hans Christian Ørsted",
+        "guess_description": "Danish physicist and chemist known for discovering the relationship between electricity and magnetism",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Hans Christian Ørsted, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 48,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Danish physicist and chemist known for discovering the relationship between electricity and magnetism\",\"name\":\"Hans Christian Ørsted\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 49,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Alessandro Volta",
+        "guess_description": "Italian physicist known for the invention of the voltaic pile",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Alessandro Volta, while the trusted subject is Albert Einstein.",
+        "counted": true,
+        "counted_questions": 49,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Italian physicist known for the invention of the voltaic pile\",\"name\":\"Alessandro Volta\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 50,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Joseph Henry",
+        "guess_description": "American scientist known for his work on electromagnetic induction",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposed identity is Joseph Henry, a different scientist.",
+        "counted": true,
+        "counted_questions": 50,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"American scientist known for his work on electromagnetic induction\",\"name\":\"Joseph Henry\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 51,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Michael Faraday",
+        "guess_description": "English chemist and physicist known for discovering electromagnetic induction",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Einstein, while the proposal identifies Michael Faraday.",
+        "counted": false,
+        "counted_questions": 50,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"English chemist and physicist known for discovering electromagnetic induction\",\"name\":\"Michael Faraday\",\"question\":null}}"
+      }
+    ]
+  }
+}

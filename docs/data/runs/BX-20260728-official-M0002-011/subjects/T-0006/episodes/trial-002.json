@@ -1,0 +1,724 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260728-official-M0002-011",
+  "target_id": "T-0006",
+  "trial_id": "trial-002",
+  "episode": {
+    "episode_run_id": "BR-350f6148071eeb3ae6b75b41fd54aa33ac0efbcf",
+    "episode_id": "EP-019faab9a6de75b2a2bac0a592f53796",
+    "subject_name": "Genghis Khan",
+    "subject_description": "Genghis Khan, the founder and first khan of the Mongol Empire, identified by Wikidata entity Q720.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Genghis_Khan",
+    "started_at": "2026-07-28T21:55:21.438207Z",
+    "completed_at": "2026-07-28T22:01:34.903500Z",
+    "duration_ms": 373465,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 25,
+    "counted_questions": 24,
+    "ask_count": 22,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 2,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.3001325749999999990",
+    "total_tokens": 347995,
+    "contract": {
+      "evaluated_outputs": 25,
+      "valid_outputs": 23,
+      "violations": 2,
+      "counted_penalties": 2,
+      "affected_trials": 1,
+      "compliance_rate": "0.92",
+      "status": "breached"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0002",
+        "requested_model": "openai/gpt-oss-120b",
+        "requested_provider": "cerebras",
+        "resolved_models": [
+          "openai/gpt-oss-120b"
+        ],
+        "resolved_providers": [
+          "Cerebras"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance"
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence"
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1"
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "reasoning_effort": "medium",
+        "calls": 22,
+        "cost_usd": "0.1571229249999999990"
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "calls": 20,
+        "cost_usd": "0.0259487"
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "anthropic",
+        "reasoning_effort": "medium",
+        "calls": 4,
+        "cost_usd": "0.044470"
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"BKXG3AZI\"}",
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 25,
+        "cost_usd": "0.07228095",
+        "latency_ms": 63770,
+        "total_tokens": 113901,
+        "input_tokens": 32862,
+        "cached_input_tokens": 27392,
+        "cache_write_tokens": 0,
+        "output_tokens": 81039,
+        "reasoning_tokens": 80127,
+        "estimated_cache_savings_usd": "0E-10"
+      },
+      "oracle": {
+        "calls": 22,
+        "cost_usd": "0.2275416249999999990",
+        "latency_ms": 308011,
+        "total_tokens": 233674,
+        "input_tokens": 216235,
+        "cached_input_tokens": 82801,
+        "cache_write_tokens": 0,
+        "output_tokens": 17439,
+        "reasoning_tokens": 12301,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.00031",
+        "latency_ms": 1122,
+        "total_tokens": 420,
+        "input_tokens": 380,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 40,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the person male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan/Legacy",
+            "excerpt": "He was above all adaptable, a man who could learn.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the person currently alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan died on August 18, 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person currently alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the person primarily known as a political leader?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.worldhistory.org/Genghis_Khan",
+            "excerpt": "Genghis Khan was the founder of the Mongol Empire which he ruled from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan/Rise-to-power",
+            "excerpt": "Genghis Khan - Mongol Empire, Conqueror, Warrior",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily known as a political leader?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Was the person's political career primarily in the United States?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "Mongol leader Genghis Khan ... rose from humble beginnings to establish the largest land empire in history. After uniting the nomadic tribes of the Mongolian plateau, he conquered huge chunks of central Asia and China.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.livescience.com/43260-genghis-khan.html",
+            "excerpt": "Genghis Khan ... founded the Mongol Empire, which covered much of Asia and parts of Europe.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person's political career primarily in the United States?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is the person primarily associated with Europe?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "Mongol leader Genghis Khan ... After uniting the nomadic tribes of the Mongolian plateau, he conquered huge chunks of central Asia and China. His descendants expanded the empire even further ... to Poland.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pressbooks.ccconline.org/his111ppcc/chapter/genghis-khan",
+            "excerpt": "Genghis Khan ruled between 1206 and 1227, expanding trade across Asia and into eastern Europe.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily associated with Europe?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the person primarily associated with a country in Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan ... was a Mongolian warrior-ruler ... who consolidated tribes into a unified Mongolia.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "After uniting the nomadic tribes of the Mongolian plateau, he conquered huge chunks of central Asia and China.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily associated with a country in Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Did the person ever hold a formal head-of-state title such as president, prime minister, or monarch?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/facts/Genghis-Khan",
+            "excerpt": "Title / Office | khan (1206-1227), Mongol empire",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/students/article/Mongol-Empire/275900",
+            "excerpt": "In 1206 Genghis (or Chinggis) Khan was elected head of the All the Mongols league",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person ever hold a formal head-of-state title such as president, prime minister, or monarch?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the person primarily associated with East Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily associated with East Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is the person primarily associated with South Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "Mongol leader Genghis Khan ... established the largest land empire in history. After uniting the nomadic tribes of the Mongolian plateau, he conquered huge chunks of central Asia and China.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/kids/article/Genghis-Khan/353171",
+            "excerpt": "Genghis Khan was a conqueror who brought together the wandering peoples of central Asia. He made their lands into the state of Mongolia.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily associated with South Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Is the person primarily associated with Southeast Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/kids/article/Genghis-Khan/353171",
+            "excerpt": "Genghis Khan was a conqueror who brought together the wandering peoples of central Asia. He made their lands into the state of Mongolia.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "Mongol leader Genghis Khan ... established the largest land empire in history. After uniting the nomadic tribes of the Mongolian plateau, he conquered huge chunks of central Asia and China.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily associated with Southeast Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Is the person primarily associated with a country in West Asia (the Middle East)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://kids.britannica.com/kids/article/Genghis-Khan/353171",
+            "excerpt": "Genghis Khan was a conqueror who brought together the wandering peoples of central Asia. He made their lands into the state of Mongolia.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/students/article/Mongolia/275899",
+            "excerpt": "In the 13th century, however, the land that is now Mongolia formed the heart of the great empire of Genghis Khan.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily associated with a country in West Asia (the Middle East)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Is the person primarily associated with Central Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily associated with Central Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Was the person known as the \"Stalin of Mongolia\"?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://koryogroup.com/blog/exploring-mongolia-s-soviet-past",
+            "excerpt": "Marshal Choibalsan ... was known as the Stalin of Mongolia for his purges of the Buddhist lamas and temples during the 1940s.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://socialhistoryportal.org/news/articles/109500",
+            "excerpt": "Choibalsan is often referred to as Mongolia's Stalin.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person known as the \\\"Stalin of Mongolia\\\"?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Did the person serve as President of Kazakhstan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.nprillinois.org/generationlisten/2019-03-19/nazarbaev-resigns-as-kazakhstans-president-was-first-elected-in-1991",
+            "excerpt": "Nazarbayev is the only president independent Kazakhstan has ever known.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan died on August 18, 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person serve as President of Kazakhstan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Is the person primarily associated with Africa?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.livescience.com/43260-genghis-khan.html",
+            "excerpt": "Genghis Khan ... founded the Mongol Empire, which covered much of Asia and parts of Europe.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Genghis_Khan",
+            "excerpt": "Genghis Khan ... was the founder and first khan of the Mongol Empire.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the person primarily associated with Africa?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Did the person serve as President of Uzbekistan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan (born 1162...died August 18, 1227)",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://gov.uz/en/pages/president",
+            "excerpt": "Shavkat Mirziyoyev...officially assumed the post of President of the Republic of Uzbekistan on December 14, 2016.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person serve as President of Uzbekistan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Did the person serve as President of Turkmenistan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan (born 1162—died August 18, 1227) was a Mongolian warrior-ruler.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.refworld.org/reference/annualreport/freehou/1999/en/95227",
+            "excerpt": "Niyazov ran unopposed in elections to the newly-created post of president in October 1990.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person serve as President of Turkmenistan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Was the person a member of the Chinese Communist Party?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/history/death-genghis-khan",
+            "excerpt": "Genghis Khan died on August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Chinese-Communist-Party",
+            "excerpt": "The CCP was founded ... in 1921.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the person a member of the Chinese Communist Party?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Did the person serve as President of Tajikistan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/facts/Genghis-Khan",
+            "excerpt": "Title / Office | khan (1206-1227)",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://2009-2017.state.gov/outofdate/bgn/tajikistan/121249.htm",
+            "excerpt": "Independence: September 9, 1991 ... Executive -- chief of state: President",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person serve as President of Tajikistan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Did the person serve as President of North Korea?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/President_of_North_Korea",
+            "excerpt": "The position was only occupied by Kim Il Sung from 1972 until his death in 1994.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.worldhistory.org/timeline/Genghis_Khan",
+            "excerpt": "Genghis Khan ... was the founder of the Mongol Empire which he ruled from 1206 until his death in 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person serve as President of North Korea?\"}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 21,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "output_limit_exceeded",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 21
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "ASK",
+        "question": "Did the person hold a hereditary monarchical title (such as king, emperor, or sultan)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/khan-title",
+            "excerpt": "Khan, historically, the ruler or monarch of a Mongol tribe; Genghis assumed the title khākān as Great Khan, or supreme ruler of the Mongols.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://ancestors.familysearch.org/en/GPHN-KSK/alakhai-bekhi-khan-1190-1230",
+            "excerpt": "Khan ... was originally a hereditary title among Tartar and Mongolian tribesmen, in particular Genghis Khan.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person hold a hereditary monarchical title (such as king, emperor, or sultan)?\"}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 23,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "output_limit_exceeded",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 23
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "ASK",
+        "question": "Did the person hold the title of Emperor of Japan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/facts/Genghis-Khan",
+            "excerpt": "Title / Office: khan (1206–1227), Mongol empire.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/place/Emperors-and-Empresses-Regnant-of-Japan-1812634",
+            "excerpt": "Emperors and Empresses Regnant of Japan is the list of Japan’s imperial rulers; Genghis Khan is not included.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the person hold the title of Emperor of Japan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Genghis Khan",
+        "guess_description": "13th‑century Mongol ruler who founded the Mongol Empire and became its first Great Khan",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity exactly matches Genghis Khan, the founder and first khan of the Mongol Empire.",
+        "counted": false,
+        "counted_questions": 24,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"13th‑century Mongol ruler who founded the Mongol Empire and became its first Great Khan\",\"name\":\"Genghis Khan\",\"question\":null}}"
+      }
+    ]
+  }
+}
