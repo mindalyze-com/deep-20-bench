@@ -3,7 +3,6 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import DrilldownBar from "@/components/DrilldownBar.vue";
-import SiteFooter from "@/components/SiteFooter.vue";
 import SiteHeader from "@/components/SiteHeader.vue";
 import {
   clearRouteContext,
@@ -139,7 +138,6 @@ onMounted(() => {
           <component :is="Component" />
         </KeepAlive>
       </RouterView>
-      <SiteFooter v-if="route.meta.workspace !== true" />
     </main>
   </div>
 </template>

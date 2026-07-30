@@ -1424,6 +1424,8 @@ def test_drilldown_navigation_is_sticky_and_scroll_safe() -> None:
     assert "prefers-reduced-motion: reduce" in global_css
     assert "scrollPositions" in app_source
     assert "app-viewport--workspace" in app_source
+    assert "SiteFooter" not in app_source
+    assert ".site-footer" not in global_css
     assert "<Transition" not in app_source
     assert "panel-deeper" not in global_css
     assert "panel-back" not in global_css
