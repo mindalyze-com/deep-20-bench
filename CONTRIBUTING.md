@@ -9,22 +9,22 @@ Install the locked development environment:
 
 ```bash
 uv sync
-uv sync --project publication --group dev
-npm ci --prefix publication/site
+uv sync --project source/publication/compiler --group dev
+npm ci --prefix source/publication/site
 ```
 
 Run the checks used in CI:
 
 ```bash
-uv run ruff check benchmark game oracle scripts
+uv run ruff check source/execution scripts
 uv run mypy
 uv run pytest -q -m "not integration"
 
-uv run --project publication ruff check publication
-uv run --project publication mypy publication/src publication/tests
-uv run --project publication pytest -q publication/tests
-npm run --prefix publication/site check
-uv run --project publication deep20-publication build --check
+uv run --project source/publication/compiler ruff check source/publication/compiler
+uv run --project source/publication/compiler mypy source/publication/compiler/src source/publication/compiler/tests
+uv run --project source/publication/compiler pytest -q source/publication/compiler/tests
+npm run --prefix source/publication/site check
+uv run --project source/publication/compiler deep20-publication build --check
 uv run python scripts/check-markdown-links.py
 ```
 

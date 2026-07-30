@@ -1,8 +1,7 @@
 name: CI
 
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -25,7 +24,7 @@ jobs:
         with:
           node-version: "24"
           cache: npm
-          cache-dependency-path: publication/site/package-lock.json
+          cache-dependency-path: source/publication/site/package-lock.json
 
       - name: Install Python
         run: uv python install 3.14.6
@@ -35,26 +34,26 @@ jobs:
 
       - name: Check benchmark packages
         run: |
-          uv run ruff check benchmark game oracle scripts
+          uv run ruff check source/execution scripts
           uv run mypy
           uv run pytest -q -m "not integration"
 
       - name: Install publication dependencies
-        run: uv sync --project publication --group dev --frozen
+        run: uv sync --project source/publication/compiler --group dev --frozen
 
       - name: Check publication package
         run: |
-          uv run --project publication ruff check publication
-          uv run --project publication mypy publication/src publication/tests
-          uv run --project publication pytest -q publication/tests
+          uv run --project source/publication/compiler ruff check source/publication/compiler
+          uv run --project source/publication/compiler mypy source/publication/compiler/src source/publication/compiler/tests
+          uv run --project source/publication/compiler pytest -q source/publication/compiler/tests
 
       - name: Install site dependencies
-        run: npm ci --prefix publication/site
+        run: npm ci --prefix source/publication/site
 
       - name: Check site and generated publication
         run: |
-          npm run --prefix publication/site check
-          uv run --project publication deep20-publication build --check
+          npm run --prefix source/publication/site check
+          uv run --project source/publication/compiler deep20-publication build --check
 
       - name: Check local Markdown links
         run: uv run python scripts/check-markdown-links.py

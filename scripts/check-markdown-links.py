@@ -12,12 +12,13 @@ from urllib.parse import unquote, urlsplit
 REPOSITORY = Path(__file__).resolve().parents[1]
 LINK_PATTERN = re.compile(r"!?\[[^\]]*]\(([^)]+)\)")
 DOCUMENTATION_FILES = (
-    Path("benchmark/README.md"),
-    Path("game/README.md"),
-    Path("game/Concept.md"),
-    Path("game/Usage.md"),
-    Path("oracle/Usage.md"),
-    Path("publication/README.md"),
+    Path("source/README.md"),
+    Path("source/execution/benchmark/README.md"),
+    Path("source/execution/game/README.md"),
+    Path("source/execution/game/Concept.md"),
+    Path("source/execution/game/Usage.md"),
+    Path("source/execution/oracle/Usage.md"),
+    Path("source/publication/README.md"),
 )
 
 

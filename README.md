@@ -74,11 +74,12 @@ for browsing results and transcripts. Its source lives in this
 [repository](https://github.com/mindalyze-com/deep-20-bench), and the publication package
 generates the committed site into [`docs/`](docs/).
 
-- [Benchmark control plane](benchmark/README.md)
+- [Source layout](source/README.md)
+- [Benchmark control plane](source/execution/benchmark/README.md)
 - [Architecture](documentation/architecture.md)
-- [Game engine](game/README.md)
-- [Oracle, Reviewer, and Judge](oracle/Usage.md)
-- [Publication package](publication/README.md)
+- [Game engine](source/execution/game/README.md)
+- [Oracle, Reviewer, and Judge](source/execution/oracle/Usage.md)
+- [Publication package](source/publication/README.md)
 - [Documentation index](documentation/README.md)
 
 ## Authors, citation, and license

@@ -27,7 +27,7 @@ Project-authored documentation and result data are licensed under
 - Files under `documentation/`.
 - Benchmark results under `runs/` and `archive/`.
 - Project review material under `reviews/`.
-- Generated publication data and pages under `docs/` and `publication/site/public/data/`.
+- Generated publication data and pages under `docs/`.
 
 Attribution should identify “Deep20Bench — Patrick Heusser and Markus Tuor” and link to the
 source repository when practical.

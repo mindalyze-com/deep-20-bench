@@ -23,15 +23,17 @@ being added to the benchmark runner or reporting module.
 The package is:
 
 ```text
-publication/
-├── pyproject.toml
-├── publication.yml
-├── src/deep20_publication/
-├── tests/
+source/publication/
+├── compiler/
+│   ├── pyproject.toml
+│   ├── src/deep20_publication/
+│   └── tests/
 └── site/
     ├── package.json
     ├── vite.config.ts
     └── src/
+
+config/publication.yml
 ```
 
 `deep20-publication` is a Python package and command-line composition root. Python is preferred
@@ -70,7 +72,7 @@ that reusable libraries do not select paths or open artifacts themselves.
 The frontend is a second explicit package nested under the publication boundary:
 
 ```text
-publication/site/
+source/publication/site/
 ├── package.json
 ├── vite.config.ts
 └── src/
@@ -96,7 +98,7 @@ flowchart LR
 The intended local command is:
 
 ```bash
-uv run --project publication deep20-publication build
+uv run --project source/publication/compiler deep20-publication build
 ```
 
 It must not require `OPENROUTER_API_KEY` or any file under `private/`. It must not make network
@@ -112,7 +114,7 @@ An additional verification mode rebuilds into a temporary directory and checks t
 site without replacing it:
 
 ```bash
-uv run --project publication deep20-publication build --check
+uv run --project source/publication/compiler deep20-publication build --check
 ```
 
 ## Source artifact contract
@@ -301,14 +303,19 @@ Handwritten Markdown lives in `documentation/`; `docs/` is reserved for generate
 output. All new publisher source code remains inside the single dedicated publication boundary:
 
 ```text
-publication/        independent compiler, site source, tests, and locked dependencies
-documentation/      handwritten Markdown source
+source/publication/  independent compiler and site source
+config/              benchmark and publication configuration
+documentation/       handwritten Markdown source
 docs/                generated GitHub Pages output only
 ```
 
 The local build replaces `docs/` atomically after every validation and rendering stage
 succeeds. The directory includes `index.html`, static assets, public data downloads, `.nojekyll`,
 and no source secrets.
+
+Public JSON is written to a temporary Vite public directory during the build. It is not retained
+under `source/publication/site/`. The development server reads committed public data from
+`docs/`.
 
 The Vite build uses the configured GitHub Pages base path. The publisher then writes static
 entry shells for every run, subject, episode, and result route so direct navigation and refresh

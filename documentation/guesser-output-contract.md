@@ -93,7 +93,8 @@ question budget. Any valid structured action resets the consecutive counter.
 `FORMAT_ERROR` is the only new Guesser-visible input. It is canonical, versioned,
 subject-independent, and identical across targets, models, providers, and parser failures. The
 provider schema and the event's concrete `required_formats` are both rendered from the same
-canonical action-contract definitions in `game/src/deep20_game/models.py`; the recovery event
+canonical action-contract definitions in
+`source/execution/game/src/deep20_game/models.py`; the recovery event
 does not carry a separately maintained copy of the wire format.
 
 The following data is never placed in the next Guesser request:
