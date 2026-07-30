@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import datetime
 from decimal import Decimal
 from typing import Literal
 
@@ -706,6 +707,7 @@ def compile_publication(
     config: PublicationConfig,
     subject_catalog: SubjectCatalog,
     subject_catalog_hash: str,
+    built_at: datetime,
 ) -> PublishedDataset:
     cohort = config.active_cohort
     missing_targets = tuple(
@@ -811,6 +813,7 @@ def compile_publication(
         score_policy=config.score,
         active_cohort=cohort,
         provenance=DatasetProvenance(
+            built_at=built_at,
             source_run_count=len(projected_runs),
             official_run_count=len(selected),
             lab_run_count=0,

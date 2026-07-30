@@ -47,20 +47,24 @@ The build:
    artifact, including both the reference file hash and signed episode envelope;
 3. compiles the active cohort and a strict public episode projection from
    `config/publication.yml`;
-4. writes the complete `deep20bench-v5.json` and `leaderboard.csv` downloads, plus typed,
+4. records the UTC build time in typed publication provenance;
+5. writes the complete `deep20bench-v5.json` and `leaderboard.csv` downloads, plus typed,
    split JSON documents for the SPA;
-5. builds the Vue application and writes static entry shells for every execution, subject, and
+6. builds the Vue application and writes static entry shells for every execution, subject, and
    episode route;
-6. uses the configured base path for clean direct URLs on GitHub Pages and normal static HTTP
+7. uses the configured base path for clean direct URLs on GitHub Pages and normal static HTTP
    hosts;
-7. runs strict Vue/TypeScript checks and the static build;
-8. atomically replaces the generated-only site output in `docs/`.
+8. runs strict Vue/TypeScript checks and the static build;
+9. atomically replaces the generated-only site output in `docs/`.
 
 To verify that committed output is current without replacing it:
 
 ```bash
 uv run --project source/publication/compiler deep20-publication build --check
 ```
+
+A normal build refreshes the homepage timestamp. Verification reuses the timestamp already in
+the committed manifest, so `--check` compares the remaining output byte for byte.
 
 ## Test
 

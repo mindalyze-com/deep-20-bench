@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 from deep20_publication.cli import (
+    _publication_build_time,
     _route_shells,
     _write_public_data,
     _write_route_shells,
@@ -21,6 +23,19 @@ def test_generated_data_is_not_stored_in_site_source() -> None:
 
     assert not source_data.exists()
     assert (REPOSITORY / "docs" / "data" / "manifest.json").is_file()
+
+
+def test_publication_build_time_is_fresh_or_reused_for_verification() -> None:
+    before = datetime.now(UTC)
+    fresh = _publication_build_time(REPOSITORY, check=False)
+    after = datetime.now(UTC)
+    committed = _publication_build_time(REPOSITORY, check=True)
+    manifest = json.loads(
+        (REPOSITORY / "docs" / "data" / "manifest.json").read_text(encoding="utf-8")
+    )
+
+    assert before <= fresh <= after
+    assert committed == datetime.fromisoformat(manifest["provenance"]["built_at"])
 
 
 def test_file_scheme_entry_explains_how_to_start_the_preview() -> None:

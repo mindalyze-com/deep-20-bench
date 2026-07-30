@@ -7,7 +7,7 @@ import QuestionScore from "@/components/QuestionScore.vue";
 import ReasoningEffort from "@/components/ReasoningEffort.vue";
 import ScoreDotPlot, { type ScoreDot } from "@/components/ScoreDotPlot.vue";
 import { getLeaderboard, getManifest } from "@/lib/api";
-import { money, number, percent } from "@/lib/format";
+import { dateTime, money, number, percent } from "@/lib/format";
 import { illustrativeRound } from "@/lib/illustrative-round";
 import { setRouteContext } from "@/lib/route-context";
 import type {
@@ -415,6 +415,12 @@ const scoreDots = computed<ScoreDot[]>(() =>
               Explore public data
             </RouterLink>
           </div>
+          <p class="home-build-stamp">
+            Homepage built
+            <time :datetime="manifest.provenance.built_at">
+              {{ dateTime(manifest.provenance.built_at) }}
+            </time>
+          </p>
         </div>
       </section>
     </template>
@@ -974,6 +980,23 @@ dd {
 .origin-strip .button-primary {
   border-color: var(--ink);
   background: transparent;
+}
+
+.origin-strip > div:last-child > .home-build-stamp {
+  width: fit-content;
+  margin: 1.4rem 0 0;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgb(12 17 27 / 22%);
+  color: rgb(12 17 27 / 62%);
+  font-size: var(--text-micro);
+  font-weight: 680;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.home-build-stamp time {
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 940px) {

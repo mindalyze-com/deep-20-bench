@@ -5,7 +5,7 @@ import os
 import shutil
 import subprocess
 import tempfile
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 
@@ -30,6 +30,7 @@ from .models import (
     LoadedEpisode,
     LoadedRun,
     PublicationDataBundle,
+    PublicationManifestDocument,
     PublishedDataset,
 )
 from .serialize import dataset_json, leaderboard_csv, publication_document_json
@@ -71,6 +72,14 @@ def _read_yaml(path: Path) -> dict[str, JsonValue]:
 
 def _read_json(path: Path) -> dict[str, JsonValue]:
     return parse_json_object(_read_text(path), str(path))
+
+
+def _publication_build_time(repository: Path, *, check: bool) -> datetime:
+    if not check:
+        return datetime.now(UTC)
+    manifest_path = repository / "docs" / "data" / "manifest.json"
+    manifest = PublicationManifestDocument.model_validate(_read_json(manifest_path))
+    return manifest.provenance.built_at
 
 
 def _load_run(summary_path: Path, repository: Path) -> LoadedRun:
@@ -331,11 +340,13 @@ def build(
             str(subject_path),
         )
         runs = _discover_runs(root)
+        built_at = _publication_build_time(root, check=check)
         dataset = compile_publication(
             runs=runs,
             config=config,
             subject_catalog=subjects,
             subject_catalog_hash=subject_hash,
+            built_at=built_at,
         )
         bundle = split_publication(dataset)
         _ensure_site_dependencies(site_root)

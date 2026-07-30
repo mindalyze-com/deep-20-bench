@@ -1448,11 +1448,19 @@ class Winner(FrozenModel):
 
 
 class DatasetProvenance(FrozenModel):
+    built_at: datetime
     source_run_count: int = Field(ge=0)
     official_run_count: int = Field(ge=0)
     lab_run_count: int = Field(ge=0)
     latest_completed_at: datetime | None = None
     subject_catalog_hash: str = Field(pattern=SHA256_PATTERN)
+
+    @field_validator("built_at")
+    @classmethod
+    def build_time_has_timezone(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("publication build time must include a timezone")
+        return value
 
 
 class PublishedDataset(FrozenModel):

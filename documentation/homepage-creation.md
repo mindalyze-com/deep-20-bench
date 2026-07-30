@@ -328,13 +328,14 @@ directory is the publication approval. GitHub does not run the benchmark or rege
 site. A keyless CI job may run tests and `publication build --check`, but it does not need a
 deployment workflow for this branch-folder arrangement.
 
-Generated output must be deterministic:
+Generated content must be deterministic apart from the declared build time:
 
 - Python and Node dependencies are pinned in lockfiles.
 - Records and pages use explicit stable ordering.
-- No wall-clock build timestamp enters output.
-- The same inputs produce byte-identical public datasets.
-- Rebuilding an approved site produces no Git diff.
+- A normal build records one typed UTC timestamp in publication provenance.
+- Verification reuses the committed timestamp rather than generating a new value.
+- With a fixed timestamp, the same inputs produce byte-identical public datasets.
+- `publication build --check` compares the remaining output byte for byte.
 
 ## Guesser isolation and caching
 

@@ -1044,6 +1044,7 @@ def test_compiler_uses_run_model_metadata_and_requires_all_trials() -> None:
         config=config,
         subject_catalog=subjects,
         subject_catalog_hash=subject_catalog_hash,
+        built_at=datetime(2026, 7, 30, 12, 34, 56, tzinfo=UTC),
     )
 
     assert tuple(model.model_id for model in dataset.models) == ("M-0001",)
@@ -1057,6 +1058,9 @@ def test_compiler_uses_run_model_metadata_and_requires_all_trials() -> None:
     assert dataset.provenance.source_run_count == 2
     assert dataset.provenance.official_run_count == 1
     assert dataset.provenance.lab_run_count == 0
+    assert dataset.provenance.built_at == datetime(
+        2026, 7, 30, 12, 34, 56, tzinfo=UTC
+    )
     assert dataset.models[0].configuration_hash == (
         loaded.manifest.model.configuration_hash
     )
@@ -1233,6 +1237,9 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "without seeing either answer" in homepage
     assert "Early runs exposed rare but basic Oracle errors" in homepage
     assert "The same game, made comparable." in homepage
+    assert "Homepage built" in homepage
+    assert '<time :datetime="manifest.provenance.built_at">' in homepage
+    assert "dateTime(manifest.provenance.built_at)" in homepage
     if evaluated:
         assert '<template v-if="evaluated.length > 0">' in homepage
         assert '<table class="data-table">' in homepage
@@ -1355,6 +1362,7 @@ def test_pre_question_score_run_compiles_without_migration() -> None:
         config=config,
         subject_catalog=subjects,
         subject_catalog_hash=subject_hash,
+        built_at=datetime(2026, 7, 30, 12, 34, 56, tzinfo=UTC),
     )
 
     assert tuple(run.execution_id for run in dataset.official_runs) == (execution_id,)

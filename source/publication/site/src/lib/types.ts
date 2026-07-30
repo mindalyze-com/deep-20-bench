@@ -26,6 +26,7 @@ export interface CohortConfig {
 }
 
 export interface DatasetProvenance {
+  built_at: string;
   source_run_count: number;
   official_run_count: number;
   lab_run_count: number;
