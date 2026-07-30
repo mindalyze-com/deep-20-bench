@@ -9,7 +9,7 @@ import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
 import ResultsNav from "@/components/ResultsNav.vue";
 import { getLeaderboard } from "@/lib/api";
-import { moneyDetailed, number, percent } from "@/lib/format";
+import { moneyEpisode, number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import type { LeaderboardRow } from "@/lib/types";
 
@@ -53,7 +53,7 @@ const efficiencyBars = computed(() =>
     label: row.model.display_name,
     value: Number(row.cost_adjusted_question_score ?? 0),
     display: number(row.cost_adjusted_question_score, 3),
-    detail: `${number(row.question_score)} questions × ${moneyDetailed(
+    detail: `${number(row.question_score)} questions × ${moneyEpisode(
       row.guesser_cost_per_episode_usd,
     )} per episode`,
     link:
@@ -66,7 +66,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
     label: row.model.display_name,
     rank: row.efficiency_rank ?? 0,
     cost: Number(row.guesser_cost_per_episode_usd ?? 0),
-    costDisplay: moneyDetailed(row.guesser_cost_per_episode_usd),
+    costDisplay: moneyEpisode(row.guesser_cost_per_episode_usd),
     score: Number(row.question_score ?? 0),
     scoreDisplay: number(row.question_score),
     frontier: row.pareto_efficient,
@@ -222,7 +222,7 @@ void load();
                   <td data-numeric>{{ row.rank ?? "—" }}</td>
                   <td data-numeric>{{ number(row.question_score) }}</td>
                   <td data-numeric>
-                    {{ moneyDetailed(row.guesser_cost_per_episode_usd) }}
+                    {{ moneyEpisode(row.guesser_cost_per_episode_usd) }}
                   </td>
                   <td data-numeric>{{ percent(row.success_rate) }}</td>
                 </tr>
@@ -368,7 +368,7 @@ h1,
   border-radius: 999px;
   background: var(--acid);
   color: var(--ink);
-  font-size: 0.6rem;
+  font-size: var(--text-micro);
   font-weight: 780;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -378,7 +378,7 @@ h1,
   max-width: 62rem;
   margin: 1rem 0 0;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: var(--text-small);
   line-height: 1.65;
 }
 

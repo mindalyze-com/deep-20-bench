@@ -6,7 +6,7 @@ import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
 import ResultsNav from "@/components/ResultsNav.vue";
 import { getLeaderboard } from "@/lib/api";
-import { duration, money, moneyDetailed, number, percent } from "@/lib/format";
+import { duration, money, moneyEpisode, number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import type { LeaderboardRow } from "@/lib/types";
 
@@ -193,7 +193,7 @@ void load();
                   {{
                     row.guesser_cost_per_episode_usd === null
                       ? "—"
-                      : moneyDetailed(row.guesser_cost_per_episode_usd)
+                      : moneyEpisode(row.guesser_cost_per_episode_usd)
                   }}
                 </td>
                 <td data-label="Guesser time / episode" data-numeric>
@@ -270,7 +270,7 @@ h1,
   max-width: 62rem;
   margin: 1rem 0 0;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: var(--text-small);
   line-height: 1.65;
 }
 

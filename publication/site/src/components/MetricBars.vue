@@ -14,10 +14,12 @@ import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import { money } from "@/lib/format";
 import {
   chartAnimationEnabled,
   chartDisplayFont,
   chartFont,
+  chartTextSize,
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
@@ -65,11 +67,7 @@ const colors = {
 } as const;
 
 const axisValue = (value: number): string => {
-  if (props.valueFormat === "currency") {
-    return `$${value.toLocaleString("en-US", {
-      maximumFractionDigits: value < 1 ? 2 : 1,
-    })}`;
-  }
+  if (props.valueFormat === "currency") return money(value);
   if (props.valueFormat === "duration") {
     if (value >= 60_000) return `${number(value / 60_000, 0)}m`;
     return `${number(value / 1_000, 0)}s`;
@@ -91,15 +89,15 @@ const tooltip = (parameters: CallbackDataParams | CallbackDataParams[]): string 
   const detail =
     item.detail === undefined
       ? ""
-      : `<span style="display:block;margin-top:5px;color:#5f626a;font-size:11px;line-height:1.45">${escapeHtml(item.detail)}</span>`;
+      : `<span style="display:block;margin-top:5px;color:#5f626a;font-size:.72rem;line-height:1.45">${escapeHtml(item.detail)}</span>`;
   return [
     '<div style="min-width:180px;max-width:280px;padding:3px 2px">',
-    `<strong style="display:block;color:#11131c;font-size:13px;line-height:1.35">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:8px;color:#11131c;font-family:Iowan Old Style,Palatino Linotype,Georgia,serif;font-size:25px;line-height:1">${escapeHtml(item.display)}</span>`,
+    `<strong style="display:block;color:#11131c;font-size:.82rem;line-height:1.35">${escapeHtml(item.label)}</strong>`,
+    `<span style="display:block;margin-top:8px;color:#11131c;font-family:Iowan Old Style,Palatino Linotype,Georgia,serif;font-size:1.55rem;line-height:1">${escapeHtml(item.display)}</span>`,
     detail,
     item.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Open model details →</span>',
+      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Open model details →</span>',
     "</div>",
   ].join("");
 };
@@ -107,6 +105,9 @@ const tooltip = (parameters: CallbackDataParams | CallbackDataParams[]): string 
 const chartOption = (width: number): EChartsOption => {
   const mobile = width < 620;
   const color = colors[props.color];
+  const axisFontSize = chartTextSize(width, 10, 11);
+  const categoryFontSize = chartTextSize(width, 10, 12);
+  const valueFontSize = chartTextSize(width, 11, 14);
   const maximum = Math.max(...props.items.map((item) => item.value), 1);
   return {
     animation: chartAnimationEnabled(),
@@ -147,7 +148,7 @@ const chartOption = (width: number): EChartsOption => {
       axisLabel: {
         color: "#6d7078",
         fontFamily: chartFont,
-        fontSize: 10,
+        fontSize: axisFontSize,
         margin: 10,
         formatter: axisValue,
       },
@@ -167,7 +168,7 @@ const chartOption = (width: number): EChartsOption => {
         align: "right",
         color: "#252833",
         fontFamily: chartFont,
-        fontSize: mobile ? 10 : 11,
+        fontSize: categoryFontSize,
         fontWeight: 650,
         width: mobile ? 112 : 186,
         overflow: "truncate",
@@ -197,7 +198,7 @@ const chartOption = (width: number): EChartsOption => {
           distance: mobile ? 6 : 10,
           color: "#11131c",
           fontFamily: chartDisplayFont,
-          fontSize: mobile ? 11 : 13,
+          fontSize: valueFontSize,
           fontWeight: 600,
           formatter: (parameters: CallbackDataParams): string =>
             props.items[parameters.dataIndex]?.display ?? "",
@@ -299,7 +300,7 @@ figcaption {
   align-items: center;
   margin-bottom: 0.3rem;
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: var(--text-micro);
   font-weight: 760;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -309,7 +310,7 @@ figcaption small {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.58rem;
+  font-size: var(--text-micro);
   font-weight: 700;
   letter-spacing: 0.04em;
 }

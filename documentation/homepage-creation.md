@@ -30,7 +30,7 @@ publication/
 ├── tests/
 └── site/
     ├── package.json
-    ├── astro.config.mjs
+    ├── vite.config.ts
     └── src/
 ```
 
@@ -72,11 +72,11 @@ The frontend is a second explicit package nested under the publication boundary:
 ```text
 publication/site/
 ├── package.json
-├── astro.config.mjs
+├── vite.config.ts
 └── src/
 ```
 
-It uses Astro, TypeScript, and Observable Plot. It does not parse benchmark YAML, reproduce
+It uses Vue, TypeScript, Vite, and Apache ECharts. It does not parse benchmark YAML, reproduce
 Python scoring, or decide whether a run is official. It renders only the versioned public JSON
 contract produced by `deep20-publication`.
 
@@ -87,7 +87,7 @@ flowchart LR
     A["Completed signed<br/>summary + episode artifacts"] --> B["deep20-publication<br/>validate and compile"]
     C["Typed publication<br/>cohort configuration"] --> B
     B --> D["Versioned public<br/>JSON and CSV"]
-    D --> E["Astro static build"]
+    D --> E["Vue and Vite<br/>static build"]
     F["Repository Markdown<br/>documentation"] --> E
     E --> G["Generated committed<br/>docs/ directory"]
     G --> H["GitHub Pages"]
@@ -235,7 +235,7 @@ cohort-relative composite score.
 
 ## Public website
 
-The site is a focused multipage publication:
+The site is a focused static Vue publication with route entry shells:
 
 - Homepage with question-score winner, leaderboard, methodology summary, and limitations.
 - A dedicated Story & prior work page that records the benchmark's human origin, credits its
@@ -259,9 +259,9 @@ The site is a focused multipage publication:
   pages.
 - Rendered engineering documentation.
 
-Important tables and explanations are prerendered into HTML. Observable Plot progressively adds
-responsive SVG charts, facets, filters, and tooltips. Every chart has an ARIA description and an
-equivalent table; meaning never depends on color or pointer hover alone.
+Vue renders tables and explanations from the generated static JSON. Apache ECharts adds
+responsive SVG charts and tooltips. Every chart has an ARIA description and equivalent
+structured text or table data; meaning never depends on color or pointer hover alone.
 
 The story page must distinguish an independent origin from a priority claim. Deep20Bench began
 with Patrick Heusser and Markus Tuor developing the initial idea together while playing Twenty
@@ -310,12 +310,11 @@ The local build replaces `docs/` atomically after every validation and rendering
 succeeds. The directory includes `index.html`, static assets, public data downloads, `.nojekyll`,
 and no source secrets.
 
-Generated pages use depth-aware relative links to concrete `index.html` files and assets. This
-keeps the same artifact functional at the configured GitHub Pages subpath, under an arbitrary
-local HTTP root, and when `docs/index.html` is opened directly from the filesystem. The
-publisher performs this portability rewrite after Astro prerendering and tests root and nested
-routes separately so a configured Pages base path cannot silently produce an unstyled local
-artifact.
+The Vite build uses the configured GitHub Pages base path. The publisher then writes static
+entry shells for every run, subject, episode, and result route so direct navigation and refresh
+work under GitHub Pages. Local verification uses an HTTP origin because the Vue application
+loads route data with `fetch`; opening `docs/index.html` directly explains how to start the
+preview server.
 
 GitHub Pages is configured to publish from `main` and `/docs`. Pushing the reviewed generated
 directory is the publication approval. GitHub does not run the benchmark or regenerate the
@@ -337,8 +336,8 @@ from durable results to public output.
 
 The benchmark runner never imports the publication package, reads `docs/`, reads generated
 JSON, or uses site state for sessions, retries, prompt caches, application caches, scoring, or
-report generation. Publication caches and Astro build artifacts are never placed in a provider
-cache namespace.
+report generation. Publication caches and frontend build artifacts are never placed in a
+provider cache namespace.
 
 The publication feature is not LLM-backed. Provider prompt caching and application response
 caching are therefore not applicable. The compiler recomputes its typed projection from source
@@ -361,12 +360,12 @@ Implemented Python tests cover:
 - A dependency-boundary check proving the package does not import benchmark, game, Oracle,
   Reviewer, Judge, or OpenRouter execution code.
 
-The static build performs strict Astro and TypeScript checks. Browser validation covers:
+The static build performs strict Vue and TypeScript checks. Browser validation covers:
 
 - Base-path-safe links for the `/deep-20-bench/` project site.
 - Generated routes, data downloads, and internal navigation.
 - Desktop and mobile layouts.
-- Prerendered tables and progressively enhanced charts.
+- Data-backed tables and responsive SVG charts.
 - Keyboard navigation and accessible chart descriptions.
 
 The isolation boundary is enforced structurally: the benchmark runner never imports or invokes
@@ -391,8 +390,8 @@ until they are retired. Publishing a holdout retires it from future secret evalu
 ## References
 
 - [GitHub Pages publishing sources](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
-- [Astro static output](https://docs.astro.build/en/reference/configuration-reference/)
-- [Observable Plot](https://observablehq.com/plot/)
-- [Observable Plot accessibility](https://observablehq.com/plot/features/accessibility)
+- [Vue](https://vuejs.org/guide/quick-start.html)
+- [Vite static deployment](https://vite.dev/guide/static-deploy.html)
+- [Apache ECharts ARIA guidance](https://echarts.apache.org/handbook/en/best-practices/aria/)
 - [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)
 - [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/)

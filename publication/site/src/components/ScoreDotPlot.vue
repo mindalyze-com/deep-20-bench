@@ -18,6 +18,7 @@ import {
   chartAnimationEnabled,
   chartDisplayFont,
   chartFont,
+  chartTextSize,
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
@@ -71,18 +72,21 @@ const tooltip = (
   if (item === undefined) return "";
   return [
     '<div style="min-width:180px;padding:3px 2px">',
-    `<strong style="display:block;color:#11131c;font:700 12px/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:8px;color:#11131c;font-family:${chartDisplayFont};font-size:25px">${escapeHtml(item.display)} questions</span>`,
-    '<span style="display:block;margin-top:5px;color:#5f626a;font-size:11px">Lower is better</span>',
+    `<strong style="display:block;color:#11131c;font:700 .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
+    `<span style="display:block;margin-top:8px;color:#11131c;font-family:${chartDisplayFont};font-size:1.55rem">${escapeHtml(item.display)} questions</span>`,
+    '<span style="display:block;margin-top:5px;color:#5f626a;font-size:.72rem">Lower is better</span>',
     item.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:10px;font-weight:700;text-transform:uppercase">Open model details →</span>',
+      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">Open model details →</span>',
     "</div>",
   ].join("");
 };
 
 const chartOption = (width: number): EChartsOption => {
   const mobile = width < 620;
+  const axisFontSize = chartTextSize(width, 10, 11);
+  const categoryFontSize = chartTextSize(width, 10, 12);
+  const valueFontSize = chartTextSize(width, 11, 14);
   return {
     animation: chartAnimationEnabled(),
     animationDuration: 420,
@@ -120,7 +124,7 @@ const chartOption = (width: number): EChartsOption => {
       nameTextStyle: {
         color: "#5f626a",
         fontFamily: chartFont,
-        fontSize: 10,
+        fontSize: axisFontSize,
         fontWeight: 700,
       },
       axisLine: {
@@ -131,7 +135,7 @@ const chartOption = (width: number): EChartsOption => {
       axisLabel: {
         color: "#5f626a",
         fontFamily: chartFont,
-        fontSize: 10,
+        fontSize: axisFontSize,
         margin: 9,
         formatter: (value: number): string =>
           value.toLocaleString("en-US", { maximumFractionDigits: 1 }),
@@ -152,7 +156,7 @@ const chartOption = (width: number): EChartsOption => {
         align: "right",
         color: "#252833",
         fontFamily: chartFont,
-        fontSize: mobile ? 10 : 11,
+        fontSize: categoryFontSize,
         fontWeight: 650,
         width: mobile ? 112 : 194,
         overflow: "truncate",
@@ -187,7 +191,7 @@ const chartOption = (width: number): EChartsOption => {
           distance: mobile ? 6 : 8,
           color: "#11131c",
           fontFamily: chartDisplayFont,
-          fontSize: mobile ? 11 : 13,
+          fontSize: valueFontSize,
           fontWeight: 650,
           formatter: (parameters: CallbackDataParams): string =>
             props.items[parameters.dataIndex]?.display ?? "",

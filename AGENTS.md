@@ -3,6 +3,8 @@
 ## Publication deployment
 
 - `deep20-publication build` generates the static GitHub Pages site in `docs/`.
+- Never commit, push, tag, release, open a pull request, or publish externally unless the user
+  explicitly requests that action in the current request.
 - Do not create, save, or deploy a Codex Sites project for this repository.
 - Do not add `.openai/hosting.json` or other Sites deployment configuration.
 - Treat requests to run or publish the publication as local `docs/` generation unless the user

@@ -36,7 +36,7 @@ const level = computed(() => {
   align-items: center;
   gap: 0.55rem;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: var(--text-small);
   font-weight: 680;
 }
 
@@ -67,7 +67,7 @@ const level = computed(() => {
 }
 
 .compact > span:last-child {
-  font-size: 0.68rem;
+  font-size: var(--text-micro);
 }
 
 .dark {

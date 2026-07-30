@@ -10,7 +10,7 @@ import {
   duration,
   integer,
   money,
-  moneyDetailed,
+  moneyEpisode,
   number,
   percent,
   reasoningEffortLabel,
@@ -404,7 +404,7 @@ onActivated(applyRouteContext);
             <div>
               <dt>Episode cost</dt>
               <dd>
-                {{ money(episode.total_cost_usd) }}
+                {{ moneyEpisode(episode.total_cost_usd) }}
                 <small>All {{ episode.total_turns }} turns</small>
               </dd>
             </div>
@@ -450,7 +450,7 @@ onActivated(applyRouteContext);
           @keydown="onEpisodeTabKeydown($event, 'usage')"
         >
           <span>Models & usage</span>
-          <small>{{ money(episode.total_cost_usd) }}</small>
+          <small>{{ moneyEpisode(episode.total_cost_usd) }}</small>
         </button>
       </nav>
 
@@ -804,7 +804,7 @@ onActivated(applyRouteContext);
               </article>
               <article>
                 <span>Episode scope</span>
-                <strong>{{ money(episode.total_cost_usd) }} across {{ episode.total_turns }} turns</strong>
+                <strong>{{ moneyEpisode(episode.total_cost_usd) }} across {{ episode.total_turns }} turns</strong>
                 <p>
                   Includes {{ evidenceCount }} evidence
                   {{ evidenceCount === 1 ? "item" : "items" }} and all model activity for this
@@ -877,7 +877,7 @@ onActivated(applyRouteContext);
                   <p>{{ row.description }}</p>
                   <dl>
                     <div><dt>Calls</dt><dd>{{ row.values.calls }}</dd></div>
-                    <div><dt>Cost</dt><dd>{{ money(row.values.cost_usd) }}</dd></div>
+                    <div><dt>Cost</dt><dd>{{ moneyEpisode(row.values.cost_usd) }}</dd></div>
                     <div>
                       <dt>Reasoning</dt>
                       <dd>{{ reasoningEffortLabel(row.values.reasoning_effort) }}</dd>
@@ -915,8 +915,8 @@ onActivated(applyRouteContext);
                     <td data-numeric>{{ integer(row.values.output_tokens) }}</td>
                     <td data-numeric>{{ integer(row.values.reasoning_tokens) }}</td>
                     <td data-numeric>{{ seconds(row.values.latency_ms) }} s</td>
-                    <td data-numeric>{{ moneyDetailed(row.values.cost_usd) }}</td>
-                    <td data-numeric>{{ moneyDetailed(row.values.estimated_cache_savings_usd) }}</td>
+                    <td data-numeric>{{ moneyEpisode(row.values.cost_usd) }}</td>
+                    <td data-numeric>{{ moneyEpisode(row.values.estimated_cache_savings_usd) }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -940,7 +940,7 @@ onActivated(applyRouteContext);
                 <div><dt>Git commit</dt><dd><code>{{ run.git_commit }}</code></dd></div>
                 <div><dt>Cache status</dt><dd>{{ statusLabel(episode.cache_status) }}</dd></div>
                 <div><dt>Total tokens</dt><dd>{{ integer(episode.total_tokens) }}</dd></div>
-                <div><dt>Episode cost</dt><dd>{{ money(episode.total_cost_usd) }}</dd></div>
+                <div><dt>Episode cost</dt><dd>{{ moneyEpisode(episode.total_cost_usd) }}</dd></div>
               </dl>
             </details>
           </div>

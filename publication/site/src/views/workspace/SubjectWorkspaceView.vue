@@ -15,6 +15,7 @@ import { getEpisode, getSubject } from "@/lib/api";
 import {
   duration,
   money,
+  moneyEpisode,
   number,
   percent,
   statusLabel,
@@ -240,7 +241,7 @@ onActivated(applySubjectContext);
               <strong>{{ statusLabel(trial.status) }}</strong>
               <small>
                 {{ trial.counted_questions }} questions · {{ duration(trial.duration_ms) }}
-                · {{ money(trial.cost_usd) }}
+                · {{ moneyEpisode(trial.cost_usd) }}
               </small>
               <span class="attempt-score-track" aria-hidden="true">
                 <i

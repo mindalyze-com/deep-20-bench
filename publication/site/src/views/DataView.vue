@@ -181,7 +181,7 @@ applyRouteContext();
 
 .file-type {
   margin: 0;
-  font-size: 0.68rem;
+  font-size: var(--text-micro);
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -249,7 +249,7 @@ applyRouteContext();
 
 .provenance dt {
   color: var(--muted);
-  font-size: 0.66rem;
+  font-size: var(--text-micro);
   font-weight: 760;
   text-transform: uppercase;
 }
@@ -260,7 +260,7 @@ applyRouteContext();
 }
 
 .provenance code {
-  font-size: 0.68rem;
+  font-size: var(--text-small);
 }
 
 .data-contract {

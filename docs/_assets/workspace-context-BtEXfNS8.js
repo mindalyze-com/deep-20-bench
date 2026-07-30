@@ -1,0 +1,1 @@
+import{v as e}from"./index-C_LXZ46F.js";var t=Symbol(`run-workspace`),n=Symbol(`subject-workspace`),r=()=>{let n=e(t);if(n===void 0)throw Error(`Run workspace context is unavailable.`);return n},i=()=>{let t=e(n);if(t===void 0)throw Error(`Subject workspace context is unavailable.`);return t};export{i,n,r,t};

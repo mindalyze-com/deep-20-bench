@@ -64,7 +64,7 @@ const percentage = computed(() =>
 .score-label,
 .score-unit {
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: var(--text-micro);
   font-weight: 740;
   letter-spacing: 0.06em;
   text-transform: uppercase;

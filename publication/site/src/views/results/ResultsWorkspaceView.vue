@@ -98,7 +98,7 @@ const copy = computed(() => {
   gap: clamp(1.5rem, 4vw, 4rem);
   align-items: end;
   min-height: 112px;
-  padding: 1.2rem var(--gutter) 0;
+  padding: 1.2rem max(var(--gutter), calc((100vw - var(--max)) / 2)) 0;
   border-bottom: 1px solid var(--line);
   background: var(--paper-bright);
 }
@@ -121,7 +121,7 @@ const copy = computed(() => {
   max-width: 30rem;
   margin: 0 0 1.15rem;
   color: var(--muted);
-  font-size: 0.77rem;
+  font-size: var(--text-small);
   line-height: 1.55;
 }
 

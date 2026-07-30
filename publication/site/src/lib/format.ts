@@ -3,6 +3,20 @@ const decimal = new Intl.NumberFormat("en", {
   maximumFractionDigits: 2,
 });
 
+const usd = new Intl.NumberFormat("en", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+const usdEpisode = new Intl.NumberFormat("en", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 4,
+});
+
 export const number = (
   value: string | number | null | undefined,
   digits = 2,
@@ -28,22 +42,15 @@ export const percent = (value: string | null | undefined): string =>
 export const money = (value: string | number | null | undefined): string =>
   value === null || value === undefined
     ? "—"
-    : new Intl.NumberFormat("en", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(Number(value));
+    : usd.format(Number(value));
 
-export const moneyDetailed = (value: string | number | null | undefined): string =>
-  value === null || value === undefined
-    ? "—"
-    : new Intl.NumberFormat("en", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 4,
-      }).format(Number(value));
+export const moneyEpisode = (
+  value: string | number | null | undefined,
+): string => {
+  if (value === null || value === undefined) return "—";
+  const amount = Number(value);
+  return (Math.abs(amount) >= 1 ? usd : usdEpisode).format(amount);
+};
 
 export const date = (value: string | null): string =>
   value === null

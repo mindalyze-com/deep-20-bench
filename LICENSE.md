@@ -8,7 +8,7 @@ Project-owned software and configuration are licensed under the
 [PolyForm Noncommercial License 1.0.0](LICENSES/PolyForm-Noncommercial-1.0.0.txt).
 This includes:
 
-- Python, TypeScript, Astro, JavaScript, and shell source code.
+- Python, TypeScript, Vue, JavaScript, and shell source code.
 - Tests, workflows, build scripts, package manifests, and lock files.
 - Benchmark, model, subject, game, Oracle, and publication configuration.
 

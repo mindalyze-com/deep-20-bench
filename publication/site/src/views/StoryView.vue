@@ -333,7 +333,7 @@ onActivated(applyRouteContext);
 .hero-jump {
   align-self: end;
   color: var(--acid);
-  font-size: 0.78rem;
+  font-size: var(--text-small);
   font-weight: 750;
 }
 
@@ -345,7 +345,7 @@ onActivated(applyRouteContext);
 
 .story-index > span {
   color: var(--blue);
-  font: 720 0.75rem ui-monospace, monospace;
+  font: 720 var(--text-small) ui-monospace, monospace;
 }
 
 .story-section h2 {
@@ -381,7 +381,7 @@ onActivated(applyRouteContext);
   padding: 0.9rem 1rem;
   background: var(--ink);
   color: white;
-  font-size: 0.66rem;
+  font-size: var(--text-micro);
   font-weight: 760;
   text-transform: uppercase;
 }
@@ -413,7 +413,7 @@ onActivated(applyRouteContext);
 
 .round-body li > span {
   color: var(--muted);
-  font: 720 0.68rem ui-monospace, monospace;
+  font: 720 var(--text-micro) ui-monospace, monospace;
 }
 
 .round-body li p {
@@ -422,7 +422,7 @@ onActivated(applyRouteContext);
 
 .round-body li strong {
   color: var(--blue);
-  font-size: 0.68rem;
+  font-size: var(--text-micro);
 }
 
 .round-body li.final {
@@ -439,7 +439,7 @@ onActivated(applyRouteContext);
 }
 
 .subject-orbit span {
-  font-size: 0.65rem;
+  font-size: var(--text-micro);
   text-transform: uppercase;
 }
 
@@ -459,7 +459,7 @@ onActivated(applyRouteContext);
 
 .example-note {
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: var(--text-small);
 }
 
 .apple-spotlight,
@@ -533,13 +533,13 @@ onActivated(applyRouteContext);
 
 .work-year {
   color: var(--blue);
-  font: 740 0.75rem ui-monospace, monospace;
+  font: 740 var(--text-small) ui-monospace, monospace;
 }
 
 .work-kind,
 .work-authors {
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: var(--text-small);
 }
 
 .work-list h3 {
@@ -555,7 +555,7 @@ onActivated(applyRouteContext);
 }
 
 .work-list article > a {
-  font-size: 0.72rem;
+  font-size: var(--text-small);
   font-weight: 750;
 }
 

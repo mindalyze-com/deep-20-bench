@@ -14,10 +14,12 @@ import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import { moneyEpisode } from "@/lib/format";
 import {
   chartAnimationEnabled,
   chartDisplayFont,
   chartFont,
+  chartTextSize,
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
@@ -83,19 +85,21 @@ const tooltip = (
   if (item === undefined) return "";
   return [
     '<div style="min-width:190px;padding:3px 2px">',
-    `<strong style="display:block;color:#11131c;font:700 12px/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:8px;color:#11131c;font-family:${chartDisplayFont};font-size:23px">${escapeHtml(item.scoreDisplay)} questions</span>`,
-    `<span style="display:block;margin-top:5px;color:#5f626a;font-size:11px">${escapeHtml(item.costDisplay)} Guesser cost per episode</span>`,
-    `<span style="display:block;margin-top:4px;color:#5f626a;font-size:11px">${item.frontier ? "Pareto frontier" : "Ranked model"} · efficiency rank ${item.rank}</span>`,
+    `<strong style="display:block;color:#11131c;font:700 .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
+    `<span style="display:block;margin-top:8px;color:#11131c;font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(item.scoreDisplay)} questions</span>`,
+    `<span style="display:block;margin-top:5px;color:#5f626a;font-size:.72rem">${escapeHtml(item.costDisplay)} Guesser cost per episode</span>`,
+    `<span style="display:block;margin-top:4px;color:#5f626a;font-size:.72rem">${item.frontier ? "Pareto frontier" : "Ranked model"} · efficiency rank ${item.rank}</span>`,
     item.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:10px;font-weight:700;text-transform:uppercase">Open model details →</span>',
+      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">Open model details →</span>',
     "</div>",
   ].join("");
 };
 
 const chartOption = (width: number): EChartsOption => {
   const mobile = width < 620;
+  const axisFontSize = chartTextSize(width, 9, 11);
+  const labelFontSize = chartTextSize(width, 8, 11);
   return {
     animation: chartAnimationEnabled(),
     animationDuration: 480,
@@ -134,16 +138,15 @@ const chartOption = (width: number): EChartsOption => {
       nameTextStyle: {
         color: "#5f626a",
         fontFamily: chartFont,
-        fontSize: mobile ? 9 : 10,
+        fontSize: axisFontSize,
       },
       axisLine: { show: true, lineStyle: { color: "#a8a69f" } },
       axisTick: { show: false },
       axisLabel: {
         color: "#6d7078",
         fontFamily: chartFont,
-        fontSize: 9,
-        formatter: (value: number): string =>
-          `$${value.toLocaleString("en-US", { maximumFractionDigits: 2 })}`,
+        fontSize: axisFontSize,
+        formatter: moneyEpisode,
       },
       splitLine: {
         show: true,
@@ -160,14 +163,14 @@ const chartOption = (width: number): EChartsOption => {
       nameTextStyle: {
         color: "#5f626a",
         fontFamily: chartFont,
-        fontSize: mobile ? 9 : 10,
+        fontSize: axisFontSize,
       },
       axisLine: { show: true, lineStyle: { color: "#a8a69f" } },
       axisTick: { show: false },
       axisLabel: {
         color: "#6d7078",
         fontFamily: chartFont,
-        fontSize: 9,
+        fontSize: axisFontSize,
       },
       splitLine: {
         show: true,
@@ -220,7 +223,7 @@ const chartOption = (width: number): EChartsOption => {
           distance: 7,
           color: "#252833",
           fontFamily: chartFont,
-          fontSize: mobile ? 8 : 10,
+          fontSize: labelFontSize,
           fontWeight: 650,
           width: mobile ? 76 : 145,
           overflow: "truncate",
@@ -300,7 +303,7 @@ figcaption {
   gap: 0.6rem 1.2rem;
   align-items: center;
   color: var(--muted);
-  font-size: 0.62rem;
+  font-size: var(--text-micro);
 }
 
 figcaption > span:first-child {
@@ -366,7 +369,7 @@ figcaption .frontier-key {
     align-items: center;
     min-height: 2.4rem;
     border-bottom: 1px solid var(--line-soft);
-    font-size: 0.65rem;
+    font-size: var(--text-micro);
   }
 
   .mobile-frontier-key i {

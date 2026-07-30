@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
   border: 0;
   background: transparent;
   color: inherit;
-  font-size: 0.72rem;
+  font-size: var(--text-small);
   font-weight: 720;
   line-height: 1.35;
   text-align: left;
@@ -179,7 +179,7 @@ onBeforeUnmount(() => {
 }
 
 .info-popover-panel header strong {
-  font-size: 0.72rem;
+  font-size: var(--text-small);
   letter-spacing: 0.02em;
 }
 
@@ -204,7 +204,7 @@ onBeforeUnmount(() => {
 .info-popover-body {
   padding: 0.9rem;
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: var(--text-small);
   line-height: 1.6;
 }
 

@@ -1205,7 +1205,7 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     assert "seconds(row.values.latency_ms)" in episode_source
     assert "`Q${turn.counted_questions}`" in episode_source
     assert "No question charge" in episode_source
-    assert "money(trial.cost_usd)" in subject_source
+    assert "moneyEpisode(trial.cost_usd)" in subject_source
     assert "<dt>Run cost</dt>" not in run_source
     assert "Complete benchmark" in run_source
     assert "Model under test" in run_source

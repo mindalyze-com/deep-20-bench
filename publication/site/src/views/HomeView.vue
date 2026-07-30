@@ -460,7 +460,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
   grid-column: 1 / -1;
   margin: 0 0 0.12rem;
   color: rgb(255 255 255 / 55%);
-  font-size: 0.54rem;
+  font-size: var(--text-micro);
 }
 
 .live-result strong {
@@ -474,7 +474,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
 .live-result span {
   max-width: 13rem;
-  font-size: 0.72rem;
+  font-size: var(--text-small);
   line-height: 1.25;
 }
 
@@ -496,7 +496,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 .round-head,
 .round-columns {
   grid-template-columns: 1fr auto;
-  font-size: 0.52rem;
+  font-size: var(--text-micro);
   font-weight: 680;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -525,12 +525,12 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
 .round-card li p {
   margin: 0;
-  font-size: 0.76rem;
+  font-size: var(--text-small);
 }
 
 .round-card li strong {
   color: var(--acid);
-  font-size: 0.57rem;
+  font-size: var(--text-micro);
   letter-spacing: 0.02em;
   text-align: right;
   text-transform: uppercase;
@@ -564,7 +564,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
   border: 1px solid var(--muted);
   border-radius: 50%;
   color: var(--ink);
-  font: 620 0.61rem var(--font-sans);
+  font: 620 var(--text-micro) var(--font-sans);
   place-items: center;
 }
 
@@ -580,7 +580,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 .trust-grid p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: var(--text-small);
   line-height: 1.5;
 }
 
@@ -602,13 +602,13 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
 .cohort-layout p {
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: var(--text-small);
   line-height: 1.6;
 }
 
 .text-link {
   color: var(--blue-ink);
-  font-size: 0.78rem;
+  font-size: var(--text-small);
   font-weight: 680;
 }
 
@@ -627,7 +627,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
   display: grid;
   gap: 0.6rem;
   color: var(--muted);
-  font-size: 0.56rem;
+  font-size: var(--text-micro);
   font-weight: 680;
   text-align: center;
   text-transform: uppercase;
@@ -653,7 +653,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
 .protocol-flow > p:last-child {
   margin: 1.9rem 0 0;
-  font-size: 0.53rem;
+  font-size: var(--text-micro);
   font-weight: 650;
   letter-spacing: 0.08em;
   text-align: center;
@@ -691,7 +691,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
 dt {
   color: var(--muted);
-  font-size: 0.57rem;
+  font-size: var(--text-micro);
   font-weight: 710;
   text-transform: uppercase;
 }
@@ -752,7 +752,7 @@ dd {
   margin: 0;
   padding: clamp(1.2rem, 3vw, 2rem) clamp(1.2rem, 3vw, 2rem) 0;
   color: var(--muted);
-  font-size: 0.66rem;
+  font-size: var(--text-micro);
   font-weight: 760;
   text-transform: uppercase;
 }

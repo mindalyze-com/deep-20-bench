@@ -10,7 +10,7 @@ import StackedMetricBars, {
   type StackedBarSegment,
 } from "@/components/StackedMetricBars.vue";
 import { getOfficialRuns } from "@/lib/api";
-import { money, moneyDetailed, percent } from "@/lib/format";
+import { money, moneyEpisode, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import type { PublicRunSummary, RunDocument } from "@/lib/types";
 
@@ -61,8 +61,8 @@ const totalCostBars = computed(() =>
   runs.value.map((run) => ({
     label: run.model_name,
     value: Number(run.totals.costs_usd.total),
-    display: moneyDetailed(run.totals.costs_usd.total),
-    detail: `${moneyDetailed(run.totals.costs_usd.guesser)} Guesser · ${moneyDetailed(
+    display: money(run.totals.costs_usd.total),
+    detail: `${money(run.totals.costs_usd.guesser)} Guesser · ${money(
       Number(run.totals.costs_usd.total) - Number(run.totals.costs_usd.guesser),
     )} support`,
     link: `/runs/${run.execution_id}/`,
@@ -90,12 +90,12 @@ const componentValue = (
 const stackedRows = computed<StackedBarRow[]>(() =>
   runs.value.map((run) => ({
     label: run.model_name,
-    display: moneyDetailed(run.totals.costs_usd.total),
+    display: money(run.totals.costs_usd.total),
     values: componentRows.map((component) =>
       componentValue(run, component.key),
     ),
     details: componentRows.map((component) =>
-      moneyDetailed(componentValue(run, component.key)),
+      money(componentValue(run, component.key)),
     ),
     link: `/runs/${run.execution_id}/`,
   })),
@@ -243,18 +243,18 @@ void load();
                   </RouterLink>
                 </td>
                 <td data-numeric>
-                  {{ moneyDetailed(run.comparison.guesser_cost_per_episode_usd) }}
+                  {{ moneyEpisode(run.comparison.guesser_cost_per_episode_usd) }}
                 </td>
                 <td data-numeric>
-                  {{ moneyDetailed(run.comparison.full_cost_per_episode_usd) }}
+                  {{ moneyEpisode(run.comparison.full_cost_per_episode_usd) }}
                 </td>
                 <td data-numeric>
-                  {{ moneyDetailed(run.comparison.support_cost_per_episode_usd) }}
+                  {{ moneyEpisode(run.comparison.support_cost_per_episode_usd) }}
                 </td>
                 <td data-numeric>{{ percent(run.comparison.support_cost_share) }}</td>
                 <td data-numeric>
                   <span :class="`value-signal value-signal--${costBand(index)}`">
-                    {{ moneyDetailed(run.totals.costs_usd.total) }}
+                    {{ money(run.totals.costs_usd.total) }}
                   </span>
                 </td>
               </tr>

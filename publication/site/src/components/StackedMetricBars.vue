@@ -14,10 +14,12 @@ import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import { money } from "@/lib/format";
 import {
   chartAnimationEnabled,
   chartDisplayFont,
   chartFont,
+  chartTextSize,
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
@@ -52,11 +54,6 @@ const props = defineProps<{
 const router = useRouter();
 const chartHeight = computed(() => Math.max(380, props.rows.length * 48 + 84));
 
-const currency = (value: number): string =>
-  `$${value.toLocaleString("en-US", {
-    maximumFractionDigits: value < 1 ? 2 : 0,
-  })}`;
-
 const tooltip = (
   parameters: CallbackDataParams | CallbackDataParams[],
 ): string => {
@@ -66,24 +63,27 @@ const tooltip = (
   if (row === undefined) return "";
   const detail = props.segments
     .map((segment, index) => {
-      const display = row.details[index] ?? currency(row.values[index] ?? 0);
-      return `<span style="display:grid;grid-template-columns:8px 1fr auto;gap:7px;align-items:center;margin-top:5px;color:#5f626a;font-size:10px"><i style="width:8px;height:8px;border-radius:50%;background:${segment.color}"></i><span>${escapeHtml(segment.label)}</span><strong style="color:#252833">${escapeHtml(display)}</strong></span>`;
+      const display = row.details[index] ?? money(row.values[index] ?? 0);
+      return `<span style="display:grid;grid-template-columns:8px 1fr auto;gap:7px;align-items:center;margin-top:5px;color:#5f626a;font-size:.72rem"><i style="width:8px;height:8px;border-radius:50%;background:${segment.color}"></i><span>${escapeHtml(segment.label)}</span><strong style="color:#252833">${escapeHtml(display)}</strong></span>`;
     })
     .join("");
   return [
     '<div style="min-width:205px;max-width:280px;padding:3px 2px">',
-    `<strong style="display:block;color:#11131c;font:700 12px/1.35 ${chartFont}">${escapeHtml(row.label)}</strong>`,
-    `<span style="display:block;margin-top:7px;color:#11131c;font-family:${chartDisplayFont};font-size:23px">${escapeHtml(row.display)}</span>`,
+    `<strong style="display:block;color:#11131c;font:700 .82rem/1.35 ${chartFont}">${escapeHtml(row.label)}</strong>`,
+    `<span style="display:block;margin-top:7px;color:#11131c;font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(row.display)}</span>`,
     detail,
     row.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:10px;font-weight:700;text-transform:uppercase">Open model details →</span>',
+      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">Open model details →</span>',
     "</div>",
   ].join("");
 };
 
 const chartOption = (width: number): EChartsOption => {
   const mobile = width < 620;
+  const axisFontSize = chartTextSize(width, 10, 11);
+  const categoryFontSize = chartTextSize(width, 10, 12);
+  const valueFontSize = chartTextSize(width, 11, 14);
   const maximum = Math.max(
     ...props.rows.map((row) =>
       row.values.reduce((sum, value) => sum + value, 0),
@@ -127,8 +127,8 @@ const chartOption = (width: number): EChartsOption => {
       axisLabel: {
         color: "#6d7078",
         fontFamily: chartFont,
-        fontSize: 10,
-        formatter: currency,
+        fontSize: axisFontSize,
+        formatter: money,
       },
       splitLine: {
         show: true,
@@ -145,7 +145,7 @@ const chartOption = (width: number): EChartsOption => {
         interval: 0,
         color: "#252833",
         fontFamily: chartFont,
-        fontSize: mobile ? 10 : 11,
+        fontSize: categoryFontSize,
         fontWeight: 650,
         width: mobile ? 108 : 180,
         overflow: "truncate",
@@ -180,7 +180,7 @@ const chartOption = (width: number): EChartsOption => {
                 distance: mobile ? 6 : 10,
                 color: "#11131c",
                 fontFamily: chartDisplayFont,
-                fontSize: mobile ? 11 : 13,
+                fontSize: valueFontSize,
                 fontWeight: 600,
                 formatter: (parameters: CallbackDataParams): string =>
                   props.rows[parameters.dataIndex]?.display ?? "",
@@ -284,7 +284,7 @@ figcaption {
   align-items: flex-start;
   margin-bottom: 0.3rem;
   color: var(--muted);
-  font-size: 0.63rem;
+  font-size: var(--text-micro);
   font-weight: 760;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -306,7 +306,7 @@ figcaption li {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.58rem;
+  font-size: var(--text-micro);
   font-weight: 650;
 }
 

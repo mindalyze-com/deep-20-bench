@@ -43,6 +43,21 @@ export const chartAnimationEnabled = (): boolean =>
   !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
   !window.matchMedia("(max-width: 760px)").matches;
 
+export const chartTextSize = (
+  width: number,
+  mobileSize: number,
+  desktopSize: number,
+): number => {
+  if (width < 620) return mobileSize;
+  const rootSize = Number.parseFloat(
+    window.getComputedStyle(document.documentElement).fontSize,
+  );
+  const scale = Number.isFinite(rootSize)
+    ? Math.min(1.125, Math.max(1, rootSize / 16))
+    : 1;
+  return Math.round(desktopSize * scale * 10) / 10;
+};
+
 export const useResponsiveEChart = (
   options: ResponsiveChartOptions,
 ): ResponsiveChart => {

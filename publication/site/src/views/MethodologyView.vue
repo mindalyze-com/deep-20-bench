@@ -89,6 +89,16 @@ const penalty = computed(() => {
               The Guesser receives a broad category. It asks one question or makes one exact
               guess, then receives YES, NO, or UNKNOWN.
             </p>
+            <p>
+              <strong>Why twenty?</strong> With ideal yes-or-no questions, each answer halves
+              the search space. Twenty answers can distinguish up to 2²⁰, or 1,048,576,
+              possibilities. See
+              <a
+                href="https://en.wikipedia.org/wiki/Twenty_questions"
+                target="_blank"
+                rel="noreferrer"
+              >Twenty Questions on Wikipedia</a>.
+            </p>
             <dl class="fact-grid">
               <div><dt>Question limit</dt><dd>{{ manifest.active_cohort.max_questions }}</dd></div>
               <div><dt>Subjects</dt><dd>{{ manifest.active_cohort.target_ids.length }}</dd></div>
@@ -243,7 +253,7 @@ const penalty = computed(() => {
 .method-nav a {
   padding: 1.2rem var(--gutter);
   border-right: 1px solid var(--line);
-  font-size: 0.64rem;
+  font-size: var(--text-ui);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-decoration: none;
@@ -255,7 +265,7 @@ const penalty = computed(() => {
 
 .section-note {
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: var(--text-small);
 }
 
 .lead {
@@ -294,7 +304,7 @@ const penalty = computed(() => {
 .formula span,
 .reliability-grid span {
   color: var(--muted);
-  font-size: 0.64rem;
+  font-size: var(--text-micro);
   font-weight: 780;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -416,7 +426,7 @@ const penalty = computed(() => {
   min-height: 5rem;
   padding: 0.7rem;
   border: 1px solid var(--ink);
-  font-size: 0.72rem;
+  font-size: var(--text-small);
   font-weight: 740;
   text-align: center;
   place-items: center;

@@ -15,6 +15,9 @@
   --workspace-content: 74rem;
   --gutter: clamp(1.25rem, 3.9vw, 3.5rem);
   --header-height: 72px;
+  --text-micro: 0.72rem;
+  --text-small: 0.84rem;
+  --text-ui: 0.9rem;
   --font-sans: "Inter Tight Variable", Inter, ui-sans-serif, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-display: "Newsreader Variable", "Iowan Old Style", "Palatino Linotype",
@@ -27,6 +30,10 @@
   font-optical-sizing: auto;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+}
+
+html {
+  font-size: 100%;
 }
 
 * {
@@ -46,8 +53,8 @@ body {
   min-width: 320px;
   background: var(--ink);
   color: var(--ink);
-  font-size: 15px;
-  line-height: 1.45;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 button,
@@ -143,7 +150,7 @@ select {
   aspect-ratio: 1;
   border: 1px solid rgb(255 255 255 / 46%);
   color: var(--acid);
-  font-size: 0.67rem;
+  font-size: var(--text-micro);
   font-weight: 720;
   letter-spacing: 0.08em;
 }
@@ -159,8 +166,8 @@ select {
   display: inline-flex;
   align-items: center;
   color: rgb(255 255 255 / 68%);
-  font-size: 0.72rem;
-  font-weight: 610;
+  font-size: var(--text-ui);
+  font-weight: 680;
   text-decoration: none;
 }
 
@@ -192,7 +199,7 @@ select {
   justify-self: end;
   gap: 0.42rem;
   color: rgb(255 255 255 / 82%);
-  font-size: 0.72rem;
+  font-size: var(--text-ui);
   text-decoration: none;
 }
 
@@ -226,7 +233,7 @@ select {
 
 .drilldown-label span {
   color: var(--blue-ink);
-  font-size: 0.64rem;
+  font-size: var(--text-micro);
   font-weight: 820;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -234,7 +241,7 @@ select {
 
 .drilldown-label strong {
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: var(--text-small);
 }
 
 .drilldown-bar nav {
@@ -256,7 +263,7 @@ select {
   overflow: hidden;
   max-width: 20rem;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: var(--text-small);
   font-weight: 650;
   text-overflow: ellipsis;
   text-decoration: none;
@@ -292,7 +299,7 @@ select {
   padding: 0.35rem 0.55rem;
   border: 1px solid var(--line);
   background: white;
-  font-size: 0.7rem;
+  font-size: var(--text-small);
   font-weight: 720;
   text-decoration: none;
 }
@@ -353,7 +360,7 @@ select {
 
 .eyebrow {
   margin: 0 0 0.8rem;
-  font-size: 0.62rem;
+  font-size: var(--text-micro);
   font-weight: 720;
   letter-spacing: 0.17em;
   text-transform: uppercase;
@@ -420,7 +427,7 @@ select {
   border: 1px solid var(--ink);
   background: transparent;
   color: var(--ink);
-  font-size: 0.76rem;
+  font-size: var(--text-small);
   font-weight: 690;
   text-decoration: none;
   cursor: pointer;
@@ -462,7 +469,7 @@ select {
 .stats-grid dt,
 .facts-grid dt {
   color: var(--muted);
-  font-size: 0.6rem;
+  font-size: var(--text-micro);
   font-weight: 710;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -543,7 +550,7 @@ a.card:hover {
   width: 100%;
   min-width: 760px;
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: var(--text-small);
 }
 
 .data-table th,
@@ -556,7 +563,7 @@ a.card:hover {
 
 .data-table th {
   color: var(--muted);
-  font-size: 0.57rem;
+  font-size: var(--text-micro);
   font-weight: 710;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -640,7 +647,7 @@ a.card:hover {
   padding: 0.2rem 0.5rem;
   border: 1px solid currentColor;
   border-radius: 999px;
-  font-size: 0.64rem;
+  font-size: var(--text-micro);
   font-weight: 780;
   letter-spacing: 0.04em;
   line-height: 1;
@@ -704,7 +711,7 @@ a.card:hover {
 
 .loading-state p {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: var(--text-small);
   font-weight: 720;
 }
 
@@ -746,20 +753,44 @@ a.card:hover {
   grid-template-columns: repeat(2, auto);
   gap: 0.65rem 2rem;
   align-content: start;
-  font-size: 0.78rem;
+  font-size: var(--text-small);
 }
 
 .footer-fineprint {
   max-width: 55rem;
   margin: 0;
   color: rgb(255 255 255 / 53%);
-  font-size: 0.74rem;
+  font-size: var(--text-small);
   line-height: 1.6;
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --max: 1480px;
+    --workspace-content: 82rem;
+    --header-height: 78px;
+  }
+
+  html {
+    font-size: 106.25%;
+  }
+}
+
+@media (min-width: 2560px) {
+  :root {
+    --max: 1680px;
+    --workspace-content: 92rem;
+    --header-height: 84px;
+  }
+
+  html {
+    font-size: 112.5%;
   }
 }
 
@@ -824,7 +855,7 @@ a.card:hover {
     flex-direction: column;
     justify-content: center;
     gap: 0.22rem;
-    font-size: 0.62rem;
+    font-size: var(--text-micro);
   }
 
   .site-header nav a[aria-current="page"]::after {
@@ -889,7 +920,7 @@ a.card:hover {
   .drilldown-bar nav a,
   .drilldown-bar nav span[aria-current="page"] {
     max-width: min(42vw, 11rem);
-    font-size: 0.72rem;
+    font-size: var(--text-small);
   }
 
   .drilldown-mobile-crumbs a {

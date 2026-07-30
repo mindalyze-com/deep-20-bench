@@ -7,7 +7,7 @@ import {
   dateTime,
   duration,
   integer,
-  moneyDetailed,
+  money,
   number,
   percent,
 } from "@/lib/format";
@@ -22,32 +22,32 @@ const costLedger = computed<CostDonutItem[]>(() => {
     {
       label: "Guesser",
       value: Number(current.totals.costs_usd.guesser),
-      display: moneyDetailed(current.totals.costs_usd.guesser),
+      display: money(current.totals.costs_usd.guesser),
       color: "#4e64ff",
       primary: true,
     },
     {
       label: "Primary Oracle",
       value: Number(current.totals.costs_usd.primary_oracle),
-      display: moneyDetailed(current.totals.costs_usd.primary_oracle),
+      display: money(current.totals.costs_usd.primary_oracle),
       color: "#ef5435",
     },
     {
       label: "Reviewer",
       value: Number(current.totals.costs_usd.reviewer),
-      display: moneyDetailed(current.totals.costs_usd.reviewer),
+      display: money(current.totals.costs_usd.reviewer),
       color: "#91a72b",
     },
     {
       label: "Judge",
       value: Number(current.totals.costs_usd.judge),
-      display: moneyDetailed(current.totals.costs_usd.judge),
+      display: money(current.totals.costs_usd.judge),
       color: "#8a72cf",
     },
     {
       label: "Validator",
       value: Number(current.totals.costs_usd.validator),
-      display: moneyDetailed(current.totals.costs_usd.validator),
+      display: money(current.totals.costs_usd.validator),
       color: "#8b8f99",
     },
   ];
@@ -87,7 +87,7 @@ const costLedger = computed<CostDonutItem[]>(() => {
       </div>
       <div>
         <dt>Guesser cost</dt>
-        <dd>{{ moneyDetailed(run.totals.costs_usd.guesser) }}</dd>
+        <dd>{{ money(run.totals.costs_usd.guesser) }}</dd>
       </div>
       <div>
         <dt>Guesser time</dt>
@@ -156,7 +156,7 @@ const costLedger = computed<CostDonutItem[]>(() => {
         </header>
         <CostDonut
           :items="costLedger"
-          :total-display="moneyDetailed(run.totals.costs_usd.total)"
+          :total-display="money(run.totals.costs_usd.total)"
         />
       </section>
 

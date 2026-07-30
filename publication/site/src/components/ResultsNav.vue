@@ -38,7 +38,7 @@ a {
   min-height: 44px;
   padding: 1.05rem clamp(0.75rem, 2vw, 1.5rem);
   color: var(--muted);
-  font-size: 0.76rem;
+  font-size: var(--text-ui);
   font-weight: 720;
   text-decoration: none;
 }

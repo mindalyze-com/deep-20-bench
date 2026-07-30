@@ -61,8 +61,8 @@ const tooltip = (
   return [
     '<div style="min-width:150px;padding:2px">',
     `<strong style="display:block;color:#11131c;font:700 12px/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:7px;color:#11131c;font-size:21px">${escapeHtml(item.display)}</span>`,
-    `<span style="display:block;margin-top:4px;color:#5f626a;font-size:11px">${share(item.value)} of full-run cost</span>`,
+    `<span style="display:block;margin-top:7px;color:#11131c;font-size:1.3rem">${escapeHtml(item.display)}</span>`,
+    `<span style="display:block;margin-top:4px;color:#5f626a;font-size:.72rem">${share(item.value)} of full-run cost</span>`,
     "</div>",
   ].join("");
 };
@@ -184,12 +184,12 @@ figcaption {
 }
 
 figcaption strong {
-  font-size: 0.76rem;
+  font-size: var(--text-small);
 }
 
 figcaption span {
   color: var(--muted);
-  font-size: 0.62rem;
+  font-size: var(--text-micro);
 }
 
 .cost-donut-layout {
@@ -220,7 +220,7 @@ figcaption span {
 
 .cost-donut-total span {
   color: var(--muted);
-  font-size: 0.57rem;
+  font-size: var(--text-micro);
   font-weight: 760;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -248,7 +248,7 @@ li {
   align-items: center;
   min-height: 2.3rem;
   border-bottom: 1px solid var(--line-soft);
-  font-size: 0.68rem;
+  font-size: var(--text-small);
 }
 
 li:last-child {
@@ -279,7 +279,7 @@ li small {
 li strong {
   min-width: 4.6rem;
   text-align: right;
-  font-size: 0.7rem;
+  font-size: var(--text-small);
   font-variant-numeric: tabular-nums;
 }
 
@@ -302,7 +302,7 @@ li strong {
 
   li {
     min-height: 2.55rem;
-    font-size: 0.72rem;
+    font-size: var(--text-small);
   }
 }
 
