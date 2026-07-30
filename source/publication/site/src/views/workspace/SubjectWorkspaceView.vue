@@ -11,6 +11,7 @@ import { useRoute, type RouteLocationRaw } from "vue-router";
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
+import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
 import { getEpisode, getSubject } from "@/lib/api";
 import {
   duration,
@@ -277,7 +278,7 @@ onActivated(applySubjectContext);
       </aside>
 
       <section class="subject-stage" :aria-busy="loading">
-        <div v-if="loading" class="workspace-progress" aria-hidden="true"></div>
+        <WorkspaceProgress :active="loading" />
         <SubjectOverviewPane v-if="isSubjectOverview" />
         <RouterView v-else />
       </section>
@@ -300,13 +301,13 @@ onActivated(applySubjectContext);
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border-right: 1px solid var(--line);
-  background: #e9e6dd;
+  border-right: var(--rule-default);
+  background: var(--surface-rail);
 }
 
 .episode-rail-heading {
   padding: clamp(1.25rem, 2.5vw, 2rem);
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--rule-default);
 }
 
 .mobile-run-back {
@@ -344,7 +345,7 @@ onActivated(applySubjectContext);
   overflow: hidden;
   margin: 0.9rem 0 0;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: var(--text-micro);
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -357,7 +358,7 @@ onActivated(applySubjectContext);
   align-items: end;
   margin-top: 1.25rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--line);
+  border-top: var(--rule-default);
 }
 
 .subject-score-line :deep(.question-score strong) {
@@ -379,7 +380,7 @@ onActivated(applySubjectContext);
 .subject-score-line dt,
 .subject-score-line dd {
   margin: 0;
-  font-size: 0.61rem;
+  font-size: var(--text-caption);
 }
 
 .subject-score-line dt {
@@ -406,8 +407,8 @@ onActivated(applySubjectContext);
   align-items: center;
   min-height: 42px;
   padding: 0.65rem 0.9rem;
-  border-bottom: 1px solid var(--line);
-  background: #dedbd2;
+  border-bottom: var(--rule-default);
+  background: var(--surface-rail-strong);
 }
 
 .episode-list-heading .eyebrow {
@@ -417,7 +418,7 @@ onActivated(applySubjectContext);
 
 .episode-list-heading > strong {
   color: var(--muted);
-  font-size: 0.61rem;
+  font-size: var(--text-caption);
   font-weight: 700;
 }
 
@@ -430,7 +431,7 @@ onActivated(applySubjectContext);
   align-items: center;
   min-height: 62px;
   padding: 0.7rem 0.9rem;
-  border-bottom: 1px solid var(--line-soft);
+  border-bottom: var(--rule-subtle);
   color: var(--ink-soft);
   text-decoration: none;
 }
@@ -458,7 +459,7 @@ onActivated(applySubjectContext);
 .episode-index {
   color: var(--muted);
   font-family: var(--font-mono);
-  font-size: 0.63rem;
+  font-size: var(--text-caption);
 }
 
 .episode-copy {
@@ -468,13 +469,13 @@ onActivated(applySubjectContext);
 }
 
 .episode-copy strong {
-  font-size: 0.73rem;
+  font-size: var(--text-micro);
 }
 
 .episode-copy small {
   overflow: hidden;
   color: var(--muted);
-  font-size: 0.6rem;
+  font-size: var(--text-caption);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -513,7 +514,7 @@ onActivated(applySubjectContext);
 }
 
 .episode-status.success {
-  background: #6abf40;
+  background: var(--state-clean);
 }
 
 .episode-status.model_failure {
@@ -529,9 +530,9 @@ onActivated(applySubjectContext);
   justify-content: space-between;
   gap: 1rem;
   padding: 0.85rem 1rem;
-  border-top: 1px solid var(--line);
+  border-top: var(--rule-default);
   color: var(--muted);
-  font-size: 0.63rem;
+  font-size: var(--text-caption);
 }
 
 .episode-rail-footer a {
@@ -547,35 +548,6 @@ onActivated(applySubjectContext);
   background: var(--paper);
 }
 
-.workspace-progress {
-  position: absolute;
-  z-index: 20;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 2px;
-  overflow: hidden;
-  background: rgb(78 100 255 / 16%);
-}
-
-.workspace-progress::after {
-  display: block;
-  width: 34%;
-  height: 100%;
-  background: var(--blue);
-  animation: workspace-progress 0.75s ease-in-out infinite alternate;
-  content: "";
-}
-
-@keyframes workspace-progress {
-  from {
-    transform: translateX(-20%);
-  }
-  to {
-    transform: translateX(250%);
-  }
-}
-
 @media (max-width: 1120px) {
   .subject-workspace {
     grid-template-columns: 18rem minmax(0, 1fr);
@@ -589,7 +561,7 @@ onActivated(applySubjectContext);
     gap: 0.45rem;
     margin-bottom: 1.3rem;
     color: var(--muted);
-    font-size: 0.68rem;
+    font-size: var(--text-caption);
     font-weight: 700;
     text-decoration: none;
   }

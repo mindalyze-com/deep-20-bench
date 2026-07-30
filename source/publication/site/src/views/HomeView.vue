@@ -200,27 +200,17 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
       <section class="content-section cohort-section">
         <div class="content-inner cohort-layout">
-          <div>
-            <p class="eyebrow">From game to benchmark</p>
-            <h2>The same game, made comparable.</h2>
+          <div class="cohort-copy">
+            <p class="eyebrow">Benchmark design</p>
+            <h2>A score built from repeated trials.</h2>
             <p>
-              Every model plays behind the same information boundary. Subjects receive equal
-              weight and failed trials remain in the score.
+              Each model completes the full subject set several times. Trials are averaged within
+              each subject and then across subjects, so every subject contributes equally to the
+              final score.
             </p>
             <RouterLink class="text-link" :to="{ name: 'methodology' }">
               Read the full method →
             </RouterLink>
-          </div>
-          <div class="protocol-flow" aria-label="Benchmark protocol">
-            <p class="eyebrow">Protocol</p>
-            <div>
-              <span><i>?</i>Hidden subject</span>
-              <b aria-hidden="true">→</b>
-              <span><i>◇</i>Model</span>
-              <b aria-hidden="true">→</b>
-              <span><i>?</i>Yes / no questions</span>
-            </div>
-            <p>Up to {{ manifest.active_cohort.max_questions }} questions · exact guess required</p>
           </div>
           <dl class="cohort-facts">
             <div><dt>Subjects</dt><dd>{{ manifest.active_cohort.target_ids.length }}</dd></div>
@@ -504,7 +494,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 }
 
 .round-card {
-  border: 1px solid rgb(255 255 255 / 30%);
+  border: var(--rule-inverse);
   background: rgb(255 255 255 / 4%);
 }
 
@@ -515,7 +505,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
   align-items: center;
   gap: 0.8rem;
   padding: 0.78rem 0.95rem;
-  border-bottom: 1px solid rgb(255 255 255 / 16%);
+  border-bottom: var(--rule-inverse-subtle);
 }
 
 .round-head,
@@ -569,7 +559,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 .trust-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border: 1px solid var(--line);
+  border: var(--rule-default);
   background: var(--line);
   gap: 1px;
 }
@@ -595,7 +585,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
   align-self: center;
   width: 1.75rem;
   height: 1.75rem;
-  border: 1px solid var(--muted);
+  border: var(--border-width) solid var(--text-secondary);
   border-radius: 50%;
   color: var(--ink);
   font: 620 var(--text-micro) var(--font-sans);
@@ -662,18 +652,22 @@ const scoreDots = computed<ScoreDot[]>(() =>
 }
 
 .cohort-section {
-  background: #e8e5dc;
+  background: var(--surface-rail);
 }
 
 .cohort-layout {
   display: grid;
-  grid-template-columns: minmax(15rem, 0.82fr) minmax(18rem, 0.9fr) minmax(15rem, 0.62fr);
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 21rem);
   gap: clamp(2.5rem, 5vw, 5rem);
   align-items: center;
 }
 
+.cohort-copy {
+  max-width: 48rem;
+}
+
 .cohort-layout h2 {
-  max-width: 10ch;
+  max-width: 13ch;
   font-size: clamp(2.5rem, 3.9vw, 3.9rem);
 }
 
@@ -689,67 +683,19 @@ const scoreDots = computed<ScoreDot[]>(() =>
   font-weight: 680;
 }
 
-.protocol-flow > .eyebrow {
-  margin-bottom: 2.7rem;
-}
-
-.protocol-flow > div {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr auto 1fr;
-  gap: 0.7rem;
-  align-items: center;
-}
-
-.protocol-flow span {
-  display: grid;
-  gap: 0.6rem;
-  color: var(--muted);
-  font-size: var(--text-micro);
-  font-weight: 680;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.protocol-flow i {
-  display: grid;
-  width: 3.1rem;
-  height: 3.1rem;
-  margin-inline: auto;
-  border: 1px solid var(--ink);
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-style: normal;
-  font-weight: 450;
-  place-items: center;
-}
-
-.protocol-flow b {
-  font-weight: 450;
-}
-
-.protocol-flow > p:last-child {
-  margin: 1.9rem 0 0;
-  font-size: var(--text-micro);
-  font-weight: 650;
-  letter-spacing: 0.08em;
-  text-align: center;
-  text-transform: uppercase;
-}
-
 .cohort-facts {
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin: 0;
-  border: 1px solid var(--ink);
+  border: var(--rule-strong);
 }
 
 .cohort-facts div {
   display: flex;
   min-height: 7.6rem;
   padding: 1rem;
-  border-right: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
+  border-right: var(--rule-strong);
+  border-bottom: var(--rule-strong);
   flex-direction: column;
   justify-content: space-between;
 }
@@ -780,8 +726,12 @@ dd {
   grid-template-columns: minmax(0, 0.8fr) minmax(18rem, 1fr);
   gap: clamp(2rem, 6vw, 6rem);
   padding: clamp(1.5rem, 3vw, 2.5rem);
-  background: linear-gradient(115deg, #5363ff 0%, #3f4df0 100%);
+  background: var(--gradient-accent);
   color: white;
+}
+
+.leaderboard-section {
+  --overview-result-gap: clamp(1.5rem, 4vw, 2.5rem);
 }
 
 .winner-card h3 {
@@ -808,8 +758,8 @@ dd {
 }
 
 .leaderboard-layout {
-  margin-top: 1rem;
-  border: 1px solid var(--line);
+  margin-top: var(--overview-result-gap);
+  border: var(--rule-default);
   background: var(--paper-bright);
 }
 
@@ -832,12 +782,12 @@ dd {
 }
 
 .table-wrap {
-  margin-top: 1rem;
+  margin-top: var(--overview-result-gap);
 }
 
 .empty-results {
   padding: clamp(2rem, 5vw, 4rem);
-  border: 1px solid var(--line);
+  border: var(--rule-default);
   background: var(--paper-bright);
 }
 
@@ -856,7 +806,7 @@ dd {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin: 2rem 0 0;
-  border-top: 1px solid var(--line);
+  border-top: var(--rule-default);
 }
 
 .empty-results dl div {
@@ -943,6 +893,10 @@ dd {
   .trust-grid,
   .adjudication {
     grid-template-columns: 1fr;
+  }
+
+  .mobile-result-list {
+    margin-top: var(--overview-result-gap);
   }
 
   .empty-results dl {

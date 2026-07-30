@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
+import ContractStatusCard from "@/components/ContractStatusCard.vue";
+import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import { number, percent } from "@/lib/format";
 import {
@@ -8,6 +12,35 @@ import {
 
 const { run } = useRunWorkspace();
 const { document, subject } = useSubjectWorkspace();
+
+const facts = computed<MetricGridItem[]>(() => {
+  const currentSubject = subject.value;
+  const currentDocument = document.value;
+  if (currentSubject === null || currentDocument === null) return [];
+  return [
+    {
+      key: "episodes",
+      label: "Episodes",
+      value: currentDocument.trials.length,
+    },
+    {
+      key: "successful",
+      label: "Successful",
+      value: currentSubject.successful,
+    },
+    {
+      key: "average",
+      label: "Average",
+      value: number(currentSubject.average_questions),
+    },
+    {
+      key: "contract",
+      label: "Contract",
+      value: percent(currentSubject.contract.compliance_rate),
+      tone: currentSubject.contract.status === "breached" ? "danger" : "default",
+    },
+  ];
+});
 </script>
 
 <template>
@@ -41,36 +74,19 @@ const { document, subject } = useSubjectWorkspace();
         </p>
       </div>
 
-      <dl class="subject-facts">
-        <div><dt>Episodes</dt><dd>{{ document.trials.length }}</dd></div>
-        <div><dt>Successful</dt><dd>{{ subject.successful }}</dd></div>
-        <div><dt>Average</dt><dd>{{ number(subject.average_questions) }}</dd></div>
-        <div><dt>Contract</dt><dd>{{ percent(subject.contract.compliance_rate) }}</dd></div>
-      </dl>
+      <MetricGrid
+        class="subject-facts"
+        :items="facts"
+        label="Subject summary"
+        :max-columns="4"
+        density="compact"
+      />
 
-      <section
-        class="subject-reliability"
-        :class="subject.contract.status"
-        aria-labelledby="subject-reliability-title"
-      >
-        <p class="eyebrow">Reliability</p>
-        <h3 id="subject-reliability-title">
-          {{
-            subject.contract.status === "breached"
-              ? "Output contract breached."
-              : "Output contract clean."
-          }}
-        </h3>
-        <p v-if="subject.contract.status === 'breached'">
-          {{ subject.contract.violations }} invalid outputs affected
-          {{ subject.contract.affected_trials }} attempts and consumed
-          {{ subject.contract.counted_penalties }} counted turns.
-        </p>
-        <p v-else>
-          All {{ subject.contract.evaluated_outputs }} evaluated outputs matched the public
-          structured-action contract.
-        </p>
-      </section>
+      <ContractStatusCard
+        :contract="subject.contract"
+        affected-unit="attempts"
+        heading-level="h3"
+      />
 
       <aside class="episode-prompt">
         <span aria-hidden="true">↖</span>
@@ -96,7 +112,7 @@ const { document, subject } = useSubjectWorkspace();
   grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.85fr);
   max-width: 58rem;
   margin: 0 auto;
-  border: 1px solid var(--line);
+  border: var(--rule-default);
   background: var(--line);
   gap: 1px;
 }
@@ -137,7 +153,7 @@ const { document, subject } = useSubjectWorkspace();
 }
 
 .subject-score-card {
-  border-top: 4px solid var(--blue);
+  border-top: var(--border-emphasis-width) solid var(--blue);
 }
 
 .subject-score-card :deep(.question-score strong) {
@@ -152,53 +168,10 @@ const { document, subject } = useSubjectWorkspace();
 }
 
 .subject-facts {
-  display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   margin: 0;
 }
 
-.subject-facts > div {
-  padding: 1rem;
-  border-right: 1px solid var(--line-soft);
-}
-
-.subject-facts > div:last-child {
-  border-right: 0;
-}
-
-.subject-facts dt {
-  color: var(--muted);
-  font-size: 0.61rem;
-  font-weight: 760;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.subject-facts dd {
-  margin: 0.45rem 0 0;
-  font-family: var(--font-display);
-  font-size: 1.7rem;
-}
-
-.subject-reliability {
-  border-top: 4px solid var(--acid);
-}
-
-.subject-reliability.breached {
-  border-top-color: var(--coral);
-  background: #fff7f3;
-}
-
-.subject-reliability h3 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 500;
-  letter-spacing: -0.04em;
-}
-
-.subject-reliability p:last-child,
 .episode-prompt p {
   margin: 0.85rem 0 0;
   color: var(--muted);

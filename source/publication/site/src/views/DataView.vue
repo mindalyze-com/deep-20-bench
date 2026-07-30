@@ -177,7 +177,7 @@ applyRouteContext();
   display: flex;
   min-height: 23rem;
   padding: clamp(1.5rem, 4vw, 3rem);
-  border: 1px solid var(--line);
+  border: var(--rule-default);
   background: var(--paper-bright);
   flex-direction: column;
   align-items: flex-start;
@@ -235,7 +235,7 @@ applyRouteContext();
   gap: clamp(2rem, 8vw, 8rem);
   margin-top: clamp(4rem, 9vw, 8rem);
   padding-top: 1rem;
-  border-top: 1px solid var(--ink);
+  border-top: var(--rule-strong);
 }
 
 .provenance h2,
@@ -253,7 +253,7 @@ applyRouteContext();
   grid-template-columns: minmax(9rem, 0.45fr) minmax(0, 1fr);
   gap: 1rem;
   padding: 1rem 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--rule-default);
 }
 
 .provenance dt {
@@ -282,7 +282,7 @@ applyRouteContext();
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
-  border: 1px solid var(--ink);
+  border: var(--rule-strong);
   background: var(--ink);
 }
 

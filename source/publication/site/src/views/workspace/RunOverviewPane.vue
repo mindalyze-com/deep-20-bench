@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import ContractStatusCard from "@/components/ContractStatusCard.vue";
 import CostDonut, { type CostDonutItem } from "@/components/CostDonut.vue";
+import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
+import { readChartTheme } from "@/lib/chart-theme";
 import {
   dateTime,
   duration,
@@ -18,37 +21,67 @@ const { run, subjects } = useRunWorkspace();
 const costLedger = computed<CostDonutItem[]>(() => {
   const current = run.value;
   if (current === null) return [];
+  const colors = readChartTheme().roles;
   return [
     {
       label: "Guesser",
       value: Number(current.totals.costs_usd.guesser),
       display: money(current.totals.costs_usd.guesser),
-      color: "#4e64ff",
+      color: colors.guesser,
       primary: true,
     },
     {
       label: "Primary Oracle",
       value: Number(current.totals.costs_usd.primary_oracle),
       display: money(current.totals.costs_usd.primary_oracle),
-      color: "#ef5435",
+      color: colors.oracle,
     },
     {
       label: "Reviewer",
       value: Number(current.totals.costs_usd.reviewer),
       display: money(current.totals.costs_usd.reviewer),
-      color: "#91a72b",
+      color: colors.reviewer,
     },
     {
       label: "Judge",
       value: Number(current.totals.costs_usd.judge),
       display: money(current.totals.costs_usd.judge),
-      color: "#8a72cf",
+      color: colors.judge,
     },
     {
       label: "Validator",
       value: Number(current.totals.costs_usd.validator),
       display: money(current.totals.costs_usd.validator),
-      color: "#8b8f99",
+      color: colors.validator,
+    },
+  ];
+});
+
+const summaryMetrics = computed<MetricGridItem[]>(() => {
+  const current = run.value;
+  if (current === null) return [];
+  return [
+    {
+      key: "success",
+      label: "Success",
+      value: percent(current.success_rate),
+    },
+    {
+      key: "contract",
+      label: "Contract compliance",
+      value: percent(current.contract.compliance_rate),
+      tone: current.contract.status === "breached" ? "danger" : "default",
+    },
+    {
+      key: "cost",
+      label: "Guesser cost",
+      value: money(current.totals.costs_usd.guesser),
+      tone: "accent",
+    },
+    {
+      key: "time",
+      label: "Guesser time",
+      value: duration(current.totals.guesser_think_time_ms),
     },
   ];
 });
@@ -74,26 +107,12 @@ const costLedger = computed<CostDonutItem[]>(() => {
       />
     </header>
 
-    <dl class="workspace-metrics" aria-label="Run summary">
-      <div>
-        <dt>Success</dt>
-        <dd>{{ percent(run.success_rate) }}</dd>
-      </div>
-      <div>
-        <dt>Contract compliance</dt>
-        <dd :class="{ alert: run.contract.status === 'breached' }">
-          {{ percent(run.contract.compliance_rate) }}
-        </dd>
-      </div>
-      <div>
-        <dt>Guesser cost</dt>
-        <dd>{{ money(run.totals.costs_usd.guesser) }}</dd>
-      </div>
-      <div>
-        <dt>Guesser time</dt>
-        <dd>{{ duration(run.totals.guesser_think_time_ms) }}</dd>
-      </div>
-    </dl>
+    <MetricGrid
+      class="workspace-metrics"
+      :items="summaryMetrics"
+      label="Run summary"
+      :max-columns="4"
+    />
 
     <section class="mobile-subjects" aria-labelledby="mobile-subjects-title">
       <header>
@@ -160,24 +179,10 @@ const costLedger = computed<CostDonutItem[]>(() => {
         />
       </section>
 
-      <section
-        v-if="run.contract.status === 'breached'"
-        class="workspace-card contract-card breached"
-      >
-        <p class="eyebrow">Reliability</p>
-        <h2>Output contract breached.</h2>
-        <p>
-          {{ run.contract.violations }} invalid outputs affected
-          {{ run.contract.affected_trials }} episodes and consumed
-          {{ run.contract.counted_penalties }} counted turns.
-        </p>
-      </section>
-
-      <section v-else class="workspace-card contract-card clean">
-        <p class="eyebrow">Reliability</p>
-        <h2>Output contract clean.</h2>
-        <p>All {{ run.contract.evaluated_outputs }} evaluated outputs matched the contract.</p>
-      </section>
+      <ContractStatusCard
+        :contract="run.contract"
+        affected-unit="episodes"
+      />
 
       <section class="workspace-card provenance-card">
         <p class="eyebrow">Provenance</p>
@@ -236,7 +241,7 @@ const costLedger = computed<CostDonutItem[]>(() => {
 
 .run-primary-score {
   padding: 1.35rem;
-  border-top: 4px solid var(--blue);
+  border-top: var(--border-emphasis-width) solid var(--blue);
   background: var(--paper-bright);
 }
 
@@ -245,44 +250,17 @@ const costLedger = computed<CostDonutItem[]>(() => {
 }
 
 .workspace-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   max-width: var(--workspace-content);
   margin: 0 auto 1px;
-  border: 1px solid var(--line);
-  background: var(--line);
-  gap: 1px;
 }
 
-.workspace-metrics > div {
-  min-width: 0;
-  padding: 1rem 1.1rem;
-  background: var(--paper-bright);
-}
-
-.workspace-metrics > div:nth-child(3) {
-  box-shadow: inset 0 4px 0 var(--blue);
-}
-
-.workspace-metrics dt,
 .run-totals dt,
 .provenance-card dt {
   color: var(--muted);
-  font-size: 0.61rem;
+  font-size: var(--text-caption);
   font-weight: 760;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-}
-
-.workspace-metrics dd {
-  margin: 0.45rem 0 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.4rem, 2.5vw, 2rem);
-  letter-spacing: -0.03em;
-}
-
-.workspace-metrics dd.alert {
-  color: var(--coral);
 }
 
 .run-overview-grid {
@@ -310,8 +288,7 @@ const costLedger = computed<CostDonutItem[]>(() => {
   margin-bottom: 1.4rem;
 }
 
-.workspace-card-heading h2,
-.contract-card h2 {
+.workspace-card-heading h2 {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.8rem, 3vw, 2.7rem);
@@ -332,14 +309,14 @@ const costLedger = computed<CostDonutItem[]>(() => {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0;
-  border: 1px solid var(--line-soft);
+  border: var(--rule-subtle);
 }
 
 .run-totals dl > div {
   min-width: 0;
   padding: 1rem;
-  border-right: 1px solid var(--line-soft);
-  border-bottom: 1px solid var(--line-soft);
+  border-right: var(--rule-subtle);
+  border-bottom: var(--rule-subtle);
 }
 
 .run-totals dl > div:nth-child(even) {
@@ -354,21 +331,6 @@ const costLedger = computed<CostDonutItem[]>(() => {
   margin: 0.4rem 0 0;
   font-size: 0.9rem;
   font-weight: 700;
-}
-
-.contract-card {
-  border-top: 4px solid var(--acid);
-}
-
-.contract-card.breached {
-  border-top-color: var(--coral);
-  background: #fff7f3;
-}
-
-.contract-card p:last-child {
-  margin: 1rem 0 0;
-  color: var(--muted);
-  line-height: 1.6;
 }
 
 .provenance-card dl {
@@ -400,9 +362,6 @@ const costLedger = computed<CostDonutItem[]>(() => {
     grid-template-columns: 1fr;
   }
 
-  .workspace-metrics {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 760px) {
@@ -453,19 +412,19 @@ const costLedger = computed<CostDonutItem[]>(() => {
   }
 
   .run-totals dl > div:nth-last-child(2) {
-    border-bottom: 1px solid var(--line-soft);
+    border-bottom: var(--rule-subtle);
   }
 
   .mobile-subjects {
     display: grid;
     margin: 1px 0;
-    border: 1px solid var(--line);
+    border: var(--rule-default);
     background: var(--paper-bright);
   }
 
   .mobile-subjects header {
     padding: 1.3rem 1rem;
-    border-bottom: 1px solid var(--line);
+    border-bottom: var(--rule-default);
   }
 
   .mobile-subjects h2 {
@@ -482,7 +441,7 @@ const costLedger = computed<CostDonutItem[]>(() => {
     align-items: center;
     min-height: 58px;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--line-soft);
+    border-bottom: var(--rule-subtle);
     text-decoration: none;
   }
 
@@ -493,7 +452,7 @@ const costLedger = computed<CostDonutItem[]>(() => {
   .mobile-subjects a > span:first-child,
   .mobile-subjects small {
     color: var(--muted);
-    font-size: 0.65rem;
+    font-size: var(--text-caption);
   }
 
   .mobile-subjects strong {

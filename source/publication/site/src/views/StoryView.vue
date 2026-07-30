@@ -384,11 +384,11 @@ onActivated(applyRouteContext);
 
 .round-section {
   padding: clamp(3.5rem, 7vw, 6.5rem) var(--gutter);
-  background: #e8e5dc;
+  background: var(--surface-rail);
 }
 
 .round-board {
-  border: 1px solid var(--ink);
+  border: var(--rule-strong);
   background: var(--paper-bright);
 }
 
@@ -424,7 +424,7 @@ onActivated(applyRouteContext);
   align-items: center;
   min-height: 5.5rem;
   padding: 1rem;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--rule-default);
 }
 
 .round-body li:last-child {
@@ -451,7 +451,7 @@ onActivated(applyRouteContext);
 
 .subject-orbit {
   display: grid;
-  border-left: 1px solid var(--ink);
+  border-left: var(--rule-strong);
   background: var(--blue);
   color: white;
   place-content: center;
@@ -474,7 +474,7 @@ onActivated(applyRouteContext);
 .round-footer {
   background: transparent;
   color: var(--muted);
-  border-top: 1px solid var(--ink);
+  border-top: var(--rule-strong);
 }
 
 .example-note {
@@ -493,7 +493,7 @@ onActivated(applyRouteContext);
 }
 
 .apple-spotlight {
-  background: linear-gradient(115deg, #5363ff 0%, #3f4df0 100%);
+  background: var(--gradient-accent);
   color: white;
 }
 
@@ -513,12 +513,12 @@ onActivated(applyRouteContext);
 
 .apple-spotlight aside {
   align-self: end;
-  border: 1px solid rgb(255 255 255 / 30%);
+  border: var(--rule-inverse);
 }
 
 .apple-spotlight aside div {
   padding: 1.2rem;
-  border-bottom: 1px solid rgb(255 255 255 / 22%);
+  border-bottom: var(--rule-inverse);
 }
 
 .apple-spotlight aside div:last-child {
@@ -534,7 +534,7 @@ onActivated(applyRouteContext);
 
 .work-table {
   width: 100%;
-  border-top: 1px solid var(--ink);
+  border-top: var(--rule-strong);
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -564,7 +564,7 @@ onActivated(applyRouteContext);
 
 .work-table th {
   padding: 0.75rem 1.5rem 0.75rem 0;
-  border-bottom: 1px solid var(--ink);
+  border-bottom: var(--rule-strong);
   color: var(--muted);
   font-size: var(--text-micro);
   font-weight: 760;
@@ -581,7 +581,7 @@ onActivated(applyRouteContext);
 
 .work-table td {
   padding: 1.3rem 1.5rem 1.3rem 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--rule-default);
   vertical-align: middle;
 }
 
@@ -628,7 +628,7 @@ onActivated(applyRouteContext);
 }
 
 .scope-list {
-  border-top: 1px solid var(--ink);
+  border-top: var(--rule-strong);
 }
 
 .scope-list article {
@@ -636,7 +636,7 @@ onActivated(applyRouteContext);
   grid-template-columns: auto minmax(9rem, 0.4fr) minmax(0, 1fr);
   gap: 1.2rem;
   padding: 1.15rem 0;
-  border-bottom: 1px solid rgb(17 19 28 / 30%);
+  border-bottom: var(--rule-muted);
 }
 
 .scope-list span {
@@ -677,7 +677,7 @@ onActivated(applyRouteContext);
 
   .subject-orbit {
     min-height: 16rem;
-    border-top: 1px solid var(--ink);
+    border-top: var(--rule-strong);
     border-left: 0;
   }
 
@@ -701,7 +701,7 @@ onActivated(applyRouteContext);
     grid-template-columns: auto 1fr;
     column-gap: 1.25rem;
     padding: 1.3rem 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: var(--rule-default);
   }
 
   .work-table td {

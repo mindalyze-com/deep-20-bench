@@ -14,6 +14,7 @@ import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import { money } from "@/lib/format";
 import {
   chartAnimationEnabled,
@@ -62,26 +63,28 @@ const tooltip = (
   const row =
     parameter === undefined ? undefined : props.rows[parameter.dataIndex];
   if (row === undefined) return "";
+  const theme = readChartTheme();
   const detail = props.segments
     .map((segment, index) => {
       const display = row.details[index] ?? money(row.values[index] ?? 0);
-      return `<span style="display:grid;grid-template-columns:8px 1fr auto;gap:7px;align-items:center;margin-top:5px;color:#5f626a;font-size:.72rem"><i style="width:8px;height:8px;border-radius:50%;background:${segment.color}"></i><span>${escapeHtml(segment.label)}</span><strong style="color:#252833">${escapeHtml(display)}</strong></span>`;
+      return `<span style="display:grid;grid-template-columns:8px 1fr auto;gap:7px;align-items:center;margin-top:5px;color:${theme.muted};font-size:.75rem"><i style="width:8px;height:8px;border-radius:50%;background:${segment.color}"></i><span>${escapeHtml(segment.label)}</span><strong style="color:${theme.inkSoft}">${escapeHtml(display)}</strong></span>`;
     })
     .join("");
   return [
     '<div style="min-width:205px;max-width:280px;padding:3px 2px">',
-    `<strong style="display:block;color:#11131c;font:700 .82rem/1.35 ${chartFont}">${escapeHtml(row.label)}</strong>`,
-    `<span style="display:block;margin-top:7px;color:#11131c;font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(row.display)}</span>`,
+    `<strong style="display:block;color:${theme.ink};font:700 .82rem/1.35 ${chartFont}">${escapeHtml(row.label)}</strong>`,
+    `<span style="display:block;margin-top:7px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(row.display)}</span>`,
     detail,
     row.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">View full run →</span>',
+      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight:700;text-transform:uppercase">View full run →</span>`,
     "</div>",
   ].join("");
 };
 
 const chartOption = (width: number): EChartsOption => {
   const mobile = width < 620;
+  const theme = readChartTheme();
   const axisFontSize = chartTextSize(width, 10, 11);
   const categoryFontSize = chartTextSize(width, 10, 12);
   const valueFontSize = chartTextSize(width, 11, 14);
@@ -114,14 +117,10 @@ const chartOption = (width: number): EChartsOption => {
       left: mobile ? 128 : 205,
     },
     tooltip: {
+      ...chartTooltipStyle(theme, 10),
       trigger: "axis",
       axisPointer: { type: "shadow" },
       confine: true,
-      backgroundColor: "#fbfaf6",
-      borderColor: "#c9c7bf",
-      borderWidth: 1,
-      padding: 10,
-      extraCssText: "box-shadow:0 12px 30px rgba(17,19,28,.15);",
       formatter: tooltip,
     },
     xAxis: {
@@ -130,17 +129,17 @@ const chartOption = (width: number): EChartsOption => {
       min: domain.minimum,
       max: domain.maximum,
       splitNumber: mobile ? 3 : 5,
-      axisLine: { show: true, lineStyle: { color: "#a8a69f" } },
+      axisLine: { show: true, lineStyle: { color: theme.border } },
       axisTick: { show: false },
       axisLabel: {
-        color: "#6d7078",
+        color: theme.muted,
         fontFamily: chartFont,
         fontSize: axisFontSize,
         formatter: money,
       },
       splitLine: {
         show: true,
-        lineStyle: { color: "rgba(17,19,28,.10)" },
+        lineStyle: { color: theme.gridLine },
       },
     },
     yAxis: {
@@ -152,7 +151,7 @@ const chartOption = (width: number): EChartsOption => {
       axisTick: { show: false },
       axisLabel: {
         interval: 0,
-        color: "#252833",
+        color: theme.inkSoft,
         fontFamily: chartFont,
         fontSize: categoryFontSize,
         fontWeight: 650,
@@ -201,7 +200,7 @@ const chartOption = (width: number): EChartsOption => {
                 show: true,
                 position: "right" as const,
                 distance: mobile ? 6 : 10,
-                color: "#11131c",
+                color: theme.ink,
                 fontFamily: chartDisplayFont,
                 fontSize: valueFontSize,
                 fontWeight: 600,
@@ -223,7 +222,7 @@ const chartOption = (width: number): EChartsOption => {
           : "default",
         data: props.rows.map(() => domain.maximum),
         itemStyle: {
-          color: "rgba(17,19,28,0.001)",
+          color: "rgb(12 17 27 / 0.1%)",
         },
         emphasis: {
           itemStyle: {

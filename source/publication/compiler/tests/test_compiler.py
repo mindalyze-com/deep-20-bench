@@ -52,6 +52,22 @@ from deep20_publication.models import (
 )
 
 REPOSITORY = Path(__file__).resolve().parents[4]
+SITE_SOURCE = REPOSITORY / "source" / "publication" / "site" / "src"
+
+
+def _site_styles_source() -> str:
+    return "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted((SITE_SOURCE / "styles").glob("*.css"))
+    )
+
+
+def _episode_source() -> str:
+    paths = (
+        SITE_SOURCE / "views" / "EpisodeView.vue",
+        *sorted((SITE_SOURCE / "components" / "episode").glob("*.vue")),
+    )
+    return "\n".join(path.read_text(encoding="utf-8") for path in paths)
 
 
 def _identity() -> TrialIdentity:
@@ -1233,7 +1249,7 @@ def test_published_contract_violations_include_only_sanitized_guesser_text() -> 
 
 def test_report_cost_labels_define_episode_and_run_scope() -> None:
     views = REPOSITORY / "source" / "publication" / "site" / "src" / "views"
-    episode_source = (views / "EpisodeView.vue").read_text(encoding="utf-8")
+    episode_source = _episode_source()
     workspace = views / "workspace"
     subject_source = (workspace / "SubjectWorkspaceView.vue").read_text(
         encoding="utf-8"
@@ -1245,7 +1261,7 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     leaderboard_source = (views / "HomeView.vue").read_text(encoding="utf-8")
 
     assert "Episode cost" in episode_source
-    assert "All {{ episode.total_turns }} turns" in episode_source
+    assert "detail: `All ${props.episode.total_turns} turns`" in episode_source
     assert "Full run {{ money(run.total_cost_usd) }}" in episode_source
     assert 'role: "Judge"' in episode_source
     assert "Blind review roles." in episode_source
@@ -1272,7 +1288,7 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     assert "Guesser time" in run_source
     assert "Primary Oracle" in run_source
     assert "run.totals.total_tokens" in run_source
-    assert "run.totals.guesser_think_time_ms" in run_source
+    assert "current.totals.guesser_think_time_ms" in run_source
     assert "Run cost" in leaderboard_source
 
 
@@ -1345,7 +1361,9 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "questions used · failed trial = {{ penalty }}" in methodology
     assert "(trial 1 + … + trial" in methodology
     assert "(subject average 1 + … + subject average" in methodology
-    assert "The same game, made comparable." in homepage
+    assert "A score built from repeated trials." in homepage
+    assert "Each model completes the full subject set several times." in homepage
+    assert 'class="protocol-flow"' not in homepage
     assert "Homepage built" not in homepage
     assert "home-build-note" not in homepage
     assert "Publication built" in data_page
@@ -1381,7 +1399,7 @@ def test_generated_drilldown_pages_keep_current_location_visible() -> None:
     subject_source = (workspace / "SubjectWorkspaceView.vue").read_text(
         encoding="utf-8"
     )
-    episode_source = (views / "EpisodeView.vue").read_text(encoding="utf-8")
+    episode_source = _episode_source()
 
     assert 'level: "Run workspace"' in run_source
     assert 'id="route-content"' in run_source
@@ -1408,11 +1426,9 @@ def test_drilldown_navigation_is_sticky_and_scroll_safe() -> None:
     component = (
         source_root / "components" / "DrilldownBar.vue"
     ).read_text(encoding="utf-8")
-    global_css = (source_root / "styles" / "app.css").read_text(encoding="utf-8")
+    global_css = _site_styles_source()
     app_source = (source_root / "App.vue").read_text(encoding="utf-8")
-    episode_page = (source_root / "views" / "EpisodeView.vue").read_text(
-        encoding="utf-8"
-    )
+    episode_page = _episode_source()
 
     assert 'class="drilldown-bar"' in component
     assert 'aria-label="Current location"' in component
@@ -1431,7 +1447,8 @@ def test_drilldown_navigation_is_sticky_and_scroll_safe() -> None:
     assert "panel-back" not in global_css
     assert "<KeepAlive" in app_source
     assert 'class="episode-tabs"' in episode_page
-    assert "overflow-y: auto" in episode_page
+    assert 'class="episode-content"' in episode_page
+    assert "overflow: hidden" in episode_page
     assert "ModelUnderTest" not in episode_page
 
 
@@ -1586,7 +1603,7 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert 'type: "log"' not in efficiency_scatter
     assert 'type: "value"' in efficiency_scatter
     assert 'name: "Models"' in efficiency_scatter
-    assert 'color: "#4e64ff"' in efficiency_scatter
+    assert "color: theme.roles.guesser" in efficiency_scatter
     assert "show: !mobile" in efficiency_scatter
     assert 'moveOverlap: "shiftY"' in efficiency_scatter
     assert "mobile-model-key" in efficiency_scatter
@@ -1596,7 +1613,7 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "BarChart" in score_dot_plot
     assert 'name: "View full run"' in score_dot_plot
     assert "scoreDomain.value.minimum" in score_dot_plot
-    assert 'lineStyle: { color: "rgba(17,19,28,.16)", width: 2 }' in score_dot_plot
+    assert "lineStyle: { color: theme.gridLine, width: 2 }" in score_dot_plot
     for linked_axis_chart in (component, stacked_costs, score_dot_plot):
         assert "triggerEvent: true" in linked_axis_chart
         assert 'parameters.componentType === "yAxis"' in linked_axis_chart
@@ -1633,7 +1650,7 @@ def test_mobile_results_use_one_scroller_and_coalesce_chart_work() -> None:
     source_root = REPOSITORY / "source" / "publication" / "site" / "src"
     router = (source_root / "router.ts").read_text(encoding="utf-8")
     app = (source_root / "App.vue").read_text(encoding="utf-8")
-    app_css = (source_root / "styles" / "app.css").read_text(encoding="utf-8")
+    app_css = _site_styles_source()
     workspace = (
         source_root / "views" / "results" / "ResultsWorkspaceView.vue"
     ).read_text(encoding="utf-8")
@@ -1668,7 +1685,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     results_nav = (
         source_root / "components" / "ResultsNav.vue"
     ).read_text(encoding="utf-8")
-    app_css = (source_root / "styles" / "app.css").read_text(encoding="utf-8")
+    app_css = _site_styles_source()
     overview = (results / "ResultsOverviewView.vue").read_text(encoding="utf-8")
     cost = (results / "ResultsCostView.vue").read_text(encoding="utf-8")
     time = (results / "ResultsTimeView.vue").read_text(encoding="utf-8")
@@ -1767,13 +1784,11 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
 
 def test_mobile_drilldowns_keep_all_facts_and_compact_turn_navigation() -> None:
     source_root = REPOSITORY / "source" / "publication" / "site" / "src"
-    episode = (source_root / "views" / "EpisodeView.vue").read_text(
-        encoding="utf-8"
-    )
+    episode = _episode_source()
     drilldown = (source_root / "components" / "DrilldownBar.vue").read_text(
         encoding="utf-8"
     )
-    app_css = (source_root / "styles" / "app.css").read_text(encoding="utf-8")
+    app_css = _site_styles_source()
     run_overview = (
         source_root / "views" / "workspace" / "RunOverviewPane.vue"
     ).read_text(encoding="utf-8")
@@ -1789,9 +1804,10 @@ def test_mobile_drilldowns_keep_all_facts_and_compact_turn_navigation() -> None:
     assert "jumpToTurn(turn.turnNumber)" in episode
     assert ':id="`turn-${turn.turn_number}`"' in episode
     assert "answerCounts" in episode
-    assert ".episode-facts > div:nth-child(even)" in episode
+    assert 'class="episode-summary-metrics"' in episode
+    assert ':max-columns="5"' in episode
     assert "display: block;" in episode
-    assert "grid-template-columns: repeat(5, minmax(0, 1fr));" in episode
+    assert "grid-template-columns: repeat(5, minmax(0, 1fr));" in app_css
     assert "flex: 1 1 0;" in episode
     assert "grid-template-columns: 2.3rem minmax(0, 1fr) auto;" in episode
     assert ".answer span" in episode
@@ -1804,9 +1820,9 @@ def test_mobile_drilldowns_keep_all_facts_and_compact_turn_navigation() -> None:
     assert ".drilldown-mobile-crumbs" in app_css
     assert "font-size: 1.25rem;" in app_css
     assert "<CostDonut" in run_overview
-    assert "run.totals.costs_usd.guesser" in run_overview
+    assert "current.totals.costs_usd.guesser" in run_overview
     assert "Recorded total" not in run_overview
-    assert "grid-template-columns: repeat(4, minmax(0, 1fr));" in run_overview
+    assert ':max-columns="4"' in run_overview
     assert 'class="attempt-score-track"' in subject_workspace
     assert 'class="eyebrow rail-section-label"' in subject_workspace
     assert 'aria-label="Runs for this subject"' in subject_workspace

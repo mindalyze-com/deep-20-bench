@@ -14,6 +14,7 @@ import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import { moneyEpisode } from "@/lib/format";
 import {
   chartAnimationEnabled,
@@ -75,21 +76,23 @@ const tooltip = (
   const parameter = Array.isArray(parameters) ? parameters[0] : parameters;
   const item = props.items.find((candidate) => candidate.label === parameter?.name);
   if (item === undefined) return "";
+  const theme = readChartTheme();
   return [
     '<div style="min-width:190px;padding:3px 2px">',
-    `<strong style="display:block;color:#11131c;font:700 .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:8px;color:#11131c;font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(item.scoreDisplay)} questions</span>`,
-    `<span style="display:block;margin-top:5px;color:#5f626a;font-size:.72rem">${escapeHtml(item.costDisplay)} Guesser cost per episode</span>`,
-    `<span style="display:block;margin-top:4px;color:#5f626a;font-size:.72rem">Efficiency rank ${item.rank}</span>`,
+    `<strong style="display:block;color:${theme.ink};font:700 .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
+    `<span style="display:block;margin-top:8px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(item.scoreDisplay)} questions</span>`,
+    `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">${escapeHtml(item.costDisplay)} Guesser cost per episode</span>`,
+    `<span style="display:block;margin-top:4px;color:${theme.muted};font-size:.75rem">Efficiency rank ${item.rank}</span>`,
     item.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">View full run →</span>',
+      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight:700;text-transform:uppercase">View full run →</span>`,
     "</div>",
   ].join("");
 };
 
 const chartOption = (width: number): EChartsOption => {
   const mobile = width < 620;
+  const theme = readChartTheme();
   const axisFontSize = chartTextSize(width, 9, 11);
   return {
     animation: chartAnimationEnabled(),
@@ -110,13 +113,9 @@ const chartOption = (width: number): EChartsOption => {
       left: mobile ? 58 : 76,
     },
     tooltip: {
+      ...chartTooltipStyle(theme, 10),
       trigger: "item",
       confine: true,
-      backgroundColor: "#fbfaf6",
-      borderColor: "#c9c7bf",
-      borderWidth: 1,
-      padding: 10,
-      extraCssText: "box-shadow:0 12px 30px rgba(17,19,28,.15);",
       formatter: tooltip,
     },
     xAxis: {
@@ -128,21 +127,21 @@ const chartOption = (width: number): EChartsOption => {
       nameLocation: "middle",
       nameGap: mobile ? 43 : 48,
       nameTextStyle: {
-        color: "#5f626a",
+        color: theme.muted,
         fontFamily: chartFont,
         fontSize: axisFontSize,
       },
-      axisLine: { show: true, lineStyle: { color: "#a8a69f" } },
+      axisLine: { show: true, lineStyle: { color: theme.border } },
       axisTick: { show: false },
       axisLabel: {
-        color: "#6d7078",
+        color: theme.muted,
         fontFamily: chartFont,
         fontSize: axisFontSize,
         formatter: moneyEpisode,
       },
       splitLine: {
         show: true,
-        lineStyle: { color: "rgba(17,19,28,.10)" },
+        lineStyle: { color: theme.gridLine },
       },
     },
     yAxis: {
@@ -154,20 +153,20 @@ const chartOption = (width: number): EChartsOption => {
       nameLocation: "middle",
       nameGap: mobile ? 40 : 51,
       nameTextStyle: {
-        color: "#5f626a",
+        color: theme.muted,
         fontFamily: chartFont,
         fontSize: axisFontSize,
       },
-      axisLine: { show: true, lineStyle: { color: "#a8a69f" } },
+      axisLine: { show: true, lineStyle: { color: theme.border } },
       axisTick: { show: false },
       axisLabel: {
-        color: "#6d7078",
+        color: theme.muted,
         fontFamily: chartFont,
         fontSize: axisFontSize,
       },
       splitLine: {
         show: true,
-        lineStyle: { color: "rgba(17,19,28,.10)" },
+        lineStyle: { color: theme.gridLine },
       },
     },
     series: [
@@ -178,14 +177,14 @@ const chartOption = (width: number): EChartsOption => {
         symbolSize: mobile ? 14 : 17,
         cursor: "pointer",
         itemStyle: {
-          color: "#4e64ff",
-          borderColor: "#11131c",
+          color: theme.roles.guesser,
+          borderColor: theme.ink,
           borderWidth: 2,
         },
         label: {
           show: !mobile,
           distance: 7,
-          color: "#252833",
+          color: theme.inkSoft,
           fontFamily: chartFont,
           fontSize: chartTextSize(width, 8, 11),
           fontWeight: 650,
@@ -202,7 +201,7 @@ const chartOption = (width: number): EChartsOption => {
           scale: 1.35,
           itemStyle: {
             shadowBlur: 10,
-            shadowColor: "rgba(17,19,28,.2)",
+            shadowColor: theme.gridLine,
           },
         },
         z: 2,
@@ -311,7 +310,7 @@ figcaption > span:first-child {
     display: grid;
     margin: 0.2rem 0.5rem 0;
     padding: 0;
-    border-top: 1px solid var(--line-soft);
+    border-top: var(--rule-subtle);
     list-style: none;
   }
 
@@ -321,14 +320,14 @@ figcaption > span:first-child {
     gap: 0.5rem;
     align-items: center;
     min-height: 2.4rem;
-    border-bottom: 1px solid var(--line-soft);
+    border-bottom: var(--rule-subtle);
     font-size: var(--text-micro);
   }
 
   .mobile-model-key i {
     width: 0.55rem;
     height: 0.55rem;
-    border: 1px solid var(--ink);
+    border: var(--rule-strong);
     border-radius: 50%;
     background: var(--blue);
   }

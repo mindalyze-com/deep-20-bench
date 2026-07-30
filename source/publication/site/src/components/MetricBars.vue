@@ -14,6 +14,7 @@ import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import { money } from "@/lib/format";
 import {
   chartAnimationEnabled,
@@ -61,12 +62,6 @@ const chartHeight = computed(() =>
   Math.max(370, props.items.length * 48 + 86),
 );
 
-const colors = {
-  blue: "#4e64ff",
-  acid: "#8cad12",
-  coral: "#ef5435",
-} as const;
-
 const axisValue = (value: number): string => {
   if (props.valueFormat === "currency") return money(value);
   if (props.valueFormat === "duration") {
@@ -87,24 +82,31 @@ const tooltip = (parameters: CallbackDataParams | CallbackDataParams[]): string 
   const item =
     parameter === undefined ? undefined : props.items[parameter.dataIndex];
   if (item === undefined) return "";
+  const theme = readChartTheme();
   const detail =
     item.detail === undefined
       ? ""
-      : `<span style="display:block;margin-top:5px;color:#5f626a;font-size:.72rem;line-height:1.45">${escapeHtml(item.detail)}</span>`;
+      : `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem;line-height:1.45">${escapeHtml(item.detail)}</span>`;
   return [
     '<div style="min-width:180px;max-width:280px;padding:3px 2px">',
-    `<strong style="display:block;color:#11131c;font-size:.82rem;line-height:1.35">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:8px;color:#11131c;font-family:Iowan Old Style,Palatino Linotype,Georgia,serif;font-size:1.55rem;line-height:1">${escapeHtml(item.display)}</span>`,
+    `<strong style="display:block;color:${theme.ink};font-size:.82rem;line-height:1.35">${escapeHtml(item.label)}</strong>`,
+    `<span style="display:block;margin-top:8px;color:${theme.ink};font-family:Iowan Old Style,Palatino Linotype,Georgia,serif;font-size:1.55rem;line-height:1">${escapeHtml(item.display)}</span>`,
     detail,
     item.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">View full run →</span>',
+      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">View full run →</span>`,
     "</div>",
   ].join("");
 };
 
 const chartOption = (width: number): EChartsOption => {
   const mobile = width < 620;
+  const theme = readChartTheme();
+  const colors = {
+    blue: theme.roles.guesser,
+    acid: theme.acid,
+    coral: theme.coral,
+  };
   const color = colors[props.color];
   const axisFontSize = chartTextSize(width, 10, 11);
   const categoryFontSize = chartTextSize(width, 10, 12);
@@ -127,13 +129,9 @@ const chartOption = (width: number): EChartsOption => {
       left: mobile ? 132 : 210,
     },
     tooltip: {
+      ...chartTooltipStyle(theme, 11),
       trigger: "item",
       confine: true,
-      backgroundColor: "#fbfaf6",
-      borderColor: "#c9c7bf",
-      borderWidth: 1,
-      padding: 11,
-      extraCssText: "box-shadow:0 12px 30px rgba(17,19,28,.15);",
       formatter: tooltip,
     },
     xAxis: {
@@ -144,11 +142,11 @@ const chartOption = (width: number): EChartsOption => {
       splitNumber: mobile ? 3 : 5,
       axisLine: {
         show: true,
-        lineStyle: { color: "#a8a69f", width: 1 },
+        lineStyle: { color: theme.border, width: 1 },
       },
       axisTick: { show: false },
       axisLabel: {
-        color: "#6d7078",
+        color: theme.muted,
         fontFamily: chartFont,
         fontSize: axisFontSize,
         margin: 10,
@@ -156,7 +154,7 @@ const chartOption = (width: number): EChartsOption => {
       },
       splitLine: {
         show: true,
-        lineStyle: { color: "rgba(17,19,28,.10)", width: 1 },
+        lineStyle: { color: theme.gridLine, width: 1 },
       },
     },
     yAxis: {
@@ -169,7 +167,7 @@ const chartOption = (width: number): EChartsOption => {
       axisLabel: {
         interval: 0,
         align: "right",
-        color: "#252833",
+        color: theme.inkSoft,
         fontFamily: chartFont,
         fontSize: categoryFontSize,
         fontWeight: 650,
@@ -199,7 +197,7 @@ const chartOption = (width: number): EChartsOption => {
           show: true,
           position: "right",
           distance: mobile ? 6 : 10,
-          color: "#11131c",
+          color: theme.ink,
           fontFamily: chartDisplayFont,
           fontSize: valueFontSize,
           fontWeight: 600,
@@ -210,7 +208,7 @@ const chartOption = (width: number): EChartsOption => {
           itemStyle: {
             opacity: 1,
             shadowBlur: 10,
-            shadowColor: "rgba(17,19,28,.18)",
+            shadowColor: theme.gridLine,
           },
         },
       },
@@ -224,11 +222,11 @@ const chartOption = (width: number): EChartsOption => {
           : "default",
         data: props.items.map(() => domain.maximum),
         itemStyle: {
-          color: "rgba(17,19,28,0.001)",
+          color: "rgb(12 17 27 / 0.1%)",
         },
         emphasis: {
           itemStyle: {
-            color: "rgba(78,100,255,0.06)",
+            color: "rgb(79 93 255 / 6%)",
           },
         },
         label: { show: false },
@@ -335,7 +333,7 @@ figcaption i {
 }
 
 .metric-chart--acid figcaption i {
-  background: #8cad12;
+  background: var(--chart-acid);
 }
 
 .metric-chart--coral figcaption i {

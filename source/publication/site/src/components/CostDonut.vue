@@ -12,6 +12,7 @@ import type {
 import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 
+import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import {
   chartAnimationEnabled,
   chartFont,
@@ -58,62 +59,62 @@ const tooltip = (
   const item =
     parameter === undefined ? undefined : props.items[parameter.dataIndex];
   if (item === undefined) return "";
+  const theme = readChartTheme();
   return [
     '<div style="min-width:150px;padding:2px">',
-    `<strong style="display:block;color:#11131c;font:700 12px/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:7px;color:#11131c;font-size:1.3rem">${escapeHtml(item.display)}</span>`,
-    `<span style="display:block;margin-top:4px;color:#5f626a;font-size:.72rem">${share(item.value)} of full-run cost</span>`,
+    `<strong style="display:block;color:${theme.ink};font:700 12px/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
+    `<span style="display:block;margin-top:7px;color:${theme.ink};font-size:1.3rem">${escapeHtml(item.display)}</span>`,
+    `<span style="display:block;margin-top:4px;color:${theme.muted};font-size:.75rem">${share(item.value)} of full-run cost</span>`,
     "</div>",
   ].join("");
 };
 
-const chartOption = (): EChartsOption => ({
-  animation: chartAnimationEnabled(),
-  animationDuration: 420,
-  animationEasing: "cubicOut",
-  aria: {
-    enabled: true,
-    description: `${props.caption}. ${props.items
-      .map((item) => `${item.label}, ${item.display}, ${share(item.value)}`)
-      .join(". ")}.`,
-  },
-  tooltip: {
-    trigger: "item",
-    confine: true,
-    backgroundColor: "#fbfaf6",
-    borderColor: "#c9c7bf",
-    borderWidth: 1,
-    padding: 10,
-    extraCssText: "box-shadow:0 12px 30px rgba(17,19,28,.15);",
-    formatter: tooltip,
-  },
-  series: [
-    {
-      name: props.caption,
-      type: "pie",
-      radius: ["58%", "83%"],
-      center: ["50%", "50%"],
-      startAngle: 90,
-      minAngle: 2,
-      avoidLabelOverlap: true,
-      itemStyle: {
-        borderColor: "#fbfaf6",
-        borderWidth: 3,
-      },
-      label: { show: false },
-      labelLine: { show: false },
-      emphasis: {
-        scale: true,
-        scaleSize: 5,
-      },
-      data: props.items.map((item) => ({
-        name: item.label,
-        value: item.value,
-        itemStyle: { color: item.color },
-      })),
+const chartOption = (): EChartsOption => {
+  const theme = readChartTheme();
+  return {
+    animation: chartAnimationEnabled(),
+    animationDuration: 420,
+    animationEasing: "cubicOut",
+    aria: {
+      enabled: true,
+      description: `${props.caption}. ${props.items
+        .map((item) => `${item.label}, ${item.display}, ${share(item.value)}`)
+        .join(". ")}.`,
     },
-  ],
-});
+    tooltip: {
+      ...chartTooltipStyle(theme, 10),
+      trigger: "item",
+      confine: true,
+      formatter: tooltip,
+    },
+    series: [
+      {
+        name: props.caption,
+        type: "pie",
+        radius: ["58%", "83%"],
+        center: ["50%", "50%"],
+        startAngle: 90,
+        minAngle: 2,
+        avoidLabelOverlap: true,
+        itemStyle: {
+          borderColor: theme.surface,
+          borderWidth: 3,
+        },
+        label: { show: false },
+        labelLine: { show: false },
+        emphasis: {
+          scale: true,
+          scaleSize: 5,
+        },
+        data: props.items.map((item) => ({
+          name: item.label,
+          value: item.value,
+          itemStyle: { color: item.color },
+        })),
+      },
+    ],
+  };
+};
 
 const { chartElement, refresh } = useResponsiveEChart({
   height: chartHeight,
@@ -247,7 +248,7 @@ li {
   gap: 0.6rem;
   align-items: center;
   min-height: 2.3rem;
-  border-bottom: 1px solid var(--line-soft);
+  border-bottom: var(--rule-subtle);
   font-size: var(--text-small);
 }
 

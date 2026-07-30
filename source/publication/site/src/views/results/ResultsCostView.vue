@@ -5,15 +5,16 @@ import { useRouter } from "vue-router";
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
-import ResultsNav from "@/components/ResultsNav.vue";
 import RunTableAction from "@/components/RunTableAction.vue";
 import StackedMetricBars, {
   type StackedBarRow,
   type StackedBarSegment,
 } from "@/components/StackedMetricBars.vue";
 import { getLeaderboard, getOfficialRuns } from "@/lib/api";
+import { readChartTheme } from "@/lib/chart-theme";
 import { money, moneyEpisode, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import type { LeaderboardRow, PublicRunSummary, RunDocument } from "@/lib/types";
@@ -72,6 +73,26 @@ const supportShare = computed(() =>
     : null,
 );
 
+const summaryMetrics = computed<MetricGridItem[]>(() => [
+  { key: "runs", label: "Selected runs", value: runs.value.length },
+  {
+    key: "spend",
+    label: "Recorded spend",
+    value: money(totalSpend.value),
+  },
+  {
+    key: "guesser",
+    label: "Guesser spend",
+    value: money(guesserSpend.value),
+    tone: "accent",
+  },
+  {
+    key: "support",
+    label: "Support share",
+    value: percent(supportShare.value),
+  },
+]);
+
 const guesserCostBars = computed(() =>
   guesserRuns.value.map((run) => ({
     label: run.model_name,
@@ -81,12 +102,13 @@ const guesserCostBars = computed(() =>
   })),
 );
 
+const roleColors = readChartTheme().roles;
 const componentRows = [
-  { key: "guesser", label: "Guesser", color: "#4e64ff" },
-  { key: "primary_oracle", label: "Primary Oracle", color: "#ef5435" },
-  { key: "reviewer", label: "Reviewer", color: "#91a72b" },
-  { key: "judge", label: "Judge", color: "#8a72cf" },
-  { key: "validator", label: "Validator", color: "#8b8f99" },
+  { key: "guesser", label: "Guesser", color: roleColors.guesser },
+  { key: "primary_oracle", label: "Primary Oracle", color: roleColors.oracle },
+  { key: "reviewer", label: "Reviewer", color: roleColors.reviewer },
+  { key: "judge", label: "Judge", color: roleColors.judge },
+  { key: "validator", label: "Validator", color: roleColors.validator },
 ] as const;
 
 const stackedSegments: StackedBarSegment[] = componentRows.map((component) => ({
@@ -156,21 +178,6 @@ void load();
 
 <template>
   <div class="page results-view">
-    <section class="results-hero">
-      <div class="results-hero-inner">
-        <div>
-          <p class="eyebrow">Cost</p>
-          <h1>What each run cost.</h1>
-        </div>
-        <p>
-          Provider-reported costs recorded when each run completed. These are historical
-          measurements, not current price estimates.
-        </p>
-      </div>
-    </section>
-
-    <ResultsNav />
-
     <LoadingState v-if="loading" label="Loading cost results" />
     <ErrorState v-else-if="error !== null" :message="error" />
 
@@ -183,24 +190,12 @@ void load();
 
     <section v-else class="content-section">
       <div class="content-inner">
-        <dl class="stats-grid results-summary">
-          <div>
-            <dt>Selected runs</dt>
-            <dd>{{ runs.length }}</dd>
-          </div>
-          <div>
-            <dt>Recorded spend</dt>
-            <dd>{{ money(totalSpend) }}</dd>
-          </div>
-          <div>
-            <dt>Guesser spend</dt>
-            <dd>{{ money(guesserSpend) }}</dd>
-          </div>
-          <div>
-            <dt>Support share</dt>
-            <dd>{{ percent(supportShare) }}</dd>
-          </div>
-        </dl>
+        <MetricGrid
+          class="results-summary"
+          :items="summaryMetrics"
+          label="Cost summary"
+          :max-columns="4"
+        />
 
         <section class="panel cost-panel" aria-labelledby="cost-chart-title">
           <header class="panel-heading">
@@ -220,8 +215,8 @@ void load();
             value-format="currency"
           />
 
-          <section class="component-ledger" aria-labelledby="component-ledger-title">
-            <header>
+          <section class="component-ledger panel-frame" aria-labelledby="component-ledger-title">
+            <header class="panel-heading panel-heading--compact">
               <div>
                 <p class="eyebrow">Total benchmark cost</p>
                 <h3 id="component-ledger-title">Where each run spent.</h3>
@@ -345,38 +340,6 @@ void load();
 </template>
 
 <style scoped>
-.results-hero {
-  padding: clamp(3rem, 7vw, 6rem) var(--gutter);
-  background: var(--ink);
-  color: white;
-}
-
-.results-hero-inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.52fr);
-  gap: clamp(2rem, 6vw, 6rem);
-  align-items: end;
-  width: min(100%, var(--max));
-  margin-inline: auto;
-}
-
-h1,
-.empty-state h2 {
-  max-width: 12ch;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 6.5vw, 6.5rem);
-  font-weight: 500;
-  letter-spacing: -0.06em;
-  line-height: 0.92;
-}
-
-.results-hero-inner > p {
-  margin: 0;
-  color: rgb(255 255 255 / 66%);
-  line-height: 1.7;
-}
-
 .results-summary,
 .cost-panel {
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
@@ -384,32 +347,6 @@ h1,
 
 .component-ledger {
   margin: 0;
-  border-top: 1px solid var(--line);
-}
-
-.component-ledger > header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.5fr);
-  gap: 2rem;
-  align-items: end;
-  padding: clamp(1.4rem, 3vw, 2.5rem);
-  border-bottom: 1px solid var(--line);
-}
-
-.component-ledger h3 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 1;
-}
-
-.component-ledger > header > p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.6;
 }
 
 .results-table {
@@ -420,48 +357,25 @@ h1,
   display: inline-block;
   min-width: 4rem;
   padding: 0.28rem 0.5rem;
-  border-left: 3px solid;
-  background: white;
+  border-left: var(--border-emphasis-width) solid;
+  background: var(--surface-raised);
   text-align: right;
   white-space: nowrap;
 }
 
 .value-signal--good {
-  border-color: #7ba321;
+  border-color: var(--state-clean);
 }
 
 .value-signal--middle {
-  border-color: #dd9a2f;
+  border-color: var(--state-warning);
 }
 
 .value-signal--bad {
   border-color: var(--coral);
 }
 
-.results-note {
-  max-width: 62rem;
-  margin: 1rem 0 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.65;
-}
-
 .empty-state {
   min-height: 50vh;
-}
-
-.empty-state h2 {
-  font-size: clamp(2.4rem, 5vw, 4.8rem);
-}
-
-@media (max-width: 760px) {
-  .results-hero-inner {
-    grid-template-columns: 1fr;
-  }
-
-  .component-ledger > header {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-  }
 }
 </style>

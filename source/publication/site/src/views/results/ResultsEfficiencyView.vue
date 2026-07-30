@@ -8,9 +8,9 @@ import EfficiencyScatter, {
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
-import ResultsNav from "@/components/ResultsNav.vue";
 import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard } from "@/lib/api";
 import { moneyEpisode, number, percent } from "@/lib/format";
@@ -60,6 +60,22 @@ const costRange = computed(() => {
   if (costs.length < 2) return null;
   return Math.max(...costs) / Math.min(...costs);
 });
+
+const summaryMetrics = computed<MetricGridItem[]>(() => [
+  { key: "models", label: "Models", value: ranked.value.length },
+  {
+    key: "range",
+    label: "Cost range",
+    value: costRange.value === null ? "—" : `${number(costRange.value, 0)}×`,
+  },
+  {
+    key: "best",
+    label: "Best efficiency",
+    value: number(ranked.value[0]?.cost_adjusted_question_score, 3),
+    tone: "accent",
+  },
+  { key: "direction", label: "Direction", value: "Lower" },
+]);
 
 const efficiencyBars = computed(() =>
   ranked.value.map((row) => ({
@@ -114,21 +130,6 @@ void load();
 
 <template>
   <div class="page results-view">
-    <section class="results-hero">
-      <div class="results-hero-inner">
-        <div>
-          <p class="eyebrow">Cost efficiency</p>
-          <h1>Result versus model cost.</h1>
-        </div>
-        <p>
-          This second official ranking combines the primary question score with the
-          recorded cost of the Guesser, the model under test.
-        </p>
-      </div>
-    </section>
-
-    <ResultsNav />
-
     <LoadingState v-if="loading" label="Loading efficiency results" />
     <ErrorState v-else-if="error !== null" :message="error" />
 
@@ -146,24 +147,12 @@ void load();
     <template v-else>
       <section class="content-section">
         <div class="content-inner">
-          <dl class="stats-grid results-summary">
-            <div>
-              <dt>Models</dt>
-              <dd>{{ ranked.length }}</dd>
-            </div>
-            <div>
-              <dt>Cost range</dt>
-              <dd>{{ costRange === null ? "—" : `${number(costRange, 0)}×` }}</dd>
-            </div>
-            <div>
-              <dt>Best efficiency</dt>
-              <dd>{{ number(ranked[0]?.cost_adjusted_question_score, 3) }}</dd>
-            </div>
-            <div>
-              <dt>Direction</dt>
-              <dd>Lower</dd>
-            </div>
-          </dl>
+          <MetricGrid
+            class="results-summary"
+            :items="summaryMetrics"
+            label="Efficiency summary"
+            :max-columns="4"
+          />
 
           <section class="panel efficiency-panel" aria-labelledby="efficiency-title">
             <header class="panel-heading">
@@ -183,8 +172,8 @@ void load();
             />
           </section>
 
-          <section class="tradeoff-panel" aria-labelledby="tradeoff-title">
-            <header>
+          <section class="tradeoff-panel panel-frame" aria-labelledby="tradeoff-title">
+            <header class="panel-heading">
               <div>
                 <p class="eyebrow">Trade-off map</p>
                 <h2 id="tradeoff-title">Cost and result.</h2>
@@ -341,59 +330,12 @@ void load();
 </template>
 
 <style scoped>
-.results-hero {
-  padding: clamp(3rem, 7vw, 6rem) var(--gutter);
-  background: var(--ink);
-  color: white;
-}
-
-.results-hero-inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.52fr);
-  gap: clamp(2rem, 6vw, 6rem);
-  align-items: end;
-  width: min(100%, var(--max));
-  margin-inline: auto;
-}
-
-h1,
-.empty-state h2 {
-  max-width: 12ch;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 6.5vw, 6.5rem);
-  font-weight: 500;
-  letter-spacing: -0.06em;
-  line-height: 0.92;
-}
-
-.results-hero-inner > p {
-  margin: 0;
-  color: rgb(255 255 255 / 66%);
-  line-height: 1.7;
-}
-
 .results-summary,
 .efficiency-panel,
 .tradeoff-panel {
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
 }
 
-.tradeoff-panel {
-  border: 1px solid var(--line);
-  background: var(--paper-bright);
-}
-
-.tradeoff-panel > header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.5fr);
-  gap: 2rem;
-  align-items: end;
-  padding: clamp(1.4rem, 3vw, 2.5rem);
-  border-bottom: 1px solid var(--line);
-}
-
-.tradeoff-panel h2,
 .metric-definition h2 {
   margin: 0;
   font-family: var(--font-display);
@@ -403,22 +345,8 @@ h1,
   line-height: 0.98;
 }
 
-.tradeoff-panel > header > p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.65;
-}
-
 .results-table {
   min-width: 980px;
-}
-
-.results-note {
-  max-width: 62rem;
-  margin: 1rem 0 0;
-  color: var(--muted);
-  font-size: var(--text-small);
-  line-height: 1.65;
 }
 
 .definition-section {
@@ -438,7 +366,7 @@ h1,
 .metric-definition code {
   display: block;
   padding: 1rem;
-  border: 1px solid var(--line);
+  border: var(--rule-default);
   background: white;
   overflow-wrap: anywhere;
   font-size: clamp(0.8rem, 1.6vw, 1rem);
@@ -456,16 +384,12 @@ h1,
 
 .metric-example {
   padding: 1rem;
-  border-left: 4px solid var(--blue);
-  background: #f2f3ff;
+  border-left: var(--border-emphasis-width) solid var(--blue);
+  background: var(--surface-accent-soft);
 }
 
 .empty-state {
   min-height: 50vh;
-}
-
-.empty-state h2 {
-  font-size: clamp(2.4rem, 5vw, 4.8rem);
 }
 
 .empty-state p:last-child {
@@ -475,14 +399,7 @@ h1,
 }
 
 @media (max-width: 900px) {
-  .tradeoff-panel > header,
   .metric-definition {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 760px) {
-  .results-hero-inner {
     grid-template-columns: 1fr;
   }
 }

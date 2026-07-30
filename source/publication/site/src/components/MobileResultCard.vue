@@ -56,9 +56,9 @@ defineProps<{
 .mobile-result-card {
   display: block;
   overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--paper-bright);
-  color: var(--ink);
+  border: var(--rule-default);
+  background: var(--surface-raised);
+  color: var(--text-primary);
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
   transition:
@@ -69,12 +69,12 @@ defineProps<{
 .mobile-result-card:not(.mobile-result-card--disabled):hover,
 .mobile-result-card:not(.mobile-result-card--disabled):active,
 .mobile-result-card:not(.mobile-result-card--disabled):focus-visible {
-  background: #eef0ff;
+  background: var(--surface-accent-soft);
   box-shadow: inset 4px 0 0 var(--blue);
 }
 
 .mobile-result-card:focus-visible {
-  outline: 3px solid var(--blue);
+  outline: var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -139,13 +139,13 @@ defineProps<{
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: 0;
   padding: 0.7rem 0.9rem 0.8rem;
-  border-top: 1px solid var(--line-soft);
+  border-top: var(--rule-subtle);
 }
 
 .mobile-result-metrics div {
   min-width: 0;
   padding-inline: 0.7rem;
-  border-right: 1px solid var(--line-soft);
+  border-right: var(--rule-subtle);
 }
 
 .mobile-result-metrics div:first-child {
@@ -160,7 +160,7 @@ defineProps<{
 .mobile-result-metrics dt {
   overflow: hidden;
   color: var(--muted);
-  font-size: 0.62rem;
+  font-size: var(--text-caption);
   font-weight: 710;
   letter-spacing: 0.05em;
   text-overflow: ellipsis;
@@ -187,7 +187,7 @@ defineProps<{
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  background: #eef0ff;
+  background: var(--surface-accent-soft);
   color: var(--blue-ink);
   font-size: 0.7rem;
   font-weight: 720;

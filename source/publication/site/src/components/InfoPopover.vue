@@ -144,7 +144,7 @@ onBeforeUnmount(() => {
   place-items: center;
   width: 1rem;
   height: 1rem;
-  border: 1px solid currentColor;
+  border: var(--border-width) solid currentColor;
   border-radius: 50%;
   font: 760 0.62rem/1 var(--font-sans);
   opacity: 0.72;
@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
   z-index: 120;
   top: calc(100% + 0.55rem);
   width: min(22rem, calc(100vw - 2rem));
-  border: 1px solid var(--line);
+  border: var(--rule-default);
   background: var(--paper-bright);
   box-shadow: 0 18px 48px rgb(17 19 28 / 20%);
   color: var(--ink);
@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
   gap: 1rem;
   align-items: center;
   padding: 0.8rem 0.9rem;
-  border-bottom: 1px solid var(--line-soft);
+  border-bottom: var(--rule-subtle);
 }
 
 .info-popover-panel header strong {
@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 1px solid var(--line);
+  border: var(--rule-default);
   background: transparent;
   color: var(--ink);
   font-size: 1.1rem;

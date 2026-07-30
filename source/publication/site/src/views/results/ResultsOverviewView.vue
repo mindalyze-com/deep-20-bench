@@ -5,9 +5,9 @@ import { useRouter } from "vue-router";
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
-import ResultsNav from "@/components/ResultsNav.vue";
 import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard } from "@/lib/api";
 import { duration, money, moneyEpisode, number, percent } from "@/lib/format";
@@ -58,6 +58,26 @@ const selectedGuesserTime = computed(() =>
   ),
 );
 
+const summaryMetrics = computed<MetricGridItem[]>(() => [
+  { key: "models", label: "Models", value: rows.value.length },
+  {
+    key: "episodes",
+    label: "Episodes / model",
+    value: rows.value[0]?.terminal_trials ?? 0,
+  },
+  {
+    key: "spend",
+    label: "Recorded spend",
+    value: money(selectedCost.value),
+    tone: "accent",
+  },
+  {
+    key: "time",
+    label: "Combined Guesser time",
+    value: duration(selectedGuesserTime.value),
+  },
+]);
+
 const scoreBars = computed(() =>
   rows.value.map((row) => ({
     label: row.model.display_name,
@@ -96,21 +116,6 @@ void load();
 
 <template>
   <div class="page results-view">
-    <section class="results-hero">
-      <div class="results-hero-inner">
-        <div>
-          <p class="eyebrow">Official comparison</p>
-          <h1>All results, one cohort.</h1>
-        </div>
-        <p>
-          Compare model quality, reliability, recorded cost, and Guesser response time.
-          Every value comes from the selected official run for the active cohort.
-        </p>
-      </div>
-    </section>
-
-    <ResultsNav />
-
     <LoadingState v-if="loading" label="Loading official results" />
     <ErrorState v-else-if="error !== null" :message="error" />
 
@@ -123,24 +128,12 @@ void load();
 
     <section v-else class="content-section">
       <div class="content-inner">
-        <dl class="stats-grid results-summary">
-          <div>
-            <dt>Models</dt>
-            <dd>{{ rows.length }}</dd>
-          </div>
-          <div>
-            <dt>Episodes / model</dt>
-            <dd>{{ rows[0]?.terminal_trials ?? 0 }}</dd>
-          </div>
-          <div>
-            <dt>Recorded spend</dt>
-            <dd>{{ money(selectedCost) }}</dd>
-          </div>
-          <div>
-            <dt>Combined Guesser time</dt>
-            <dd>{{ duration(selectedGuesserTime) }}</dd>
-          </div>
-        </dl>
+        <MetricGrid
+          class="results-summary"
+          :items="summaryMetrics"
+          label="Results summary"
+          :max-columns="4"
+        />
 
         <section class="panel comparison-panel" aria-labelledby="overview-chart-title">
           <header class="panel-heading">
@@ -278,38 +271,6 @@ void load();
 </template>
 
 <style scoped>
-.results-hero {
-  padding: clamp(3rem, 7vw, 6rem) var(--gutter);
-  background: var(--ink);
-  color: white;
-}
-
-.results-hero-inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.52fr);
-  gap: clamp(2rem, 6vw, 6rem);
-  align-items: end;
-  width: min(100%, var(--max));
-  margin-inline: auto;
-}
-
-h1,
-.empty-state h2 {
-  max-width: 12ch;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 6.5vw, 6.5rem);
-  font-weight: 500;
-  letter-spacing: -0.06em;
-  line-height: 0.92;
-}
-
-.results-hero-inner > p {
-  margin: 0;
-  color: rgb(255 255 255 / 66%);
-  line-height: 1.7;
-}
-
 .results-summary {
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
 }
@@ -326,25 +287,7 @@ h1,
   min-width: 920px;
 }
 
-.results-note {
-  max-width: 62rem;
-  margin: 1rem 0 0;
-  color: var(--muted);
-  font-size: var(--text-small);
-  line-height: 1.65;
-}
-
 .empty-state {
   min-height: 50vh;
-}
-
-.empty-state h2 {
-  font-size: clamp(2.4rem, 5vw, 4.8rem);
-}
-
-@media (max-width: 760px) {
-  .results-hero-inner {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

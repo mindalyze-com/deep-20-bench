@@ -27,7 +27,7 @@ const links = [
   overflow-x: auto;
   overflow-y: hidden;
   padding-inline: var(--gutter);
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--rule-default);
   background: var(--paper-bright);
   scrollbar-width: thin;
 }

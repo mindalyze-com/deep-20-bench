@@ -99,7 +99,7 @@ const copy = computed(() => {
   align-items: end;
   min-height: 112px;
   padding: 1.2rem max(var(--gutter), calc((100vw - var(--max)) / 2)) 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--rule-default);
   background: var(--paper-bright);
 }
 
@@ -148,11 +148,6 @@ const copy = computed(() => {
   min-height: 0;
   overflow-y: auto;
   scrollbar-gutter: stable;
-}
-
-.results-workspace-body :deep(.results-view > .results-hero),
-.results-workspace-body :deep(.results-view > .results-nav) {
-  display: none;
 }
 
 .results-workspace-body :deep(.results-view > .content-section) {

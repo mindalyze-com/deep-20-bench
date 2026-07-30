@@ -308,13 +308,13 @@ const penalty = computed(() => {
 .method-nav {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--rule-default);
   background: var(--paper-bright);
 }
 
 .method-nav a {
   padding: 1.2rem var(--gutter);
-  border-right: 1px solid var(--line);
+  border-right: var(--rule-default);
   font-size: var(--text-ui);
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -341,15 +341,15 @@ const penalty = computed(() => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin: 2.5rem 0;
-  border: 1px solid var(--ink);
+  border: var(--rule-strong);
 }
 
 .fact-grid div {
   display: flex;
   min-height: 8rem;
   padding: 1rem;
-  border-right: 1px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
+  border-right: var(--rule-strong);
+  border-bottom: var(--rule-strong);
   flex-direction: column;
   justify-content: space-between;
 }
@@ -386,7 +386,7 @@ const penalty = computed(() => {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin: 2.5rem 0 1rem;
-  border: 1px solid var(--line);
+  border: var(--rule-default);
   background: var(--line);
   gap: 1px;
 }
@@ -423,7 +423,7 @@ const penalty = computed(() => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   margin: 0 0 2rem;
-  border: 1px solid var(--ink);
+  border: var(--rule-strong);
 }
 
 .decision-path p {
@@ -431,7 +431,7 @@ const penalty = computed(() => {
   min-height: 6.5rem;
   margin: 0;
   padding: 1rem;
-  border-right: 1px solid var(--ink);
+  border-right: var(--rule-strong);
   flex-direction: column;
   justify-content: space-between;
 }
@@ -466,7 +466,7 @@ const penalty = computed(() => {
 
 .formula {
   margin: 2.5rem 0;
-  border: 1px solid rgb(255 255 255 / 28%);
+  border: var(--rule-inverse);
 }
 
 .formula div {
@@ -475,7 +475,7 @@ const penalty = computed(() => {
   align-items: center;
   justify-content: space-between;
   padding: 1.15rem;
-  border-bottom: 1px solid rgb(255 255 255 / 20%);
+  border-bottom: var(--rule-inverse);
 }
 
 .formula div:last-child {
@@ -493,14 +493,14 @@ const penalty = computed(() => {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin: 2.5rem 0;
-  border: 1px solid var(--line);
+  border: var(--rule-default);
 }
 
 .reliability-grid article {
   display: flex;
   min-height: 9rem;
   padding: 1rem;
-  border-right: 1px solid var(--line);
+  border-right: var(--rule-default);
   flex-direction: column;
   justify-content: space-between;
 }
@@ -521,13 +521,13 @@ const penalty = computed(() => {
   margin: 2.5rem 0;
   padding: 0;
   list-style: none;
-  border-top: 1px solid var(--ink);
+  border-top: var(--rule-strong);
 }
 
 .check-list li {
   position: relative;
   padding: 1rem 1rem 1rem 2.6rem;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--rule-default);
 }
 
 .check-list li::before {
@@ -537,14 +537,14 @@ const penalty = computed(() => {
   display: grid;
   width: 1.5rem;
   height: 1.5rem;
-  border: 1px solid var(--blue);
+  border: var(--border-width) solid var(--blue);
   color: var(--blue);
   content: "✓";
   place-items: center;
 }
 
 .isolation-section {
-  background: #e8e5dc;
+  background: var(--surface-rail);
 }
 
 .flow {
@@ -559,7 +559,7 @@ const penalty = computed(() => {
   display: grid;
   min-height: 5rem;
   padding: 0.7rem;
-  border: 1px solid var(--ink);
+  border: var(--rule-strong);
   font-size: var(--text-small);
   font-weight: 740;
   text-align: center;
@@ -577,7 +577,7 @@ const penalty = computed(() => {
   }
 
   .method-nav a {
-    border-bottom: 1px solid rgb(17 19 28 / 20%);
+    border-bottom: var(--rule-muted);
   }
 
   .method-nav a:nth-child(even) {
@@ -608,7 +608,7 @@ const penalty = computed(() => {
   .answer-roles article,
   .decision-path p {
     min-height: auto;
-    border-bottom: 1px solid var(--line);
+    border-bottom: var(--rule-default);
   }
 
   .answer-roles article:last-child,
@@ -623,7 +623,7 @@ const penalty = computed(() => {
 
   .reliability-grid article {
     border-right: 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: var(--rule-default);
   }
 
   .reliability-grid article:last-child {

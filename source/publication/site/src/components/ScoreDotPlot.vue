@@ -14,6 +14,7 @@ import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 import { useRouter, type RouteLocationRaw } from "vue-router";
 
+import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import {
   chartAnimationEnabled,
   chartDisplayFont,
@@ -62,20 +63,22 @@ const tooltip = (
   const item =
     parameter === undefined ? undefined : props.items[parameter.dataIndex];
   if (item === undefined) return "";
+  const theme = readChartTheme();
   return [
     '<div style="min-width:180px;padding:3px 2px">',
-    `<strong style="display:block;color:#11131c;font:700 .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:8px;color:#11131c;font-family:${chartDisplayFont};font-size:1.55rem">${escapeHtml(item.display)} questions</span>`,
-    '<span style="display:block;margin-top:5px;color:#5f626a;font-size:.72rem">Lower is better</span>',
+    `<strong style="display:block;color:${theme.ink};font:700 .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
+    `<span style="display:block;margin-top:8px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.55rem">${escapeHtml(item.display)} questions</span>`,
+    `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">Lower is better</span>`,
     item.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">View full run →</span>',
+      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight:700;text-transform:uppercase">View full run →</span>`,
     "</div>",
   ].join("");
 };
 
 const chartOption = (width: number): EChartsOption => {
   const mobile = width < 620;
+  const theme = readChartTheme();
   const axisFontSize = chartTextSize(width, 10, 11);
   const categoryFontSize = chartTextSize(width, 10, 12);
   const valueFontSize = chartTextSize(width, 11, 14);
@@ -96,13 +99,9 @@ const chartOption = (width: number): EChartsOption => {
       left: mobile ? 132 : 218,
     },
     tooltip: {
+      ...chartTooltipStyle(theme, 11),
       trigger: "item",
       confine: true,
-      backgroundColor: "#fbfaf6",
-      borderColor: "#c9c7bf",
-      borderWidth: 1,
-      padding: 11,
-      extraCssText: "box-shadow:0 12px 30px rgba(17,19,28,.15);",
       formatter: tooltip,
     },
     xAxis: {
@@ -115,18 +114,18 @@ const chartOption = (width: number): EChartsOption => {
       nameLocation: "middle",
       nameGap: 33,
       nameTextStyle: {
-        color: "#5f626a",
+        color: theme.muted,
         fontFamily: chartFont,
         fontSize: axisFontSize,
         fontWeight: 700,
       },
       axisLine: {
         show: true,
-        lineStyle: { color: "#8f8d86", width: 1 },
+        lineStyle: { color: theme.border, width: 1 },
       },
       axisTick: { show: false },
       axisLabel: {
-        color: "#5f626a",
+        color: theme.muted,
         fontFamily: chartFont,
         fontSize: axisFontSize,
         margin: 9,
@@ -135,7 +134,7 @@ const chartOption = (width: number): EChartsOption => {
       },
       splitLine: {
         show: true,
-        lineStyle: { color: "rgba(17,19,28,.08)", width: 1 },
+        lineStyle: { color: theme.gridLine, width: 1 },
       },
     },
     yAxis: {
@@ -148,7 +147,7 @@ const chartOption = (width: number): EChartsOption => {
       axisLabel: {
         interval: 0,
         align: "right",
-        color: "#252833",
+        color: theme.inkSoft,
         fontFamily: chartFont,
         fontSize: categoryFontSize,
         fontWeight: 650,
@@ -159,7 +158,7 @@ const chartOption = (width: number): EChartsOption => {
       },
       splitLine: {
         show: true,
-        lineStyle: { color: "rgba(17,19,28,.16)", width: 2 },
+        lineStyle: { color: theme.gridLine, width: 2 },
       },
     },
     series: [
@@ -172,7 +171,7 @@ const chartOption = (width: number): EChartsOption => {
           : "default",
         data: props.items.map(() => scoreDomain.value.maximum),
         itemStyle: {
-          color: "rgba(17,19,28,0.001)",
+          color: "rgb(12 17 27 / 0.1%)",
         },
         emphasis: {
           itemStyle: {
@@ -194,15 +193,15 @@ const chartOption = (width: number): EChartsOption => {
           ? "pointer"
           : "default",
         itemStyle: {
-          color: "#4e64ff",
-          borderColor: "#11131c",
+          color: theme.roles.guesser,
+          borderColor: theme.ink,
           borderWidth: 1.5,
         },
         label: {
           show: true,
           position: "right",
           distance: mobile ? 6 : 8,
-          color: "#11131c",
+          color: theme.ink,
           fontFamily: chartDisplayFont,
           fontSize: valueFontSize,
           fontWeight: 650,
@@ -213,7 +212,7 @@ const chartOption = (width: number): EChartsOption => {
           scale: 1.25,
           itemStyle: {
             shadowBlur: 10,
-            shadowColor: "rgba(17,19,28,.2)",
+            shadowColor: theme.gridLine,
           },
         },
         z: 3,

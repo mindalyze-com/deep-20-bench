@@ -11,6 +11,7 @@ import { useRoute } from "vue-router";
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
+import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
 import { getRun, getSubject } from "@/lib/api";
 import { number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
@@ -168,7 +169,7 @@ onActivated(applyRunContext);
       </aside>
 
       <section class="workspace-stage" :aria-busy="loading">
-        <div v-if="loading" class="workspace-progress" aria-hidden="true"></div>
+        <WorkspaceProgress :active="loading" />
         <RunOverviewPane v-if="isRunOverview" />
         <RouterView v-else />
       </section>
@@ -192,14 +193,14 @@ onActivated(applyRunContext);
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border-right: 1px solid rgb(255 255 255 / 13%);
-  background: #171923;
-  color: white;
+  border-right: var(--rule-inverse-subtle);
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
 }
 
 .model-rail-heading {
   padding: 1.4rem 1.35rem 1.25rem;
-  border-bottom: 1px solid rgb(255 255 255 / 12%);
+  border-bottom: var(--rule-inverse-subtle);
 }
 
 .rail-back {
@@ -207,20 +208,20 @@ onActivated(applyRunContext);
   align-items: center;
   gap: 0.45rem;
   margin-bottom: 1.7rem;
-  color: rgb(255 255 255 / 58%);
-  font-size: 0.7rem;
+  color: var(--text-inverse-subtle);
+  font-size: var(--text-caption);
   font-weight: 700;
   text-decoration: none;
 }
 
 .rail-back:hover {
-  color: white;
+  color: var(--text-inverse);
 }
 
 .model-rail-heading .eyebrow {
   margin-bottom: 0.55rem;
   color: var(--acid);
-  font-size: 0.62rem;
+  font-size: var(--text-caption);
 }
 
 .model-rail-heading h2 {
@@ -253,15 +254,15 @@ onActivated(applyRunContext);
   align-items: center;
   min-height: 58px;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgb(255 255 255 / 8%);
-  color: rgb(255 255 255 / 66%);
+  border-bottom: var(--rule-inverse-subtle);
+  color: var(--text-inverse-muted);
   text-decoration: none;
 }
 
 .run-overview-link:hover,
 .subject-rail-list a:hover {
   background: rgb(255 255 255 / 5%);
-  color: white;
+  color: var(--text-inverse);
 }
 
 .run-overview-link[aria-current="page"],
@@ -288,7 +289,7 @@ onActivated(applyRunContext);
 .rail-item-index {
   color: currentColor;
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: var(--text-caption);
   opacity: 0.52;
 }
 
@@ -302,7 +303,7 @@ onActivated(applyRunContext);
 .rail-item-copy strong,
 .run-overview-link strong {
   overflow: hidden;
-  font-size: 0.75rem;
+  font-size: var(--text-micro);
   font-weight: 740;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -312,8 +313,8 @@ onActivated(applyRunContext);
 .run-overview-link small {
   overflow: hidden;
   color: currentColor;
-  font-size: 0.62rem;
-  opacity: 0.57;
+  font-size: var(--text-caption);
+  opacity: 0.82;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -326,7 +327,7 @@ onActivated(applyRunContext);
 }
 
 .rail-status.clean {
-  background: var(--acid);
+  background: var(--state-clean);
 }
 
 .rail-status.breached {
@@ -337,12 +338,12 @@ onActivated(applyRunContext);
   display: grid;
   gap: 0.3rem;
   padding: 0.9rem 1rem 1rem;
-  border-top: 1px solid rgb(255 255 255 / 12%);
-  color: rgb(255 255 255 / 43%);
+  border-top: var(--rule-inverse-subtle);
+  color: var(--text-inverse-subtle);
 }
 
 .model-rail-footer span {
-  font-size: 0.58rem;
+  font-size: var(--text-caption);
   font-weight: 760;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -350,7 +351,7 @@ onActivated(applyRunContext);
 
 .model-rail-footer code {
   overflow: hidden;
-  font-size: 0.62rem;
+  font-size: var(--text-caption);
   text-overflow: ellipsis;
 }
 
@@ -359,35 +360,6 @@ onActivated(applyRunContext);
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-}
-
-.workspace-progress {
-  position: absolute;
-  z-index: 20;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 2px;
-  overflow: hidden;
-  background: rgb(78 100 255 / 16%);
-}
-
-.workspace-progress::after {
-  display: block;
-  width: 34%;
-  height: 100%;
-  background: var(--blue);
-  animation: workspace-progress 0.75s ease-in-out infinite alternate;
-  content: "";
-}
-
-@keyframes workspace-progress {
-  from {
-    transform: translateX(-20%);
-  }
-  to {
-    transform: translateX(250%);
-  }
 }
 
 @media (max-width: 1080px) {

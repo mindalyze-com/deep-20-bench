@@ -5,9 +5,9 @@ import { useRouter } from "vue-router";
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
-import ResultsNav from "@/components/ResultsNav.vue";
 import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard, getOfficialRuns } from "@/lib/api";
 import { duration, integer } from "@/lib/format";
@@ -86,6 +86,26 @@ const totalBenchmarkTime = computed(() =>
   ),
 );
 
+const summaryMetrics = computed<MetricGridItem[]>(() => [
+  { key: "runs", label: "Selected runs", value: guesserRuns.value.length },
+  {
+    key: "median",
+    label: "Median Guesser runtime",
+    value: duration(medianGuesserTime.value),
+    tone: "accent",
+  },
+  {
+    key: "guesser",
+    label: "Combined Guesser runtime",
+    value: duration(totalGuesserTime.value),
+  },
+  {
+    key: "benchmark",
+    label: "Combined benchmark runtime",
+    value: duration(totalBenchmarkTime.value),
+  },
+]);
+
 const guesserTimeBars = computed(() =>
   guesserRuns.value.map((run) => ({
     label: run.model_name,
@@ -148,21 +168,6 @@ void load();
 
 <template>
   <div class="page results-view">
-    <section class="results-hero">
-      <div class="results-hero-inner">
-        <div>
-          <p class="eyebrow">Time</p>
-          <h1>How long each run took.</h1>
-        </div>
-        <p>
-          Guesser response time is shown separately from the total elapsed time of each
-          benchmark run. Lower time is faster.
-        </p>
-      </div>
-    </section>
-
-    <ResultsNav />
-
     <LoadingState v-if="loading" label="Loading time results" />
     <ErrorState v-else-if="error !== null" :message="error" />
 
@@ -175,24 +180,12 @@ void load();
 
     <section v-else class="content-section">
       <div class="content-inner">
-        <dl class="stats-grid results-summary">
-          <div>
-            <dt>Selected runs</dt>
-            <dd>{{ guesserRuns.length }}</dd>
-          </div>
-          <div>
-            <dt>Median Guesser runtime</dt>
-            <dd>{{ duration(medianGuesserTime) }}</dd>
-          </div>
-          <div>
-            <dt>Combined Guesser runtime</dt>
-            <dd>{{ duration(totalGuesserTime) }}</dd>
-          </div>
-          <div>
-            <dt>Combined benchmark runtime</dt>
-            <dd>{{ duration(totalBenchmarkTime) }}</dd>
-          </div>
-        </dl>
+        <MetricGrid
+          class="results-summary"
+          :items="summaryMetrics"
+          label="Time summary"
+          :max-columns="4"
+        />
 
         <section class="panel time-panel" aria-labelledby="time-chart-title">
           <header class="panel-heading">
@@ -212,8 +205,8 @@ void load();
             value-format="duration"
           />
 
-          <section class="runtime-ledger" aria-labelledby="runtime-ledger-title">
-            <header>
+          <section class="runtime-ledger panel-frame" aria-labelledby="runtime-ledger-title">
+            <header class="panel-heading panel-heading--compact">
               <div>
                 <p class="eyebrow">Total benchmark runtime</p>
                 <h3 id="runtime-ledger-title">End-to-end elapsed time.</h3>
@@ -346,38 +339,6 @@ void load();
 </template>
 
 <style scoped>
-.results-hero {
-  padding: clamp(3rem, 7vw, 6rem) var(--gutter);
-  background: var(--ink);
-  color: white;
-}
-
-.results-hero-inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.52fr);
-  gap: clamp(2rem, 6vw, 6rem);
-  align-items: end;
-  width: min(100%, var(--max));
-  margin-inline: auto;
-}
-
-h1,
-.empty-state h2 {
-  max-width: 12ch;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 6.5vw, 6.5rem);
-  font-weight: 500;
-  letter-spacing: -0.06em;
-  line-height: 0.92;
-}
-
-.results-hero-inner > p {
-  margin: 0;
-  color: rgb(255 255 255 / 66%);
-  line-height: 1.7;
-}
-
 .results-summary,
 .time-panel {
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
@@ -385,62 +346,13 @@ h1,
 
 .runtime-ledger {
   margin: 0;
-  border-top: 1px solid var(--line);
-}
-
-.runtime-ledger > header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.5fr);
-  gap: 2rem;
-  align-items: end;
-  padding: clamp(1.4rem, 3vw, 2.5rem);
-  border-bottom: 1px solid var(--line);
-}
-
-.runtime-ledger h3 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 1;
-}
-
-.runtime-ledger > header > p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.6;
 }
 
 .results-table {
   min-width: 1020px;
 }
 
-.results-note {
-  max-width: 62rem;
-  margin: 1rem 0 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.65;
-}
-
 .empty-state {
   min-height: 50vh;
-}
-
-.empty-state h2 {
-  font-size: clamp(2.4rem, 5vw, 4.8rem);
-}
-
-@media (max-width: 760px) {
-  .results-hero-inner {
-    grid-template-columns: 1fr;
-  }
-
-  .runtime-ledger > header {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-  }
 }
 </style>

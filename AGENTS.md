@@ -3,6 +3,8 @@
 ## Publication deployment
 
 - `deep20-publication build` generates the static GitHub Pages site in `docs/`.
+- `docs/` is the tracked project homepage. Always regenerate and commit the complete `docs/`
+  output with any commit that changes the publication source or generated publication.
 - Never commit, push, tag, release, open a pull request, or publish externally unless the user
   explicitly requests that action in the current request.
 - Never push feature or development branches to GitHub. Keep those revisions local and private.
