@@ -1458,6 +1458,39 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "@media (max-width: 620px)" in component
 
 
+def test_mobile_results_use_one_scroller_and_coalesce_chart_work() -> None:
+    source_root = REPOSITORY / "publication" / "site" / "src"
+    router = (source_root / "router.ts").read_text(encoding="utf-8")
+    app = (source_root / "App.vue").read_text(encoding="utf-8")
+    app_css = (source_root / "styles" / "app.css").read_text(encoding="utf-8")
+    workspace = (
+        source_root / "views" / "results" / "ResultsWorkspaceView.vue"
+    ).read_text(encoding="utf-8")
+    chart_runtime = (
+        source_root / "lib" / "use-responsive-echart.ts"
+    ).read_text(encoding="utf-8")
+
+    assert "resultsWorkspace: true" in router
+    assert "'app-viewport--results': route.meta.resultsWorkspace === true" in app
+    assert "to.meta.workspace === true" in app
+    assert "scrollRestoreVersion" in app
+    assert ".app-viewport--results" in app_css
+    assert "overflow-anchor: none;" in app_css
+    assert "pointer-events: none;" in app_css
+    assert "touch-action: pan-y;" in app_css
+    assert "scroll-behavior: smooth" not in app_css
+    assert 'ref="resultsBody"' in workspace
+    assert "resetResultsScroll" in workspace
+    assert 'closest<HTMLElement>(".app-viewport")' in workspace
+    assert "viewport.scrollTop = 0" in workspace
+    assert "scroller.scrollTop = 0" in workspace
+    assert "height: auto;" in workspace
+    assert "overflow: visible;" in workspace
+    assert "refreshPending" in chart_runtime
+    assert "onDeactivated" in chart_runtime
+    assert '"(max-width: 760px)"' in chart_runtime
+
+
 def test_results_pages_keep_model_metrics_explicit() -> None:
     source_root = REPOSITORY / "publication" / "site" / "src"
     results = source_root / "views" / "results"

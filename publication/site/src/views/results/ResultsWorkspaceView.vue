@@ -1,10 +1,35 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, nextTick, onActivated, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import ResultsNav from "@/components/ResultsNav.vue";
 
 const route = useRoute();
+const resultsBody = ref<HTMLElement | null>(null);
+
+const resetResultsScroll = async (): Promise<void> => {
+  await nextTick();
+  const viewport = resultsBody.value?.closest<HTMLElement>(".app-viewport");
+  if (viewport !== undefined && viewport !== null) {
+    viewport.scrollTop = 0;
+    viewport.scrollLeft = 0;
+  }
+  const scroller = resultsBody.value?.querySelector<HTMLElement>(".results-view");
+  if (scroller === undefined || scroller === null) return;
+  scroller.scrollTop = 0;
+  scroller.scrollLeft = 0;
+};
+
+onActivated(() => {
+  void resetResultsScroll();
+});
+watch(
+  () => route.name,
+  () => {
+    void resetResultsScroll();
+  },
+  { flush: "post" },
+);
 
 const copy = computed(() => {
   switch (route.name) {
@@ -47,7 +72,7 @@ const copy = computed(() => {
       <ResultsNav />
     </header>
 
-    <div class="results-workspace-body">
+    <div ref="resultsBody" class="results-workspace-body">
       <RouterView v-slot="{ Component }">
         <KeepAlive>
           <component :is="Component" />
@@ -152,6 +177,13 @@ const copy = computed(() => {
 }
 
 @media (max-width: 760px) {
+  .results-workspace {
+    display: block;
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
   .results-workspace-header {
     grid-template-columns: 1fr;
     gap: 0.35rem;
@@ -174,7 +206,13 @@ const copy = computed(() => {
     padding-block: 0.8rem;
   }
 
+  .results-workspace-body {
+    overflow: visible;
+  }
+
   .results-workspace-body :deep(.results-view) {
+    height: auto;
+    overflow: visible;
     scrollbar-gutter: auto;
   }
 }

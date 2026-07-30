@@ -1,0 +1,1 @@
+import{Mr as e,Rr as t,pr as n}from"./use-responsive-echart-C-tKWXHA.js";function r(r,i,a){var o=r.get(`borderRadius`);if(o==null)return a?{cornerRadius:0}:null;e(o)||(o=[o,o,o,o]);var s=Math.abs(i.r||0-i.r0||0);return{cornerRadius:t(o,function(e){return n(e,s)})}}export{r as t};

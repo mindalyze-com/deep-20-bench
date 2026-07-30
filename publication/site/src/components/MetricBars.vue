@@ -345,9 +345,7 @@ figcaption i {
   }
 
   figcaption small {
-    max-width: 8.5rem;
-    justify-content: flex-end;
-    text-align: right;
+    display: none;
   }
 }
 </style>

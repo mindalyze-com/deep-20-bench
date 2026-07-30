@@ -7,6 +7,7 @@ import {
   nextTick,
   onActivated,
   onBeforeUnmount,
+  onDeactivated,
   onMounted,
   ref,
   watch,
@@ -39,7 +40,8 @@ export const escapeHtml = (value: string): string =>
     .replaceAll("'", "&#039;");
 
 export const chartAnimationEnabled = (): boolean =>
-  !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+  !window.matchMedia("(max-width: 760px)").matches;
 
 export const useResponsiveEChart = (
   options: ResponsiveChartOptions,
@@ -48,6 +50,7 @@ export const useResponsiveEChart = (
   let chart: EChartsType | null = null;
   let resizeObserver: ResizeObserver | null = null;
   let observedWidth = 0;
+  let refreshPending = false;
 
   const render = (): void => {
     const element = chartElement.value;
@@ -58,18 +61,8 @@ export const useResponsiveEChart = (
     chart.resize({ width, height: options.height.value });
   };
 
-  const ensure = (): void => {
-    const element = chartElement.value;
-    if (
-      element === null ||
-      chart !== null ||
-      element.clientWidth < 1 ||
-      element.clientHeight < 1
-    ) {
-      return;
-    }
-    chart = options.initialize(element);
-    if (options.onClick !== undefined) chart.on("click", options.onClick);
+  const observe = (element: HTMLDivElement): void => {
+    if (resizeObserver !== null) return;
     resizeObserver = new ResizeObserver(([entry]) => {
       if (
         entry === undefined ||
@@ -82,8 +75,23 @@ export const useResponsiveEChart = (
     resizeObserver.observe(element);
   };
 
+  const ensure = (): void => {
+    const element = chartElement.value;
+    if (element === null || element.clientWidth < 1 || element.clientHeight < 1) {
+      return;
+    }
+    if (chart === null) {
+      chart = options.initialize(element);
+      if (options.onClick !== undefined) chart.on("click", options.onClick);
+    }
+    observe(element);
+  };
+
   const refresh = (): void => {
+    if (refreshPending) return;
+    refreshPending = true;
     void nextTick(() => {
+      refreshPending = false;
       ensure();
       render();
     });
@@ -92,6 +100,11 @@ export const useResponsiveEChart = (
   onMounted(refresh);
   onActivated(refresh);
   watch(options.height, refresh);
+
+  onDeactivated(() => {
+    resizeObserver?.disconnect();
+    resizeObserver = null;
+  });
 
   onBeforeUnmount(() => {
     resizeObserver?.disconnect();

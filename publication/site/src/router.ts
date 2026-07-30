@@ -15,6 +15,7 @@ const routes: RouteRecordRaw[] = [
       nav: "Results",
       title: "Results",
       workspace: true,
+      resultsWorkspace: true,
       context: "Official results",
     },
     children: [

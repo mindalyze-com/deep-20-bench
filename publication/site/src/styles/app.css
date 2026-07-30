@@ -304,7 +304,6 @@ select {
   overflow-x: clip;
   overflow-y: auto;
   overscroll-behavior-y: contain;
-  scroll-behavior: smooth;
   scrollbar-gutter: stable;
   background: var(--paper);
 }
@@ -851,6 +850,22 @@ a.card:hover {
   .app-viewport {
     padding-bottom: calc(62px + env(safe-area-inset-bottom));
     scrollbar-gutter: auto;
+  }
+
+  .app-viewport--results {
+    overflow-y: auto;
+    overflow-anchor: none;
+    overscroll-behavior-y: auto;
+  }
+
+  .results-workspace :is(
+    .metric-chart-canvas,
+    .stacked-chart-canvas,
+    .efficiency-scatter-canvas,
+    .cost-donut-canvas
+  ) {
+    pointer-events: none;
+    touch-action: pan-y;
   }
 
   .drilldown-inner {
