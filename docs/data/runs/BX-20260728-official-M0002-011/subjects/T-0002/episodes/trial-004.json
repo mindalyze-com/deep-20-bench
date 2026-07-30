@@ -105,6 +105,10 @@
     "guesser_disclosure": {
       "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
       "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"BYOMPCJW\"}",
+      "required_formats": {
+        "ask": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"<non-empty yes-or-no property question>\"}}",
+        "guess": "{\"result\":{\"action\":\"GUESS\",\"description\":\"<non-empty identifying description>\",\"name\":\"<non-empty candidate name>\",\"question\":null}}"
+      },
       "output_storage": "canonical_structured_action"
     },
     "telemetry": {
@@ -683,7 +687,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 23
+        "counted_questions": 23,
+        "rejected_outputs": []
       },
       {
         "turn_type": "action",
@@ -853,7 +858,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 30
+        "counted_questions": 30,
+        "rejected_outputs": []
       },
       {
         "turn_type": "action",
@@ -903,7 +909,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 33
+        "counted_questions": 33,
+        "rejected_outputs": []
       },
       {
         "turn_type": "contract_violation",
@@ -912,7 +919,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 34
+        "counted_questions": 34,
+        "rejected_outputs": []
       },
       {
         "turn_type": "contract_violation",
@@ -921,7 +929,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 35
+        "counted_questions": 35,
+        "rejected_outputs": []
       },
       {
         "turn_type": "action",
@@ -982,7 +991,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 38
+        "counted_questions": 38,
+        "rejected_outputs": []
       },
       {
         "turn_type": "contract_violation",
@@ -991,7 +1001,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 39
+        "counted_questions": 39,
+        "rejected_outputs": []
       },
       {
         "turn_type": "contract_violation",
@@ -1000,7 +1011,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 40
+        "counted_questions": 40,
+        "rejected_outputs": []
       },
       {
         "turn_type": "action",
@@ -1035,7 +1047,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 42
+        "counted_questions": 42,
+        "rejected_outputs": []
       },
       {
         "turn_type": "contract_violation",
@@ -1044,7 +1057,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 43
+        "counted_questions": 43,
+        "rejected_outputs": []
       },
       {
         "turn_type": "contract_violation",
@@ -1053,7 +1067,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 44
+        "counted_questions": 44,
+        "rejected_outputs": []
       },
       {
         "turn_type": "contract_violation",
@@ -1062,7 +1077,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 45
+        "counted_questions": 45,
+        "rejected_outputs": []
       },
       {
         "turn_type": "action",
@@ -1097,7 +1113,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 47
+        "counted_questions": 47,
+        "rejected_outputs": []
       },
       {
         "turn_type": "contract_violation",
@@ -1106,7 +1123,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 48
+        "counted_questions": 48,
+        "rejected_outputs": []
       },
       {
         "turn_type": "action",
@@ -1141,7 +1159,8 @@
         "violation_kind": "output_limit_exceeded",
         "feedback_event": "FORMAT_ERROR",
         "counted": true,
-        "counted_questions": 50
+        "counted_questions": 50,
+        "rejected_outputs": []
       }
     ]
   }

@@ -20,6 +20,7 @@ import {
   chartDisplayFont,
   chartFont,
   chartTextSize,
+  chartValueDomain,
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
@@ -97,7 +98,7 @@ const tooltip = (parameters: CallbackDataParams | CallbackDataParams[]): string 
     detail,
     item.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Open model details →</span>',
+      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">View full run →</span>',
     "</div>",
   ].join("");
 };
@@ -108,7 +109,7 @@ const chartOption = (width: number): EChartsOption => {
   const axisFontSize = chartTextSize(width, 10, 11);
   const categoryFontSize = chartTextSize(width, 10, 12);
   const valueFontSize = chartTextSize(width, 11, 14);
-  const maximum = Math.max(...props.items.map((item) => item.value), 1);
+  const domain = chartValueDomain(props.items.map((item) => item.value));
   return {
     animation: chartAnimationEnabled(),
     animationDuration: 420,
@@ -137,8 +138,9 @@ const chartOption = (width: number): EChartsOption => {
     },
     xAxis: {
       type: "value",
-      min: 0,
-      max: maximum * 1.12,
+      scale: true,
+      min: domain.minimum,
+      max: domain.maximum,
       splitNumber: mobile ? 3 : 5,
       axisLine: {
         show: true,
@@ -160,6 +162,7 @@ const chartOption = (width: number): EChartsOption => {
     yAxis: {
       type: "category",
       inverse: true,
+      triggerEvent: true,
       data: props.items.map((item) => item.label),
       axisLine: { show: false },
       axisTick: { show: false },
@@ -212,14 +215,14 @@ const chartOption = (width: number): EChartsOption => {
         },
       },
       {
-        name: "Open model details",
+        name: "View full run",
         type: "bar",
         barGap: "-100%",
         barWidth: mobile ? 38 : 42,
         cursor: props.items.some((item) => item.link !== undefined)
           ? "pointer"
           : "default",
-        data: props.items.map(() => maximum * 1.12),
+        data: props.items.map(() => domain.maximum),
         itemStyle: {
           color: "rgba(17,19,28,0.001)",
         },
@@ -236,7 +239,10 @@ const chartOption = (width: number): EChartsOption => {
 };
 
 const handleChartClick = (parameters: CallbackDataParams): void => {
-  const item = props.items[parameters.dataIndex];
+  const item =
+    parameters.componentType === "yAxis"
+      ? props.items.find((candidate) => candidate.label === String(parameters.value))
+      : props.items[parameters.dataIndex];
   if (item?.link !== undefined) void router.push(item.link);
 };
 
@@ -246,6 +252,12 @@ const { chartElement, refresh } = useResponsiveEChart({
     echarts.init(element, undefined, { renderer: "svg" }),
   option: chartOption,
   onClick: handleChartClick,
+  pointerCursor: (parameters) =>
+    parameters.componentType === "yAxis" &&
+    props.items.some(
+      (item) =>
+        item.label === String(parameters.value) && item.link !== undefined,
+    ),
 });
 
 watch(
@@ -265,7 +277,7 @@ watch(
   <figure class="metric-chart" :class="`metric-chart--${color}`">
     <figcaption>
       <span>{{ directionLabel }}</span>
-      <small><i aria-hidden="true"></i>Select anywhere on a bar row for details</small>
+      <small><i aria-hidden="true"></i>Select a model row to view its full run</small>
     </figcaption>
     <div
       ref="chartElement"
@@ -277,7 +289,7 @@ watch(
         {{ index + 1 }}. {{ item.label }}: {{ item.display }}.
         <span v-if="item.detail">{{ item.detail }}.</span>
         <RouterLink v-if="item.link" :to="item.link" tabindex="-1">
-          Open full details for {{ item.label }}
+          View full run for {{ item.label }}
         </RouterLink>
       </li>
     </ol>

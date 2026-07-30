@@ -20,6 +20,7 @@ import {
   chartDisplayFont,
   chartFont,
   chartTextSize,
+  chartValueDomain,
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
@@ -74,7 +75,7 @@ const tooltip = (
     detail,
     row.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">Open model details →</span>',
+      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">View full run →</span>',
     "</div>",
   ].join("");
 };
@@ -84,13 +85,19 @@ const chartOption = (width: number): EChartsOption => {
   const axisFontSize = chartTextSize(width, 10, 11);
   const categoryFontSize = chartTextSize(width, 10, 12);
   const valueFontSize = chartTextSize(width, 11, 14);
-  const maximum = Math.max(
-    ...props.rows.map((row) =>
-      row.values.reduce((sum, value) => sum + value, 0),
-    ),
-    1,
+  const totals = props.rows.map((row) =>
+    row.values.reduce((sum, value) => sum + value, 0),
   );
+  const domain = chartValueDomain(totals);
   const lastSeries = props.segments.length - 1;
+  const visibleValue = (row: StackedBarRow, segmentIndex: number): number => {
+    const total = row.values.reduce((sum, value) => sum + value, 0);
+    if (total <= 0) return 0;
+    return (
+      (row.values[segmentIndex] ?? 0) *
+      ((total - domain.minimum) / total)
+    );
+  };
   return {
     animation: chartAnimationEnabled(),
     animationDuration: 420,
@@ -119,8 +126,9 @@ const chartOption = (width: number): EChartsOption => {
     },
     xAxis: {
       type: "value",
-      min: 0,
-      max: maximum * 1.12,
+      scale: true,
+      min: domain.minimum,
+      max: domain.maximum,
       splitNumber: mobile ? 3 : 5,
       axisLine: { show: true, lineStyle: { color: "#a8a69f" } },
       axisTick: { show: false },
@@ -138,6 +146,7 @@ const chartOption = (width: number): EChartsOption => {
     yAxis: {
       type: "category",
       inverse: true,
+      triggerEvent: true,
       data: props.rows.map((row) => row.label),
       axisLine: { show: false },
       axisTick: { show: false },
@@ -154,6 +163,20 @@ const chartOption = (width: number): EChartsOption => {
       },
     },
     series: [
+      {
+        name: "Adaptive axis offset",
+        type: "bar",
+        stack: "full-cost",
+        barWidth: mobile ? 15 : 18,
+        silent: true,
+        data: props.rows.map(() => domain.minimum),
+        itemStyle: {
+          color: "transparent",
+        },
+        emphasis: {
+          disabled: true,
+        },
+      },
       ...props.segments.map((segment, segmentIndex) => ({
         name: segment.label,
         type: "bar" as const,
@@ -171,7 +194,7 @@ const chartOption = (width: number): EChartsOption => {
                 ? [0, 3, 3, 0]
                 : 0,
         },
-        data: props.rows.map((row) => row.values[segmentIndex] ?? 0),
+        data: props.rows.map((row) => visibleValue(row, segmentIndex)),
         label:
           segmentIndex === lastSeries
             ? {
@@ -191,14 +214,14 @@ const chartOption = (width: number): EChartsOption => {
         },
       })),
       {
-        name: "Open model details",
+        name: "View full run",
         type: "bar",
         barGap: "-100%",
         barWidth: mobile ? 38 : 42,
         cursor: props.rows.some((row) => row.link !== undefined)
           ? "pointer"
           : "default",
-        data: props.rows.map(() => maximum * 1.12),
+        data: props.rows.map(() => domain.maximum),
         itemStyle: {
           color: "rgba(17,19,28,0.001)",
         },
@@ -215,7 +238,10 @@ const chartOption = (width: number): EChartsOption => {
 };
 
 const handleClick = (parameters: CallbackDataParams): void => {
-  const row = props.rows[parameters.dataIndex];
+  const row =
+    parameters.componentType === "yAxis"
+      ? props.rows.find((candidate) => candidate.label === String(parameters.value))
+      : props.rows[parameters.dataIndex];
   if (row?.link !== undefined) void router.push(row.link);
 };
 
@@ -225,6 +251,12 @@ const { chartElement, refresh } = useResponsiveEChart({
     echarts.init(element, undefined, { renderer: "svg" }),
   option: chartOption,
   onClick: handleClick,
+  pointerCursor: (parameters) =>
+    parameters.componentType === "yAxis" &&
+    props.rows.some(
+      (row) =>
+        row.label === String(parameters.value) && row.link !== undefined,
+    ),
 });
 
 watch(
@@ -251,6 +283,7 @@ watch(
         </li>
       </ul>
     </figcaption>
+    <p class="chart-run-cue">Select a model row to view its full run.</p>
     <div
       ref="chartElement"
       class="stacked-chart-canvas"
@@ -263,7 +296,7 @@ watch(
           {{ segments[index]?.label }} {{ detail }}.
         </span>
         <RouterLink v-if="row.link" :to="row.link" tabindex="-1">
-          Open full details for {{ row.label }}
+          View full run for {{ row.label }}
         </RouterLink>
       </li>
     </ol>
@@ -314,6 +347,14 @@ figcaption i {
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 50%;
+}
+
+.chart-run-cue {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: var(--text-micro);
+  line-height: 1.4;
+  text-align: right;
 }
 
 .stacked-chart-canvas {

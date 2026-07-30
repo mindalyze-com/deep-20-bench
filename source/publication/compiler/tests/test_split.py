@@ -25,7 +25,7 @@ REPOSITORY = Path(__file__).resolve().parents[4]
 
 
 def _dataset() -> PublishedDataset:
-    path = REPOSITORY / "docs" / "data" / "deep20bench-v5.json"
+    path = REPOSITORY / "docs" / "data" / "deep20bench-v6.json"
     return PublishedDataset.model_validate_json(path.read_text(encoding="utf-8"))
 
 

@@ -182,6 +182,40 @@ class ErrorOutputPreview(FrozenModel):
         return self
 
 
+class DiagnosticProviderOutput(FrozenModel):
+    """Private provider output parsed only by the explicit publication capture step."""
+
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+        str_strip_whitespace=False,
+    )
+
+    attempt_number: int = Field(ge=1)
+    response_id: str | None = None
+    finish_reason: str | None = None
+    output: str = Field(min_length=1)
+
+
+class DiagnosticErrorOutputRecord(FrozenModel):
+    """Strict input model for one signed owner-only diagnostic record."""
+
+    schema_version: Literal[1] = 1
+    component: Literal[
+        "guesser",
+        "oracle",
+        "reviewer",
+        "judge",
+        "guess_validator",
+    ]
+    call_id: str = Field(pattern=CALL_ID_PATTERN)
+    failure_code: str | None = Field(default=None, min_length=1, max_length=160)
+    recovered: bool
+    recovery: RecoveryTotalsSnapshot
+    outputs: tuple[DiagnosticProviderOutput, ...] = Field(min_length=1)
+    recorded_at: datetime
+
+
 class PartialTrialMetrics(FrozenModel):
     counted_questions: int = Field(default=0, ge=0)
     guesser_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
@@ -560,6 +594,27 @@ class EpisodeAction(FrozenModel):
         elif self.question is not None or self.name is None or self.description is None:
             raise ValueError("GUESS requires name/description and null question")
         return self
+
+
+class GuesserActionEnvelope(FrozenModel):
+    result: EpisodeAction
+
+
+class GuesserRequiredFormats(FrozenModel):
+    ask: GuesserActionEnvelope = Field(alias="ASK")
+    guess: GuesserActionEnvelope = Field(alias="GUESS")
+
+    @model_validator(mode="after")
+    def actions_match_labels(self) -> GuesserRequiredFormats:
+        if self.ask.result.action != "ASK" or self.guess.result.action != "GUESS":
+            raise ValueError("FORMAT_ERROR required formats do not match their action labels")
+        return self
+
+
+class GuesserFormatErrorEvent(FrozenModel):
+    event: Literal["FORMAT_ERROR"]
+    message: str = Field(min_length=1)
+    required_formats: GuesserRequiredFormats
 
 
 class EpisodeEvidence(FrozenModel):
@@ -994,8 +1049,61 @@ class CompletedTrialArtifactEnvelope(FrozenModel):
 class LoadedEpisode(FrozenModel):
     identity: TrialIdentity
     result: EpisodeResultArtifact
+    artifacts: TrialArtifactReferences
+    violation_disclosures: tuple[GuesserViolationDisclosure, ...] = ()
     relative_path: str = Field(min_length=1)
     integrity_hash: str = Field(pattern=SHA256_PATTERN)
+
+
+class PublicRejectedOutput(FrozenModel):
+    """Exact Guesser-visible provider text with private provider IDs removed."""
+
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+        str_strip_whitespace=False,
+    )
+
+    attempt_number: int = Field(ge=1)
+    finish_reason: str | None = None
+    text: str = Field(min_length=1)
+
+
+class GuesserViolationDisclosure(FrozenModel):
+    execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
+    target_id: str = Field(pattern=TARGET_ID_PATTERN)
+    trial_id: str = Field(pattern=TRIAL_ID_PATTERN)
+    turn_number: int = Field(ge=1)
+    violation_kind: Literal[
+        "invalid_json",
+        "invalid_action",
+        "output_limit_exceeded",
+        "empty_output",
+        "incomplete_output",
+    ]
+    rejected_outputs: tuple[PublicRejectedOutput, ...] = ()
+
+
+class GuesserViolationSnapshot(FrozenModel):
+    schema_version: Literal[1] = 1
+    records: tuple[GuesserViolationDisclosure, ...]
+
+    @model_validator(mode="after")
+    def unique_canonical_records(self) -> GuesserViolationSnapshot:
+        keys = tuple(
+            (
+                record.execution_id,
+                record.target_id,
+                record.trial_id,
+                record.turn_number,
+            )
+            for record in self.records
+        )
+        if len(keys) != len(set(keys)):
+            raise ValueError("Guesser violation disclosure records must be unique")
+        if keys != tuple(sorted(keys)):
+            raise ValueError("Guesser violation disclosure records must use canonical order")
+        return self
 
 
 class CatalogModel(FrozenModel):
@@ -1193,6 +1301,7 @@ class PublicContractViolationTurn(FrozenModel):
     feedback_event: Literal["FORMAT_ERROR"] | None
     counted: bool
     counted_questions: int
+    rejected_outputs: tuple[PublicRejectedOutput, ...] = ()
 
 
 PublicTurn = Annotated[
@@ -1248,9 +1357,15 @@ class PublicOracleSupportUsage(FrozenModel):
 class PublicGuesserDisclosure(FrozenModel):
     system_message: str
     begin_message: str
+    required_formats: PublicGuesserRequiredFormats | None = None
     output_storage: Literal["canonical_structured_action"] = (
         "canonical_structured_action"
     )
+
+
+class PublicGuesserRequiredFormats(FrozenModel):
+    ask: str = Field(min_length=1)
+    guess: str = Field(min_length=1)
 
 
 class PublicEpisodeDetail(FrozenModel):
@@ -1464,7 +1579,7 @@ class DatasetProvenance(FrozenModel):
 
 
 class PublishedDataset(FrozenModel):
-    schema_version: Literal[5] = 5
+    schema_version: Literal[6] = 6
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig
@@ -1486,7 +1601,7 @@ class PublicationRunReference(FrozenModel):
 class PublicationManifestDocument(FrozenModel):
     document_type: Literal["manifest"] = "manifest"
     schema_version: Literal[1] = 1
-    dataset_schema_version: Literal[5] = 5
+    dataset_schema_version: Literal[6] = 6
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig

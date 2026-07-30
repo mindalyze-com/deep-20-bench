@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import filecmp
+import json
 import os
 import shutil
 import subprocess
@@ -21,16 +22,23 @@ from .integrity import (
 )
 from .loader import (
     parse_completed_episode,
+    parse_diagnostic_error_outputs,
+    parse_guesser_violation_snapshot,
     parse_publication_config,
     parse_run,
     parse_subject_catalog,
 )
 from .models import (
     CompletedTrialSummary,
+    DiagnosticErrorOutputRecord,
+    EpisodeActionTurn,
+    GuesserViolationDisclosure,
+    GuesserViolationSnapshot,
     LoadedEpisode,
     LoadedRun,
     PublicationDataBundle,
     PublicationManifestDocument,
+    PublicRejectedOutput,
     PublishedDataset,
 )
 from .serialize import dataset_json, leaderboard_csv, publication_document_json
@@ -82,7 +90,11 @@ def _publication_build_time(repository: Path, *, check: bool) -> datetime:
     return manifest.provenance.built_at
 
 
-def _load_run(summary_path: Path, repository: Path) -> LoadedRun:
+def _load_run(
+    summary_path: Path,
+    repository: Path,
+    violation_snapshot: GuesserViolationSnapshot | None = None,
+) -> LoadedRun:
     run_root = summary_path.parent
     manifest_path = run_root / "manifest.json"
     state_path = run_root / "state.yml"
@@ -101,7 +113,7 @@ def _load_run(summary_path: Path, repository: Path) -> LoadedRun:
         state_label=str(state_path),
         relative_summary_path=relative,
     )
-    episodes = _load_episode_details(loaded, repository)
+    episodes = _load_episode_details(loaded, repository, violation_snapshot)
     return LoadedRun(
         summary=loaded.summary,
         manifest=loaded.manifest,
@@ -114,6 +126,7 @@ def _load_run(summary_path: Path, repository: Path) -> LoadedRun:
 def _load_episode_details(
     run: LoadedRun,
     repository: Path,
+    violation_snapshot: GuesserViolationSnapshot | None = None,
 ) -> tuple[LoadedEpisode, ...]:
     episodes: list[LoadedEpisode] = []
     repository_root = repository.resolve()
@@ -132,23 +145,162 @@ def _load_episode_details(
             if not source.is_file():
                 raise PublicationInputError(f"episode detail does not exist: {relative}")
             source_text = _read_text(source)
-            episodes.append(
-                parse_completed_episode(
-                    value=parse_yaml_object(source_text, str(source)),
-                    label=str(source),
-                    relative_path=relative,
-                    actual_file_integrity_hash=sha256_text(source_text),
-                    expected_integrity_hash=reference.integrity_hash,
-                )
+            episode = parse_completed_episode(
+                value=parse_yaml_object(source_text, str(source)),
+                label=str(source),
+                relative_path=relative,
+                actual_file_integrity_hash=sha256_text(source_text),
+                expected_integrity_hash=reference.integrity_hash,
             )
+            if violation_snapshot is not None:
+                disclosures = tuple(
+                    record
+                    for record in violation_snapshot.records
+                    if record.execution_id == episode.identity.execution_id
+                    and record.target_id == episode.identity.target_id
+                    and record.trial_id == episode.identity.trial_id
+                )
+                expected = {
+                    (turn.turn_number, turn.violation_kind)
+                    for turn in episode.result.turns
+                    if not isinstance(turn, EpisodeActionTurn)
+                }
+                actual = {
+                    (record.turn_number, record.violation_kind)
+                    for record in disclosures
+                }
+                if actual != expected:
+                    raise PublicationInputError(
+                        f"{relative} Guesser violation disclosures do not match "
+                        "its recorded contract violations"
+                    )
+                episode = episode.model_copy(
+                    update={"violation_disclosures": disclosures}
+                )
+            episodes.append(episode)
     return tuple(episodes)
 
 
-def _discover_runs(repository: Path) -> tuple[LoadedRun, ...]:
+def _discover_runs(
+    repository: Path,
+    violation_snapshot: GuesserViolationSnapshot | None = None,
+) -> tuple[LoadedRun, ...]:
     candidates = sorted(
         (repository / "runs").glob("M-[0-9][0-9][0-9][0-9]/BX-*/summary.yml")
     )
-    return tuple(_load_run(path, repository) for path in candidates)
+    runs = tuple(
+        _load_run(path, repository, violation_snapshot)
+        for path in candidates
+    )
+    if violation_snapshot is not None:
+        attached = sum(
+            len(episode.violation_disclosures)
+            for run in runs
+            for episode in run.episodes
+        )
+        if attached != len(violation_snapshot.records):
+            raise PublicationInputError(
+                "Guesser violation disclosure snapshot contains unknown episode records"
+            )
+    return runs
+
+
+def _guesser_violation_snapshot_path(repository: Path) -> Path:
+    return (
+        repository
+        / "source"
+        / "publication"
+        / "data"
+        / "guesser-violation-outputs-v1.json"
+    )
+
+
+def _episode_diagnostic_records(
+    episode: LoadedEpisode,
+    repository: Path,
+) -> tuple[DiagnosticErrorOutputRecord, ...]:
+    reference = episode.artifacts.error_outputs
+    if reference is None:
+        return ()
+    source = (repository / reference.relative_path).resolve()
+    try:
+        source.relative_to(repository.resolve())
+    except ValueError as error:
+        raise PublicationInputError(
+            f"error-output diagnostic is outside repository: {reference.relative_path}"
+        ) from error
+    if not source.is_file():
+        raise PublicationInputError(
+            f"error-output diagnostic does not exist: {reference.relative_path}"
+        )
+    if source.stat().st_mode & 0o077:
+        raise PublicationInputError(
+            f"error-output diagnostic is not owner-only: {reference.relative_path}"
+        )
+    return parse_diagnostic_error_outputs(
+        text=_read_text(source),
+        label=str(source),
+        expected_record_count=reference.record_count,
+        expected_integrity_hash=reference.integrity_hash,
+    )
+
+
+def _capture_guesser_violation_snapshot(
+    runs: tuple[LoadedRun, ...],
+    repository: Path,
+) -> GuesserViolationSnapshot:
+    disclosures: list[GuesserViolationDisclosure] = []
+    for run in runs:
+        for episode in run.episodes:
+            diagnostics = {
+                record.call_id: record
+                for record in _episode_diagnostic_records(episode, repository)
+                if record.component == "guesser"
+            }
+            for turn in episode.result.turns:
+                if isinstance(turn, EpisodeActionTurn):
+                    continue
+                diagnostic = diagnostics.get(turn.guesser_call_id)
+                if diagnostic is not None and diagnostic.recovered:
+                    raise PublicationInputError(
+                        f"{episode.relative_path} maps a recovered diagnostic "
+                        f"to rejected turn {turn.turn_number}"
+                    )
+                rejected_outputs = (
+                    tuple(
+                        PublicRejectedOutput(
+                            attempt_number=output.attempt_number,
+                            finish_reason=output.finish_reason,
+                            text=output.output,
+                        )
+                        for output in diagnostic.outputs
+                    )
+                    if diagnostic is not None
+                    else ()
+                )
+                disclosures.append(
+                    GuesserViolationDisclosure(
+                        execution_id=episode.identity.execution_id,
+                        target_id=episode.identity.target_id,
+                        trial_id=episode.identity.trial_id,
+                        turn_number=turn.turn_number,
+                        violation_kind=turn.violation_kind,
+                        rejected_outputs=rejected_outputs,
+                    )
+                )
+    return GuesserViolationSnapshot(
+        records=tuple(
+            sorted(
+                disclosures,
+                key=lambda record: (
+                    record.execution_id,
+                    record.target_id,
+                    record.trial_id,
+                    record.turn_number,
+                ),
+            )
+        )
+    )
 
 
 def _directories_equal(left: Path, right: Path) -> bool:
@@ -189,7 +341,7 @@ def _write_public_data(public_directory: Path, dataset: PublishedDataset) -> Non
     )
     backup_directory = public_directory / ".deep20-data-previous"
     try:
-        (staged_directory / "deep20bench-v5.json").write_text(
+        (staged_directory / "deep20bench-v6.json").write_text(
             dataset_json(dataset),
             encoding="utf-8",
         )
@@ -339,7 +491,12 @@ def build(
             _read_yaml(subject_path),
             str(subject_path),
         )
-        runs = _discover_runs(root)
+        violation_snapshot_path = _guesser_violation_snapshot_path(root)
+        violation_snapshot = parse_guesser_violation_snapshot(
+            _read_json(violation_snapshot_path),
+            str(violation_snapshot_path),
+        )
+        runs = _discover_runs(root, violation_snapshot)
         built_at = _publication_build_time(root, check=check)
         dataset = compile_publication(
             runs=runs,
@@ -392,6 +549,48 @@ def build(
         typer.echo(
             f"{_timestamp()} ERROR publication.failed code=publication_build_failed "
             f"message={str(error)!r}",
+            err=True,
+        )
+        raise typer.Exit(1) from error
+
+
+@app.command("capture-guesser-outputs")
+def capture_guesser_outputs(
+    repository: Annotated[
+        Path | None,
+        typer.Option(help="Deep20Bench repository root; discovered by default."),
+    ] = None,
+) -> None:
+    """Create the public-safe Guesser violation snapshot from owner-only diagnostics."""
+
+    try:
+        root = _repository_root(repository or Path.cwd())
+        runs = _discover_runs(root)
+        snapshot = _capture_guesser_violation_snapshot(runs, root)
+        output = _guesser_violation_snapshot_path(root)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(
+            json.dumps(
+                snapshot.model_dump(mode="json"),
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        retained = sum(
+            len(record.rejected_outputs)
+            for record in snapshot.records
+        )
+        typer.echo(
+            f"{_timestamp()} INFO publication.guesser_outputs "
+            f"violations={len(snapshot.records)} retained_outputs={retained} "
+            f"output={output.relative_to(root).as_posix()}"
+        )
+    except (OSError, PublicationInputError, ValueError) as error:
+        typer.echo(
+            f"{_timestamp()} ERROR publication.failed "
+            f"code=guesser_output_capture_failed message={str(error)!r}",
             err=True,
         )
         raise typer.Exit(1) from error

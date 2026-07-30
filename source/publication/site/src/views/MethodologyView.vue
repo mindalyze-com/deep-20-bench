@@ -71,10 +71,11 @@ const penalty = computed(() => {
 
       <nav class="method-nav" aria-label="Methodology contents">
         <a href="#protocol">01 · Protocol</a>
-        <a href="#scoring">02 · Scoring</a>
-        <a href="#reliability">03 · Reliability</a>
-        <a href="#eligibility">04 · Eligibility</a>
-        <a href="#isolation">05 · Isolation</a>
+        <a href="#answer-checks">02 · Answer checks</a>
+        <a href="#scoring">03 · Scoring</a>
+        <a href="#reliability">04 · Reliability</a>
+        <a href="#eligibility">05 · Eligibility</a>
+        <a href="#isolation">06 · Isolation</a>
       </nav>
 
       <section id="protocol" class="content-section">
@@ -118,35 +119,96 @@ const penalty = computed(() => {
         </div>
       </section>
 
+      <section id="answer-checks" class="content-section answer-checks-section">
+        <div class="content-inner editorial-copy">
+          <div>
+            <p class="eyebrow">02 · Answer checks</p>
+            <p class="section-note">Blind adjudication</p>
+          </div>
+          <div>
+            <h2>Three checks produce one answer.</h2>
+            <p class="lead">
+              The Guesser never sees the research or review. It receives only the final YES, NO,
+              or UNKNOWN.
+            </p>
+            <div class="answer-roles">
+              <article>
+                <span>01 · Oracle</span>
+                <h3>Research the question.</h3>
+                <p>
+                  The Oracle must not answer from its own knowledge, where a plausible answer
+                  may still be wrong. It must search the live web, cite evidence, and then
+                  propose YES, NO, or UNKNOWN.
+                </p>
+              </article>
+              <article>
+                <span>02 · Reviewer</span>
+                <h3>Check every YES or NO.</h3>
+                <p>
+                  The Reviewer checks each Oracle YES or NO using the subject, question, and
+                  evidence, without seeing the Oracle’s answer.
+                </p>
+              </article>
+              <article>
+                <span>03 · Judge</span>
+                <h3>Resolve disagreement.</h3>
+                <p>
+                  If the first two decisions disagree, the Judge decides from the same limited
+                  material, without seeing either answer.
+                </p>
+              </article>
+            </div>
+            <div class="decision-path" aria-label="Answer review decision path">
+              <p><strong>Oracle UNKNOWN</strong><span>→ final</span></p>
+              <p><strong>Oracle YES or NO</strong><span>→ Reviewer</span></p>
+              <p><strong>Agreement</strong><span>→ final</span></p>
+              <p><strong>Disagreement</strong><span>→ Judge → final</span></p>
+            </div>
+            <p>
+              Early runs exposed rare but basic Oracle errors. In one case, it answered YES to
+              “born before 1800?” while citing 1875. A full run asks hundreds of questions, so
+              even rare errors add up. Reviewer and Judge use different model families and
+              providers to reduce correlated mistakes.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section id="scoring" class="content-section dark-method">
         <div class="content-inner editorial-copy">
           <div>
-            <p class="eyebrow">02 · Scoring</p>
+            <p class="eyebrow">03 · Scoring</p>
             <p class="section-note">{{ manifest.score_policy.version }}</p>
           </div>
           <div>
-            <h2>The score is a question count.</h2>
-            <p class="lead">Lower is better. The score stays in the unit used by the game.</p>
+            <h2>The model score is the average number of questions.</h2>
+            <p class="lead">
+              Lower is better. A failed trial counts as {{ penalty }} questions.
+            </p>
             <div class="formula" aria-label="Question score formula">
               <div>
-                <span>Trial value</span>
-                <strong>success: questions · failure: {{ penalty }}</strong>
+                <span>Trial score</span>
+                <strong>questions used · failed trial = {{ penalty }}</strong>
               </div>
               <div>
-                <span>Subject value</span>
-                <strong>average of {{ manifest.active_cohort.iterations }} trials</strong>
-              </div>
-              <div>
-                <span>Model score</span>
+                <span>Subject average</span>
                 <strong>
-                  average of {{ manifest.active_cohort.target_ids.length }} subject values
+                  (trial 1 + … + trial {{ manifest.active_cohort.iterations }}) ÷
+                  {{ manifest.active_cohort.iterations }}
+                </strong>
+              </div>
+              <div>
+                <span>Final model score</span>
+                <strong>
+                  (subject average 1 + … + subject average
+                  {{ manifest.active_cohort.target_ids.length }}) ÷
+                  {{ manifest.active_cohort.target_ids.length }}
                 </strong>
               </div>
             </div>
             <p>
-              A successful trial uses its counted questions. A model failure receives
-              {{ penalty }}, one above the question limit. Subject averages are averaged again,
-              so every subject has equal weight. Infrastructure failures are not scored.
+              First, average the trials for each subject. Then average the subject results. This
+              gives every subject equal weight. Infrastructure failures are not scored.
             </p>
           </div>
         </div>
@@ -155,7 +217,7 @@ const penalty = computed(() => {
       <section id="reliability" class="content-section">
         <div class="content-inner editorial-copy">
           <div>
-            <p class="eyebrow">03 · Reliability</p>
+            <p class="eyebrow">04 · Reliability</p>
             <p class="section-note">Independent aspect</p>
           </div>
           <div>
@@ -190,7 +252,7 @@ const penalty = computed(() => {
       <section id="eligibility" class="content-section eligibility-section">
         <div class="content-inner editorial-copy">
           <div>
-            <p class="eyebrow">04 · Eligibility</p>
+            <p class="eyebrow">05 · Eligibility</p>
             <p class="section-note">Official selection</p>
           </div>
           <div>
@@ -215,7 +277,7 @@ const penalty = computed(() => {
       <section id="isolation" class="content-section isolation-section">
         <div class="content-inner editorial-copy">
           <div>
-            <p class="eyebrow">05 · Isolation</p>
+            <p class="eyebrow">06 · Isolation</p>
             <p class="section-note">Information boundary</p>
           </div>
           <div>
@@ -245,7 +307,7 @@ const penalty = computed(() => {
 <style scoped>
 .method-nav {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   border-bottom: 1px solid var(--line);
   background: var(--paper-bright);
 }
@@ -314,6 +376,78 @@ const penalty = computed(() => {
   margin: 0;
   font-family: var(--font-display);
   font-size: 2.35rem;
+}
+
+.answer-checks-section {
+  background: var(--paper-bright);
+}
+
+.answer-roles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 2.5rem 0 1rem;
+  border: 1px solid var(--line);
+  background: var(--line);
+  gap: 1px;
+}
+
+.answer-roles article {
+  min-height: 14rem;
+  padding: 1.2rem;
+  background: white;
+}
+
+.answer-roles span {
+  color: var(--muted);
+  font-size: var(--text-micro);
+  font-weight: 780;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.answer-roles h3 {
+  margin: 2.5rem 0 0.65rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.answer-roles p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-small);
+  line-height: 1.5;
+}
+
+.decision-path {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0 0 2rem;
+  border: 1px solid var(--ink);
+}
+
+.decision-path p {
+  display: flex;
+  min-height: 6.5rem;
+  margin: 0;
+  padding: 1rem;
+  border-right: 1px solid var(--ink);
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.decision-path p:last-child {
+  border-right: 0;
+}
+
+.decision-path strong,
+.decision-path span {
+  font-size: var(--text-small);
+}
+
+.decision-path span {
+  color: var(--blue-ink);
+  font-weight: 720;
 }
 
 .dark-method {
@@ -450,14 +584,36 @@ const penalty = computed(() => {
     border-right: 0;
   }
 
-  .method-nav a:last-child {
-    grid-column: 1 / -1;
+  .method-nav a:nth-last-child(-n + 2) {
     border-bottom: 0;
   }
 
+  .method-nav a:last-child {
+    grid-column: auto;
+  }
+
+  .answer-roles,
+  .decision-path,
   .flow,
   .reliability-grid {
     grid-template-columns: 1fr;
+  }
+
+  .answer-roles article,
+  .decision-path p,
+  .flow i {
+    border-right: 0;
+  }
+
+  .answer-roles article,
+  .decision-path p {
+    min-height: auto;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .answer-roles article:last-child,
+  .decision-path p:last-child {
+    border-bottom: 0;
   }
 
   .flow i {

@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { computed, onActivated, ref } from "vue";
+import { useRouter } from "vue-router";
 
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import MobileResultCard from "@/components/MobileResultCard.vue";
+import ModelRunLink from "@/components/ModelRunLink.vue";
 import ResultsNav from "@/components/ResultsNav.vue";
+import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard } from "@/lib/api";
 import { duration, money, moneyEpisode, number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
@@ -13,6 +17,7 @@ import type { LeaderboardRow } from "@/lib/types";
 const leaderboard = ref<LeaderboardRow[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
+const router = useRouter();
 
 const applyRouteContext = (): void => {
   setRouteContext({
@@ -63,6 +68,15 @@ const scoreBars = computed(() =>
       row.execution_id === null ? undefined : `/runs/${row.execution_id}/`,
   })),
 );
+
+const runLink = (row: LeaderboardRow) => ({
+  name: "run",
+  params: { executionId: row.execution_id },
+});
+
+const openRun = (row: LeaderboardRow): void => {
+  if (row.execution_id !== null) void router.push(runLink(row));
+};
 
 const load = async (): Promise<void> => {
   loading.value = true;
@@ -147,40 +161,64 @@ void load();
         </section>
 
         <div
-          class="table-wrap results-table-wrap"
+          class="table-wrap ranking-table-wrap results-table-wrap"
           tabindex="0"
           aria-label="Scrollable result comparison"
         >
-          <table class="data-table results-table results-table--overview">
+          <table class="data-table ranking-table results-table results-table--overview">
             <thead>
               <tr>
-                <th>Rank</th>
-                <th>Model</th>
+                <th class="rank-column">
+                  <span aria-hidden="true">#</span>
+                  <span class="visually-hidden">Rank</span>
+                </th>
+                <th class="model-column">Model</th>
+                <th class="run-column">Run</th>
                 <th data-numeric>Score</th>
                 <th data-numeric>Success</th>
                 <th data-numeric>Contract</th>
-                <th data-numeric>Guesser cost / episode</th>
-                <th data-numeric>Guesser time / episode</th>
+                <th data-numeric>
+                  <span class="table-header-stack">
+                    <span>Guesser cost</span>
+                    <span>per episode</span>
+                  </span>
+                </th>
+                <th data-numeric>
+                  <span class="table-header-stack">
+                    <span>Guesser time</span>
+                    <span>per episode</span>
+                  </span>
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr
                 v-for="row in rows"
                 :key="row.model.model_id"
-                :class="{ 'result-row--clickable': row.execution_id !== null }"
+                :class="{
+                  'result-row--clickable': row.execution_id !== null,
+                  'result-row--navigable': row.execution_id !== null,
+                }"
+                @click="openRun(row)"
               >
-                <td data-label="Question rank">{{ row.rank ?? "—" }}</td>
-                <td data-label="Model">
-                  <RouterLink
+                <td class="rank-column" data-label="Question rank">{{ row.rank ?? "—" }}</td>
+                <td class="model-column" data-label="Model">
+                  <ModelRunLink
                     v-if="row.execution_id !== null"
-                    class="result-row-link"
-                    :to="{ name: 'run', params: { executionId: row.execution_id } }"
-                    :aria-label="`Open full details for ${row.model.display_name}`"
-                  >
-                    {{ row.model.display_name }}
-                  </RouterLink>
+                    :to="runLink(row)"
+                    :name="row.model.display_name"
+                    :meta="row.model.provider"
+                  />
                   <strong v-else>{{ row.model.display_name }}</strong>
-                  <small>{{ row.model.provider }}</small>
+                  <small v-if="row.execution_id === null">{{ row.model.provider }}</small>
+                </td>
+                <td class="run-column" data-label="Run">
+                  <RunTableAction
+                    v-if="row.execution_id !== null"
+                    :to="runLink(row)"
+                    :name="row.model.display_name"
+                  />
+                  <span v-else aria-hidden="true">—</span>
                 </td>
                 <td data-label="Question score" data-numeric>
                   {{ number(row.question_score) }}
@@ -206,6 +244,28 @@ void load();
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div class="mobile-result-list" aria-label="Result comparison">
+          <MobileResultCard
+            v-for="row in rows"
+            :key="`mobile-${row.model.model_id}`"
+            :rank="row.rank ?? '—'"
+            :name="row.model.display_name"
+            :provider="row.model.provider"
+            :to="row.execution_id === null ? null : runLink(row)"
+            :metrics="[
+              { label: 'Score', value: number(row.question_score) },
+              { label: 'Success', value: percent(row.success_rate) },
+              {
+                label: 'Cost',
+                value:
+                  row.guesser_cost_per_episode_usd === null
+                    ? '—'
+                    : moneyEpisode(row.guesser_cost_per_episode_usd),
+              },
+            ]"
+          />
         </div>
 
         <p class="results-note">

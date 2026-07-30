@@ -1,22 +1,28 @@
 <script setup lang="ts">
 import { computed, onActivated, ref } from "vue";
+import { useRouter } from "vue-router";
 
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import MobileResultCard from "@/components/MobileResultCard.vue";
+import ModelRunLink from "@/components/ModelRunLink.vue";
 import ResultsNav from "@/components/ResultsNav.vue";
+import RunTableAction from "@/components/RunTableAction.vue";
 import StackedMetricBars, {
   type StackedBarRow,
   type StackedBarSegment,
 } from "@/components/StackedMetricBars.vue";
-import { getOfficialRuns } from "@/lib/api";
+import { getLeaderboard, getOfficialRuns } from "@/lib/api";
 import { money, moneyEpisode, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
-import type { PublicRunSummary, RunDocument } from "@/lib/types";
+import type { LeaderboardRow, PublicRunSummary, RunDocument } from "@/lib/types";
 
 const documents = ref<RunDocument[]>([]);
+const leaderboard = ref<LeaderboardRow[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
+const router = useRouter();
 
 const applyRouteContext = (): void => {
   setRouteContext({
@@ -43,6 +49,15 @@ const runs = computed(() =>
     ),
 );
 
+const guesserRuns = computed(() =>
+  [...runs.value].sort(
+    (left, right) =>
+      Number(left.totals.costs_usd.guesser) -
+        Number(right.totals.costs_usd.guesser) ||
+      left.model_name.localeCompare(right.model_name),
+  ),
+);
+
 const totalSpend = computed(() =>
   runs.value.reduce((sum, run) => sum + Number(run.totals.costs_usd.total), 0),
 );
@@ -57,14 +72,11 @@ const supportShare = computed(() =>
     : null,
 );
 
-const totalCostBars = computed(() =>
-  runs.value.map((run) => ({
+const guesserCostBars = computed(() =>
+  guesserRuns.value.map((run) => ({
     label: run.model_name,
-    value: Number(run.totals.costs_usd.total),
-    display: money(run.totals.costs_usd.total),
-    detail: `${money(run.totals.costs_usd.guesser)} Guesser · ${money(
-      Number(run.totals.costs_usd.total) - Number(run.totals.costs_usd.guesser),
-    )} support`,
+    value: Number(run.totals.costs_usd.guesser),
+    display: money(run.totals.costs_usd.guesser),
     link: `/runs/${run.execution_id}/`,
   })),
 );
@@ -108,11 +120,29 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
   return "middle";
 };
 
+const runLink = (run: PublicRunSummary) => ({
+  name: "run",
+  params: { executionId: run.execution_id },
+});
+
+const openRun = (run: PublicRunSummary): void => {
+  void router.push(runLink(run));
+};
+
+const providerFor = (modelId: string): string =>
+  leaderboard.value.find((row) => row.model.model_id === modelId)?.model.provider ??
+  modelId;
+
 const load = async (): Promise<void> => {
   loading.value = true;
   error.value = null;
   try {
-    documents.value = await getOfficialRuns();
+    const [runDocuments, leaderboardDocument] = await Promise.all([
+      getOfficialRuns(),
+      getLeaderboard(),
+    ]);
+    documents.value = runDocuments;
+    leaderboard.value = leaderboardDocument.leaderboard;
   } catch (reason: unknown) {
     error.value =
       reason instanceof Error ? reason.message : "Publication data could not be loaded.";
@@ -175,17 +205,17 @@ void load();
         <section class="panel cost-panel" aria-labelledby="cost-chart-title">
           <header class="panel-heading">
             <div>
-              <p class="eyebrow">Full-run cost</p>
-              <h2 id="cost-chart-title">Least to most expensive.</h2>
+              <p class="eyebrow">Guesser-only cost</p>
+              <h2 id="cost-chart-title">Least to most expensive model.</h2>
             </div>
             <p>
-              Guesser is the model under test. Primary Oracle, Reviewer, Judge, and
-              Validator are benchmark-support costs.
+              Only the model under test is counted here. Oracle, Reviewer, Judge, and
+              Validator costs appear in the total-cost breakdown below.
             </p>
           </header>
           <MetricBars
-            :items="totalCostBars"
-            direction-label="Full-run cost · lower is better"
+            :items="guesserCostBars"
+            direction-label="Guesser cost · lower is better"
             color="coral"
             value-format="currency"
           />
@@ -193,35 +223,54 @@ void load();
           <section class="component-ledger" aria-labelledby="component-ledger-title">
             <header>
               <div>
-                <p class="eyebrow">Composition</p>
+                <p class="eyebrow">Total benchmark cost</p>
                 <h3 id="component-ledger-title">Where each run spent.</h3>
               </div>
               <p>
-                Bar length shows full-run cost. Color separates the Guesser from
-                benchmark-support roles.
+                Bar length shows the total cost of each benchmark run. Color separates
+                the Guesser, Primary Oracle, Reviewer, Judge, and Validator.
               </p>
             </header>
             <StackedMetricBars
               :rows="stackedRows"
               :segments="stackedSegments"
-              direction-label="Full-run cost by component"
+              direction-label="Total benchmark cost by component"
             />
           </section>
         </section>
 
         <div
-          class="table-wrap results-table-wrap"
+          class="table-wrap ranking-table-wrap results-table-wrap"
           tabindex="0"
           aria-label="Scrollable cost comparison"
         >
-          <table class="data-table results-table">
+          <table class="data-table ranking-table results-table">
             <thead>
               <tr>
-                <th>Cost rank</th>
-                <th>Model</th>
-                <th data-numeric>Guesser / episode</th>
-                <th data-numeric>Full / episode</th>
-                <th data-numeric>Support / episode</th>
+                <th class="rank-column">
+                  <span aria-hidden="true">#</span>
+                  <span class="visually-hidden">Cost rank</span>
+                </th>
+                <th class="model-column">Model</th>
+                <th class="run-column">Run</th>
+                <th data-numeric>
+                  <span class="table-header-stack">
+                    <span>Guesser cost</span>
+                    <span>per episode</span>
+                  </span>
+                </th>
+                <th data-numeric>
+                  <span class="table-header-stack">
+                    <span>Full cost</span>
+                    <span>per episode</span>
+                  </span>
+                </th>
+                <th data-numeric>
+                  <span class="table-header-stack">
+                    <span>Support cost</span>
+                    <span>per episode</span>
+                  </span>
+                </th>
                 <th data-numeric>Support share</th>
                 <th data-numeric>Full run</th>
               </tr>
@@ -230,17 +279,19 @@ void load();
               <tr
                 v-for="(run, index) in runs"
                 :key="run.execution_id"
-                class="result-row--clickable"
+                class="result-row--clickable result-row--navigable"
+                @click="openRun(run)"
               >
-                <td><span class="rank-badge">{{ index + 1 }}</span></td>
-                <td>
-                  <RouterLink
-                    class="result-row-link"
-                    :to="{ name: 'run', params: { executionId: run.execution_id } }"
-                    :aria-label="`Open full details for ${run.model_name}`"
-                  >
-                    {{ run.model_name }}
-                  </RouterLink>
+                <td class="rank-column">{{ index + 1 }}</td>
+                <td class="model-column">
+                  <ModelRunLink
+                    :to="runLink(run)"
+                    :name="run.model_name"
+                    :meta="run.model_id"
+                  />
+                </td>
+                <td class="run-column">
+                  <RunTableAction :to="runLink(run)" :name="run.model_name" />
                 </td>
                 <td data-numeric>
                   {{ moneyEpisode(run.comparison.guesser_cost_per_episode_usd) }}
@@ -260,6 +311,28 @@ void load();
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div class="mobile-result-list" aria-label="Cost comparison">
+          <MobileResultCard
+            v-for="(run, index) in runs"
+            :key="`mobile-${run.execution_id}`"
+            :rank="index + 1"
+            :name="run.model_name"
+            :provider="providerFor(run.model_id)"
+            :to="runLink(run)"
+            :metrics="[
+              {
+                label: 'Guesser / ep.',
+                value: moneyEpisode(run.comparison.guesser_cost_per_episode_usd),
+              },
+              {
+                label: 'Full / ep.',
+                value: moneyEpisode(run.comparison.full_cost_per_episode_usd),
+              },
+              { label: 'Full run', value: money(run.totals.costs_usd.total) },
+            ]"
+          />
         </div>
 
         <p class="results-note">
@@ -343,20 +416,14 @@ h1,
   min-width: 960px;
 }
 
-.rank-badge {
-  display: inline-grid;
-  width: 1.8rem;
-  aspect-ratio: 1;
-  place-items: center;
-  border: 1px solid var(--line);
-  font-weight: 760;
-}
-
 .value-signal {
   display: inline-block;
+  min-width: 4rem;
   padding: 0.28rem 0.5rem;
   border-left: 3px solid;
   background: white;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .value-signal--good {

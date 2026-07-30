@@ -74,6 +74,9 @@ export const dateTime = (value: string): string =>
     timeZoneName: "short",
   }).format(new Date(value));
 
+export const isoDateTime = (value: string): string =>
+  new Date(value).toISOString().replace(/\.\d{3}Z$/, "Z");
+
 export const duration = (milliseconds: number): string => {
   const seconds = milliseconds / 1_000;
   if (seconds < 60) return `${number(seconds, 1)} s`;

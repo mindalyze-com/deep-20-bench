@@ -12,6 +12,7 @@ from deep20_publication.integrity import (
     sha256_text,
     verify_signed_object,
 )
+from deep20_publication.loader import parse_diagnostic_error_outputs
 from deep20_publication.models import (
     BenchmarkManifestArtifact,
     BenchmarkSummaryArtifact,
@@ -49,7 +50,7 @@ def test_publication_contract_accepts_only_current_artifact_versions() -> None:
     assert BenchmarkManifestArtifact.model_fields["schema_version"].default == 3
     assert BenchmarkSummaryArtifact.model_fields["schema_version"].default == 3
     assert EpisodeResultArtifact.model_fields["schema_version"].default == 9
-    assert PublishedDataset.model_fields["schema_version"].default == 5
+    assert PublishedDataset.model_fields["schema_version"].default == 6
     assert "working_tree_dirty_before_run" not in BenchmarkManifestArtifact.model_fields
     assert "clean_worktree" not in PublicRun.model_fields
 
@@ -178,3 +179,44 @@ def test_trial_artifacts_accept_private_error_output_reference() -> None:
     )
 
     assert artifacts.error_outputs is None
+
+
+def test_private_error_output_capture_validates_integrity_and_strips_no_text() -> None:
+    unsigned: dict[str, JsonValue] = {
+        "schema_version": 1,
+        "component": "guesser",
+        "call_id": f"GC-{'1' * 32}",
+        "failure_code": "invalid_guesser_output",
+        "recovered": False,
+        "recovery": {},
+        "outputs": [
+            {
+                "attempt_number": 1,
+                "response_id": "private-provider-id",
+                "finish_reason": "stop",
+                "output": '{"result":{"action":"ASK","question":""}}',
+            }
+        ],
+        "recorded_at": "2026-07-30T12:00:00+00:00",
+    }
+    signed: dict[str, JsonValue] = {
+        **unsigned,
+        "integrity_hash": sha256_text(canonical_json(unsigned)),
+    }
+    text = canonical_json(signed) + "\n"
+
+    records = parse_diagnostic_error_outputs(
+        text=text,
+        label="error-outputs.jsonl",
+        expected_record_count=1,
+        expected_integrity_hash=sha256_text(text),
+    )
+
+    assert records[0].outputs[0].output.endswith('question":""}}')
+    with pytest.raises(PublicationInputError, match="signed artifact reference"):
+        parse_diagnostic_error_outputs(
+            text=text,
+            label="error-outputs.jsonl",
+            expected_record_count=1,
+            expected_integrity_hash="0" * 64,
+        )

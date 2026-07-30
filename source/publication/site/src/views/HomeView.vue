@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { computed, onActivated, onDeactivated, ref } from "vue";
+import { useRouter } from "vue-router";
 
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
+import MobileResultCard from "@/components/MobileResultCard.vue";
+import ModelRunLink from "@/components/ModelRunLink.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import ReasoningEffort from "@/components/ReasoningEffort.vue";
+import RunTableAction from "@/components/RunTableAction.vue";
 import ScoreDotPlot, { type ScoreDot } from "@/components/ScoreDotPlot.vue";
 import { getLeaderboard, getManifest } from "@/lib/api";
-import { dateTime, money, number, percent } from "@/lib/format";
+import { money, number, percent } from "@/lib/format";
 import { illustrativeRound } from "@/lib/illustrative-round";
 import { setRouteContext } from "@/lib/route-context";
 import type {
@@ -20,6 +24,7 @@ const manifest = ref<ManifestDocument | null>(null);
 const leaderboard = ref<LeaderboardDocument | null>(null);
 const error = ref<string | null>(null);
 const active = ref(true);
+const router = useRouter();
 
 const applyRouteContext = (): void => {
   setRouteContext({
@@ -83,6 +88,9 @@ const runLink = (row: LeaderboardRow) => ({
   name: "run",
   params: { executionId: row.execution_id },
 });
+const openRun = (row: LeaderboardRow): void => {
+  if (row.execution_id !== null) void router.push(runLink(row));
+};
 const scoreDots = computed<ScoreDot[]>(() =>
   evaluated.value.map((row) => ({
     label: row.model.display_name,
@@ -112,11 +120,6 @@ const scoreDots = computed<ScoreDot[]>(() =>
               <RouterLink class="button button-primary" :to="{ name: 'results' }">
                 See the benchmark ↓
               </RouterLink>
-              <div v-if="manifest.winner" class="live-result">
-                <p class="eyebrow">Live result · leader</p>
-                <strong>{{ number(manifest.winner.question_score) }}</strong>
-                <span>{{ manifest.winner.display_names.join(" · ") }}</span>
-              </div>
             </div>
           </div>
           <aside class="round-card" aria-label="Illustrative Twenty Questions round">
@@ -174,46 +177,23 @@ const scoreDots = computed<ScoreDot[]>(() =>
             </article>
           </div>
           <div class="adjudication">
-            <header class="adjudication-heading">
-              <div>
-                <p class="eyebrow">How answers are checked</p>
-                <h3>One player. Three independent checks.</h3>
-              </div>
-              <p>
-                The Guesser receives only the final YES, NO, or UNKNOWN.
-              </p>
-            </header>
-            <div class="role-grid">
-              <article>
-                <span>01</span>
-                <h4>Guesser</h4>
-                <p>The model under test asks about the hidden subject.</p>
-              </article>
-              <article>
-                <span>02</span>
-                <h4>Oracle</h4>
-                <p>Researches the question on the live web and cites evidence.</p>
-              </article>
-              <article>
-                <span>03</span>
-                <h4>Second-eye Reviewer</h4>
-                <p>Checks every YES or NO without seeing the Oracle’s answer.</p>
-              </article>
-              <article>
-                <span>04</span>
-                <h4>Judge</h4>
-                <p>Decides again after a disagreement, without seeing either answer.</p>
-              </article>
+            <div>
+              <p class="eyebrow">How answers are checked</p>
+              <h3>Three checks. One final answer.</h3>
             </div>
-            <aside class="failure-note">
-              <p class="eyebrow">Why the extra checks</p>
+            <div class="adjudication-summary">
               <p>
-                Early runs exposed rare but basic Oracle errors: it answered YES to “born before
-                1800?” while citing 1875. A full run asks hundreds of questions, so even rare
-                errors add up. Reviewer and Judge use different model families and providers to
-                reduce correlated mistakes.
+                The Oracle researches each question. An independent Reviewer checks every YES or
+                NO. If they disagree, a blind Judge decides. The Guesser receives only the final
+                answer.
               </p>
-            </aside>
+              <RouterLink
+                class="text-link"
+                :to="{ name: 'methodology', hash: '#answer-checks' }"
+              >
+                See the full answer-checking method →
+              </RouterLink>
+            </div>
           </div>
         </div>
       </section>
@@ -301,18 +281,22 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 <p class="chart-title">Score comparison</p>
                 <ScoreDotPlot :items="scoreDots" />
               </div>
-              <dl class="result-counts">
-                <div><dt>Official models</dt><dd>{{ evaluated.length }}</dd></div>
-                <div><dt>Trials / model</dt><dd>{{ totalTrials }}</dd></div>
-              </dl>
             </div>
 
-            <div class="table-wrap" tabindex="0" aria-label="Scrollable official leaderboard">
-              <table class="data-table">
+            <div
+              class="table-wrap ranking-table-wrap"
+              tabindex="0"
+              aria-label="Scrollable official leaderboard"
+            >
+              <table class="data-table ranking-table">
                 <thead>
                   <tr>
-                    <th>Rank</th>
-                    <th>Model</th>
+                    <th class="rank-column">
+                      <span aria-hidden="true">#</span>
+                      <span class="visually-hidden">Rank</span>
+                    </th>
+                    <th class="model-column">Model</th>
+                    <th class="run-column">Run</th>
                     <th>Reasoning</th>
                     <th data-numeric>Score</th>
                     <th data-numeric>Success</th>
@@ -324,20 +308,32 @@ const scoreDots = computed<ScoreDot[]>(() =>
                   <tr
                     v-for="row in evaluated"
                     :key="row.model.model_id"
-                    :class="{ 'result-row--clickable': row.execution_id !== null }"
+                    :class="{
+                      'result-row--clickable': row.execution_id !== null,
+                      'result-row--navigable': row.execution_id !== null,
+                    }"
+                    @click="openRun(row)"
                   >
-                    <td>{{ row.rank ?? "—" }}</td>
-                    <td>
-                      <RouterLink
+                    <td class="rank-column">{{ row.rank ?? "—" }}</td>
+                    <td class="model-column">
+                      <ModelRunLink
                         v-if="row.execution_id"
-                        class="result-row-link"
                         :to="runLink(row)"
-                        :aria-label="`Open full details for ${row.model.display_name}`"
-                      >
-                        {{ row.model.display_name }}
-                      </RouterLink>
+                        :name="row.model.display_name"
+                        :meta="`${row.model.model_id} · ${row.model.provider}`"
+                      />
                       <strong v-else>{{ row.model.display_name }}</strong>
-                      <small>{{ row.model.model_id }} · {{ row.model.provider }}</small>
+                      <small v-if="row.execution_id === null">
+                        {{ row.model.model_id }} · {{ row.model.provider }}
+                      </small>
+                    </td>
+                    <td class="run-column">
+                      <RunTableAction
+                        v-if="row.execution_id"
+                        :to="runLink(row)"
+                        :name="row.model.display_name"
+                      />
+                      <span v-else aria-hidden="true">—</span>
                     </td>
                     <td><ReasoningEffort :effort="row.model.reasoning_effort" compact /></td>
                     <td data-numeric>{{ number(row.question_score) }}</td>
@@ -352,6 +348,22 @@ const scoreDots = computed<ScoreDot[]>(() =>
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <div class="mobile-result-list" aria-label="Official leaderboard">
+              <MobileResultCard
+                v-for="row in evaluated"
+                :key="`mobile-${row.model.model_id}`"
+                :rank="row.rank ?? '—'"
+                :name="row.model.display_name"
+                :provider="row.model.provider"
+                :to="row.execution_id === null ? null : runLink(row)"
+                :metrics="[
+                  { label: 'Score', value: number(row.question_score) },
+                  { label: 'Success', value: percent(row.success_rate) },
+                  { label: 'Cost', value: money(row.total_cost_usd) },
+                ]"
+              />
             </div>
           </template>
 
@@ -415,12 +427,6 @@ const scoreDots = computed<ScoreDot[]>(() =>
               Explore public data
             </RouterLink>
           </div>
-          <p class="home-build-stamp">
-            Homepage built
-            <time :datetime="manifest.provenance.built_at">
-              {{ dateTime(manifest.provenance.built_at) }}
-            </time>
-          </p>
         </div>
       </section>
     </template>
@@ -497,35 +503,6 @@ const scoreDots = computed<ScoreDot[]>(() =>
   margin-top: 2rem;
 }
 
-.live-result {
-  display: grid;
-  grid-template-columns: auto auto;
-  column-gap: 0.65rem;
-  align-items: end;
-}
-
-.live-result .eyebrow {
-  grid-column: 1 / -1;
-  margin: 0 0 0.12rem;
-  color: rgb(255 255 255 / 55%);
-  font-size: var(--text-micro);
-}
-
-.live-result strong {
-  color: var(--acid);
-  font-family: var(--font-display);
-  font-size: 2.1rem;
-  font-weight: 460;
-  font-variant-numeric: tabular-nums;
-  line-height: 0.95;
-}
-
-.live-result span {
-  max-width: 13rem;
-  font-size: var(--text-small);
-  line-height: 1.25;
-}
-
 .round-card {
   border: 1px solid rgb(255 255 255 / 30%);
   background: rgb(255 255 255 / 4%);
@@ -599,14 +576,23 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
 .ability-grid article,
 .trust-grid article {
-  min-height: 13.5rem;
-  padding: 1.25rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  min-height: 9rem;
+  padding: 1.5rem 1.25rem 1rem;
+  column-gap: 0.85rem;
+  row-gap: 0.65rem;
+  align-content: center;
   background: var(--paper-bright);
 }
 
 .ability-grid article > span,
 .trust-grid article > span {
   display: grid;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
   width: 1.75rem;
   height: 1.75rem;
   border: 1px solid var(--muted);
@@ -618,14 +604,20 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
 .ability-grid h3,
 .trust-grid h3 {
-  margin: 3.9rem 0 0.55rem;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  margin: 0;
   font-family: var(--font-display);
   font-size: 1.4rem;
   font-weight: 470;
+  line-height: 1.12;
 }
 
 .ability-grid p,
 .trust-grid p {
+  grid-column: 2;
+  grid-row: 2;
   margin: 0;
   color: var(--muted);
   font-size: var(--text-small);
@@ -633,93 +625,40 @@ const scoreDots = computed<ScoreDot[]>(() =>
 }
 
 .adjudication {
-  margin-top: clamp(3rem, 6vw, 5rem);
-  padding-top: clamp(2.5rem, 5vw, 4rem);
-  border-top: 1px solid var(--line);
-}
-
-.adjudication-heading {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.52fr);
-  gap: 2rem;
+  grid-template-columns: minmax(0, 0.9fr) minmax(17rem, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
   align-items: end;
-  margin-bottom: clamp(2rem, 4vw, 3.25rem);
+  margin-top: clamp(3rem, 6vw, 5rem);
+  padding: clamp(2rem, 4vw, 3.5rem);
+  background: var(--ink);
+  color: white;
 }
 
-.adjudication-heading h3 {
-  max-width: 15ch;
+.adjudication .eyebrow {
+  color: var(--acid);
+}
+
+.adjudication h3 {
+  max-width: 12ch;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.3rem, 4.2vw, 4.2rem);
+  font-size: clamp(2.3rem, 3.8vw, 3.8rem);
   font-weight: 470;
   letter-spacing: -0.042em;
   line-height: 0.99;
 }
 
-.adjudication-heading > p {
+.adjudication-summary > p {
   margin: 0;
-  color: var(--muted);
-  line-height: 1.65;
-}
-
-.role-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  border: 1px solid var(--line);
-  background: var(--line);
-  gap: 1px;
-}
-
-.role-grid article {
-  min-height: 13.5rem;
-  padding: 1.25rem;
-  background: var(--paper-bright);
-}
-
-.role-grid article > span {
-  color: var(--muted);
-  font-size: var(--text-micro);
-  font-weight: 710;
-  letter-spacing: 0.08em;
-}
-
-.role-grid h4 {
-  margin: 4rem 0 0.55rem;
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 470;
-}
-
-.role-grid p {
-  margin: 0;
-  color: var(--muted);
-  font-size: var(--text-small);
-  line-height: 1.5;
-}
-
-.failure-note {
-  display: grid;
-  grid-template-columns: minmax(10rem, 0.3fr) minmax(0, 1fr);
-  gap: clamp(1.5rem, 4vw, 4rem);
-  margin-top: 1rem;
-  padding: clamp(1.25rem, 2.5vw, 2rem);
-  background: var(--ink);
-  color: white;
-}
-
-.failure-note .eyebrow,
-.failure-note > p:last-child {
-  margin: 0;
-}
-
-.failure-note .eyebrow {
-  color: var(--acid);
-}
-
-.failure-note > p:last-child {
-  max-width: 58rem;
   color: rgb(255 255 255 / 72%);
   line-height: 1.65;
+}
+
+.adjudication .text-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+  color: var(--acid);
 }
 
 .cohort-section {
@@ -798,16 +737,14 @@ const scoreDots = computed<ScoreDot[]>(() =>
   text-transform: uppercase;
 }
 
-.cohort-facts,
-.result-counts {
+.cohort-facts {
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin: 0;
   border: 1px solid var(--ink);
 }
 
-.cohort-facts div,
-.result-counts div {
+.cohort-facts div {
   display: flex;
   min-height: 7.6rem;
   padding: 1rem;
@@ -817,13 +754,11 @@ const scoreDots = computed<ScoreDot[]>(() =>
   justify-content: space-between;
 }
 
-.cohort-facts div:nth-child(even),
-.result-counts div:nth-child(even) {
+.cohort-facts div:nth-child(even) {
   border-right: 0;
 }
 
-.cohort-facts div:nth-last-child(-n + 2),
-.result-counts div:nth-last-child(-n + 2) {
+.cohort-facts div:nth-last-child(-n + 2) {
   border-bottom: 0;
 }
 
@@ -873,8 +808,6 @@ dd {
 }
 
 .leaderboard-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.3fr);
   margin-top: 1rem;
   border: 1px solid var(--line);
   background: var(--paper-bright);
@@ -883,7 +816,6 @@ dd {
 .score-chart {
   min-width: 0;
   overflow: hidden;
-  border-right: 1px solid var(--line);
 }
 
 .chart-title {
@@ -897,21 +829,6 @@ dd {
 
 .score-chart :deep(.score-dot-plot) {
   padding: 0 clamp(0.65rem, 1.5vw, 1rem) 0.5rem;
-}
-
-.result-counts {
-  grid-template-columns: 1fr;
-  border: 0;
-}
-
-.result-counts div,
-.result-counts div:nth-child(even) {
-  border-right: 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.result-counts div:last-child {
-  border-bottom: 0;
 }
 
 .table-wrap {
@@ -982,28 +899,10 @@ dd {
   background: transparent;
 }
 
-.origin-strip > div:last-child > .home-build-stamp {
-  width: fit-content;
-  margin: 1.4rem 0 0;
-  padding-top: 0.7rem;
-  border-top: 1px solid rgb(12 17 27 / 22%);
-  color: rgb(12 17 27 / 62%);
-  font-size: var(--text-micro);
-  font-weight: 680;
-  letter-spacing: 0.04em;
-  line-height: 1.45;
-  text-transform: uppercase;
-}
-
-.home-build-stamp time {
-  font-variant-numeric: tabular-nums;
-}
-
 @media (max-width: 940px) {
   .home-hero-inner,
   .cohort-layout,
   .winner-card,
-  .leaderboard-layout,
   .origin-strip {
     grid-template-columns: 1fr;
   }
@@ -1012,18 +911,10 @@ dd {
     grid-template-columns: 1fr 1fr;
   }
 
-  .adjudication-heading {
-    grid-template-columns: 1fr;
-  }
-
-  .role-grid {
+  .adjudication {
     grid-template-columns: 1fr 1fr;
   }
 
-  .score-chart {
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-  }
 }
 
 @media (max-width: 620px) {
@@ -1050,21 +941,8 @@ dd {
 
   .ability-grid,
   .trust-grid,
-  .role-grid,
-  .failure-note {
+  .adjudication {
     grid-template-columns: 1fr;
-  }
-
-  .ability-grid article,
-  .trust-grid article,
-  .role-grid article {
-    min-height: 11rem;
-  }
-
-  .ability-grid h3,
-  .trust-grid h3,
-  .role-grid h4 {
-    margin-top: 3rem;
   }
 
   .empty-results dl {

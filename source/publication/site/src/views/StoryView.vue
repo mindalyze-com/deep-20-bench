@@ -197,29 +197,49 @@ onActivated(applyRouteContext);
           </div>
           <p>Deep20Bench was developed independently. These projects address related problems.</p>
         </header>
-        <div class="work-list">
-          <article
-            v-for="work in priorWork"
-            :key="work.title"
-            :class="{ featured: work.year === '2024' }"
-          >
-            <span class="work-year">{{ work.year }}</span>
-            <span class="work-kind">{{ work.kind }}</span>
-            <div>
-              <h3>{{ work.title }}</h3>
-              <p class="work-authors">{{ work.authors }}</p>
-              <p>{{ work.description }}</p>
-            </div>
-            <a
-              :href="work.href"
-              target="_blank"
-              rel="noreferrer"
-              :aria-label="`Read ${work.title} (opens in a new tab)`"
+        <table class="work-table">
+          <caption>
+            Research related to Deep20Bench
+          </caption>
+          <colgroup>
+            <col class="work-col-year" />
+            <col class="work-col-kind" />
+            <col />
+            <col class="work-col-source" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">Year</th>
+              <th scope="col">Focus</th>
+              <th scope="col">Publication</th>
+              <th scope="col">Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="work in priorWork"
+              :key="work.title"
             >
-              {{ work.source }} ↗
-            </a>
-          </article>
-        </div>
+              <td class="work-year">{{ work.year }}</td>
+              <td class="work-kind">{{ work.kind }}</td>
+              <td class="work-details">
+                <h3>{{ work.title }}</h3>
+                <p class="work-authors">{{ work.authors }}</p>
+                <p>{{ work.description }}</p>
+              </td>
+              <td class="work-source">
+                <a
+                  :href="work.href"
+                  target="_blank"
+                  rel="noreferrer"
+                  :aria-label="`Read ${work.title} (opens in a new tab)`"
+                >
+                  {{ work.source }} ↗
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
@@ -512,23 +532,57 @@ onActivated(applyRouteContext);
   line-height: 1.55;
 }
 
-.work-list {
+.work-table {
+  width: 100%;
   border-top: 1px solid var(--ink);
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.work-list article {
-  display: grid;
-  grid-template-columns: 5rem minmax(8rem, 0.35fr) minmax(0, 1fr) auto;
-  gap: 1.5rem;
-  align-items: center;
-  padding: 1.3rem 0;
+.work-table caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.work-col-year {
+  width: 8rem;
+}
+
+.work-col-kind {
+  width: 7rem;
+}
+
+.work-col-source {
+  width: 18rem;
+}
+
+.work-table th {
+  padding: 0.75rem 1.5rem 0.75rem 0;
+  border-bottom: 1px solid var(--ink);
+  color: var(--muted);
+  font-size: var(--text-micro);
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.work-table th:last-child,
+.work-table td:last-child {
+  padding-right: 0;
+  text-align: right;
+}
+
+.work-table td {
+  padding: 1.3rem 1.5rem 1.3rem 0;
   border-bottom: 1px solid var(--line);
-}
-
-.work-list article.featured {
-  margin-inline: -1rem;
-  padding-inline: 1rem;
-  background: var(--acid);
+  vertical-align: middle;
 }
 
 .work-year {
@@ -542,19 +596,23 @@ onActivated(applyRouteContext);
   font-size: var(--text-small);
 }
 
-.work-list h3 {
+.work-kind {
+  line-height: 1.35;
+}
+
+.work-table h3 {
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 500;
 }
 
-.work-list p {
+.work-table p {
   margin: 0.35rem 0 0;
   color: var(--muted);
 }
 
-.work-list article > a {
+.work-source a {
   font-size: var(--text-small);
   font-weight: 750;
 }
@@ -623,13 +681,52 @@ onActivated(applyRouteContext);
     border-left: 0;
   }
 
-  .work-list article {
-    grid-template-columns: auto 1fr;
+  .work-table {
+    display: block;
+    border-collapse: separate;
+    table-layout: auto;
   }
 
-  .work-list article > div,
-  .work-list article > a {
+  .work-table colgroup,
+  .work-table thead {
+    display: none;
+  }
+
+  .work-table tbody {
+    display: block;
+  }
+
+  .work-table tr {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1.25rem;
+    padding: 1.3rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .work-table td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .work-year {
+    grid-row: 1 / 4;
+  }
+
+  .work-kind,
+  .work-details,
+  .work-source {
     grid-column: 2;
+  }
+
+  .work-details {
+    margin-top: 0.7rem;
+  }
+
+  .work-table td:last-child {
+    margin-top: 0.75rem;
+    text-align: left;
   }
 }
 

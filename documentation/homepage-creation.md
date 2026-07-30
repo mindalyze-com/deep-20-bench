@@ -284,13 +284,16 @@ evidence-bearing adjudication, and inspectable public provenance.
 The compiler emits an allowlisted public dataset. The detailed projection may contain only
 post-run subject context, typed actions, protocol answer tokens, Validator explanations,
 model-reported Oracle evidence URLs and excerpts, aggregate component telemetry, public model
-version metadata, and immutable artifact identities.
+version metadata, immutable artifact identities, and the typed public Guesser-violation
+snapshot. Rejected Guesser turns may include the exact visible provider text, attempt number,
+and finish reason from that snapshot.
 
 It must not contain rendered prompts, system instructions, the serialized Guesser conversation,
-the opaque variation token, aliases, raw model/provider responses, call identifiers, provider
-traces, session identifiers, prompt-cache keys, diagnostics, credentials, headers, environment
-values, or other private execution state. This is deliberately a typed reconstruction rather
-than a dump of internal logs.
+the opaque variation token, aliases, support-model responses, call identifiers, response
+identifiers, provider traces, session identifiers, prompt-cache keys, recovery diagnostics,
+credentials, headers, environment values, or other private execution state. It never publishes
+an `error-outputs.jsonl` file directly. This is deliberately a typed reconstruction rather than
+a dump of internal logs.
 
 The detail compiler is one-way and post-run. Neither its public JSON nor any generated page may
 be reused as Guesser conversational state, cache input, retry input, or provider metadata. Tests

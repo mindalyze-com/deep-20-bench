@@ -4,7 +4,7 @@ import { onActivated, onDeactivated, ref } from "vue";
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { getManifest, publicDownloadUrl } from "@/lib/api";
-import { date } from "@/lib/format";
+import { date, isoDateTime } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import type { ManifestDocument } from "@/lib/types";
 
@@ -72,7 +72,7 @@ applyRouteContext();
               <p>Cohort rules, models, runs, subjects, episodes, scores, and build details.</p>
               <a
                 class="button button-primary"
-                :href="publicDownloadUrl('deep20bench-v5.json')"
+                :href="publicDownloadUrl('deep20bench-v6.json')"
                 download
               >
                 Download JSON ↓
@@ -153,6 +153,15 @@ applyRouteContext();
           </section>
         </div>
       </section>
+
+      <footer class="data-build-note" aria-label="Publication build information">
+        <p>
+          Publication built ·
+          <time :datetime="manifest.provenance.built_at">
+            {{ isoDateTime(manifest.provenance.built_at) }}
+          </time>
+        </p>
+      </footer>
     </template>
   </div>
 </template>
@@ -297,6 +306,26 @@ applyRouteContext();
 
 .publisher-note {
   grid-column: 2;
+}
+
+.data-build-note {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 max(var(--gutter), calc((100vw - var(--max)) / 2)) 1.1rem;
+}
+
+.data-build-note p {
+  margin: 0;
+  color: rgb(12 17 27 / 34%);
+  font-size: var(--text-micro);
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.data-build-note time {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 760px) {

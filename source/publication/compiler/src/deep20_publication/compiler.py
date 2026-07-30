@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
@@ -15,6 +16,7 @@ from .models import (
     EpisodeModelVersion,
     EpisodeResultArtifact,
     EvidenceReviewConfigurationSnapshot,
+    GuesserFormatErrorEvent,
     InfrastructureFailedTrialSummary,
     LeaderboardRow,
     LoadedEpisode,
@@ -28,6 +30,7 @@ from .models import (
     PublicEpisodeTelemetry,
     PublicEvidence,
     PublicGuesserDisclosure,
+    PublicGuesserRequiredFormats,
     PublicModel,
     PublicOracleSupportRole,
     PublicOracleSupportUsage,
@@ -204,7 +207,17 @@ def _public_guesser_disclosure(
         raise ValueError("retained Guesser conversation has an invalid introduction")
 
     recorded_outputs: dict[int, str] = {}
+    format_events: list[GuesserFormatErrorEvent] = []
     for message in conversation:
+        if message.role == "user" and message.turn_number is not None:
+            try:
+                format_event = GuesserFormatErrorEvent.model_validate_json(
+                    message.content
+                )
+            except ValueError:
+                format_event = None
+            if format_event is not None:
+                format_events.append(format_event)
         if message.role != "assistant":
             continue
         if message.turn_number is None:
@@ -213,10 +226,31 @@ def _public_guesser_disclosure(
             raise ValueError("retained Guesser conversation has duplicate turn output")
         recorded_outputs[message.turn_number] = message.content
 
+    required_formats: PublicGuesserRequiredFormats | None = None
+    if format_events:
+        first = format_events[0].required_formats
+        if any(event.required_formats != first for event in format_events[1:]):
+            raise ValueError("retained FORMAT_ERROR events use inconsistent formats")
+        required_formats = PublicGuesserRequiredFormats(
+            ask=json.dumps(
+                first.ask.model_dump(mode="json"),
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ),
+            guess=json.dumps(
+                first.guess.model_dump(mode="json"),
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ),
+        )
+
     return (
         PublicGuesserDisclosure(
             system_message=system_messages[0],
             begin_message=begin_messages[0],
+            required_formats=required_formats,
         ),
         recorded_outputs,
     )
@@ -227,6 +261,17 @@ def _public_episode(episode: LoadedEpisode) -> PublicEpisodeDetail:
     oracle_configuration = result.llm_details.oracle.configuration
     oracle_quality = result.summary.oracle_quality
     guesser_disclosure, recorded_outputs = _public_guesser_disclosure(result)
+    violation_disclosures = {
+        disclosure.turn_number: disclosure
+        for disclosure in episode.violation_disclosures
+    }
+    known_violation_turns = {
+        turn.turn_number
+        for turn in result.turns
+        if not isinstance(turn, EpisodeActionTurn)
+    }
+    if set(violation_disclosures) != known_violation_turns:
+        raise ValueError("public Guesser violation disclosures do not match episode turns")
     turns = tuple(
         (
             PublicActionTurn(
@@ -258,6 +303,9 @@ def _public_episode(episode: LoadedEpisode) -> PublicEpisodeDetail:
                 feedback_event=turn.feedback_event,
                 counted=turn.counted,
                 counted_questions=turn.counted_questions,
+                rejected_outputs=violation_disclosures[
+                    turn.turn_number
+                ].rejected_outputs,
             )
         )
         for turn in result.turns

@@ -19,6 +19,7 @@ interface ResponsiveChartOptions {
   initialize: (element: HTMLDivElement) => EChartsType;
   option: (width: number) => EChartsOption;
   onClick?: (parameters: CallbackDataParams) => void;
+  pointerCursor?: (parameters: CallbackDataParams) => boolean;
 }
 
 interface ResponsiveChart {
@@ -26,10 +27,61 @@ interface ResponsiveChart {
   refresh: () => void;
 }
 
+export interface ChartValueDomain {
+  minimum: number;
+  maximum: number;
+}
+
 export const chartFont =
   'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 export const chartDisplayFont =
   '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif';
+
+export const chartValueDomain = (
+  values: readonly number[],
+  paddingRatio = 0.08,
+): ChartValueDomain => {
+  const finiteValues = values.filter((value) => Number.isFinite(value));
+  if (finiteValues.length === 0) return { minimum: 0, maximum: 1 };
+
+  const dataMinimum = Math.min(...finiteValues);
+  const dataMaximum = Math.max(...finiteValues);
+  const span = dataMaximum - dataMinimum;
+  const magnitude = Math.max(Math.abs(dataMinimum), Math.abs(dataMaximum), 1);
+  const rangePadding = (span > 0 ? span : magnitude) * paddingRatio;
+  const padding =
+    dataMinimum > 0
+      ? Math.min(rangePadding, dataMinimum / 2)
+      : dataMaximum < 0
+        ? Math.min(rangePadding, Math.abs(dataMaximum) / 2)
+        : rangePadding;
+  const paddedMinimum = dataMinimum - padding;
+  const paddedMaximum = dataMaximum + padding;
+  const paddedSpan = paddedMaximum - paddedMinimum;
+  const roundingStep =
+    10 ** Math.floor(Math.log10(paddedSpan > 0 ? paddedSpan : 1)) / 10;
+  const roundedMinimum = Number(
+    (Math.floor(paddedMinimum / roundingStep) * roundingStep).toPrecision(12),
+  );
+  const roundedMaximum = Number(
+    (Math.ceil(paddedMaximum / roundingStep) * roundingStep).toPrecision(12),
+  );
+
+  return {
+    minimum:
+      dataMinimum > 0 && roundedMinimum <= 0
+        ? paddedMinimum
+        : dataMinimum >= 0 && roundedMinimum < 0
+          ? 0
+          : roundedMinimum,
+    maximum:
+      dataMaximum < 0 && roundedMaximum >= 0
+        ? paddedMaximum
+        : dataMaximum <= 0 && roundedMaximum > 0
+          ? 0
+          : roundedMaximum,
+  };
+};
 
 export const escapeHtml = (value: string): string =>
   value
@@ -67,6 +119,18 @@ export const useResponsiveEChart = (
   let observedWidth = 0;
   let refreshPending = false;
 
+  const updatePointerCursor = (parameters: CallbackDataParams): void => {
+    const element = chartElement.value;
+    if (element !== null) {
+      element.style.cursor =
+        options.pointerCursor?.(parameters) === true ? "pointer" : "";
+    }
+  };
+
+  const resetPointerCursor = (): void => {
+    chartElement.value?.style.removeProperty("cursor");
+  };
+
   const render = (): void => {
     const element = chartElement.value;
     if (element === null || chart === null || element.clientWidth < 1) return;
@@ -98,6 +162,10 @@ export const useResponsiveEChart = (
     if (chart === null) {
       chart = options.initialize(element);
       if (options.onClick !== undefined) chart.on("click", options.onClick);
+      if (options.pointerCursor !== undefined) {
+        chart.on("mouseover", updatePointerCursor);
+        chart.on("mouseout", resetPointerCursor);
+      }
     }
     observe(element);
   };
@@ -125,6 +193,10 @@ export const useResponsiveEChart = (
     resizeObserver?.disconnect();
     resizeObserver = null;
     if (options.onClick !== undefined) chart?.off("click", options.onClick);
+    if (options.pointerCursor !== undefined) {
+      chart?.off("mouseover", updatePointerCursor);
+      chart?.off("mouseout", resetPointerCursor);
+    }
     chart?.dispose();
     chart = null;
   });

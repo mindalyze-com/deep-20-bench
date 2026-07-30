@@ -50,7 +50,7 @@ def test_file_scheme_entry_explains_how_to_start_the_preview() -> None:
 
 
 def _published_dataset() -> PublishedDataset:
-    source = REPOSITORY / "docs" / "data" / "deep20bench-v5.json"
+    source = REPOSITORY / "docs" / "data" / "deep20bench-v6.json"
     return PublishedDataset.model_validate_json(source.read_text(encoding="utf-8"))
 
 
@@ -88,17 +88,17 @@ def test_split_public_data_is_complete_and_removes_stale_files(
 
     data = public / "data"
     assert not stale.exists()
-    assert (data / "deep20bench-v5.json").is_file()
+    assert (data / "deep20bench-v6.json").is_file()
     assert (data / "leaderboard.csv").is_file()
     manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
     leaderboard = json.loads(
         (data / "leaderboard.json").read_text(encoding="utf-8")
     )
     assert manifest["document_type"] == "manifest"
-    assert manifest["dataset_schema_version"] == 5
+    assert manifest["dataset_schema_version"] == 6
     assert leaderboard["document_type"] == "leaderboard"
     assert leaderboard["leaderboard"] == json.loads(
-        (data / "deep20bench-v5.json").read_text(encoding="utf-8")
+        (data / "deep20bench-v6.json").read_text(encoding="utf-8")
     )["leaderboard"]
 
     run = dataset.official_runs[0]

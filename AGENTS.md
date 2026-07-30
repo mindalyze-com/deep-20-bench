@@ -116,9 +116,13 @@
   that is discarded because of an error, the benchmark composition root must retain the full
   completion and attempt metadata in a signed, owner-only per-trial `error-outputs.jsonl`.
   This diagnostic artifact must exclude prompts, messages, trusted subject state, full provider
-  responses, evidence annotations, and hidden reasoning; it must never be read into any model
-  request, cache input, retry message, report body, or later trial. Benchmark mode must not
-  create per-trial `audit/` directories or general raw call logs.
+  responses, evidence annotations, and hidden reasoning. An explicit post-run publication
+  capture may read it only to create the typed public Guesser-violation snapshot. That snapshot
+  contains turn identity, violation kind, attempt number, finish reason, and exact visible
+  Guesser text. It excludes call IDs, response IDs, recovery metadata, and every Oracle,
+  Reviewer, Judge, and Validator record. The raw diagnostic and the public snapshot must never
+  be read into any model request, cache input, retry message, or later trial. Benchmark mode
+  must not create per-trial `audit/` directories or general raw call logs.
 - Standalone `deep20 game play` and `deep20 oracle ask` commands remain composition roots. They
   may choose paths and retain auxiliary artifacts behind their shared `RunArtifactPolicy` and
   `--verbose` flag.

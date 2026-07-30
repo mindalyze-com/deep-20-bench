@@ -48,7 +48,7 @@ The build:
 3. compiles the active cohort and a strict public episode projection from
    `config/publication.yml`;
 4. records the UTC build time in typed publication provenance;
-5. writes the complete `deep20bench-v5.json` and `leaderboard.csv` downloads, plus typed,
+5. writes the complete `deep20bench-v6.json` and `leaderboard.csv` downloads, plus typed,
    split JSON documents for the SPA;
 6. builds the Vue application and writes static entry shells for every execution, subject, and
    episode route;
@@ -56,6 +56,19 @@ The build:
    hosts;
 8. runs strict Vue/TypeScript checks and the static build;
 9. atomically replaces the generated-only site output in `docs/`.
+
+Before publishing a new run with contract violations, refresh the public-safe Guesser output
+snapshot:
+
+```bash
+uv run --project source/publication/compiler deep20-publication capture-guesser-outputs
+```
+
+This command reads the owner-only diagnostics locally. It writes only turn identity, violation
+kind, attempt number, finish reason, and exact visible Guesser text to
+`source/publication/data/guesser-violation-outputs-v1.json`. It excludes call IDs, response IDs,
+recovery data, and all Oracle, Reviewer, Judge, and Validator records. Normal builds read this
+tracked snapshot and never read the owner-only diagnostics.
 
 To verify that committed output is current without replacing it:
 
@@ -79,7 +92,7 @@ No credential or network access is needed once the locked Python and Node depend
 installed.
 
 The SPA loads `manifest.json` and `leaderboard.json` first. It fetches one small run, subject,
-or episode document only when that route needs it. The complete version 5 JSON remains a
+or episode document only when that route needs it. The complete version 6 JSON remains a
 download and is not imported into the application bundle. Browser promise caching applies only
 to these immutable public reporting files. It is application caching, not provider prompt
 caching, and it cannot affect model requests, benchmark execution, or Guesser-visible state.
@@ -115,7 +128,7 @@ Cache status and cache metrics are reporting-only and never affect qualification
 Only selected current-protocol runs and their models enter the leaderboard, public run details,
 and generated routes. Historical protocol artifacts live outside `runs/` under `archive/` and
 are never parsed by the publication compiler. Non-qualifying current runs remain under `runs/`
-but are omitted from the public projection. The version 5 JSON shape emits an empty `lab_runs`
+but are omitted from the public projection. The version 6 JSON shape emits an empty `lab_runs`
 collection. Tampered or malformed discovered input still fails the build.
 
 The score uses exact decimal arithmetic:
@@ -232,14 +245,19 @@ separate from gameplay success: a model can solve the game while breaking the pr
 the game while following the protocol correctly.
 
 Malformed provider completions remain in signed, owner-only `error-outputs.jsonl` diagnostic
-artifacts. Publication never reads those files into the public dataset or a report page and
-does not publish cropped previews. This preserves the diagnostic isolation contract. Public
-pages show the typed reason recorded in the completed episode artifact instead.
+artifacts. An explicit post-run capture reads those files once and writes a tracked,
+public-safe Guesser-violation snapshot. It keeps only the turn identity, violation kind,
+attempt number, finish reason, and exact visible Guesser text. It drops call IDs, response IDs,
+recovery metadata, and every support-model record. The publication compiler reads the public
+snapshot, not the owner-only diagnostics. Episode pages show the typed rejection reason, the
+captured text when one exists, and the required formats from the exact `FORMAT_ERROR` event.
+Calls with no textual completion are labeled as such.
 
 The technical section exposes requested/resolved models and providers, prompt-contract versions,
 token/cache/latency/cost telemetry, and immutable episode provenance. The compiler intentionally
 does not project system instructions, raw Guesser conversation records, variation tokens, call
-IDs, raw provider responses, sessions, cache keys, diagnostics, credentials, or headers.
+IDs, response IDs, support-model outputs, sessions, cache keys, recovery diagnostics,
+credentials, or headers.
 The package accepts only the current manifest/summary schema 3, episode schema 9, and game
 protocol 9. It has no legacy adapter, schema downgrade, or per-run exclusion path. Every
 discovered run must satisfy the current strict read contract. Internal read-model names remain

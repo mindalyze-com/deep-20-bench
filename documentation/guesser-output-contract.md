@@ -141,6 +141,12 @@ while following the protocol correctly.
 The episode transcript contains a distinct violation card in the exact turn position. Reports
 use the explicit wording “Model broke the output contract” for breached trials.
 
+An explicit post-run capture reads signed owner-only `error-outputs.jsonl` files and writes a
+tracked, public-safe Guesser-violation snapshot. It keeps only turn identity, violation kind,
+attempt number, finish reason, and exact visible Guesser text. It drops call IDs, response IDs,
+recovery metadata, and every support-model record. The publication compiler reads this snapshot,
+not the owner-only diagnostics. The snapshot and public report are never model or cache input.
+
 ## Caching and versions
 
 The fixed correction forms a deterministic appended prompt tail. It can reuse an unchanged
@@ -154,7 +160,7 @@ This is a clean artifact-contract break with no legacy loader:
 - Guesser output schema: `guesser_action_v3`;
 - episode result: schema version 9;
 - benchmark summary/result/manifest: schema version 3; and
-- active protocol-9 public dataset: schema version 3.
+- active protocol-9 public dataset: schema version 6.
 
 The independent publisher is pinned to protocol 9 and rejects older episode artifacts.
 

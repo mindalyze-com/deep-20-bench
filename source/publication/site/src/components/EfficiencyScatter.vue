@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LineChart, ScatterChart } from "echarts/charts";
+import { ScatterChart } from "echarts/charts";
 import {
   AriaComponent,
   GridComponent,
@@ -20,12 +20,12 @@ import {
   chartDisplayFont,
   chartFont,
   chartTextSize,
+  chartValueDomain,
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
 
 echarts.use([
-  LineChart,
   ScatterChart,
   GridComponent,
   TooltipComponent,
@@ -40,7 +40,6 @@ export interface EfficiencyPoint {
   costDisplay: string;
   score: number;
   scoreDisplay: string;
-  frontier: boolean;
   link?: string;
 }
 
@@ -50,32 +49,25 @@ const props = defineProps<{
 
 const router = useRouter();
 const chartHeight = computed(() => 430);
-const frontier = computed(() =>
-  props.items
-    .filter((item) => item.frontier)
-    .sort((left, right) => left.cost - right.cost),
+const costDomain = computed(() =>
+  chartValueDomain(props.items.map((item) => item.cost)),
 );
-const scoreMinimum = computed(() =>
-  Math.max(
-    0,
-    Math.floor(Math.min(...props.items.map((item) => item.score)) - 2),
-  ),
-);
-const scoreMaximum = computed(() =>
-  Math.ceil(Math.max(...props.items.map((item) => item.score), 1) + 2),
-);
-const costMaximum = computed(
-  () => Math.max(...props.items.map((item) => item.cost), 1) * 1.08,
+const scoreDomain = computed(() =>
+  chartValueDomain(props.items.map((item) => item.score)),
 );
 
-const pointData = (frontierOnly: boolean) =>
-  props.items
-    .filter((item) => item.frontier === frontierOnly)
-    .map((item) => ({
-      name: item.label,
-      value: [item.cost, item.score],
-      rank: item.rank,
-    }));
+const pointData = () => {
+  const maximumCost = Math.max(...props.items.map((item) => item.cost));
+  return props.items.map((item) => ({
+    name: item.label,
+    value: [item.cost, item.score],
+    rank: item.rank,
+    label: {
+      position:
+        item.cost === maximumCost ? ("left" as const) : ("right" as const),
+    },
+  }));
+};
 
 const tooltip = (
   parameters: CallbackDataParams | CallbackDataParams[],
@@ -88,10 +80,10 @@ const tooltip = (
     `<strong style="display:block;color:#11131c;font:700 .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
     `<span style="display:block;margin-top:8px;color:#11131c;font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(item.scoreDisplay)} questions</span>`,
     `<span style="display:block;margin-top:5px;color:#5f626a;font-size:.72rem">${escapeHtml(item.costDisplay)} Guesser cost per episode</span>`,
-    `<span style="display:block;margin-top:4px;color:#5f626a;font-size:.72rem">${item.frontier ? "Pareto frontier" : "Ranked model"} · efficiency rank ${item.rank}</span>`,
+    `<span style="display:block;margin-top:4px;color:#5f626a;font-size:.72rem">Efficiency rank ${item.rank}</span>`,
     item.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">Open model details →</span>',
+      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">View full run →</span>',
     "</div>",
   ].join("");
 };
@@ -99,7 +91,6 @@ const tooltip = (
 const chartOption = (width: number): EChartsOption => {
   const mobile = width < 620;
   const axisFontSize = chartTextSize(width, 9, 11);
-  const labelFontSize = chartTextSize(width, 8, 11);
   return {
     animation: chartAnimationEnabled(),
     animationDuration: 480,
@@ -108,7 +99,7 @@ const chartOption = (width: number): EChartsOption => {
       description: `Cost and question-score trade-off. Lower and further left is better. ${props.items
         .map(
           (item) =>
-            `${item.label}, ${item.scoreDisplay} questions, ${item.costDisplay} per episode${item.frontier ? ", Pareto frontier" : ""}`,
+            `${item.label}, ${item.scoreDisplay} questions, ${item.costDisplay} per episode`,
         )
         .join(". ")}.`,
     },
@@ -130,8 +121,9 @@ const chartOption = (width: number): EChartsOption => {
     },
     xAxis: {
       type: "value",
-      min: 0,
-      max: costMaximum.value,
+      scale: true,
+      min: costDomain.value.minimum,
+      max: costDomain.value.maximum,
       name: "Guesser cost / episode · lower is better",
       nameLocation: "middle",
       nameGap: mobile ? 43 : 48,
@@ -155,8 +147,9 @@ const chartOption = (width: number): EChartsOption => {
     },
     yAxis: {
       type: "value",
-      min: scoreMinimum.value,
-      max: scoreMaximum.value,
+      scale: true,
+      min: scoreDomain.value.minimum,
+      max: scoreDomain.value.maximum,
       name: "Question score",
       nameLocation: "middle",
       nameGap: mobile ? 40 : 51,
@@ -179,59 +172,40 @@ const chartOption = (width: number): EChartsOption => {
     },
     series: [
       {
-        name: "Pareto frontier guide",
-        type: "line",
-        data: frontier.value.map((item) => [item.cost, item.score]),
-        symbol: "none",
-        silent: true,
-        lineStyle: {
-          color: "#849f18",
-          width: 2,
-          type: "dashed",
-        },
-        z: 1,
-      },
-      {
-        name: "Other ranked models",
+        name: "Models",
         type: "scatter",
-        data: pointData(false),
-        symbolSize: mobile ? 12 : 14,
+        data: pointData(),
+        symbolSize: mobile ? 14 : 17,
         cursor: "pointer",
         itemStyle: {
-          color: "#fbfaf6",
-          borderColor: "#4e64ff",
-          borderWidth: 2,
-        },
-        label: { show: false },
-        emphasis: { scale: 1.35 },
-        z: 2,
-      },
-      {
-        name: "Pareto frontier",
-        type: "scatter",
-        data: pointData(true),
-        symbolSize: mobile ? 17 : 20,
-        cursor: "pointer",
-        itemStyle: {
-          color: "#d6ff3f",
-          borderColor: "#667d0d",
+          color: "#4e64ff",
+          borderColor: "#11131c",
           borderWidth: 2,
         },
         label: {
           show: !mobile,
-          position: "right",
           distance: 7,
           color: "#252833",
           fontFamily: chartFont,
-          fontSize: labelFontSize,
+          fontSize: chartTextSize(width, 8, 11),
           fontWeight: 650,
-          width: mobile ? 76 : 145,
+          width: 148,
           overflow: "truncate",
           ellipsis: "…",
           formatter: (parameters: CallbackDataParams): string => parameters.name,
         },
-        emphasis: { scale: 1.25 },
-        z: 3,
+        labelLayout: {
+          hideOverlap: false,
+          moveOverlap: "shiftY",
+        },
+        emphasis: {
+          scale: 1.35,
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: "rgba(17,19,28,.2)",
+          },
+        },
+        z: 2,
       },
     ],
   };
@@ -259,16 +233,15 @@ watch(() => [chartElement.value, props.items] as const, refresh, {
   <figure class="efficiency-scatter">
     <figcaption>
       <span>Lower-left is better</span>
-      <span><i class="frontier-key" aria-hidden="true"></i>Pareto frontier</span>
-      <span><i aria-hidden="true"></i>Other ranked model</span>
+      <span>Select a model point to view its full run</span>
     </figcaption>
     <div
       ref="chartElement"
       class="efficiency-scatter-canvas"
       :style="{ height: `${chartHeight}px` }"
     ></div>
-    <ul class="mobile-frontier-key" aria-label="Pareto frontier models">
-      <li v-for="item in frontier" :key="item.label">
+    <ul class="mobile-model-key" aria-label="Models in the chart">
+      <li v-for="item in items" :key="item.label">
         <i aria-hidden="true"></i>
         <RouterLink v-if="item.link" :to="item.link">{{ item.label }}</RouterLink>
         <strong v-else>{{ item.label }}</strong>
@@ -279,9 +252,8 @@ watch(() => [chartElement.value, props.items] as const, refresh, {
       <li v-for="item in items" :key="item.label">
         {{ item.label }}: {{ item.scoreDisplay }} questions,
         {{ item.costDisplay }} Guesser cost per episode.
-        <span v-if="item.frontier">Pareto frontier.</span>
         <RouterLink v-if="item.link" :to="item.link" tabindex="-1">
-          Open full details for {{ item.label }}
+          View full run for {{ item.label }}
         </RouterLink>
       </li>
     </ol>
@@ -313,31 +285,12 @@ figcaption > span:first-child {
   text-transform: uppercase;
 }
 
-figcaption span:not(:first-child) {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-figcaption i {
-  width: 0.65rem;
-  height: 0.65rem;
-  border: 2px solid var(--blue);
-  border-radius: 50%;
-  background: var(--paper-bright);
-}
-
-figcaption .frontier-key {
-  border-color: #667d0d;
-  background: var(--acid);
-}
-
 .efficiency-scatter-canvas {
   width: 100%;
   min-width: 0;
 }
 
-.mobile-frontier-key {
+.mobile-model-key {
   display: none;
 }
 
@@ -354,7 +307,7 @@ figcaption .frontier-key {
     flex-basis: 100%;
   }
 
-  .mobile-frontier-key {
+  .mobile-model-key {
     display: grid;
     margin: 0.2rem 0.5rem 0;
     padding: 0;
@@ -362,7 +315,7 @@ figcaption .frontier-key {
     list-style: none;
   }
 
-  .mobile-frontier-key li {
+  .mobile-model-key li {
     display: grid;
     grid-template-columns: 0.55rem minmax(0, 1fr) auto;
     gap: 0.5rem;
@@ -372,16 +325,16 @@ figcaption .frontier-key {
     font-size: var(--text-micro);
   }
 
-  .mobile-frontier-key i {
+  .mobile-model-key i {
     width: 0.55rem;
     height: 0.55rem;
-    border: 2px solid #667d0d;
+    border: 1px solid var(--ink);
     border-radius: 50%;
-    background: var(--acid);
+    background: var(--blue);
   }
 
-  .mobile-frontier-key a,
-  .mobile-frontier-key strong {
+  .mobile-model-key a,
+  .mobile-model-key strong {
     overflow: hidden;
     color: var(--ink);
     font-weight: 700;
@@ -389,7 +342,7 @@ figcaption .frontier-key {
     white-space: nowrap;
   }
 
-  .mobile-frontier-key span {
+  .mobile-model-key span {
     color: var(--muted);
     font-variant-numeric: tabular-nums;
   }

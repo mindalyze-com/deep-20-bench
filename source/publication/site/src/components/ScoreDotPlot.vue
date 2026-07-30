@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ScatterChart } from "echarts/charts";
+import { BarChart, ScatterChart } from "echarts/charts";
 import {
   AriaComponent,
   GridComponent,
@@ -19,11 +19,13 @@ import {
   chartDisplayFont,
   chartFont,
   chartTextSize,
+  chartValueDomain,
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
 
 echarts.use([
+  BarChart,
   ScatterChart,
   GridComponent,
   TooltipComponent,
@@ -51,17 +53,7 @@ const scoreValues = computed(() =>
     .map((item) => item.value)
     .filter((value) => Number.isFinite(value)),
 );
-const scoreDomain = computed(() => {
-  if (scoreValues.value.length === 0) return { minimum: 0, maximum: 1 };
-  const dataMinimum = Math.min(...scoreValues.value);
-  const dataMaximum = Math.max(...scoreValues.value);
-  const span = dataMaximum - dataMinimum;
-  const padding = Math.max(0.5, span * 0.08);
-  return {
-    minimum: Math.max(0, Math.floor((dataMinimum - padding) * 2) / 2),
-    maximum: Math.ceil((dataMaximum + padding) * 2) / 2,
-  };
-});
+const scoreDomain = computed(() => chartValueDomain(scoreValues.value));
 
 const tooltip = (
   parameters: CallbackDataParams | CallbackDataParams[],
@@ -77,7 +69,7 @@ const tooltip = (
     '<span style="display:block;margin-top:5px;color:#5f626a;font-size:.72rem">Lower is better</span>',
     item.link === undefined
       ? ""
-      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">Open model details →</span>',
+      : '<span style="display:block;margin-top:9px;color:#2539bd;font-size:.72rem;font-weight:700;text-transform:uppercase">View full run →</span>',
     "</div>",
   ].join("");
 };
@@ -115,6 +107,7 @@ const chartOption = (width: number): EChartsOption => {
     },
     xAxis: {
       type: "value",
+      scale: true,
       min: scoreDomain.value.minimum,
       max: scoreDomain.value.maximum,
       splitNumber: mobile ? 3 : 5,
@@ -148,6 +141,7 @@ const chartOption = (width: number): EChartsOption => {
     yAxis: {
       type: "category",
       inverse: true,
+      triggerEvent: true,
       data: props.items.map((item) => item.label),
       axisLine: { show: false },
       axisTick: { show: false },
@@ -169,6 +163,25 @@ const chartOption = (width: number): EChartsOption => {
       },
     },
     series: [
+      {
+        name: "View full run",
+        type: "bar",
+        barWidth: mobile ? 38 : 42,
+        cursor: props.items.some((item) => item.link !== undefined)
+          ? "pointer"
+          : "default",
+        data: props.items.map(() => scoreDomain.value.maximum),
+        itemStyle: {
+          color: "rgba(17,19,28,0.001)",
+        },
+        emphasis: {
+          itemStyle: {
+            color: "rgba(78,100,255,0.06)",
+          },
+        },
+        label: { show: false },
+        z: 2,
+      },
       {
         name: "Question score",
         type: "scatter",
@@ -210,7 +223,10 @@ const chartOption = (width: number): EChartsOption => {
 };
 
 const handleClick = (parameters: CallbackDataParams): void => {
-  const item = props.items[parameters.dataIndex];
+  const item =
+    parameters.componentType === "yAxis"
+      ? props.items.find((candidate) => candidate.label === String(parameters.value))
+      : props.items[parameters.dataIndex];
   if (item?.link !== undefined) void router.push(item.link);
 };
 
@@ -220,6 +236,12 @@ const { chartElement, refresh } = useResponsiveEChart({
     echarts.init(element, undefined, { renderer: "svg" }),
   option: chartOption,
   onClick: handleClick,
+  pointerCursor: (parameters) =>
+    parameters.componentType === "yAxis" &&
+    props.items.some(
+      (item) =>
+        item.label === String(parameters.value) && item.link !== undefined,
+    ),
 });
 
 watch(() => [chartElement.value, props.items] as const, refresh, {
@@ -229,6 +251,7 @@ watch(() => [chartElement.value, props.items] as const, refresh, {
 
 <template>
   <figure class="score-dot-plot">
+    <figcaption>Select a model row to view its full run.</figcaption>
     <div
       ref="chartElement"
       class="score-dot-plot-canvas"
@@ -238,7 +261,7 @@ watch(() => [chartElement.value, props.items] as const, refresh, {
       <li v-for="(item, index) in items" :key="item.label">
         {{ index + 1 }}. {{ item.label }}: {{ item.display }} questions.
         <RouterLink v-if="item.link" :to="item.link" tabindex="-1">
-          Open full details for {{ item.label }}
+          View full run for {{ item.label }}
         </RouterLink>
       </li>
     </ol>
@@ -248,6 +271,15 @@ watch(() => [chartElement.value, props.items] as const, refresh, {
 <style scoped>
 .score-dot-plot {
   margin: 0;
+}
+
+.score-dot-plot figcaption {
+  margin: 0;
+  padding: 0.75rem 0.5rem 0;
+  color: var(--muted);
+  font-size: var(--text-micro);
+  line-height: 1.4;
+  text-align: right;
 }
 
 .score-dot-plot-canvas {

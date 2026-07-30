@@ -6,6 +6,7 @@ from pydantic import BaseModel, JsonValue, ValidationError
 
 from .integrity import (
     PublicationInputError,
+    parse_json_object,
     sha256_text,
     verify_signed_object,
 )
@@ -14,6 +15,8 @@ from .models import (
     BenchmarkStateEnvelope,
     BenchmarkSummaryEnvelope,
     CompletedTrialArtifactEnvelope,
+    DiagnosticErrorOutputRecord,
+    GuesserViolationSnapshot,
     LoadedEpisode,
     LoadedRun,
     ModelCatalog,
@@ -101,6 +104,53 @@ def parse_completed_episode(
     return LoadedEpisode(
         identity=envelope.payload.identity,
         result=envelope.payload.result,
+        artifacts=envelope.payload.artifacts,
         relative_path=relative_path,
         integrity_hash=envelope.integrity_hash,
     )
+
+
+def parse_diagnostic_error_outputs(
+    *,
+    text: str,
+    label: str,
+    expected_record_count: int,
+    expected_integrity_hash: str | None,
+) -> tuple[DiagnosticErrorOutputRecord, ...]:
+    if expected_integrity_hash is not None and sha256_text(text) != expected_integrity_hash:
+        raise PublicationInputError(f"{label} differs from its signed artifact reference")
+
+    records: list[DiagnosticErrorOutputRecord] = []
+    call_ids: set[str] = set()
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        if not line:
+            continue
+        line_label = f"{label}:{line_number}"
+        value = parse_json_object(line, line_label)
+        verify_signed_object(value, line_label)
+        unsigned = dict(value)
+        unsigned.pop("integrity_hash", None)
+        record = _validate_model(
+            DiagnosticErrorOutputRecord,
+            unsigned,
+            line_label,
+        )
+        if record.call_id in call_ids:
+            raise PublicationInputError(
+                f"{label} contains duplicate diagnostic call {record.call_id}"
+            )
+        call_ids.add(record.call_id)
+        records.append(record)
+
+    if len(records) != expected_record_count:
+        raise PublicationInputError(
+            f"{label} record count differs from its signed artifact reference"
+        )
+    return tuple(records)
+
+
+def parse_guesser_violation_snapshot(
+    value: dict[str, JsonValue],
+    label: str,
+) -> GuesserViolationSnapshot:
+    return _validate_model(GuesserViolationSnapshot, value, label)

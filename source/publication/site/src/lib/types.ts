@@ -207,6 +207,13 @@ export interface PublicContractViolationTurn {
   feedback_event: "FORMAT_ERROR" | null;
   counted: boolean;
   counted_questions: number;
+  rejected_outputs: PublicRejectedOutput[];
+}
+
+export interface PublicRejectedOutput {
+  attempt_number: number;
+  finish_reason: string | null;
+  text: string;
 }
 
 export type PublicTurn = PublicActionTurn | PublicContractViolationTurn;
@@ -252,6 +259,10 @@ export interface PublicOracleSupportUsage {
 export interface PublicGuesserDisclosure {
   system_message: string;
   begin_message: string;
+  required_formats: {
+    ask: string;
+    guess: string;
+  } | null;
   output_storage: "canonical_structured_action";
 }
 
@@ -299,7 +310,7 @@ export interface PublicationRunReference {
 export interface ManifestDocument {
   document_type: "manifest";
   schema_version: 1;
-  dataset_schema_version: 5;
+  dataset_schema_version: 6;
   site: SiteMetadata;
   score_policy: ScorePolicy;
   active_cohort: CohortConfig;

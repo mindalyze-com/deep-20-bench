@@ -63,7 +63,7 @@ const level = computed(() => {
 }
 
 .effort-meter i.active {
-  background: var(--blue);
+  background: var(--muted);
 }
 
 .compact > span:last-child {

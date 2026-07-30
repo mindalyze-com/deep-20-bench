@@ -39,4 +39,6 @@ artifacts, reports, or component wiring must review this boundary and add or upd
 prove the Guesser-visible projection remains limited to permitted data.
 
 Do not commit credentials, files under `private/`, or owner-only `error-outputs.jsonl`
-diagnostics. Build the generated publication only from terminal benchmark runs.
+diagnostics. Before publishing a new terminal run with contract violations, run
+`deep20-publication capture-guesser-outputs` and review the typed public snapshot. Build the
+generated publication only from terminal benchmark runs.

@@ -523,8 +523,8 @@ onActivated(applyRouteContext);
                   <pre>{{ episode.guesser_disclosure.begin_message }}</pre>
                 </article>
                 <p class="detail-note">
-                  Published recorded outputs are canonical structured actions. Malformed provider
-                  completions remain in owner-only diagnostics and are not shown here.
+                  Valid recorded outputs are canonical structured actions. Rejected Guesser text
+                  is published separately without provider or call identifiers.
                 </p>
               </div>
             </details>
@@ -696,10 +696,50 @@ onActivated(applyRouteContext);
                           </div>
                           <div><dt>Feedback</dt><dd>{{ turn.feedback_event ?? "No retry" }}</dd></div>
                         </dl>
-                        <p class="detail-note">
-                          The malformed provider text is excluded from the public dataset. The
-                          full completion stays in the isolated owner-only diagnostic artifact.
-                        </p>
+                        <section class="rejected-output-comparison">
+                          <header>
+                            <strong>What the model returned</strong>
+                            <small>Exact Guesser provider text</small>
+                          </header>
+                          <div v-if="turn.rejected_outputs.length" class="rejected-output-list">
+                            <article
+                              v-for="output in turn.rejected_outputs"
+                              :key="output.attempt_number"
+                            >
+                              <span>
+                                Attempt {{ output.attempt_number }} · finish
+                                {{ output.finish_reason ?? "not reported" }}
+                              </span>
+                              <pre>{{ output.text }}</pre>
+                            </article>
+                          </div>
+                          <p v-else class="missing-output">
+                            The provider returned no textual completion for this call.
+                          </p>
+                        </section>
+                        <section
+                          v-if="episode.guesser_disclosure?.required_formats"
+                          class="contract-examples"
+                        >
+                          <header>
+                            <strong>What a valid response looks like</strong>
+                            <small>The same formats shown to the Guesser</small>
+                          </header>
+                          <div>
+                            <article>
+                              <span>ASK</span>
+                              <pre>{{ episode.guesser_disclosure.required_formats.ask }}</pre>
+                            </article>
+                            <article>
+                              <span>GUESS</span>
+                              <pre>{{ episode.guesser_disclosure.required_formats.guess }}</pre>
+                            </article>
+                          </div>
+                          <p class="detail-note">
+                            The response must match one complete format. Active strings must be
+                            non-empty. Inactive fields must be JSON <code>null</code>.
+                          </p>
+                        </section>
                       </div>
                     </details>
                   </div>
@@ -821,10 +861,11 @@ onActivated(applyRouteContext);
               </article>
               <article>
                 <span>Public post-run view</span>
-                <strong>Published actions, bounded detail</strong>
+                <strong>Published actions and rejected Guesser text</strong>
                 <p>
-                  Typed actions and canonical stored outputs are public. Malformed completions,
-                  adjudicator prompts, hidden reasoning, and provider payloads are excluded.
+                  Typed actions, canonical valid outputs, and rejected Guesser text are public.
+                  Adjudicator prompts, hidden reasoning, private identifiers, and provider
+                  payloads are excluded.
                 </p>
               </article>
             </div>
@@ -1534,6 +1575,75 @@ pre {
   overflow-wrap: anywhere;
 }
 
+.rejected-output-comparison,
+.contract-examples {
+  margin-top: 1rem;
+  border: 1px solid var(--line);
+  background: var(--paper-bright);
+}
+
+.rejected-output-comparison > header,
+.contract-examples > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.rejected-output-comparison > header strong,
+.contract-examples > header strong {
+  font-size: 0.72rem;
+}
+
+.rejected-output-comparison > header small,
+.contract-examples > header small,
+.rejected-output-list article > span,
+.contract-examples article > span {
+  color: var(--muted);
+  font-size: 0.62rem;
+}
+
+.rejected-output-list {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+}
+
+.rejected-output-list article,
+.contract-examples article {
+  min-width: 0;
+  padding: 0.9rem;
+  background: var(--paper-bright);
+}
+
+.rejected-output-list article > span,
+.contract-examples article > span {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+
+.missing-output {
+  margin: 0;
+  padding: 1rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.contract-examples > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+}
+
+.contract-examples .detail-note {
+  margin: 1rem;
+}
+
 .reliability {
   border-top: 7px solid var(--coral);
   background: #fff1ec;
@@ -1742,6 +1852,7 @@ pre {
   .warning-facts,
   .reliability-grid,
   .violation-body dl,
+  .contract-examples > div,
   .provenance-details > dl {
     grid-template-columns: 1fr;
   }

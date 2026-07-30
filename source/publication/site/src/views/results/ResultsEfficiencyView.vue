@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onActivated, ref } from "vue";
+import { useRouter } from "vue-router";
 
 import EfficiencyScatter, {
   type EfficiencyPoint,
@@ -7,7 +8,10 @@ import EfficiencyScatter, {
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import MobileResultCard from "@/components/MobileResultCard.vue";
+import ModelRunLink from "@/components/ModelRunLink.vue";
 import ResultsNav from "@/components/ResultsNav.vue";
+import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard } from "@/lib/api";
 import { moneyEpisode, number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
@@ -16,12 +20,13 @@ import type { LeaderboardRow } from "@/lib/types";
 const leaderboard = ref<LeaderboardRow[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
+const router = useRouter();
 
 const applyRouteContext = (): void => {
   setRouteContext({
     title: "Efficiency results",
     description:
-      "Compare the official cost-adjusted question score and cost-quality frontier.",
+      "Compare the official cost-adjusted question score and cost-quality trade-off.",
     level: null,
     position: null,
     crumbs: [],
@@ -48,6 +53,14 @@ const unranked = computed(() =>
   leaderboard.value.filter((row) => row.efficiency_rank === null),
 );
 
+const costRange = computed(() => {
+  const costs = ranked.value
+    .map((row) => Number(row.guesser_cost_per_episode_usd))
+    .filter((cost) => Number.isFinite(cost) && cost > 0);
+  if (costs.length < 2) return null;
+  return Math.max(...costs) / Math.min(...costs);
+});
+
 const efficiencyBars = computed(() =>
   ranked.value.map((row) => ({
     label: row.model.display_name,
@@ -69,11 +82,19 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
     costDisplay: moneyEpisode(row.guesser_cost_per_episode_usd),
     score: Number(row.question_score ?? 0),
     scoreDisplay: number(row.question_score),
-    frontier: row.pareto_efficient,
     link:
       row.execution_id === null ? undefined : `/runs/${row.execution_id}/`,
   })),
 );
+
+const runLink = (row: LeaderboardRow) => ({
+  name: "run",
+  params: { executionId: row.execution_id },
+});
+
+const openRun = (row: LeaderboardRow): void => {
+  if (row.execution_id !== null) void router.push(runLink(row));
+};
 
 const load = async (): Promise<void> => {
   loading.value = true;
@@ -127,12 +148,12 @@ void load();
         <div class="content-inner">
           <dl class="stats-grid results-summary">
             <div>
-              <dt>Ranked models</dt>
+              <dt>Models</dt>
               <dd>{{ ranked.length }}</dd>
             </div>
             <div>
-              <dt>Pareto frontier</dt>
-              <dd>{{ ranked.filter((row) => row.pareto_efficient).length }}</dd>
+              <dt>Cost range</dt>
+              <dd>{{ costRange === null ? "—" : `${number(costRange, 0)}×` }}</dd>
             </div>
             <div>
               <dt>Best efficiency</dt>
@@ -162,34 +183,47 @@ void load();
             />
           </section>
 
-          <section class="frontier-panel" aria-labelledby="frontier-title">
+          <section class="tradeoff-panel" aria-labelledby="tradeoff-title">
             <header>
               <div>
                 <p class="eyebrow">Trade-off map</p>
-                <h2 id="frontier-title">Cost and result.</h2>
+                <h2 id="tradeoff-title">Cost and result.</h2>
               </div>
               <p>
-                Frontier models are not beaten by another model on both question score
-                and Guesser cost per episode.
+                Each point is one model. Both axes use their original linear scale.
               </p>
             </header>
             <EfficiencyScatter :items="efficiencyPoints" />
           </section>
 
           <div
-            class="table-wrap results-table-wrap"
+            class="table-wrap ranking-table-wrap results-table-wrap"
             tabindex="0"
             aria-label="Scrollable efficiency ranking"
           >
-            <table class="data-table results-table">
+            <table class="data-table ranking-table results-table">
               <thead>
                 <tr>
-                  <th>Efficiency rank</th>
-                  <th>Model</th>
-                  <th data-numeric>Cost-adjusted score</th>
+                  <th class="rank-column">
+                    <span aria-hidden="true">#</span>
+                    <span class="visually-hidden">Efficiency rank</span>
+                  </th>
+                  <th class="model-column">Model</th>
+                  <th class="run-column">Run</th>
+                  <th data-numeric>
+                    <span class="table-header-stack">
+                      <span>Cost-adjusted</span>
+                      <span>score</span>
+                    </span>
+                  </th>
                   <th data-numeric>Question rank</th>
                   <th data-numeric>Question score</th>
-                  <th data-numeric>Guesser / episode</th>
+                  <th data-numeric>
+                    <span class="table-header-stack">
+                      <span>Guesser cost</span>
+                      <span>per episode</span>
+                    </span>
+                  </th>
                   <th data-numeric>Success</th>
                 </tr>
               </thead>
@@ -197,24 +231,29 @@ void load();
                 <tr
                   v-for="row in ranked"
                   :key="row.model.model_id"
-                  :class="{ 'result-row--clickable': row.execution_id !== null }"
+                  :class="{
+                    'result-row--clickable': row.execution_id !== null,
+                    'result-row--navigable': row.execution_id !== null,
+                  }"
+                  @click="openRun(row)"
                 >
-                  <td>
-                    <span class="rank-badge">{{ row.efficiency_rank }}</span>
-                  </td>
-                  <td>
-                    <RouterLink
+                  <td class="rank-column">{{ row.efficiency_rank }}</td>
+                  <td class="model-column">
+                    <ModelRunLink
                       v-if="row.execution_id !== null"
-                      class="result-row-link"
-                      :to="{ name: 'run', params: { executionId: row.execution_id } }"
-                      :aria-label="`Open full details for ${row.model.display_name}`"
-                    >
-                      {{ row.model.display_name }}
-                    </RouterLink>
+                      :to="runLink(row)"
+                      :name="row.model.display_name"
+                      :meta="row.model.provider"
+                    />
                     <strong v-else>{{ row.model.display_name }}</strong>
-                    <small v-if="row.pareto_efficient">
-                      <span class="frontier-badge">Frontier</span>
-                    </small>
+                  </td>
+                  <td class="run-column">
+                    <RunTableAction
+                      v-if="row.execution_id !== null"
+                      :to="runLink(row)"
+                      :name="row.model.display_name"
+                    />
+                    <span v-else aria-hidden="true">—</span>
                   </td>
                   <td data-numeric>
                     {{ number(row.cost_adjusted_question_score, 3) }}
@@ -228,6 +267,28 @@ void load();
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <div class="mobile-result-list" aria-label="Efficiency ranking">
+            <MobileResultCard
+              v-for="row in ranked"
+              :key="`mobile-${row.model.model_id}`"
+              :rank="row.efficiency_rank ?? '—'"
+              :name="row.model.display_name"
+              :provider="row.model.provider"
+              :to="row.execution_id === null ? null : runLink(row)"
+              :metrics="[
+                {
+                  label: 'Adjusted',
+                  value: number(row.cost_adjusted_question_score, 3),
+                },
+                { label: 'Score', value: number(row.question_score) },
+                {
+                  label: 'Cost',
+                  value: moneyEpisode(row.guesser_cost_per_episode_usd),
+                },
+              ]"
+            />
           </div>
 
           <p v-if="unranked.length > 0" class="results-note">
@@ -314,16 +375,16 @@ h1,
 
 .results-summary,
 .efficiency-panel,
-.frontier-panel {
+.tradeoff-panel {
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
 }
 
-.frontier-panel {
+.tradeoff-panel {
   border: 1px solid var(--line);
   background: var(--paper-bright);
 }
 
-.frontier-panel > header {
+.tradeoff-panel > header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.5fr);
   gap: 2rem;
@@ -332,7 +393,7 @@ h1,
   border-bottom: 1px solid var(--line);
 }
 
-.frontier-panel h2,
+.tradeoff-panel h2,
 .metric-definition h2 {
   margin: 0;
   font-family: var(--font-display);
@@ -342,7 +403,7 @@ h1,
   line-height: 0.98;
 }
 
-.frontier-panel > header > p {
+.tradeoff-panel > header > p {
   margin: 0;
   color: var(--muted);
   line-height: 1.65;
@@ -350,28 +411,6 @@ h1,
 
 .results-table {
   min-width: 980px;
-}
-
-.rank-badge {
-  display: inline-grid;
-  width: 1.8rem;
-  aspect-ratio: 1;
-  place-items: center;
-  border: 1px solid var(--line);
-  font-weight: 760;
-}
-
-.frontier-badge {
-  display: inline-block;
-  padding: 0.2rem 0.45rem;
-  border: 1px solid #667f0c;
-  border-radius: 999px;
-  background: var(--acid);
-  color: var(--ink);
-  font-size: var(--text-micro);
-  font-weight: 780;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .results-note {
@@ -436,7 +475,7 @@ h1,
 }
 
 @media (max-width: 900px) {
-  .frontier-panel > header,
+  .tradeoff-panel > header,
   .metric-definition {
     grid-template-columns: 1fr;
   }
