@@ -89,9 +89,15 @@ def test_split_public_data_is_complete_and_removes_stale_files(
     assert (data / "leaderboard.csv").is_file()
     manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
     leaderboard = json.loads((data / "leaderboard.json").read_text(encoding="utf-8"))
+    repeat_averages = json.loads((data / "repeat-averages.json").read_text(encoding="utf-8"))
     assert manifest["document_type"] == "manifest"
     assert manifest["dataset_schema_version"] == 7
     assert leaderboard["document_type"] == "leaderboard"
+    assert repeat_averages["document_type"] == "repeat_averages"
+    assert repeat_averages["schema_version"] == 1
+    assert len(repeat_averages["averages"]) == sum(
+        run.iterations for run in dataset.official_runs if run.question_score is not None
+    )
     assert (
         leaderboard["leaderboard"]
         == json.loads((data / "deep20bench-v7.json").read_text(encoding="utf-8"))["leaderboard"]

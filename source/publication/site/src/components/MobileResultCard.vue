@@ -4,6 +4,7 @@ import { RouterLink, type RouteLocationRaw } from "vue-router";
 interface ResultMetric {
   label: string;
   value: string;
+  tone?: "default" | "primary";
 }
 
 defineProps<{
@@ -33,7 +34,11 @@ defineProps<{
     </div>
 
     <dl class="mobile-result-metrics">
-      <div v-for="metric in metrics" :key="metric.label">
+      <div
+        v-for="metric in metrics"
+        :key="metric.label"
+        :data-tone="metric.tone ?? 'default'"
+      >
         <dt>{{ metric.label }}</dt>
         <dd>{{ metric.value }}</dd>
       </div>
@@ -157,6 +162,13 @@ defineProps<{
   border-right: 0;
 }
 
+.mobile-result-metrics div[data-tone="primary"] {
+  margin-block: -0.35rem;
+  padding-block: 0.35rem;
+  background: var(--surface-accent-soft);
+  box-shadow: 0 0 0 0.35rem var(--surface-accent-soft);
+}
+
 .mobile-result-metrics dt {
   overflow: hidden;
   color: var(--muted);
@@ -178,6 +190,18 @@ defineProps<{
   letter-spacing: -0.01em;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.mobile-result-metrics div[data-tone="primary"] dt {
+  color: var(--blue-ink);
+}
+
+.mobile-result-metrics div[data-tone="primary"] dd {
+  color: var(--blue-ink);
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+  font-weight: 620;
+  letter-spacing: -0.025em;
 }
 
 .mobile-result-action {

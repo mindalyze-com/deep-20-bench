@@ -2,6 +2,7 @@ import type {
   EpisodeDocument,
   LeaderboardDocument,
   ManifestDocument,
+  RepeatAveragesDocument,
   RunDocument,
   SubjectDocument,
 } from "./types";
@@ -45,6 +46,9 @@ export const getManifest = (): Promise<ManifestDocument> =>
 
 export const getLeaderboard = (): Promise<LeaderboardDocument> =>
   request<LeaderboardDocument>("leaderboard.json", "leaderboard");
+
+export const getRepeatAverages = (): Promise<RepeatAveragesDocument> =>
+  request<RepeatAveragesDocument>("repeat-averages.json", "repeat_averages");
 
 export const getRun = (executionId: string): Promise<RunDocument> =>
   request<RunDocument>(`runs/${encodeURIComponent(executionId)}.json`, "run").then(

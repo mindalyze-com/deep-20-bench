@@ -1619,6 +1619,37 @@ class PublicationLeaderboardDocument(FrozenModel):
     leaderboard: tuple[LeaderboardRow, ...]
 
 
+class PublicRepeatAverage(FrozenModel):
+    execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
+    model_id: str = Field(pattern=MODEL_ID_PATTERN)
+    trial_number: int = Field(ge=1)
+    average_questions: Decimal = Field(ge=0)
+    subject_count: int = Field(ge=1)
+    successful: int = Field(ge=0)
+    model_failed: int = Field(ge=0)
+
+    @model_validator(mode="after")
+    def outcomes_match_subject_count(self) -> PublicRepeatAverage:
+        if self.successful + self.model_failed != self.subject_count:
+            raise ValueError("repeat-average outcomes must match the subject count")
+        return self
+
+
+class PublicationRepeatAveragesDocument(FrozenModel):
+    document_type: Literal["repeat_averages"] = "repeat_averages"
+    schema_version: Literal[1] = 1
+    averages: tuple[PublicRepeatAverage, ...]
+
+    @model_validator(mode="after")
+    def unique_repeat_averages(self) -> PublicationRepeatAveragesDocument:
+        identities = tuple(
+            (average.execution_id, average.trial_number) for average in self.averages
+        )
+        if len(identities) != len(set(identities)):
+            raise ValueError("repeat-average identities must be unique")
+        return self
+
+
 class PublicationRunDocument(FrozenModel):
     document_type: Literal["run"] = "run"
     schema_version: Literal[2] = 2
@@ -1667,6 +1698,7 @@ class PublicationEpisodeDocument(FrozenModel):
 PublicationDocument = Annotated[
     PublicationManifestDocument
     | PublicationLeaderboardDocument
+    | PublicationRepeatAveragesDocument
     | PublicationRunDocument
     | PublicationSubjectDocument
     | PublicationEpisodeDocument,
@@ -1677,6 +1709,7 @@ PublicationDocument = Annotated[
 class PublicationDataBundle(FrozenModel):
     manifest: PublicationManifestDocument
     leaderboard: PublicationLeaderboardDocument
+    repeat_averages: PublicationRepeatAveragesDocument
     runs: tuple[PublicationRunDocument, ...]
     subjects: tuple[PublicationSubjectDocument, ...]
     episodes: tuple[PublicationEpisodeDocument, ...]
@@ -1692,6 +1725,16 @@ class PublicationDataBundle(FrozenModel):
         ):
             raise ValueError("publication manifest references differ from run documents")
 
+        official_identities = {
+            (reference.execution_id, reference.model_id)
+            for reference in self.manifest.official_runs
+        }
+        if any(
+            (average.execution_id, average.model_id) not in official_identities
+            for average in self.repeat_averages.averages
+        ):
+            raise ValueError("repeat averages must belong to official runs")
+
         subject_documents = {
             (document.execution_id, document.target_id): document for document in self.subjects
         }
@@ -1704,6 +1747,48 @@ class PublicationDataBundle(FrozenModel):
         }
         if set(subject_documents) != expected_subjects:
             raise ValueError("publication subject documents differ from run documents")
+
+        official_run_documents = {
+            reference.execution_id: run_documents[reference.execution_id]
+            for reference in self.manifest.official_runs
+        }
+        expected_repeat_averages: dict[tuple[str, int], tuple[str, Decimal, int, int, int]] = {}
+        for run in official_run_documents.values():
+            if run.run.question_score is None:
+                continue
+            for trial_number in range(1, run.run.iterations + 1):
+                trials = tuple(
+                    trial
+                    for subject in run.subjects
+                    for trial in subject_documents[(run.run.execution_id, subject.target_id)].trials
+                    if trial.trial_number == trial_number
+                )
+                scores = tuple(
+                    trial.penalized_questions
+                    for trial in trials
+                    if trial.penalized_questions is not None
+                )
+                if len(trials) != len(run.subjects) or len(scores) != len(run.subjects):
+                    raise ValueError("scored official repeats must include every subject")
+                expected_repeat_averages[(run.run.execution_id, trial_number)] = (
+                    run.run.model_id,
+                    sum(scores, start=Decimal(0)) / Decimal(len(scores)),
+                    len(scores),
+                    sum(trial.status == "success" for trial in trials),
+                    sum(trial.status == "model_failure" for trial in trials),
+                )
+        actual_repeat_averages = {
+            (average.execution_id, average.trial_number): (
+                average.model_id,
+                average.average_questions,
+                average.subject_count,
+                average.successful,
+                average.model_failed,
+            )
+            for average in self.repeat_averages.averages
+        }
+        if actual_repeat_averages != expected_repeat_averages:
+            raise ValueError("repeat averages differ from official scored trials")
 
         episode_documents = {
             (document.execution_id, document.target_id, document.trial_id): document

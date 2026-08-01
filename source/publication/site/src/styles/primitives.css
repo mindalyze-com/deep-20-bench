@@ -199,6 +199,18 @@
   align-items: start;
 }
 
+.result-chart-panel > .panel-heading > div:first-child {
+  min-width: 0;
+  justify-self: stretch;
+  text-align: left;
+}
+
+.result-chart-panel > .panel-heading > div:first-child > .eyebrow,
+.result-chart-panel > .panel-heading > div:first-child > :is(h2, h3) {
+  margin-inline: 0;
+  padding-inline: 0;
+}
+
 @media (min-width: 761px) {
   .result-chart-panel > .panel-heading {
     border-bottom: 0;
@@ -397,10 +409,57 @@ a.card:hover {
   vertical-align: middle;
 }
 
+.comparison-ranking-table {
+  min-width: 64rem;
+  table-layout: fixed;
+}
+
+.comparison-ranking-table .rank-column,
+.comparison-ranking-table .model-column,
+.comparison-ranking-table .run-column,
+.comparison-ranking-table .primary-metric-column {
+  min-width: 0;
+}
+
+.comparison-ranking-table .reasoning-column {
+  padding-inline: 0.68rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
 .ranking-table th[data-numeric],
 .ranking-table td[data-numeric] {
   padding-inline: 0.68rem;
   white-space: nowrap;
+}
+
+.ranking-table .primary-metric-column {
+  width: 8.5rem;
+  min-width: 8.5rem;
+  background: color-mix(
+    in srgb,
+    var(--surface-accent-soft) 68%,
+    var(--surface-raised)
+  );
+  box-shadow:
+    inset 1px 0 0 color-mix(in srgb, var(--blue) 18%, transparent),
+    inset -1px 0 0 color-mix(in srgb, var(--blue) 18%, transparent);
+}
+
+.ranking-table th.primary-metric-column {
+  color: var(--blue-ink);
+  box-shadow:
+    inset 0 var(--border-emphasis-width) 0 var(--blue),
+    inset 1px 0 0 color-mix(in srgb, var(--blue) 18%, transparent),
+    inset -1px 0 0 color-mix(in srgb, var(--blue) 18%, transparent);
+}
+
+.ranking-table th.primary-metric-column .table-header-stack span:last-child {
+  color: var(--text-secondary);
+}
+
+.ranking-table td.primary-metric-column .question-score {
+  margin-left: auto;
 }
 
 .ranking-table .rank-column {
@@ -708,6 +767,20 @@ a.card:hover {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 1321px) {
+  .panel-heading--with-help {
+    grid-template-columns:
+      minmax(24rem, 36rem)
+      minmax(560px, 576px)
+      minmax(11rem, 14rem);
+    justify-content: space-between;
+  }
+
+  .panel-heading--with-help.panel-heading--compact > p {
+    max-width: none;
   }
 }
 

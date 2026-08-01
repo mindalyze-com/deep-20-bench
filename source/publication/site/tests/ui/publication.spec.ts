@@ -147,10 +147,13 @@ test("question scores show repeated-trial confidence intervals", async ({ page }
   await waitForPublication(page);
   await expect(page.locator(".score-dot-plot-canvas svg")).toBeVisible();
   await expect(page.locator(".score-dot-plot figcaption")).toContainText(
-    "average score",
+    "Question score",
   );
   await expect(page.locator(".score-dot-plot figcaption")).toContainText(
-    "repeatability range",
+    "lower is better",
+  );
+  await expect(page.locator(".score-dot-plot figcaption")).toContainText(
+    "95% CI of average",
   );
   await expect(page.locator(".winner-card .score-confidence")).toContainText("95% CI");
 
@@ -158,11 +161,134 @@ test("question scores show repeated-trial confidence intervals", async ({ page }
   await waitForPublication(page);
   await expect(page.locator(".score-dot-plot-canvas svg")).toBeVisible();
   await expect
-    .poll(() => page.locator('.score-dot-plot-canvas path[stroke="#4f5dff"][d^="M"]').count())
+    .poll(() => page.locator('.score-dot-plot-canvas path[fill="#4f5dff"]').count())
     .toBeGreaterThan(0);
+  await expect
+    .poll(() => page.locator('.score-dot-plot-canvas path[stroke="#4f5dff"]').count())
+    .toBeGreaterThan(0);
+  await expect(page.locator(".score-dot-plot-legend-interval")).toHaveCSS(
+    "background-color",
+    "rgb(79, 93, 255)",
+  );
   await expect(
     page.getByText("The range uses repeated seeded runs on the seven fixed subjects"),
   ).toBeVisible();
+});
+
+test("repeat-average controls remain unavailable", async ({ page }) => {
+  for (const routePath of ["", "results/"]) {
+    let repeatAverageRequests = 0;
+    const countRepeatRequest = (request: { url: () => string }): void => {
+      if (request.url().endsWith("/data/repeat-averages.json")) {
+        repeatAverageRequests += 1;
+      }
+    };
+    page.on("request", countRepeatRequest);
+    await page.goto(routePath);
+    await waitForPublication(page);
+
+    await expect(
+      page.getByRole("switch", { name: /Show repeat averages/ }),
+    ).toHaveCount(0);
+    expect(repeatAverageRequests).toBe(0);
+    await expect(page.locator(".score-dot-plot-caption")).not.toContainText(
+      "repeat average",
+    );
+    await expectNoViewportOverflow(page);
+    page.off("request", countRepeatRequest);
+  }
+});
+
+test("home score heading uses the section-heading scale and alignment", async ({ page }) => {
+  await page.goto("");
+  await waitForPublication(page);
+  const heading = page.getByRole("heading", {
+    name: "Question score",
+    level: 3,
+  });
+  const description = page.locator(".score-chart .chart-description");
+  await expect(heading).toBeVisible();
+  const headingStyle = await heading.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    return {
+      fontFamily: style.fontFamily,
+      fontSize: Number.parseFloat(style.fontSize),
+    };
+  });
+  expect(headingStyle.fontFamily).toContain("Newsreader");
+  expect(headingStyle.fontSize).toBeGreaterThanOrEqual(32);
+  const headingBox = await heading.boundingBox();
+  const descriptionBox = await description.boundingBox();
+  expect(headingBox).not.toBeNull();
+  expect(descriptionBox).not.toBeNull();
+  expect(Math.abs(headingBox!.x - descriptionBox!.x)).toBeLessThan(1);
+});
+
+test("question score stays visually primary in both leaderboards", async ({
+  page,
+}, testInfo) => {
+  const mobile = testInfo.project.name.startsWith("mobile");
+
+  for (const routePath of ["", "results/"]) {
+    await page.goto(routePath);
+    await waitForPublication(page);
+
+    const legend = page.locator(".score-dot-plot-legend-item--primary");
+    await expect(legend).toBeVisible();
+    await expect(legend).toContainText("Question score");
+    await expect(legend.locator("strong")).toHaveCSS("color", "rgb(12, 17, 27)");
+    await expect(
+      page.getByText("Shorter lines suggest more consistent performance", { exact: false }),
+    ).toBeVisible();
+
+    if (mobile) {
+      const primaryMetric = page.locator(
+        '.mobile-result-metrics [data-tone="primary"]',
+      ).first();
+      await expect(primaryMetric).toBeVisible();
+      await expect(primaryMetric.locator("dt")).toHaveText("Score");
+      await expect(primaryMetric.locator("dd")).toHaveCSS(
+        "color",
+        "rgb(48, 68, 210)",
+      );
+    } else {
+      const primaryColumn = page.locator(".ranking-table .primary-metric-column");
+      await expect(primaryColumn.first()).toBeVisible();
+      expect(await primaryColumn.count()).toBeGreaterThan(1);
+      const tableScore = page.locator(".question-score--table").first();
+      await expect(tableScore).toBeVisible();
+      await expect(tableScore).toHaveAttribute(
+        "aria-label",
+        /95% confidence interval/,
+      );
+      await expect(tableScore.locator("strong")).toHaveCSS(
+        "color",
+        "rgb(48, 68, 210)",
+      );
+      await expect(tableScore.locator("strong")).toHaveCSS("font-size", "16px");
+      await expect(tableScore.locator(".score-confidence")).not.toContainText("95% CI");
+      await expect(
+        page.locator("th.primary-metric-column .table-header-stack span").last(),
+      ).toHaveCSS("color", "rgb(96, 99, 106)");
+
+      const metricWidths = await page
+        .locator(
+          ".comparison-ranking-table thead th:not(.rank-column):not(.model-column):not(.run-column)",
+        )
+        .evaluateAll((cells) => cells.map((cell) => cell.getBoundingClientRect().width));
+      expect(Math.max(...metricWidths) - Math.min(...metricWidths)).toBeLessThan(1);
+      const metricAlignments = await page
+        .locator(
+          ".comparison-ranking-table thead th:not(.rank-column):not(.model-column):not(.run-column)",
+        )
+        .evaluateAll((cells) => cells.map((cell) => getComputedStyle(cell).textAlign));
+      expect(metricAlignments.every((alignment) => alignment === "right")).toBe(true);
+      const reasoningCell = page.locator(".comparison-ranking-table td.reasoning-column").first();
+      if ((await reasoningCell.count()) > 0) {
+        await expect(reasoningCell).toHaveCSS("text-align", "right");
+      }
+    }
+  }
 });
 
 test("result metric explanations work by keyboard and tap", async ({ page }) => {
@@ -203,24 +329,51 @@ test("result hints stay inside their chart headings", async ({
       page.locator(".panel-heading--with-help > .result-help"),
     ).toHaveCount(route.helpCount);
     await expectMinimumSize(page.locator(".result-help .info-popover-trigger"), 44);
-  }
 
-  if (!testInfo.project.name.startsWith("mobile")) {
-    await page.setViewportSize({ width: 1600, height: 900 });
+    const titleGroups = page.locator(
+      ".result-chart-panel > .panel-heading > div:first-child",
+    );
+    const titleGroupCount = await titleGroups.count();
+    for (let index = 0; index < titleGroupCount; index += 1) {
+      const titleGroup = titleGroups.nth(index);
+      const eyebrowBox = await titleGroup.locator(".eyebrow").boundingBox();
+      const headingBox = await titleGroup.locator("h2, h3").boundingBox();
+      expect(eyebrowBox).not.toBeNull();
+      expect(headingBox).not.toBeNull();
+      expect(Math.abs(eyebrowBox!.x - headingBox!.x)).toBeLessThan(1);
+      await expect(titleGroup).toHaveCSS("text-align", "left");
+    }
   }
-  await page.goto("results/reliability/");
-  await waitForPublication(page);
-
-  const heading = page.locator(".reliability-scatter-panel > .panel-heading");
-  const copyBox = await heading.locator(":scope > p").boundingBox();
-  const helpBox = await heading.locator(":scope > .result-help").boundingBox();
-  expect(copyBox).not.toBeNull();
-  expect(helpBox).not.toBeNull();
 
   if (testInfo.project.name.startsWith("mobile")) {
+    await page.goto("results/reliability/");
+    await waitForPublication(page);
+    const heading = page.locator(".reliability-scatter-panel > .panel-heading");
+    const copyBox = await heading.locator(":scope > p").boundingBox();
+    const helpBox = await heading.locator(":scope > .result-help").boundingBox();
+    expect(copyBox).not.toBeNull();
+    expect(helpBox).not.toBeNull();
     expect(helpBox!.y).toBeGreaterThanOrEqual(copyBox!.y + copyBox!.height - 1);
   } else {
-    expect(helpBox!.x).toBeGreaterThan(copyBox!.x + copyBox!.width);
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    for (const route of routes) {
+      await page.goto(route.path);
+      await waitForPublication(page);
+      const headings = page.locator(".panel-heading--with-help");
+      await expect(headings).toHaveCount(route.helpCount);
+
+      for (let index = 0; index < route.helpCount; index += 1) {
+        const heading = headings.nth(index);
+        const copyBox = await heading.locator(":scope > p").boundingBox();
+        const helpBox = await heading.locator(":scope > .result-help").boundingBox();
+        expect(copyBox).not.toBeNull();
+        expect(helpBox).not.toBeNull();
+        expect(copyBox!.width).toBeGreaterThanOrEqual(560);
+        expect(copyBox!.width).toBeLessThanOrEqual(576);
+        expect(helpBox!.x).toBeGreaterThanOrEqual(copyBox!.x + copyBox!.width);
+      }
+      await expectNoViewportOverflow(page);
+    }
   }
   await expectNoViewportOverflow(page);
 });

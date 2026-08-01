@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+from decimal import Decimal
+
 from .models import (
     PublicationDataBundle,
     PublicationEpisodeDocument,
     PublicationLeaderboardDocument,
     PublicationManifestDocument,
+    PublicationRepeatAveragesDocument,
     PublicationRunDocument,
     PublicationRunReference,
     PublicationSubjectDocument,
     PublicationSubjectProfile,
+    PublicRepeatAverage,
     PublicRun,
     PublicRunSummary,
     PublicSubject,
@@ -68,6 +72,42 @@ def _subject_document(
     )
 
 
+def _repeat_averages(run: PublicRun) -> tuple[PublicRepeatAverage, ...]:
+    if run.question_score is None:
+        return ()
+    averages: list[PublicRepeatAverage] = []
+    for trial_number in range(1, run.iterations + 1):
+        trials = tuple(
+            trial
+            for subject in run.subjects
+            for trial in subject.trials
+            if trial.trial_number == trial_number
+        )
+        scores = tuple(
+            trial.penalized_questions for trial in trials if trial.penalized_questions is not None
+        )
+        if len(trials) != len(run.subjects) or len(scores) != len(run.subjects):
+            raise ValueError("scored official repeats must include every subject")
+        averages.append(
+            PublicRepeatAverage(
+                execution_id=run.execution_id,
+                model_id=run.model_id,
+                trial_number=trial_number,
+                average_questions=sum(scores, start=Decimal(0)) / Decimal(len(scores)),
+                subject_count=len(scores),
+                successful=sum(trial.status == "success" for trial in trials),
+                model_failed=sum(trial.status == "model_failure" for trial in trials),
+            )
+        )
+    reproduced_score = sum(
+        (average.average_questions for average in averages),
+        start=Decimal(0),
+    ) / Decimal(len(averages))
+    if abs(reproduced_score - run.question_score) > Decimal("1e-24"):
+        raise ValueError("repeat averages must reproduce the official question score")
+    return tuple(averages)
+
+
 def split_publication(dataset: PublishedDataset) -> PublicationDataBundle:
     ordered_runs = (*dataset.official_runs, *dataset.lab_runs)
     return PublicationDataBundle(
@@ -84,6 +124,11 @@ def split_publication(dataset: PublishedDataset) -> PublicationDataBundle:
         ),
         leaderboard=PublicationLeaderboardDocument(
             leaderboard=dataset.leaderboard,
+        ),
+        repeat_averages=PublicationRepeatAveragesDocument(
+            averages=tuple(
+                average for run in dataset.official_runs for average in _repeat_averages(run)
+            ),
         ),
         runs=tuple(
             PublicationRunDocument(

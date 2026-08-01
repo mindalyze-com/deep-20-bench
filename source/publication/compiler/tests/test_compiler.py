@@ -1308,6 +1308,8 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "(subject average 1 + … + subject average" in methodology
     assert "A score built from repeated trials." in homepage
     assert "Each model completes the full subject set several times." in homepage
+    assert "Shorter lines" in homepage
+    assert "more consistent performance" in homepage
     assert 'class="protocol-flow"' not in homepage
     assert "Homepage built" not in homepage
     assert "home-build-note" not in homepage
@@ -1319,11 +1321,14 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     )
     if evaluated:
         assert '<template v-if="evaluated.length > 0">' in homepage
-        assert '<table class="data-table ranking-table">' in homepage
+        assert "<ComparisonRankingTable" in homepage
+        assert 'variant="home"' in homepage
         assert '@click="openRun(row)"' in homepage
         assert "<ModelRunLink" in homepage
         assert "<RunTableAction" in homepage
         assert "<MobileResultCard" in homepage
+        assert 'variant="table"' in homepage
+        assert "tone: 'primary'" in homepage
         assert "@click.stop" in model_run_link
         assert "model-run-link-cue" not in model_run_link
         assert "View <span" in run_table_action
@@ -1530,11 +1535,14 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "BarChart" in score_dot_plot
     assert "CustomChart" in score_dot_plot
     assert 'type: "custom"' in score_dot_plot
-    assert 'name: "Repeatability range (95% CI)"' in score_dot_plot
+    assert 'name: "95% CI of average"' in score_dot_plot
+    assert "intentionally not exposed for now" in score_dot_plot
     assert "confidenceDisplay" in score_dot_plot
     assert 'name: "View full run"' in score_dot_plot
     assert "scoreDomain.value.minimum" in score_dot_plot
-    assert "lineStyle: { color: theme.gridLine, width: 2 }" in score_dot_plot
+    assert "lineStyle: { color: theme.gridLine, width: 1 }" in score_dot_plot
+    assert "color: theme.ink" in score_dot_plot
+    assert "stroke: theme.roles.guesser" in score_dot_plot
     for linked_axis_chart in (component, stacked_costs, score_dot_plot):
         assert "triggerEvent: true" in linked_axis_chart
         assert 'parameters.componentType === "yAxis"' in linked_axis_chart
@@ -1625,6 +1633,9 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     run_table_action = (source_root / "components" / "RunTableAction.vue").read_text(
         encoding="utf-8"
     )
+    comparison_ranking_table = (
+        source_root / "components" / "ComparisonRankingTable.vue"
+    ).read_text(encoding="utf-8")
 
     assert '{ label: "Overview", name: "results" }' in results_nav
     assert '{ label: "Stability", name: "results-reliability" }' in results_nav
@@ -1644,7 +1655,14 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "<ReliabilityComparisonPlot" not in reliability
     assert 'value-format="currency"' in cost
     assert 'value-format="duration"' in time
-    assert "results-table--overview" in overview
+    assert "<ComparisonRankingTable" in overview
+    assert 'variant="results-overview"' in overview
+    assert "const metricWidth" in comparison_ranking_table
+    assert '<colgroup>' in comparison_ranking_table
+    assert '"comparison-ranking-table"' in comparison_ranking_table
+    assert 'variant="table"' in overview
+    assert "primary-metric-column" in overview
+    assert "tone: 'primary'" in overview
     assert '@click="openRun(row)"' in overview
     assert "result-row--navigable" in overview
     assert "@click.stop" in model_run_link
@@ -1670,10 +1688,13 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
         assert "<RunTableAction" in table_source
         assert "<MobileResultCard" in table_source
         assert "mobile-result-list" in table_source
-        assert "ranking-table-wrap" in table_source
-        assert "ranking-table" in table_source
         assert "panel-heading--with-help" in table_source
         assert "result-chart-panel" in table_source
+    assert "ranking-table-wrap" in comparison_ranking_table
+    assert '"ranking-table"' in comparison_ranking_table
+    for table_source in (cost, time, efficiency, reliability):
+        assert "ranking-table-wrap" in table_source
+        assert "ranking-table" in table_source
     assert overview.count("<ResultHelp") == 1
     assert reliability.count("<ResultHelp") == 1
     assert cost.count("<ResultHelp") == 1
@@ -1748,8 +1769,9 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert 'label="Repeatability width"' in reliability
     assert 'label="Score and stability"' in reliability
     assert "smaller repeatability range" in " ".join(reliability.split())
-    assert "Score and repeatability." in overview
-    assert "A longer line means more variation." in overview
+    assert "Question score." in overview
+    assert "Shorter lines suggest" in overview
+    assert "longer lines indicate more variation" in overview
     assert 'name: "95% CI width · smaller is more repeatable"' in reliability_scatter
     assert 'name: "Question score"' in reliability_scatter
     assert "value: [item.intervalWidth, item.score]" in reliability_scatter

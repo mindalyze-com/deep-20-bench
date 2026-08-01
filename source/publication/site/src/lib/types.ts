@@ -341,6 +341,22 @@ export interface LeaderboardDocument {
   leaderboard: LeaderboardRow[];
 }
 
+export interface PublicRepeatAverage {
+  execution_id: string;
+  model_id: string;
+  trial_number: number;
+  average_questions: string;
+  subject_count: number;
+  successful: number;
+  model_failed: number;
+}
+
+export interface RepeatAveragesDocument {
+  document_type: "repeat_averages";
+  schema_version: 1;
+  averages: PublicRepeatAverage[];
+}
+
 export interface RunDocument {
   document_type: "run";
   schema_version: 2;

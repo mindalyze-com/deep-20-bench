@@ -1,5 +1,5 @@
 import type {
-  DefaultLabelFormatterCallbackParams as CallbackDataParams,
+  ECElementEvent,
   EChartsOption,
 } from "echarts";
 import type { EChartsType } from "echarts/core";
@@ -18,8 +18,8 @@ interface ResponsiveChartOptions {
   height: Readonly<Ref<number>>;
   initialize: (element: HTMLDivElement) => EChartsType;
   option: (width: number) => EChartsOption;
-  onClick?: (parameters: CallbackDataParams) => void;
-  pointerCursor?: (parameters: CallbackDataParams) => boolean;
+  onClick?: (parameters: ECElementEvent) => void;
+  pointerCursor?: (parameters: ECElementEvent) => boolean;
 }
 
 interface ResponsiveChart {
@@ -119,7 +119,7 @@ export const useResponsiveEChart = (
   let observedWidth = 0;
   let refreshPending = false;
 
-  const updatePointerCursor = (parameters: CallbackDataParams): void => {
+  const updatePointerCursor = (parameters: ECElementEvent): void => {
     const element = chartElement.value;
     if (element !== null) {
       element.style.cursor =

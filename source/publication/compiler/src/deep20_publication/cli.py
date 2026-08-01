@@ -333,6 +333,10 @@ def _write_public_data(public_directory: Path, dataset: PublishedDataset) -> Non
             publication_document_json(bundle.leaderboard),
             encoding="utf-8",
         )
+        (staged_directory / "repeat-averages.json").write_text(
+            publication_document_json(bundle.repeat_averages),
+            encoding="utf-8",
+        )
         for run_document in bundle.runs:
             path = staged_directory / "runs" / f"{run_document.run.execution_id}.json"
             path.parent.mkdir(parents=True, exist_ok=True)

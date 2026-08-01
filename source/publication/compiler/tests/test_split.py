@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from decimal import Decimal
 from pathlib import Path
 from typing import cast
 
@@ -11,6 +12,7 @@ from deep20_publication.models import (
     PublicationEpisodeDocument,
     PublicationLeaderboardDocument,
     PublicationManifestDocument,
+    PublicationRepeatAveragesDocument,
     PublicationRunDocument,
     PublicationSubjectDocument,
     PublicRun,
@@ -128,6 +130,84 @@ def test_split_documents_reconstruct_the_complete_public_dataset() -> None:
         for subject in run.subjects
         for trial in subject.trials
     )
+    expected_averages = tuple(
+        (
+            run.execution_id,
+            run.model_id,
+            trial_number,
+            sum(
+                (
+                    trial.penalized_questions
+                    for subject in run.subjects
+                    for trial in subject.trials
+                    if trial.trial_number == trial_number and trial.penalized_questions is not None
+                ),
+                start=Decimal(0),
+            )
+            / Decimal(len(run.subjects)),
+            len(run.subjects),
+            sum(
+                trial.status == "success"
+                for subject in run.subjects
+                for trial in subject.trials
+                if trial.trial_number == trial_number
+            ),
+            sum(
+                trial.status == "model_failure"
+                for subject in run.subjects
+                for trial in subject.trials
+                if trial.trial_number == trial_number
+            ),
+        )
+        for run in dataset.official_runs
+        if run.question_score is not None
+        for trial_number in range(1, run.iterations + 1)
+    )
+    assert (
+        tuple(
+            (
+                average.execution_id,
+                average.model_id,
+                average.trial_number,
+                average.average_questions,
+                average.subject_count,
+                average.successful,
+                average.model_failed,
+            )
+            for average in bundle.repeat_averages.averages
+        )
+        == expected_averages
+    )
+
+
+def test_repeat_averages_publish_one_complete_cohort_value_per_trial_number() -> None:
+    dataset = _dataset()
+    document = split_publication(dataset).repeat_averages
+    scored_runs = tuple(run for run in dataset.official_runs if run.question_score is not None)
+
+    assert len(document.averages) == sum(run.iterations for run in scored_runs)
+    assert all(
+        average.subject_count == len(dataset.active_cohort.target_ids)
+        for average in document.averages
+    )
+    assert all(
+        average.successful + average.model_failed == average.subject_count
+        for average in document.averages
+    )
+    for run in scored_runs:
+        assert run.question_score is not None
+        run_averages = tuple(
+            average.average_questions
+            for average in document.averages
+            if average.execution_id == run.execution_id
+        )
+        assert tuple(
+            average.trial_number
+            for average in document.averages
+            if average.execution_id == run.execution_id
+        ) == tuple(range(1, run.iterations + 1))
+        reproduced_score = sum(run_averages, start=Decimal(0)) / Decimal(len(run_averages))
+        assert abs(reproduced_score - run.question_score) <= Decimal("1e-24")
 
 
 def test_split_document_serialization_is_typed_deterministic_and_private_free() -> None:
@@ -135,6 +215,7 @@ def test_split_document_serialization_is_typed_deterministic_and_private_free() 
     documents: tuple[
         PublicationManifestDocument
         | PublicationLeaderboardDocument
+        | PublicationRepeatAveragesDocument
         | PublicationRunDocument
         | PublicationSubjectDocument
         | PublicationEpisodeDocument,
@@ -142,6 +223,7 @@ def test_split_document_serialization_is_typed_deterministic_and_private_free() 
     ] = (
         bundle.manifest,
         bundle.leaderboard,
+        bundle.repeat_averages,
         *bundle.runs,
         *bundle.subjects,
         *bundle.episodes,

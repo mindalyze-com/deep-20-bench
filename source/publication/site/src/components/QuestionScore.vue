@@ -10,7 +10,7 @@ const props = withDefaults(
     score: string | null;
     maxQuestions?: number;
     label?: string;
-    variant?: "default" | "compact" | "metric" | "hero";
+    variant?: "default" | "compact" | "metric" | "hero" | "table";
     theme?: "light" | "dark";
     explain?: boolean;
     confidenceInterval?: QuestionScoreConfidenceInterval | null;
@@ -30,19 +30,30 @@ const percentage = computed(() =>
     ? 0
     : Math.max(0, Math.min(100, (Number(props.score) / (props.maxQuestions + 1)) * 100)),
 );
+const accessibleLabel = computed(() => {
+  const score = `${props.label}: ${number(props.score)}`;
+  return props.confidenceInterval === null
+    ? score
+    : `${score}; 95% confidence interval ${number(
+        props.confidenceInterval.lower,
+        2,
+      )} to ${number(props.confidenceInterval.upper, 2)}`;
+});
 </script>
 
 <template>
   <div
     class="question-score"
     :class="[`question-score--${variant}`, `question-score--${theme}`]"
-    :aria-label="`${label}: ${number(score)}`"
+    :aria-label="accessibleLabel"
   >
     <span class="score-label">{{ label }}</span>
     <strong>{{ number(score) }}</strong>
     <span class="score-unit">{{ score === null ? "not available" : "questions · lower is better" }}</span>
     <span v-if="confidenceInterval !== null" class="score-confidence">
-      95% CI {{ number(confidenceInterval.lower, 2) }}–{{ number(confidenceInterval.upper, 2) }}
+      <template v-if="variant !== 'table'">95% CI </template>{{
+        number(confidenceInterval.lower, 2)
+      }}–{{ number(confidenceInterval.upper, 2) }}
     </span>
     <span v-if="variant !== 'compact' && score !== null" class="score-scale" aria-hidden="true">
       <i :style="{ width: `${percentage}%` }"></i>
@@ -129,6 +140,36 @@ strong {
   font-size: 1rem;
   font-weight: 770;
   letter-spacing: 0;
+}
+
+.question-score--table {
+  display: inline-grid;
+  gap: 0.18rem;
+  min-width: 5.75rem;
+  justify-items: end;
+}
+
+.question-score--table .score-label,
+.question-score--table .score-unit,
+.question-score--table .score-scale {
+  display: none;
+}
+
+.question-score--table strong {
+  color: var(--blue-ink);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.question-score--table .score-confidence {
+  color: var(--text-secondary);
+  font-size: var(--text-caption);
+  font-weight: 620;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .question-score--metric strong {

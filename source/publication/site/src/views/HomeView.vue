@@ -2,6 +2,7 @@
 import { computed, onActivated, onDeactivated, ref } from "vue";
 import { useRouter } from "vue-router";
 
+import ComparisonRankingTable from "@/components/ComparisonRankingTable.vue";
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
@@ -14,6 +15,7 @@ import { getLeaderboard, getManifest } from "@/lib/api";
 import { money, number, percent } from "@/lib/format";
 import { illustrativeRound } from "@/lib/illustrative-round";
 import { setRouteContext } from "@/lib/route-context";
+import { useRepeatAverages } from "@/lib/use-repeat-averages";
 import type {
   LeaderboardDocument,
   LeaderboardRow,
@@ -25,6 +27,12 @@ const leaderboard = ref<LeaderboardDocument | null>(null);
 const error = ref<string | null>(null);
 const active = ref(true);
 const router = useRouter();
+const {
+  averages: repeatAverages,
+  loading: repeatAveragesLoading,
+  error: repeatAveragesError,
+  load: loadRepeatAverages,
+} = useRepeatAverages();
 
 const applyRouteContext = (): void => {
   setRouteContext({
@@ -93,9 +101,10 @@ const openRun = (row: LeaderboardRow): void => {
 };
 const scoreDots = computed<ScoreDot[]>(() =>
   evaluated.value.map((row) => ({
+    modelId: row.model.model_id,
     label: row.model.display_name,
     value: Number(row.question_score),
-    display: number(row.question_score, 1),
+    display: number(row.question_score),
     confidenceLower:
       row.question_score_confidence_interval === null
         ? undefined
@@ -288,42 +297,27 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
             <div class="leaderboard-layout">
               <div class="score-chart">
-                <p class="chart-title">Score and repeatability</p>
+                <h3 class="chart-title">Question score</h3>
                 <p class="chart-description">
-                  The dot is the average question score. The line shows how consistently the
-                  model repeated that result. Shorter lines mean more consistent runs; longer
-                  lines mean more volatile runs.
+                  Lower is better. The blue marker is the average question score. The blue line
+                  is its 95% confidence interval across repeated runs. Shorter lines
+                  suggest more consistent performance; longer lines indicate more variation
+                  between runs.
                 </p>
-                <ScoreDotPlot :items="scoreDots" />
+                <ScoreDotPlot
+                  :items="scoreDots"
+                  :repeat-averages="repeatAverages"
+                  :repeat-averages-loading="repeatAveragesLoading"
+                  :repeat-averages-error="repeatAveragesError"
+                  @request-repeat-averages="loadRepeatAverages"
+                />
               </div>
             </div>
 
-            <div
-              class="table-wrap ranking-table-wrap"
-              tabindex="0"
-              aria-label="Scrollable official leaderboard"
+            <ComparisonRankingTable
+              variant="home"
+              label="Scrollable official leaderboard"
             >
-              <table class="data-table ranking-table">
-                <thead>
-                  <tr>
-                    <th class="rank-column">
-                      <span aria-hidden="true">#</span>
-                      <span class="visually-hidden">Rank</span>
-                    </th>
-                    <th class="model-column">Model</th>
-                    <th class="run-column">Run</th>
-                    <th>Reasoning</th>
-                    <th data-numeric>
-                      <span class="table-header-stack">
-                        <span>Score</span>
-                        <span>Repeatability range</span>
-                      </span>
-                    </th>
-                    <th data-numeric>Success</th>
-                    <th data-numeric>Contract</th>
-                    <th data-numeric>Run cost</th>
-                  </tr>
-                </thead>
                 <tbody>
                   <tr
                     v-for="row in evaluated"
@@ -355,27 +349,27 @@ const scoreDots = computed<ScoreDot[]>(() =>
                       />
                       <span v-else aria-hidden="true">—</span>
                     </td>
-                    <td><ReasoningEffort :effort="row.model.reasoning_effort" compact /></td>
-                    <td data-numeric>
-                      {{ number(row.question_score) }}
-                      <small v-if="row.question_score_confidence_interval">
-                        {{ number(row.question_score_confidence_interval.lower, 2) }}–{{
-                          number(row.question_score_confidence_interval.upper, 2)
-                        }}
-                      </small>
+                    <td class="primary-metric-column" data-numeric>
+                      <QuestionScore
+                        :score="row.question_score"
+                        :confidence-interval="row.question_score_confidence_interval"
+                        variant="table"
+                      />
                     </td>
-                    <td data-numeric>{{ percent(row.success_rate) }}</td>
-                    <td data-numeric>
+                    <td class="reasoning-column">
+                      <ReasoningEffort :effort="row.model.reasoning_effort" compact />
+                    </td>
+                    <td class="success-column" data-numeric>{{ percent(row.success_rate) }}</td>
+                    <td class="contract-column" data-numeric>
                       {{ percent(row.contract?.compliance_rate) }}
                       <small v-if="row.contract?.status === 'breached'">
                         {{ row.contract.violations }} violations
                       </small>
                     </td>
-                    <td data-numeric>{{ money(row.total_cost_usd) }}</td>
+                    <td class="cost-column" data-numeric>{{ money(row.total_cost_usd) }}</td>
                   </tr>
                 </tbody>
-              </table>
-            </div>
+            </ComparisonRankingTable>
 
             <div class="mobile-result-list" aria-label="Official leaderboard">
               <MobileResultCard
@@ -386,7 +380,11 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 :provider="row.model.provider"
                 :to="row.execution_id === null ? null : runLink(row)"
                 :metrics="[
-                  { label: 'Score', value: number(row.question_score) },
+                  {
+                    label: 'Score',
+                    value: number(row.question_score),
+                    tone: 'primary',
+                  },
                   {
                     label: 'Repeatability',
                     value:
@@ -818,10 +816,12 @@ dd {
 .chart-title {
   margin: 0;
   padding: clamp(1.2rem, 3vw, 2rem) clamp(1.2rem, 3vw, 2rem) 0;
-  color: var(--muted);
-  font-size: var(--text-micro);
-  font-weight: 760;
-  text-transform: uppercase;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.4vw, 3.2rem);
+  font-weight: 470;
+  letter-spacing: -0.04em;
+  line-height: 1;
 }
 
 .chart-description {

@@ -2,24 +2,34 @@
 import { computed, onActivated, ref } from "vue";
 import { useRouter } from "vue-router";
 
+import ComparisonRankingTable from "@/components/ComparisonRankingTable.vue";
 import ErrorState from "@/components/ErrorState.vue";
 import InfoPopover from "@/components/InfoPopover.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
+import QuestionScore from "@/components/QuestionScore.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
 import RunTableAction from "@/components/RunTableAction.vue";
 import ScoreDotPlot, { type ScoreDot } from "@/components/ScoreDotPlot.vue";
-import { getLeaderboard } from "@/lib/api";
+import { getLeaderboard, getManifest } from "@/lib/api";
 import { duration, money, moneyEpisode, number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
-import type { LeaderboardRow } from "@/lib/types";
+import type { LeaderboardRow, ManifestDocument } from "@/lib/types";
+import { useRepeatAverages } from "@/lib/use-repeat-averages";
 
 const leaderboard = ref<LeaderboardRow[]>([]);
+const manifest = ref<ManifestDocument | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
 const router = useRouter();
+const {
+  averages: repeatAverages,
+  loading: repeatAveragesLoading,
+  error: repeatAveragesError,
+  load: loadRepeatAverages,
+} = useRepeatAverages();
 
 const applyRouteContext = (): void => {
   setRouteContext({
@@ -82,6 +92,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
 
 const scoreDots = computed<ScoreDot[]>(() =>
   rows.value.map((row) => ({
+    modelId: row.model.model_id,
     label: row.model.display_name,
     value: Number(row.question_score ?? 0),
     display: number(row.question_score),
@@ -119,7 +130,12 @@ const load = async (): Promise<void> => {
   loading.value = true;
   error.value = null;
   try {
-    leaderboard.value = (await getLeaderboard()).leaderboard;
+    const [leaderboardDocument, manifestDocument] = await Promise.all([
+      getLeaderboard(),
+      getManifest(),
+    ]);
+    leaderboard.value = leaderboardDocument.leaderboard;
+    manifest.value = manifestDocument;
   } catch (reason: unknown) {
     error.value =
       reason instanceof Error ? reason.message : "Publication data could not be loaded.";
@@ -159,12 +175,12 @@ void load();
           <header class="panel-heading panel-heading--with-help">
             <div>
               <p class="eyebrow">Primary result</p>
-              <h2 id="overview-chart-title">Score and repeatability.</h2>
+              <h2 id="overview-chart-title">Question score.</h2>
             </div>
             <p>
-              The dot is the average question score; lower is better. The line is its 95%
-              repeatability range. A shorter line means the model produced more consistent
-              results across repeated runs. A longer line means more variation.
+              Lower is better. The blue marker is the average question score. The blue line is
+              its 95% confidence interval across repeated runs. Shorter lines suggest
+              more consistent performance; longer lines indicate more variation between runs.
             </p>
             <ResultHelp label="Overview metric explanations">
               <InfoPopover label="Question score">
@@ -190,45 +206,20 @@ void load();
               </InfoPopover>
             </ResultHelp>
           </header>
-          <ScoreDotPlot :items="scoreDots" />
+          <ScoreDotPlot
+            :items="scoreDots"
+            :repeat-averages="repeatAverages"
+            :repeat-averages-loading="repeatAveragesLoading"
+            :repeat-averages-error="repeatAveragesError"
+            @request-repeat-averages="loadRepeatAverages"
+          />
         </section>
 
-        <div
-          class="table-wrap ranking-table-wrap results-table-wrap"
-          tabindex="0"
-          aria-label="Scrollable result comparison"
+        <ComparisonRankingTable
+          class="results-table-wrap"
+          variant="results-overview"
+          label="Scrollable result comparison"
         >
-          <table class="data-table ranking-table results-table results-table--overview">
-            <thead>
-              <tr>
-                <th class="rank-column">
-                  <span aria-hidden="true">#</span>
-                  <span class="visually-hidden">Rank</span>
-                </th>
-                <th class="model-column">Model</th>
-                <th class="run-column">Run</th>
-                <th data-numeric>
-                  <span class="table-header-stack">
-                    <span>Score</span>
-                    <span>Repeatability range</span>
-                  </span>
-                </th>
-                <th data-numeric>Success</th>
-                <th data-numeric>Contract</th>
-                <th data-numeric>
-                  <span class="table-header-stack">
-                    <span>Model cost</span>
-                    <span>per episode</span>
-                  </span>
-                </th>
-                <th data-numeric>
-                  <span class="table-header-stack">
-                    <span>Model time</span>
-                    <span>per episode</span>
-                  </span>
-                </th>
-              </tr>
-            </thead>
             <tbody>
               <tr
                 v-for="row in rows"
@@ -258,26 +249,31 @@ void load();
                   />
                   <span v-else aria-hidden="true">—</span>
                 </td>
-                <td data-label="Question score" data-numeric>
-                  {{ number(row.question_score) }}
-                  <small v-if="row.question_score_confidence_interval">
-                    {{ number(row.question_score_confidence_interval.lower, 2) }}–{{
-                      number(row.question_score_confidence_interval.upper, 2)
-                    }}
-                  </small>
+                <td
+                  class="primary-metric-column"
+                  data-label="Question score"
+                  data-numeric
+                >
+                  <QuestionScore
+                    :score="row.question_score"
+                    :confidence-interval="row.question_score_confidence_interval"
+                    variant="table"
+                  />
                 </td>
-                <td data-label="Success" data-numeric>{{ percent(row.success_rate) }}</td>
-                <td data-label="Contract" data-numeric>
+                <td class="success-column" data-label="Success" data-numeric>
+                  {{ percent(row.success_rate) }}
+                </td>
+                <td class="contract-column" data-label="Contract" data-numeric>
                   {{ percent(row.contract?.compliance_rate ?? null) }}
                 </td>
-                <td data-label="Model cost / episode" data-numeric>
+                <td class="cost-column" data-label="Model cost / episode" data-numeric>
                   {{
                     row.guesser_cost_per_episode_usd === null
                       ? "—"
                       : moneyEpisode(row.guesser_cost_per_episode_usd)
                   }}
                 </td>
-                <td data-label="Model time / episode" data-numeric>
+                <td class="time-column" data-label="Model time / episode" data-numeric>
                   {{
                     row.guesser_think_time_per_episode_ms === null
                       ? "—"
@@ -286,8 +282,7 @@ void load();
                 </td>
               </tr>
             </tbody>
-          </table>
-        </div>
+        </ComparisonRankingTable>
 
         <div class="mobile-result-list" aria-label="Result comparison">
           <MobileResultCard
@@ -298,7 +293,11 @@ void load();
             :provider="row.model.provider"
             :to="row.execution_id === null ? null : runLink(row)"
             :metrics="[
-              { label: 'Score', value: number(row.question_score) },
+              {
+                label: 'Score',
+                value: number(row.question_score),
+                tone: 'primary',
+              },
               {
                 label: 'Repeatability',
                 value:
@@ -345,10 +344,6 @@ void load();
 
 .results-table-wrap {
   margin-top: clamp(1.5rem, 4vw, 2.5rem);
-}
-
-.results-table--overview {
-  min-width: 920px;
 }
 
 .empty-state {
