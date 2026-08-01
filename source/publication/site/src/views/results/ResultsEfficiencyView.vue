@@ -6,11 +6,14 @@ import EfficiencyScatter, {
   type EfficiencyPoint,
 } from "@/components/EfficiencyScatter.vue";
 import ErrorState from "@/components/ErrorState.vue";
+import InfoPopover from "@/components/InfoPopover.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import MetricDefinitionCard from "@/components/MetricDefinitionCard.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
+import ResultHelp from "@/components/ResultHelp.vue";
 import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard } from "@/lib/api";
 import { moneyEpisode, number, percent } from "@/lib/format";
@@ -65,16 +68,16 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   { key: "models", label: "Models", value: ranked.value.length },
   {
     key: "range",
-    label: "Cost range",
+    label: "Model cost range",
     value: costRange.value === null ? "—" : `${number(costRange.value, 0)}×`,
   },
   {
     key: "best",
-    label: "Best efficiency",
+    label: "Lowest adjusted score",
     value: number(ranked.value[0]?.cost_adjusted_question_score, 3),
     tone: "accent",
   },
-  { key: "direction", label: "Direction", value: "Lower" },
+  { key: "direction", label: "Direction", value: "Lower is better" },
 ]);
 
 const efficiencyBars = computed(() =>
@@ -138,8 +141,8 @@ void load();
         <p class="eyebrow">Cost efficiency</p>
         <h2>No models can be ranked.</h2>
         <p>
-          Efficiency needs a question score, terminal episode, Guesser call, and
-          positive recorded Guesser cost.
+          Efficiency is available when a model has a question score and a positive
+          recorded model cost for completed episodes.
         </p>
       </div>
     </section>
@@ -155,32 +158,57 @@ void load();
           />
 
           <section class="panel efficiency-panel" aria-labelledby="efficiency-title">
-            <header class="panel-heading">
+            <header class="panel-heading panel-heading--with-help">
               <div>
                 <p class="eyebrow">Official ranking</p>
                 <h2 id="efficiency-title">Cost-adjusted score.</h2>
               </div>
               <p>
-                Lower is better. Each value combines question score with recorded
-                Guesser cost per terminal episode.
+                This ranking multiplies question score by tested-model cost per episode.
+                Lower is better: a model improves by using fewer questions, costing less,
+                or both.
               </p>
+              <ResultHelp label="Efficiency ranking explanations">
+                <InfoPopover label="Adjusted score">
+                  <p>
+                    This score multiplies question score by tested-model cost per episode.
+                    Lower is better. Its unit is USD·questions per episode, not raw dollar
+                    cost.
+                  </p>
+                </InfoPopover>
+                <InfoPopover label="Model cost range">
+                  <p>
+                    This is the highest tested-model cost per episode divided by the lowest.
+                    It shows how far apart the least and most expensive models are.
+                  </p>
+                </InfoPopover>
+              </ResultHelp>
             </header>
             <MetricBars
               :items="efficiencyBars"
               direction-label="USD·questions per episode · lower is better"
-              color="blue"
+              color="efficiency"
             />
           </section>
 
           <section class="tradeoff-panel panel-frame" aria-labelledby="tradeoff-title">
-            <header class="panel-heading">
+            <header class="panel-heading panel-heading--with-help">
               <div>
                 <p class="eyebrow">Trade-off map</p>
-                <h2 id="tradeoff-title">Cost and result.</h2>
+                <h2 id="tradeoff-title">Cost and question score.</h2>
               </div>
               <p>
-                Each point is one model. Both axes use their original linear scale.
+                Further left means lower model cost. Lower means a better question score.
+                The lower-left is favorable; this chart does not change the efficiency rank.
               </p>
+              <ResultHelp label="Trade-off map explanation">
+                <InfoPopover label="Trade-off map">
+                  <p>
+                    The map shows the original cost and question score on separate axes. It
+                    does not add another weighted score or change the efficiency rank.
+                  </p>
+                </InfoPopover>
+              </ResultHelp>
             </header>
             <EfficiencyScatter :items="efficiencyPoints" />
           </section>
@@ -209,7 +237,7 @@ void load();
                   <th data-numeric>Question score</th>
                   <th data-numeric>
                     <span class="table-header-stack">
-                      <span>Guesser cost</span>
+                      <span>Model cost</span>
                       <span>per episode</span>
                     </span>
                   </th>
@@ -268,7 +296,7 @@ void load();
               :to="row.execution_id === null ? null : runLink(row)"
               :metrics="[
                 {
-                  label: 'Adjusted',
+                  label: 'Adjusted score',
                   value: number(row.cost_adjusted_question_score, 3),
                 },
                 { label: 'Score', value: number(row.question_score) },
@@ -282,27 +310,23 @@ void load();
 
           <p v-if="unranked.length > 0" class="results-note">
             {{ unranked.length }} model{{ unranked.length === 1 ? " is" : "s are" }}
-            not ranked because a question score, terminal episode, Guesser call, or
-            positive recorded Guesser cost is unavailable.
+            not ranked because a question score or positive recorded model cost per
+            completed episode is unavailable.
           </p>
-        </div>
-      </section>
 
-      <section class="content-section definition-section">
-        <div class="content-inner metric-definition">
-          <div>
-            <p class="eyebrow">Definition</p>
-            <h2>Cost-adjusted question score.</h2>
-          </div>
-          <div>
-            <code>question score × (Guesser cost ÷ terminal episodes)</code>
+          <MetricDefinitionCard
+            title="Cost-adjusted score."
+            formula="question score × (tested-model cost ÷ terminal episodes)"
+            interpretation="Question score and tested-model cost per episode are multiplied. Lower is better."
+            detail-summary="Steps, example, scoring treatment, and scope"
+          >
             <ol>
               <li>
                 Average penalized trial values within each subject, then average the
                 subject averages.
               </li>
               <li>
-                Divide the run's recorded Guesser cost by its terminal episodes.
+                Divide the run's recorded tested-model cost by its terminal episodes.
               </li>
               <li>Multiply the exact values. Lower is better.</li>
             </ol>
@@ -322,7 +346,7 @@ void load();
               cost is excluded because support-model pricing describes benchmark
               operation, not the model under test.
             </p>
-          </div>
+          </MetricDefinitionCard>
         </div>
       </section>
     </template>
@@ -336,56 +360,8 @@ void load();
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
 }
 
-.metric-definition h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(2.2rem, 4.8vw, 4.6rem);
-  font-weight: 500;
-  letter-spacing: -0.05em;
-  line-height: 0.98;
-}
-
 .results-table {
   min-width: 980px;
-}
-
-.definition-section {
-  background: var(--paper-bright);
-}
-
-.metric-definition {
-  display: grid;
-  grid-template-columns: minmax(14rem, 0.42fr) minmax(0, 1fr);
-  gap: clamp(2rem, 7vw, 7rem);
-}
-
-.metric-definition > div:last-child {
-  max-width: 50rem;
-}
-
-.metric-definition code {
-  display: block;
-  padding: 1rem;
-  border: var(--rule-default);
-  background: white;
-  overflow-wrap: anywhere;
-  font-size: clamp(0.8rem, 1.6vw, 1rem);
-}
-
-.metric-definition p,
-.metric-definition li {
-  color: var(--ink-soft);
-  line-height: 1.72;
-}
-
-.metric-definition ol {
-  padding-left: 1.25rem;
-}
-
-.metric-example {
-  padding: 1rem;
-  border-left: var(--border-emphasis-width) solid var(--blue);
-  background: var(--surface-accent-soft);
 }
 
 .empty-state {
@@ -398,9 +374,4 @@ void load();
   line-height: 1.65;
 }
 
-@media (max-width: 900px) {
-  .metric-definition {
-    grid-template-columns: 1fr;
-  }
-}
 </style>

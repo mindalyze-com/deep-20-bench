@@ -61,6 +61,18 @@ export interface ContractReliability {
   status: "clean" | "breached" | "not_evaluable";
 }
 
+export interface QuestionScoreConfidenceInterval {
+  confidence_level: string;
+  method: "stratified-welch-t-v1";
+  estimate: string;
+  lower: string;
+  upper: string;
+  standard_error: string;
+  degrees_of_freedom: string | null;
+  subject_count: number;
+  trial_count: number;
+}
+
 export type EfficiencyStatus =
   | "ranked"
   | "question_score_unavailable"
@@ -77,6 +89,7 @@ export interface LeaderboardRow {
   execution_id: string | null;
   completed_at: string | null;
   question_score: string | null;
+  question_score_confidence_interval: QuestionScoreConfidenceInterval | null;
   success_rate: string | null;
   total_cost_usd: string | null;
   guesser_cost_per_episode_usd: string | null;
@@ -138,6 +151,7 @@ export interface PublicRunSummary {
   max_questions: number;
   success_rate: string | null;
   question_score: string | null;
+  question_score_confidence_interval: QuestionScoreConfidenceInterval | null;
   total_cost_usd: string;
   successful: number;
   model_failed: number;
@@ -310,7 +324,7 @@ export interface PublicationRunReference {
 export interface ManifestDocument {
   document_type: "manifest";
   schema_version: 1;
-  dataset_schema_version: 6;
+  dataset_schema_version: 7;
   site: SiteMetadata;
   score_policy: ScorePolicy;
   active_cohort: CohortConfig;
@@ -323,13 +337,13 @@ export interface ManifestDocument {
 
 export interface LeaderboardDocument {
   document_type: "leaderboard";
-  schema_version: 1;
+  schema_version: 2;
   leaderboard: LeaderboardRow[];
 }
 
 export interface RunDocument {
   document_type: "run";
-  schema_version: 1;
+  schema_version: 2;
   run: PublicRunSummary;
   subjects: PublicSubjectSummary[];
 }

@@ -14,6 +14,8 @@ Builder and Fact Dossier design has been removed; it is not a supported architec
   isolation proof obligations, reliability metrics, reporting, and schema versions.
 - [Homepage creation and publication](homepage-creation.md) — implemented independent
   publication package, scoring, static-site generation, and GitHub Pages architecture.
+- [Question-score confidence intervals](confidence-intervals.md) — repeated-trial estimand,
+  stratified calculation, interpretation, and reporting boundary.
 - [Benchmark control plane](../source/execution/benchmark/README.md) — catalogs, typed API, scheduling,
   persistence, observation, result hierarchy, and console policy.
 - [Game engine overview](../source/execution/game/README.md) — package scope and links to its documentation.

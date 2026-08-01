@@ -72,7 +72,7 @@ applyRouteContext();
               <p>Cohort rules, models, runs, subjects, episodes, scores, and build details.</p>
               <a
                 class="button button-primary"
-                :href="publicDownloadUrl('deep20bench-v6.json')"
+                :href="publicDownloadUrl('deep20bench-v7.json')"
                 download
               >
                 Download JSON ↓

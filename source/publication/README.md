@@ -48,7 +48,7 @@ The build:
 3. compiles the active cohort and a strict public episode projection from
    `config/publication.yml`;
 4. records the UTC build time in typed publication provenance;
-5. writes the complete `deep20bench-v6.json` and `leaderboard.csv` downloads, plus typed,
+5. writes the complete `deep20bench-v7.json` and `leaderboard.csv` downloads, plus typed,
    split JSON documents for the SPA;
 6. builds the Vue application and writes static entry shells for every execution, subject, and
    episode route;
@@ -92,7 +92,7 @@ No credential or network access is needed once the locked Python and Node depend
 installed.
 
 The SPA loads `manifest.json` and `leaderboard.json` first. It fetches one small run, subject,
-or episode document only when that route needs it. The complete version 6 JSON remains a
+or episode document only when that route needs it. The complete version 7 JSON remains a
 download and is not imported into the application bundle. Browser promise caching applies only
 to these immutable public reporting files. It is application caching, not provider prompt
 caching, and it cannot affect model requests, benchmark execution, or Guesser-visible state.
@@ -128,7 +128,7 @@ Cache status and cache metrics are reporting-only and never affect qualification
 Only selected current-protocol runs and their models enter the leaderboard, public run details,
 and generated routes. Historical protocol artifacts live outside `runs/` under `archive/` and
 are never parsed by the publication compiler. Non-qualifying current runs remain under `runs/`
-but are omitted from the public projection. The version 6 JSON shape emits an empty `lab_runs`
+but are omitted from the public projection. The version 7 JSON shape emits an empty `lab_runs`
 collection. Tampered or malformed discovered input still fails the build.
 
 The score uses exact decimal arithmetic:
@@ -153,26 +153,52 @@ protocol 9 runs created before question scoring remain valid inputs. The publish
 question score from their signed `counted_questions`, outcome, and question-limit fields. It
 does not require a B20 field, a run migration, or another benchmark execution.
 
-## Cross-model cost, time, and efficiency
+Each official question score also has a 95% repeated-trial confidence interval. The calculation
+treats subjects as fixed strata and the completed seeded trials within each subject as
+independent repetitions. It estimates each subject's sample variance, combines the equally
+weighted variance terms, and uses a Welch–Satterthwaite t critical value. A wider interval means
+less repeatable performance in the current experiment. The interval does not cover new subject
+selection, later model or provider behavior, or direct pairwise model differences. See
+[`documentation/confidence-intervals.md`](../../documentation/confidence-intervals.md).
 
-The static Results area has four views:
+Independence is a modeling assumption. Separate calls and variation tokens support it, but unique
+seeds do not prove it. The interval is an approximate interval for the aggregate mean, not a
+prediction range for individual trials.
+
+Confidence intervals are reporting-only. The compiler derives them after completed model calls
+from typed penalized trial values. They never enter Guesser-visible history, provider requests,
+sessions, caches, retries, adjudication, or later trials.
+
+## Cross-model stability, cost, time, and efficiency
+
+The static Results area has five views:
 
 ```text
-/results/             score, outcome, reliability, cost, and time overview
+/results/             score, outcome, stability, cost, and time overview
+/results/reliability/ repeated-trial stability ranking by 95% confidence-interval width
 /results/cost/        full-run component costs and per-episode costs
-/results/time/        provider-reported Guesser response time
-/results/efficiency/  cost-adjusted ranking and cost-quality frontier
+/results/time/        tested-model response time and end-to-end benchmark runtime
+/results/efficiency/  cost-adjusted ranking and cost-quality trade-off
 ```
 
+Every model uses the same 95% confidence level. The Stability view therefore ranks by
+confidence-interval width, not by confidence level. It subtracts the lower bound from the upper
+bound and sorts from smallest to largest. A smaller width indicates a more repeatable aggregate
+score on the fixed subjects. This rank is independent of score quality: a model may be consistently
+bad or inconsistently good. A scatter chart shows CI width against question score; lower-left
+means lower score and a smaller confidence interval width. The chart does not create a weighted score.
+
 Cost pages use provider-reported costs recorded in the selected signed run. They are historical
-measurements, not estimates based on current prices. Full benchmark cost includes the Guesser,
+measurements, not estimates based on current prices. Tested-model cost is called Guesser cost in
+the methodology. Full benchmark cost includes the Guesser,
 Primary Oracle, Reviewer, Judge, and Validator. Per-episode values divide by terminal episodes.
 Support cost is full cost minus Guesser cost.
 
-The Results time page shows only Guesser response time. This is the sum of provider-reported
-latency for every recorded Guesser call. Guesser time per episode divides that sum by terminal
-episodes. Guesser latency per call divides it by recorded Guesser calls. The page excludes
-Oracle, Reviewer, Judge, Validator, scheduling, concurrency, and other benchmark overhead.
+The first chart on the Results time page shows tested-model response time. This is the sum of
+provider-reported latency for every recorded Guesser call. Model time per episode divides that
+sum by terminal episodes. Model latency per call divides it by recorded Guesser calls. A second
+chart shows end-to-end runtime, which also includes support-model calls, scheduling, concurrency,
+and other benchmark work.
 
 Question score remains the primary benchmark result. Cost efficiency is a separate official
 ranking:
@@ -204,10 +230,15 @@ artifacts do not distinguish a genuinely free call from a provider response that
 price. The publisher therefore treats zero aggregate Guesser cost as unavailable instead of
 ranking it as free.
 
-The efficiency chart also marks the Pareto frontier. A model is on the frontier when no other
-ranked model has both an equal-or-lower question score and an equal-or-lower Guesser cost per
-episode, with at least one strict improvement. Pareto status is descriptive and does not alter
-either official rank.
+The efficiency trade-off chart shows the original tested-model cost per episode and question
+score on separate axes. It does not create a second weighted score or change the official rank.
+
+Each Results page uses short, keyboard- and tap-accessible information popovers to define the
+page-specific metrics and explain when chart or table orders differ. The popovers sit in the
+related chart header: in a third column on wide screens and below the explanatory copy when
+space is limited. Stability and Efficiency use a contained metric-definition card for the
+formula and interpretation. Longer calculation details remain available through a native
+details disclosure inside the card.
 
 All comparison values are derived after model calls from completed artifacts. They are
 reporting-only. They never enter a Guesser request, history, retry, session, cache namespace, or

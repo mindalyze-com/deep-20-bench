@@ -31,11 +31,7 @@ def _subject_document(
     run: PublicRun,
     subject: PublicSubject,
 ) -> PublicationSubjectDocument:
-    episodes = tuple(
-        trial.episode
-        for trial in subject.trials
-        if trial.episode is not None
-    )
+    episodes = tuple(trial.episode for trial in subject.trials if trial.episode is not None)
     if not episodes:
         raise ValueError(
             f"published subject {run.execution_id}/{subject.target_id} has no episode detail"
@@ -100,9 +96,7 @@ def split_publication(dataset: PublishedDataset) -> PublicationDataBundle:
             for run in ordered_runs
         ),
         subjects=tuple(
-            _subject_document(run, subject)
-            for run in ordered_runs
-            for subject in run.subjects
+            _subject_document(run, subject) for run in ordered_runs for subject in run.subjects
         ),
         episodes=tuple(
             PublicationEpisodeDocument(

@@ -46,7 +46,7 @@ const props = withDefaults(
   defineProps<{
     items: MetricBar[];
     directionLabel?: string;
-    color?: "blue" | "acid" | "coral";
+    color?: "blue" | "acid" | "coral" | "efficiency";
     valueFormat?: "number" | "currency" | "duration";
   }>(),
   {
@@ -106,6 +106,7 @@ const chartOption = (width: number): EChartsOption => {
     blue: theme.roles.guesser,
     acid: theme.acid,
     coral: theme.coral,
+    efficiency: theme.results.efficiency,
   };
   const color = colors[props.color];
   const axisFontSize = chartTextSize(width, 10, 11);
@@ -338,6 +339,10 @@ figcaption i {
 
 .metric-chart--coral figcaption i {
   background: var(--coral);
+}
+
+.metric-chart--efficiency figcaption i {
+  background: var(--result-efficiency);
 }
 
 .metric-chart-canvas {

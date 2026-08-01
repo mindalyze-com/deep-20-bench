@@ -177,7 +177,7 @@ const chartOption = (width: number): EChartsOption => {
         symbolSize: mobile ? 14 : 17,
         cursor: "pointer",
         itemStyle: {
-          color: theme.roles.guesser,
+          color: theme.results.efficiency,
           borderColor: theme.ink,
           borderWidth: 2,
         },
@@ -329,7 +329,7 @@ figcaption > span:first-child {
     height: 0.55rem;
     border: var(--rule-strong);
     border-radius: 50%;
-    background: var(--blue);
+    background: var(--result-efficiency);
   }
 
   .mobile-model-key a,

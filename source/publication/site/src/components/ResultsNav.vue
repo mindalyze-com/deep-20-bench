@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const links = [
   { label: "Overview", name: "results" },
+  { label: "Stability", name: "results-reliability" },
   { label: "Cost", name: "results-cost" },
   { label: "Time", name: "results-time" },
   { label: "Efficiency", name: "results-efficiency" },
@@ -44,7 +45,7 @@ a {
 }
 
 a.active {
-  color: var(--ink);
+  color: var(--result-accent-ink, var(--ink));
 }
 
 a.active::after {
@@ -53,7 +54,7 @@ a.active::after {
   bottom: -1px;
   left: 0.75rem;
   height: 3px;
-  background: var(--blue);
+  background: var(--result-accent, var(--blue));
   content: "";
 }
 </style>

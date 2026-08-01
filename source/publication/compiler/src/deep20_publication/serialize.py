@@ -27,6 +27,9 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
             "status",
             "execution_id",
             "question_score",
+            "question_score_ci_lower",
+            "question_score_ci_upper",
+            "question_score_ci_method",
             "success_rate",
             "contract_status",
             "contract_compliance_rate",
@@ -56,12 +59,26 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
                 row.status,
                 row.execution_id or "",
                 row.question_score if row.question_score is not None else "",
+                (
+                    row.question_score_confidence_interval.lower
+                    if row.question_score_confidence_interval is not None
+                    else ""
+                ),
+                (
+                    row.question_score_confidence_interval.upper
+                    if row.question_score_confidence_interval is not None
+                    else ""
+                ),
+                (
+                    row.question_score_confidence_interval.method
+                    if row.question_score_confidence_interval is not None
+                    else ""
+                ),
                 row.success_rate if row.success_rate is not None else "",
                 row.contract.status if row.contract is not None else "",
                 (
                     row.contract.compliance_rate
-                    if row.contract is not None
-                    and row.contract.compliance_rate is not None
+                    if row.contract is not None and row.contract.compliance_rate is not None
                     else ""
                 ),
                 row.contract.violations if row.contract is not None else "",
@@ -80,11 +97,7 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
                     if row.full_cost_per_episode_usd is not None
                     else ""
                 ),
-                (
-                    row.runtime_per_episode_ms
-                    if row.runtime_per_episode_ms is not None
-                    else ""
-                ),
+                (row.runtime_per_episode_ms if row.runtime_per_episode_ms is not None else ""),
                 (
                     row.guesser_think_time_per_episode_ms
                     if row.guesser_think_time_per_episode_ms is not None

@@ -99,6 +99,7 @@ class ModelConfigurationSnapshot(FrozenModel):
     seed_capability: str = Field(min_length=1, max_length=80)
     prompt_cache: PromptCacheSnapshot
 
+
 class ModelSnapshot(FrozenModel):
     model_id: str = Field(pattern=MODEL_ID_PATTERN)
     display_name: str = Field(min_length=1, max_length=160)
@@ -379,27 +380,19 @@ class OracleQualityAggregateSnapshot(FrozenModel):
         if self.judge_invocations != self.disagreements:
             raise ValueError("every disagreement must invoke exactly one Judge")
         if (
-            self.judge_yes_answers
-            + self.judge_no_answers
-            + self.judge_unknown_answers
+            self.judge_yes_answers + self.judge_no_answers + self.judge_unknown_answers
             != self.judge_invocations
         ):
             raise ValueError("Judge answer distribution must match Judge invocations")
         if self.oracle_answers_changed > self.judge_invocations:
             raise ValueError("only Judge decisions may change an Oracle answer")
-        if self.quality_control_cost_usd != (
-            self.reviewer_cost_usd + self.judge_cost_usd
-        ):
+        if self.quality_control_cost_usd != (self.reviewer_cost_usd + self.judge_cost_usd):
             raise ValueError("quality-control cost must equal Reviewer plus Judge cost")
-        if len({item.question_type for item in self.question_types}) != len(
-            self.question_types
-        ):
+        if len({item.question_type for item in self.question_types}) != len(self.question_types):
             raise ValueError("question-type aggregates must be unique")
         if self.question_types and (
-            sum(item.reviewed_questions for item in self.question_types)
-            != self.reviewed_questions
-            or sum(item.disagreements for item in self.question_types)
-            != self.disagreements
+            sum(item.reviewed_questions for item in self.question_types) != self.reviewed_questions
+            or sum(item.disagreements for item in self.question_types) != self.disagreements
         ):
             raise ValueError("question-type aggregates must match overall quality counts")
         return self
@@ -646,26 +639,16 @@ class EvidenceReviewDecisionSnapshot(FrozenModel):
     def support_matches_answer(self) -> EvidenceReviewDecisionSnapshot:
         if self.answer == "UNKNOWN" and self.evidence_indices:
             raise ValueError("UNKNOWN must not identify supporting evidence")
-        if (
-            self.answer == "UNKNOWN"
-            and self.basis is EvidenceDecisionBasisSnapshot.MODEL_KNOWLEDGE
-        ):
+        if self.answer == "UNKNOWN" and self.basis is EvidenceDecisionBasisSnapshot.MODEL_KNOWLEDGE:
             raise ValueError("UNKNOWN cannot use model knowledge as its decision basis")
         if (
             self.answer != "UNKNOWN"
             and self.basis is EvidenceDecisionBasisSnapshot.EVIDENCE
             and not self.evidence_indices
         ):
-            raise ValueError(
-                "evidence-based YES and NO require supporting evidence indices"
-            )
-        if (
-            self.basis is EvidenceDecisionBasisSnapshot.MODEL_KNOWLEDGE
-            and self.evidence_indices
-        ):
-            raise ValueError(
-                "model-knowledge decisions must not identify supporting evidence"
-            )
+            raise ValueError("evidence-based YES and NO require supporting evidence indices")
+        if self.basis is EvidenceDecisionBasisSnapshot.MODEL_KNOWLEDGE and self.evidence_indices:
+            raise ValueError("model-knowledge decisions must not identify supporting evidence")
         return self
 
 
@@ -862,27 +845,19 @@ class OracleQualityTotalsSnapshot(FrozenModel):
         if self.judge_invocations != self.disagreements:
             raise ValueError("every disagreement must invoke exactly one Judge")
         if (
-            self.judge_yes_answers
-            + self.judge_no_answers
-            + self.judge_unknown_answers
+            self.judge_yes_answers + self.judge_no_answers + self.judge_unknown_answers
             != self.judge_invocations
         ):
             raise ValueError("Judge answer distribution must match Judge invocations")
         if self.oracle_answers_changed > self.judge_invocations:
             raise ValueError("only Judge decisions may change an Oracle answer")
-        if self.quality_control_cost_usd != (
-            self.reviewer_cost_usd + self.judge_cost_usd
-        ):
+        if self.quality_control_cost_usd != (self.reviewer_cost_usd + self.judge_cost_usd):
             raise ValueError("quality-control cost must equal Reviewer plus Judge cost")
-        if len({item.question_type for item in self.question_types}) != len(
-            self.question_types
-        ):
+        if len({item.question_type for item in self.question_types}) != len(self.question_types):
             raise ValueError("question-type quality totals must be unique")
         if self.question_types and (
-            sum(item.reviewed_questions for item in self.question_types)
-            != self.reviewed_questions
-            or sum(item.disagreements for item in self.question_types)
-            != self.disagreements
+            sum(item.reviewed_questions for item in self.question_types) != self.reviewed_questions
+            or sum(item.disagreements for item in self.question_types) != self.disagreements
         ):
             raise ValueError("question-type totals must match overall quality totals")
         return self
@@ -950,6 +925,7 @@ class OracleConfigurationSnapshot(EvidenceReviewConfigurationSnapshot):
     max_search_results: int = Field(ge=1)
     reviewer: EvidenceReviewConfigurationSnapshot
     judge: EvidenceReviewConfigurationSnapshot
+
 
 class ModelLlmDetail(FrozenModel):
     configuration: ModelConfigurationSnapshot
@@ -1031,9 +1007,7 @@ class CompletedTrialArtifact(FrozenModel):
             raise ValueError("trial and episode run IDs differ")
         if self.identity.target_id != self.result.run.subject.target_id:
             raise ValueError("trial and episode target IDs differ")
-        attempt_numbers = tuple(
-            attempt.attempt_number for attempt in self.superseded_attempts
-        )
+        attempt_numbers = tuple(attempt.attempt_number for attempt in self.superseded_attempts)
         if len(set(attempt_numbers)) != len(attempt_numbers):
             raise ValueError("superseded attempt numbers must be unique")
         if any(number >= self.attempt_number for number in attempt_numbers):
@@ -1235,10 +1209,7 @@ class LoadedRun(FrozenModel):
         }
         if len(identities) != 1 or len(models) != 1:
             raise ValueError("run artifacts disagree on execution or model identity")
-        if (
-            self.summary.model.configuration_hash
-            != self.manifest.model.configuration_hash
-        ):
+        if self.summary.model.configuration_hash != self.manifest.model.configuration_hash:
             raise ValueError("summary and manifest model configurations differ")
         if self.summary.benchmark_id != self.manifest.definition.benchmark_id:
             raise ValueError("summary and manifest benchmark IDs differ")
@@ -1358,9 +1329,7 @@ class PublicGuesserDisclosure(FrozenModel):
     system_message: str
     begin_message: str
     required_formats: PublicGuesserRequiredFormats | None = None
-    output_storage: Literal["canonical_structured_action"] = (
-        "canonical_structured_action"
-    )
+    output_storage: Literal["canonical_structured_action"] = "canonical_structured_action"
 
 
 class PublicGuesserRequiredFormats(FrozenModel):
@@ -1441,11 +1410,7 @@ class PublicRunCostTotals(FrozenModel):
     @model_validator(mode="after")
     def components_match_total(self) -> PublicRunCostTotals:
         component_total = (
-            self.guesser
-            + self.primary_oracle
-            + self.reviewer
-            + self.judge
-            + self.validator
+            self.guesser + self.primary_oracle + self.reviewer + self.judge + self.validator
         )
         if abs(self.total - component_total) > Decimal("0.00000001"):
             raise ValueError("public run component costs must equal the total")
@@ -1478,6 +1443,30 @@ class PublicRunComparison(FrozenModel):
     ]
 
 
+class QuestionScoreConfidenceInterval(FrozenModel):
+    confidence_level: Decimal = Field(gt=0, lt=1)
+    method: Literal["stratified-welch-t-v1"]
+    estimate: Decimal
+    lower: Decimal
+    upper: Decimal
+    standard_error: Decimal = Field(ge=0)
+    degrees_of_freedom: Decimal | None = Field(default=None, gt=0)
+    subject_count: int = Field(ge=1)
+    trial_count: int = Field(ge=2)
+
+    @model_validator(mode="after")
+    def ordered_bounds_contain_estimate(self) -> QuestionScoreConfidenceInterval:
+        if self.lower > self.estimate or self.estimate > self.upper:
+            raise ValueError("question-score confidence interval must contain its estimate")
+        if self.standard_error == 0 and (
+            self.lower != self.estimate or self.upper != self.estimate
+        ):
+            raise ValueError("zero-error confidence interval must equal its estimate")
+        if self.standard_error > 0 and self.degrees_of_freedom is None:
+            raise ValueError("nonzero confidence interval requires degrees of freedom")
+        return self
+
+
 class PublicRunSummary(FrozenModel):
     execution_id: str
     model_id: str
@@ -1496,6 +1485,7 @@ class PublicRunSummary(FrozenModel):
     max_questions: int
     success_rate: Decimal | None
     question_score: Decimal | None
+    question_score_confidence_interval: QuestionScoreConfidenceInterval | None = None
     total_cost_usd: Decimal
     successful: int
     model_failed: int
@@ -1509,6 +1499,9 @@ class PublicRunSummary(FrozenModel):
     def repeated_total_cost_matches(self) -> PublicRunSummary:
         if self.total_cost_usd != self.totals.costs_usd.total:
             raise ValueError("public run total cost fields disagree")
+        interval = self.question_score_confidence_interval
+        if interval is not None and interval.estimate != self.question_score:
+            raise ValueError("public run score and confidence interval disagree")
         return self
 
 
@@ -1535,6 +1528,7 @@ class LeaderboardRow(FrozenModel):
     execution_id: str | None = None
     completed_at: datetime | None = None
     question_score: Decimal | None = None
+    question_score_confidence_interval: QuestionScoreConfidenceInterval | None = None
     success_rate: Decimal | None = None
     total_cost_usd: Decimal | None = None
     guesser_cost_per_episode_usd: Decimal | None = None
@@ -1553,6 +1547,13 @@ class LeaderboardRow(FrozenModel):
     successful: int = 0
     terminal_trials: int = 0
     contract: ContractReliabilitySnapshot | None = None
+
+    @model_validator(mode="after")
+    def confidence_interval_matches_score(self) -> LeaderboardRow:
+        interval = self.question_score_confidence_interval
+        if interval is not None and interval.estimate != self.question_score:
+            raise ValueError("leaderboard score and confidence interval disagree")
+        return self
 
 
 class Winner(FrozenModel):
@@ -1579,7 +1580,7 @@ class DatasetProvenance(FrozenModel):
 
 
 class PublishedDataset(FrozenModel):
-    schema_version: Literal[6] = 6
+    schema_version: Literal[7] = 7
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig
@@ -1601,7 +1602,7 @@ class PublicationRunReference(FrozenModel):
 class PublicationManifestDocument(FrozenModel):
     document_type: Literal["manifest"] = "manifest"
     schema_version: Literal[1] = 1
-    dataset_schema_version: Literal[6] = 6
+    dataset_schema_version: Literal[7] = 7
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig
@@ -1614,13 +1615,13 @@ class PublicationManifestDocument(FrozenModel):
 
 class PublicationLeaderboardDocument(FrozenModel):
     document_type: Literal["leaderboard"] = "leaderboard"
-    schema_version: Literal[1] = 1
+    schema_version: Literal[2] = 2
     leaderboard: tuple[LeaderboardRow, ...]
 
 
 class PublicationRunDocument(FrozenModel):
     document_type: Literal["run"] = "run"
-    schema_version: Literal[1] = 1
+    schema_version: Literal[2] = 2
     run: PublicRunSummary
     subjects: tuple[PublicSubjectSummary, ...]
 
@@ -1692,8 +1693,7 @@ class PublicationDataBundle(FrozenModel):
             raise ValueError("publication manifest references differ from run documents")
 
         subject_documents = {
-            (document.execution_id, document.target_id): document
-            for document in self.subjects
+            (document.execution_id, document.target_id): document for document in self.subjects
         }
         if len(subject_documents) != len(self.subjects):
             raise ValueError("publication data bundle subject IDs must be unique")

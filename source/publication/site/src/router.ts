@@ -32,6 +32,17 @@ const routes: RouteRecordRaw[] = [
         meta: { depth: 1, nav: "Results", title: "Cost results", workspace: true },
       },
       {
+        path: "reliability/",
+        name: "results-reliability",
+        component: () => import("@/views/results/ResultsReliabilityView.vue"),
+        meta: {
+          depth: 1,
+          nav: "Results",
+          title: "Stability results",
+          workspace: true,
+        },
+      },
+      {
         path: "time/",
         name: "results-time",
         component: () => import("@/views/results/ResultsTimeView.vue"),

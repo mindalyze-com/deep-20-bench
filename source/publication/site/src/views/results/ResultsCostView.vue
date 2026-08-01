@@ -3,11 +3,13 @@ import { computed, onActivated, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import ErrorState from "@/components/ErrorState.vue";
+import InfoPopover from "@/components/InfoPopover.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
+import ResultHelp from "@/components/ResultHelp.vue";
 import RunTableAction from "@/components/RunTableAction.vue";
 import StackedMetricBars, {
   type StackedBarRow,
@@ -74,7 +76,7 @@ const supportShare = computed(() =>
 );
 
 const summaryMetrics = computed<MetricGridItem[]>(() => [
-  { key: "runs", label: "Selected runs", value: runs.value.length },
+  { key: "runs", label: "Models", value: runs.value.length },
   {
     key: "spend",
     label: "Recorded spend",
@@ -82,7 +84,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   },
   {
     key: "guesser",
-    label: "Guesser spend",
+    label: "Tested-model spend",
     value: money(guesserSpend.value),
     tone: "accent",
   },
@@ -197,33 +199,56 @@ void load();
           :max-columns="4"
         />
 
-        <section class="panel cost-panel" aria-labelledby="cost-chart-title">
-          <header class="panel-heading">
-            <div>
-              <p class="eyebrow">Guesser-only cost</p>
-              <h2 id="cost-chart-title">Least to most expensive model.</h2>
-            </div>
-            <p>
-              Only the model under test is counted here. Oracle, Reviewer, Judge, and
-              Validator costs appear in the total-cost breakdown below.
-            </p>
-          </header>
-          <MetricBars
-            :items="guesserCostBars"
-            direction-label="Guesser cost · lower is better"
-            color="coral"
-            value-format="currency"
-          />
+        <div class="result-chart-stack">
+          <section class="panel cost-panel" aria-labelledby="cost-chart-title">
+            <header class="panel-heading panel-heading--with-help">
+              <div>
+                <p class="eyebrow">Tested-model cost</p>
+                <h2 id="cost-chart-title">Model cost across the run.</h2>
+              </div>
+              <p>
+                Each bar adds the recorded provider cost of every call to the model under
+                test. Support-model costs are excluded here and shown in the breakdown below.
+              </p>
+              <ResultHelp label="Cost metric explanations">
+                <InfoPopover label="Model and support cost">
+                  <p>
+                    Model cost covers calls to the model under test, called the Guesser in
+                    the methodology. Support cost covers the Oracle, Reviewer, Judge, and
+                    Validator. Full cost combines both.
+                  </p>
+                </InfoPopover>
+                <InfoPopover label="Per episode">
+                  <p>
+                    Per-episode values divide the recorded run cost by the number of terminal
+                    episodes. This keeps runs comparable if cohort sizes change.
+                  </p>
+                </InfoPopover>
+                <InfoPopover label="How this page is ordered">
+                  <p>
+                    The first chart is ordered by tested-model cost. The breakdown and table
+                    are ordered by full-run cost, so their order can differ.
+                  </p>
+                </InfoPopover>
+              </ResultHelp>
+            </header>
+            <MetricBars
+              :items="guesserCostBars"
+              direction-label="Tested-model cost · lower is better"
+              color="coral"
+              value-format="currency"
+            />
+          </section>
 
-          <section class="component-ledger panel-frame" aria-labelledby="component-ledger-title">
+          <section class="panel component-ledger" aria-labelledby="component-ledger-title">
             <header class="panel-heading panel-heading--compact">
               <div>
                 <p class="eyebrow">Total benchmark cost</p>
-                <h3 id="component-ledger-title">Where each run spent.</h3>
+                <h3 id="component-ledger-title">Where the total cost came from.</h3>
               </div>
               <p>
                 Bar length shows the total cost of each benchmark run. Color separates
-                the Guesser, Primary Oracle, Reviewer, Judge, and Validator.
+                the tested model (Guesser), Primary Oracle, Reviewer, Judge, and Validator.
               </p>
             </header>
             <StackedMetricBars
@@ -232,7 +257,7 @@ void load();
               direction-label="Total benchmark cost by component"
             />
           </section>
-        </section>
+        </div>
 
         <div
           class="table-wrap ranking-table-wrap results-table-wrap"
@@ -244,13 +269,13 @@ void load();
               <tr>
                 <th class="rank-column">
                   <span aria-hidden="true">#</span>
-                  <span class="visually-hidden">Cost rank</span>
+                  <span class="visually-hidden">Full-cost rank</span>
                 </th>
                 <th class="model-column">Model</th>
                 <th class="run-column">Run</th>
                 <th data-numeric>
                   <span class="table-header-stack">
-                    <span>Guesser cost</span>
+                    <span>Model cost</span>
                     <span>per episode</span>
                   </span>
                 </th>
@@ -267,7 +292,7 @@ void load();
                   </span>
                 </th>
                 <th data-numeric>Support share</th>
-                <th data-numeric>Full run</th>
+                <th data-numeric>Full run cost</th>
               </tr>
             </thead>
             <tbody>
@@ -318,7 +343,7 @@ void load();
             :to="runLink(run)"
             :metrics="[
               {
-                label: 'Guesser / ep.',
+                label: 'Model / ep.',
                 value: moneyEpisode(run.comparison.guesser_cost_per_episode_usd),
               },
               {
@@ -331,8 +356,8 @@ void load();
         </div>
 
         <p class="results-note">
-          Per-episode figures use terminal episodes as the denominator. This keeps
-          comparisons consistent if cohort sizes change.
+          Costs are provider-reported values for the selected official runs. A missing or
+          unreported provider price can affect the comparison.
         </p>
       </div>
     </section>
@@ -340,13 +365,8 @@ void load();
 </template>
 
 <style scoped>
-.results-summary,
-.cost-panel {
+.results-summary {
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
-}
-
-.component-ledger {
-  margin: 0;
 }
 
 .results-table {

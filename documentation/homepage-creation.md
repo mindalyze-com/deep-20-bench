@@ -231,9 +231,21 @@ the scoring explanation. Cost is a separate comparison and may support a separat
 label; it is not a hidden tie-breaker. Recorded historical cost and dated catalog pricing must
 remain distinguishable.
 
-Version 5 shows the model question score beside subject averages and individual trial values
-instead of adding a fragile confidence interval. It does not remove outliers or create a
-cohort-relative composite score.
+Version 7 shows a stratified 95% repeated-trial confidence interval beside every official model
+score. It estimates trial variation separately within each fixed subject, then combines those
+equally weighted variance estimates with a Welch–Satterthwaite t interval. A larger interval
+width indicates less repeatable performance on the current subjects. It does not estimate uncertainty
+from subject selection, model or provider changes, or future benchmark versions. Individual
+model intervals are not pairwise significance tests. The publication also retains subject
+averages and individual trial values; it does not remove outliers or create a cohort-relative
+composite score.
+
+The dedicated Stability result view orders models by the width of that 95% interval. Every
+model uses the same confidence level, so the level itself is not a ranking measure. Smaller
+interval widths rank first. Question score remains visible as context but does not affect the stability
+rank, allowing a model to be consistently bad or inconsistently good. A two-dimensional scatter
+chart places CI width against question score. Lower-left means lower score and a smaller
+confidence interval width; it does not define a combined rank.
 
 ## Public website
 
@@ -264,6 +276,16 @@ The site is a focused static Vue publication with route entry shells:
 Vue renders tables and explanations from the generated static JSON. Apache ECharts adds
 responsive SVG charts and tooltips. Every chart has an ARIA description and equivalent
 structured text or table data; meaning never depends on color or pointer hover alone.
+
+Result views use a fixed accent mapping: score is blue, Stability is violet, cost is coral,
+time is lime, and Efficiency is teal. The active tab, section labels, summary accent, and
+primary chart repeat that mapping. Text labels and chart shapes still carry the meaning.
+
+Short definitions use keyboard- and tap-accessible information popovers inside the related
+chart header. They use a third column on wide screens and sit below the explanatory copy when
+space is limited. Stability and Efficiency keep their formula and plain-language interpretation
+in a contained card aligned with the result panels. Longer steps, examples, and limits use a
+native details disclosure inside that card instead of a separate full-width section.
 
 The story page must distinguish an independent origin from a priority claim. Deep20Bench began
 with Patrick Heusser and Markus Tuor developing the initial idea together while playing Twenty

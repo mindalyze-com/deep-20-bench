@@ -9,6 +9,10 @@ export interface ChartTheme {
   accent: string;
   acid: string;
   coral: string;
+  results: {
+    stability: string;
+    efficiency: string;
+  };
   roles: {
     guesser: string;
     oracle: string;
@@ -38,6 +42,10 @@ export const readChartTheme = (): ChartTheme => {
     accent: customProperty(styles, "--blue-ink", "#3044d2"),
     acid: customProperty(styles, "--chart-acid", "#8cad12"),
     coral: customProperty(styles, "--coral", "#e95a3d"),
+    results: {
+      stability: customProperty(styles, "--result-stability", "#8266d5"),
+      efficiency: customProperty(styles, "--result-efficiency", "#168c76"),
+    },
     roles: {
       guesser: customProperty(styles, "--role-guesser", "#4f5dff"),
       oracle: customProperty(styles, "--role-oracle", "#e95a3d"),

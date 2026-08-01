@@ -160,7 +160,7 @@ This is a clean artifact-contract break with no legacy loader:
 - Guesser output schema: `guesser_action_v3`;
 - episode result: schema version 9;
 - benchmark summary/result/manifest: schema version 3; and
-- active protocol-9 public dataset: schema version 6.
+- active protocol-9 public dataset: schema version 7.
 
 The independent publisher is pinned to protocol 9 and rejects older episode artifacts.
 

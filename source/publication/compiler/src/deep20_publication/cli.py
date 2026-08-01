@@ -55,10 +55,9 @@ def publication() -> None:
 def _repository_root(start: Path) -> Path:
     current = start.resolve()
     for candidate in (current, *current.parents):
-        if (
-            (candidate / ".git").exists()
-            and (candidate / "source" / "publication" / "compiler").is_dir()
-        ):
+        if (candidate / ".git").exists() and (
+            candidate / "source" / "publication" / "compiler"
+        ).is_dir():
             return candidate
     raise FileNotFoundError("Deep20Bench repository root not found")
 
@@ -165,18 +164,13 @@ def _load_episode_details(
                     for turn in episode.result.turns
                     if not isinstance(turn, EpisodeActionTurn)
                 }
-                actual = {
-                    (record.turn_number, record.violation_kind)
-                    for record in disclosures
-                }
+                actual = {(record.turn_number, record.violation_kind) for record in disclosures}
                 if actual != expected:
                     raise PublicationInputError(
                         f"{relative} Guesser violation disclosures do not match "
                         "its recorded contract violations"
                     )
-                episode = episode.model_copy(
-                    update={"violation_disclosures": disclosures}
-                )
+                episode = episode.model_copy(update={"violation_disclosures": disclosures})
             episodes.append(episode)
     return tuple(episodes)
 
@@ -185,18 +179,11 @@ def _discover_runs(
     repository: Path,
     violation_snapshot: GuesserViolationSnapshot | None = None,
 ) -> tuple[LoadedRun, ...]:
-    candidates = sorted(
-        (repository / "runs").glob("M-[0-9][0-9][0-9][0-9]/BX-*/summary.yml")
-    )
-    runs = tuple(
-        _load_run(path, repository, violation_snapshot)
-        for path in candidates
-    )
+    candidates = sorted((repository / "runs").glob("M-[0-9][0-9][0-9][0-9]/BX-*/summary.yml"))
+    runs = tuple(_load_run(path, repository, violation_snapshot) for path in candidates)
     if violation_snapshot is not None:
         attached = sum(
-            len(episode.violation_disclosures)
-            for run in runs
-            for episode in run.episodes
+            len(episode.violation_disclosures) for run in runs for episode in run.episodes
         )
         if attached != len(violation_snapshot.records):
             raise PublicationInputError(
@@ -206,13 +193,7 @@ def _discover_runs(
 
 
 def _guesser_violation_snapshot_path(repository: Path) -> Path:
-    return (
-        repository
-        / "source"
-        / "publication"
-        / "data"
-        / "guesser-violation-outputs-v1.json"
-    )
+    return repository / "source" / "publication" / "data" / "guesser-violation-outputs-v1.json"
 
 
 def _episode_diagnostic_records(
@@ -314,10 +295,7 @@ def _directories_equal(left: Path, right: Path) -> bool:
         for name in comparison.common_files
     ):
         return False
-    return all(
-        _directories_equal(left / name, right / name)
-        for name in comparison.common_dirs
-    )
+    return all(_directories_equal(left / name, right / name) for name in comparison.common_dirs)
 
 
 def _ensure_site_dependencies(site_root: Path) -> None:
@@ -336,12 +314,10 @@ def _write_public_data(public_directory: Path, dataset: PublishedDataset) -> Non
     public_directory.mkdir(parents=True, exist_ok=True)
     data_directory = public_directory / "data"
     bundle = split_publication(dataset)
-    staged_directory = Path(
-        tempfile.mkdtemp(prefix=".deep20-data-", dir=public_directory)
-    )
+    staged_directory = Path(tempfile.mkdtemp(prefix=".deep20-data-", dir=public_directory))
     backup_directory = public_directory / ".deep20-data-previous"
     try:
-        (staged_directory / "deep20bench-v6.json").write_text(
+        (staged_directory / "deep20bench-v7.json").write_text(
             dataset_json(dataset),
             encoding="utf-8",
         )
@@ -358,11 +334,7 @@ def _write_public_data(public_directory: Path, dataset: PublishedDataset) -> Non
             encoding="utf-8",
         )
         for run_document in bundle.runs:
-            path = (
-                staged_directory
-                / "runs"
-                / f"{run_document.run.execution_id}.json"
-            )
+            path = staged_directory / "runs" / f"{run_document.run.execution_id}.json"
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(
                 publication_document_json(run_document),
@@ -417,6 +389,7 @@ def _write_public_data(public_directory: Path, dataset: PublishedDataset) -> Non
 def _route_shells(bundle: PublicationDataBundle) -> tuple[str, ...]:
     editorial = (
         "results",
+        "results/reliability",
         "results/cost",
         "results/time",
         "results/efficiency",
@@ -430,10 +403,7 @@ def _route_shells(bundle: PublicationDataBundle) -> tuple[str, ...]:
         for document in bundle.subjects
     )
     episodes = tuple(
-        (
-            f"runs/{document.execution_id}/subjects/{document.target_id}"
-            f"/episodes/{document.trial_id}"
-        )
+        (f"runs/{document.execution_id}/subjects/{document.target_id}/episodes/{document.trial_id}")
         for document in bundle.episodes
     )
     return (*editorial, *runs, *subjects, *episodes)
@@ -578,10 +548,7 @@ def capture_guesser_outputs(
             + "\n",
             encoding="utf-8",
         )
-        retained = sum(
-            len(record.rejected_outputs)
-            for record in snapshot.records
-        )
+        retained = sum(len(record.rejected_outputs) for record in snapshot.records)
         typer.echo(
             f"{_timestamp()} INFO publication.guesser_outputs "
             f"violations={len(snapshot.records)} retained_outputs={retained} "

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BarChart, ScatterChart } from "echarts/charts";
+import { BarChart, CustomChart, ScatterChart } from "echarts/charts";
 import {
   AriaComponent,
   GridComponent,
@@ -8,6 +8,7 @@ import {
 import * as echarts from "echarts/core";
 import type {
   DefaultLabelFormatterCallbackParams as CallbackDataParams,
+  CustomSeriesRenderItem,
   EChartsOption,
 } from "echarts";
 import { SVGRenderer } from "echarts/renderers";
@@ -27,6 +28,7 @@ import {
 
 echarts.use([
   BarChart,
+  CustomChart,
   ScatterChart,
   GridComponent,
   TooltipComponent,
@@ -38,6 +40,10 @@ export interface ScoreDot {
   label: string;
   value: number;
   display: string;
+  confidenceLower?: number;
+  confidenceUpper?: number;
+  confidenceDisplay?: string;
+  detail?: string;
   link?: RouteLocationRaw;
 }
 
@@ -51,7 +57,11 @@ const chartHeight = computed(() =>
 );
 const scoreValues = computed(() =>
   props.items
-    .map((item) => item.value)
+    .flatMap((item) => [
+      item.value,
+      item.confidenceLower ?? item.value,
+      item.confidenceUpper ?? item.value,
+    ])
     .filter((value) => Number.isFinite(value)),
 );
 const scoreDomain = computed(() => chartValueDomain(scoreValues.value));
@@ -64,10 +74,20 @@ const tooltip = (
     parameter === undefined ? undefined : props.items[parameter.dataIndex];
   if (item === undefined) return "";
   const theme = readChartTheme();
+  const confidence =
+    item.confidenceDisplay === undefined
+      ? ""
+      : `<span style="display:block;margin-top:7px;color:${theme.inkSoft};font-size:.78rem;font-weight:650">Repeatability range (95% CI) ${escapeHtml(item.confidenceDisplay)} questions</span>`;
+  const detail =
+    item.detail === undefined
+      ? ""
+      : `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">${escapeHtml(item.detail)}</span>`;
   return [
     '<div style="min-width:180px;padding:3px 2px">',
     `<strong style="display:block;color:${theme.ink};font:700 .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
     `<span style="display:block;margin-top:8px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.55rem">${escapeHtml(item.display)} questions</span>`,
+    confidence,
+    detail,
     `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">Lower is better</span>`,
     item.link === undefined
       ? ""
@@ -82,14 +102,51 @@ const chartOption = (width: number): EChartsOption => {
   const axisFontSize = chartTextSize(width, 10, 11);
   const categoryFontSize = chartTextSize(width, 10, 12);
   const valueFontSize = chartTextSize(width, 11, 14);
+  const renderConfidenceInterval: CustomSeriesRenderItem = (_parameters, api) => {
+    const categoryIndex = Number(api.value(2));
+    const lower = api.coord([Number(api.value(0)), categoryIndex]);
+    const upper = api.coord([Number(api.value(1)), categoryIndex]);
+    const lowerX = lower[0] ?? 0;
+    const lowerY = lower[1] ?? 0;
+    const upperX = upper[0] ?? 0;
+    const upperY = upper[1] ?? 0;
+    const cap = mobile ? 5 : 6;
+    return {
+      type: "group",
+      children: [
+        {
+          type: "line",
+          shape: { x1: lowerX, y1: lowerY, x2: upperX, y2: upperY },
+          style: { stroke: theme.roles.guesser, lineWidth: 2.5, opacity: 0.72 },
+        },
+        {
+          type: "line",
+          shape: { x1: lowerX, y1: lowerY - cap, x2: lowerX, y2: lowerY + cap },
+          style: { stroke: theme.roles.guesser, lineWidth: 2, opacity: 0.72 },
+        },
+        {
+          type: "line",
+          shape: { x1: upperX, y1: upperY - cap, x2: upperX, y2: upperY + cap },
+          style: { stroke: theme.roles.guesser, lineWidth: 2, opacity: 0.72 },
+        },
+      ],
+    };
+  };
   return {
     animation: chartAnimationEnabled(),
     animationDuration: 420,
     animationEasing: "cubicOut",
     aria: {
       enabled: true,
-      description: `Official question scores. Lower is better. The horizontal axis runs from ${scoreDomain.value.minimum} to ${scoreDomain.value.maximum}. ${props.items
-        .map((item, index) => `${index + 1}. ${item.label}, ${item.display}`)
+      description: `Official question scores and repeatability. Each dot is the average question score, where lower is better. Each line is the 95 percent confidence range; a shorter line means the model repeated its result more consistently, while a longer line means its results were more volatile. The horizontal axis runs from ${scoreDomain.value.minimum} to ${scoreDomain.value.maximum}. ${props.items
+        .map(
+          (item, index) =>
+            `${index + 1}. ${item.label}, ${item.display}${
+              item.confidenceDisplay === undefined
+                ? ""
+                : `, 95 percent confidence interval ${item.confidenceDisplay}`
+            }`,
+        )
         .join(". ")}.`,
     },
     grid: {
@@ -182,6 +239,21 @@ const chartOption = (width: number): EChartsOption => {
         z: 2,
       },
       {
+        name: "Repeatability range (95% CI)",
+        type: "custom",
+        renderItem: renderConfidenceInterval,
+        encode: { x: [0, 1], y: 2 },
+        cursor: props.items.some((item) => item.link !== undefined)
+          ? "pointer"
+          : "default",
+        data: props.items.map((item, index) => [
+          item.confidenceLower ?? item.value,
+          item.confidenceUpper ?? item.value,
+          index,
+        ]),
+        z: 3,
+      },
+      {
         name: "Question score",
         type: "scatter",
         data: props.items.map((item) => ({
@@ -199,8 +271,8 @@ const chartOption = (width: number): EChartsOption => {
         },
         label: {
           show: true,
-          position: "right",
-          distance: mobile ? 6 : 8,
+          position: "top",
+          distance: mobile ? 5 : 6,
           color: theme.ink,
           fontFamily: chartDisplayFont,
           fontSize: valueFontSize,
@@ -215,7 +287,7 @@ const chartOption = (width: number): EChartsOption => {
             shadowColor: theme.gridLine,
           },
         },
-        z: 3,
+        z: 4,
       },
     ],
   };
@@ -250,7 +322,10 @@ watch(() => [chartElement.value, props.items] as const, refresh, {
 
 <template>
   <figure class="score-dot-plot">
-    <figcaption>Select a model row to view its full run.</figcaption>
+    <figcaption>
+      Dot: average score, lower is better · line: repeatability range, shorter is more
+      consistent · select a model row for its full run
+    </figcaption>
     <div
       ref="chartElement"
       class="score-dot-plot-canvas"
@@ -259,6 +334,10 @@ watch(() => [chartElement.value, props.items] as const, refresh, {
     <ol class="visually-hidden" aria-label="Official question scores">
       <li v-for="(item, index) in items" :key="item.label">
         {{ index + 1 }}. {{ item.label }}: {{ item.display }} questions.
+        <span v-if="item.confidenceDisplay">
+          Repeatability range, shown as a 95% confidence interval:
+          {{ item.confidenceDisplay }} questions.
+        </span>
         <RouterLink v-if="item.link" :to="item.link" tabindex="-1">
           View full run for {{ item.label }}
         </RouterLink>

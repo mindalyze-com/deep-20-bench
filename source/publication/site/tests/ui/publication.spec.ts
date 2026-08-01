@@ -68,6 +68,7 @@ const episodePath = `${subjectPath}episodes/${trialId}/`;
 const staticPaths = [
   "",
   "results/",
+  "results/reliability/",
   "results/cost/",
   "results/time/",
   "results/efficiency/",
@@ -109,6 +110,20 @@ const expectMinimumSize = async (
   }
 };
 
+const expectVerticalGap = async (
+  upper: Locator,
+  lower: Locator,
+  minimum: number,
+): Promise<void> => {
+  const upperBox = await upper.boundingBox();
+  const lowerBox = await lower.boundingBox();
+  expect(upperBox).not.toBeNull();
+  expect(lowerBox).not.toBeNull();
+  expect(lowerBox!.y - (upperBox!.y + upperBox!.height)).toBeGreaterThanOrEqual(
+    minimum,
+  );
+};
+
 test("public routes stay within the viewport", async ({ page }) => {
   for (const routePath of staticPaths) {
     await page.goto(routePath);
@@ -116,6 +131,112 @@ test("public routes stay within the viewport", async ({ page }) => {
     await expect(page.locator("h1").first()).toBeVisible();
     await expectNoViewportOverflow(page);
   }
+});
+
+test("source link includes the GitHub mark", async ({ page }) => {
+  await page.goto("");
+  await waitForPublication(page);
+  const sourceLink = page.getByRole("link", {
+    name: "Source code (opens in a new tab)",
+  });
+  await expect(sourceLink.locator(".repository-icon")).toBeVisible();
+});
+
+test("question scores show repeated-trial confidence intervals", async ({ page }) => {
+  await page.goto("");
+  await waitForPublication(page);
+  await expect(page.locator(".score-dot-plot-canvas svg")).toBeVisible();
+  await expect(page.locator(".score-dot-plot figcaption")).toContainText(
+    "average score",
+  );
+  await expect(page.locator(".score-dot-plot figcaption")).toContainText(
+    "repeatability range",
+  );
+  await expect(page.locator(".winner-card .score-confidence")).toContainText("95% CI");
+
+  await page.goto("results/");
+  await waitForPublication(page);
+  await expect(page.locator(".score-dot-plot-canvas svg")).toBeVisible();
+  await expect
+    .poll(() => page.locator('.score-dot-plot-canvas path[stroke="#4f5dff"][d^="M"]').count())
+    .toBeGreaterThan(0);
+  await expect(
+    page.getByText("The range uses repeated seeded runs on the seven fixed subjects"),
+  ).toBeVisible();
+});
+
+test("result metric explanations work by keyboard and tap", async ({ page }) => {
+  await page.goto("results/");
+  await waitForPublication(page);
+  const scoreHelp = page.getByRole("button", { name: "Question score" });
+  await scoreHelp.click();
+  await expect(page.getByRole("dialog", { name: "Question score" })).toContainText(
+    "Failed trials receive the benchmark penalty",
+  );
+  await page.keyboard.press("Escape");
+  await expect(scoreHelp).toBeFocused();
+
+  await page.goto("results/reliability/");
+  await waitForPublication(page);
+  await page.getByRole("button", { name: "Repeatability width" }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Repeatability width" }),
+  ).toContainText("upper 95% confidence bound minus the lower bound");
+});
+
+test("result hints stay inside their chart headings", async ({
+  page,
+}, testInfo) => {
+  const routes = [
+    { path: "results/", helpCount: 1 },
+    { path: "results/reliability/", helpCount: 1 },
+    { path: "results/cost/", helpCount: 1 },
+    { path: "results/time/", helpCount: 1 },
+    { path: "results/efficiency/", helpCount: 2 },
+  ] as const;
+
+  for (const route of routes) {
+    await page.goto(route.path);
+    await waitForPublication(page);
+    await expect(page.locator(".content-inner > .result-help")).toHaveCount(0);
+    await expect(
+      page.locator(".panel-heading--with-help > .result-help"),
+    ).toHaveCount(route.helpCount);
+    await expectMinimumSize(page.locator(".result-help .info-popover-trigger"), 44);
+  }
+
+  if (!testInfo.project.name.startsWith("mobile")) {
+    await page.setViewportSize({ width: 1600, height: 900 });
+  }
+  await page.goto("results/reliability/");
+  await waitForPublication(page);
+
+  const heading = page.locator(".reliability-scatter-panel > .panel-heading");
+  const copyBox = await heading.locator(":scope > p").boundingBox();
+  const helpBox = await heading.locator(":scope > .result-help").boundingBox();
+  expect(copyBox).not.toBeNull();
+  expect(helpBox).not.toBeNull();
+
+  if (testInfo.project.name.startsWith("mobile")) {
+    expect(helpBox!.y).toBeGreaterThanOrEqual(copyBox!.y + copyBox!.height - 1);
+  } else {
+    expect(helpBox!.x).toBeGreaterThan(copyBox!.x + copyBox!.width);
+  }
+  await expectNoViewportOverflow(page);
+});
+
+test("detailed metric definitions stay contained", async ({ page }) => {
+  await page.goto("results/efficiency/");
+  await waitForPublication(page);
+  const definition = page.locator(".metric-definition-card");
+  await expect(definition).toBeVisible();
+  await expect(definition).toContainText("Cost-adjusted score.");
+  await expect(page.locator(".definition-section")).toHaveCount(0);
+  await definition.locator("summary").click();
+  await expect(definition.locator("details")).toHaveAttribute("open", "");
+  await expect(definition.locator(".metric-definition-toggle-open")).toBeVisible();
+  await expect(definition).toContainText("12.3 questions × $0.0500 per episode");
+  await expectNoViewportOverflow(page);
 });
 
 test("workspace routes stay within the viewport", async ({ page }) => {
@@ -132,6 +253,7 @@ test("result navigation, tables, and charts use the shared workspace", async ({
 }, testInfo) => {
   for (const routePath of [
     "results/",
+    "results/reliability/",
     "results/cost/",
     "results/time/",
     "results/efficiency/",
@@ -147,6 +269,21 @@ test("result navigation, tables, and charts use the shared workspace", async ({
 
   await page.goto("results/cost/");
   await expect(page.locator(".stacked-chart-canvas svg")).toBeVisible();
+  await expect(page.locator(".cost-panel + .component-ledger")).toHaveCount(1);
+  await expect(page.locator(".cost-panel .component-ledger")).toHaveCount(0);
+  await expect(page.locator(".result-chart-stack")).toHaveCSS(
+    "background-color",
+    "rgba(0, 0, 0, 0)",
+  );
+  await expect(page.locator(".results-view")).toHaveCSS(
+    "background-color",
+    "rgb(243, 240, 232)",
+  );
+  await expectVerticalGap(
+    page.locator(".cost-panel > .metric-chart"),
+    page.locator(".component-ledger"),
+    23,
+  );
   await expect(page.locator(".table-wrap").first()).toHaveCSS(
     "overflow-x",
     testInfo.project.name.startsWith("mobile") ? "auto" : /auto|visible/,
@@ -154,9 +291,24 @@ test("result navigation, tables, and charts use the shared workspace", async ({
 
   await page.goto("results/time/");
   await expect(page.locator(".metric-chart-canvas svg").first()).toBeVisible();
+  await expect(page.locator(".time-panel + .runtime-ledger")).toHaveCount(1);
+  await expect(page.locator(".time-panel .runtime-ledger")).toHaveCount(0);
+  await expectVerticalGap(
+    page.locator(".time-panel > .metric-chart"),
+    page.locator(".runtime-ledger"),
+    23,
+  );
 
   await page.goto("results/efficiency/");
   await expect(page.locator(".efficiency-scatter-canvas svg")).toBeVisible();
+
+  await page.goto("results/reliability/");
+  await expect(page.locator(".reliability-scatter-canvas svg")).toBeVisible();
+  await expect(page.locator(".reliability-comparison")).toHaveCount(0);
+  await expect(page.locator(".ranking-table tbody tr").first()).toContainText(
+    "Claude Opus 5",
+  );
+  await expect(page.locator(".ranking-table tbody tr").first()).toContainText("1.86");
 });
 
 test("route focus is quiet and interactive focus remains visible", async ({
@@ -277,6 +429,21 @@ test("focused publication surfaces match visual baselines", async ({
   );
   await expect(page.locator(".results-view .metric-grid").first()).toHaveScreenshot(
     "results-summary-metrics.png",
+  );
+
+  await page.goto("results/reliability/");
+  await waitForPublication(page);
+  await expect(
+    page.locator(".reliability-scatter-panel > .panel-heading"),
+  ).toHaveScreenshot("results-reliability-heading-help.png");
+  await expect(page.locator(".reliability-scatter-panel .reliability-scatter")).toHaveScreenshot(
+    "results-reliability-scatter.png",
+  );
+
+  await page.goto("results/efficiency/");
+  await waitForPublication(page);
+  await expect(page.locator(".metric-definition-card")).toHaveScreenshot(
+    "results-metric-definition.png",
   );
 
   await page.goto(runPath);

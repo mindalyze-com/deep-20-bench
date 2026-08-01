@@ -45,6 +45,7 @@ from .models import (
     SubjectSummary,
     Winner,
 )
+from .uncertainty import stratified_question_score_confidence_interval
 
 
 def _public_model(run: LoadedRun) -> PublicModel:
@@ -79,10 +80,7 @@ def _reason_codes(
     reasons: list[str] = []
     if run.state.status != "completed":
         reasons.append("incomplete")
-    subjects = {
-        subject.target_id: subject
-        for subject in run.summary.subjects
-    }
+    subjects = {subject.target_id: subject for subject in run.summary.subjects}
     if set(subjects) != set(cohort.target_ids):
         reasons.append("subject_cohort_mismatch")
     expected_numbers = set(range(1, cohort.iterations + 1))
@@ -95,10 +93,7 @@ def _reason_codes(
             for trial in subject.trials
             if isinstance(trial, CompletedTrialSummary)
         }
-        if (
-            len(subject.trials) != cohort.iterations
-            or completed_numbers != expected_numbers
-        ):
+        if len(subject.trials) != cohort.iterations or completed_numbers != expected_numbers:
             reasons.append("trial_coverage_mismatch")
     return tuple(dict.fromkeys(reasons))
 
@@ -113,9 +108,7 @@ def _trial(
         status: Literal["success", "model_failure"] = (
             "success" if trial.success else "model_failure"
         )
-        penalized_questions = (
-            Decimal(trial.counted_questions) if trial.success else failure_penalty
-        )
+        penalized_questions = Decimal(trial.counted_questions) if trial.success else failure_penalty
         return PublicTrial(
             trial_id=trial.identity.trial_id,
             trial_number=trial.identity.trial_number,
@@ -211,9 +204,7 @@ def _public_guesser_disclosure(
     for message in conversation:
         if message.role == "user" and message.turn_number is not None:
             try:
-                format_event = GuesserFormatErrorEvent.model_validate_json(
-                    message.content
-                )
+                format_event = GuesserFormatErrorEvent.model_validate_json(message.content)
             except ValueError:
                 format_event = None
             if format_event is not None:
@@ -262,13 +253,10 @@ def _public_episode(episode: LoadedEpisode) -> PublicEpisodeDetail:
     oracle_quality = result.summary.oracle_quality
     guesser_disclosure, recorded_outputs = _public_guesser_disclosure(result)
     violation_disclosures = {
-        disclosure.turn_number: disclosure
-        for disclosure in episode.violation_disclosures
+        disclosure.turn_number: disclosure for disclosure in episode.violation_disclosures
     }
     known_violation_turns = {
-        turn.turn_number
-        for turn in result.turns
-        if not isinstance(turn, EpisodeActionTurn)
+        turn.turn_number for turn in result.turns if not isinstance(turn, EpisodeActionTurn)
     }
     if set(violation_disclosures) != known_violation_turns:
         raise ValueError("public Guesser violation disclosures do not match episode turns")
@@ -303,9 +291,7 @@ def _public_episode(episode: LoadedEpisode) -> PublicEpisodeDetail:
                 feedback_event=turn.feedback_event,
                 counted=turn.counted,
                 counted_questions=turn.counted_questions,
-                rejected_outputs=violation_disclosures[
-                    turn.turn_number
-                ].rejected_outputs,
+                rejected_outputs=violation_disclosures[turn.turn_number].rejected_outputs,
             )
         )
         for turn in result.turns
@@ -346,8 +332,7 @@ def _public_episode(episode: LoadedEpisode) -> PublicEpisodeDetail:
                 oracle_configuration,
                 calls=result.llm_details.oracle.metrics.calls,
                 cost_usd=(
-                    result.summary.costs_usd.oracle
-                    - oracle_quality.quality_control_cost_usd
+                    result.summary.costs_usd.oracle - oracle_quality.quality_control_cost_usd
                 ),
             ),
             reviewer=_public_oracle_support_role(
@@ -381,22 +366,14 @@ def _subject(
         _trial(
             trial,
             failure_penalty=failure_penalty,
-            episode=episodes.get(
-                (trial.identity.target_id, trial.identity.trial_id)
-            ),
+            episode=episodes.get((trial.identity.target_id, trial.identity.trial_id)),
         )
         for trial in subject.trials
     )
     penalized = tuple(
-        trial.penalized_questions
-        for trial in trials
-        if trial.penalized_questions is not None
+        trial.penalized_questions for trial in trials if trial.penalized_questions is not None
     )
-    average_questions = (
-        _average(penalized)
-        if len(penalized) == len(trials) and penalized
-        else None
-    )
+    average_questions = _average(penalized) if len(penalized) == len(trials) and penalized else None
     counts = subject.summary.counts
     return PublicSubject(
         target_id=subject.target_id,
@@ -450,9 +427,7 @@ def _public_run_totals(run: LoadedRun) -> PublicRunTotals:
             reviewer_cost += partial.reviewer_cost_usd
             judge_cost += partial.judge_cost_usd
             primary_oracle_cost += max(
-                partial.oracle_cost_usd
-                - partial.reviewer_cost_usd
-                - partial.judge_cost_usd,
+                partial.oracle_cost_usd - partial.reviewer_cost_usd - partial.judge_cost_usd,
                 Decimal(0),
             )
             validator_cost += partial.validator_cost_usd
@@ -463,20 +438,14 @@ def _public_run_totals(run: LoadedRun) -> PublicRunTotals:
     reviewer_cost += repair.reviewer_cost_usd
     judge_cost += repair.judge_cost_usd
     primary_oracle_cost += max(
-        repair.oracle_cost_usd
-        - repair.reviewer_cost_usd
-        - repair.judge_cost_usd,
+        repair.oracle_cost_usd - repair.reviewer_cost_usd - repair.judge_cost_usd,
         Decimal(0),
     )
     validator_cost += repair.validator_cost_usd
     total_tokens += repair.tokens
 
     component_total_cost = (
-        guesser_cost
-        + primary_oracle_cost
-        + reviewer_cost
-        + judge_cost
-        + validator_cost
+        guesser_cost + primary_oracle_cost + reviewer_cost + judge_cost + validator_cost
     )
     total_cost = _total_cost(run)
     if abs(total_cost - component_total_cost) > Decimal("0.00000001"):
@@ -492,9 +461,7 @@ def _public_run_totals(run: LoadedRun) -> PublicRunTotals:
             total=total_cost,
         ),
         total_tokens=total_tokens,
-        runtime_ms=round(
-            (run.state.updated_at - run.manifest.created_at).total_seconds() * 1_000
-        ),
+        runtime_ms=round((run.state.updated_at - run.manifest.created_at).total_seconds() * 1_000),
         guesser_think_time_ms=guesser_think_time_ms,
         guesser_calls=guesser_calls,
     )
@@ -518,9 +485,7 @@ def _public_run_comparison(
     )
     support_cost_per_episode = support_cost / episodes
     support_cost_share = (
-        support_cost / totals.costs_usd.total
-        if totals.costs_usd.total > 0
-        else None
+        support_cost / totals.costs_usd.total if totals.costs_usd.total > 0 else None
     )
     guesser_latency_per_call = (
         Decimal(totals.guesser_think_time_ms) / Decimal(totals.guesser_calls)
@@ -550,9 +515,7 @@ def _public_run_comparison(
         support_cost_per_episode_usd=support_cost_per_episode,
         support_cost_share=support_cost_share,
         runtime_per_episode_ms=Decimal(totals.runtime_ms) / episodes,
-        guesser_think_time_per_episode_ms=(
-            Decimal(totals.guesser_think_time_ms) / episodes
-        ),
+        guesser_think_time_per_episode_ms=(Decimal(totals.guesser_think_time_ms) / episodes),
         guesser_latency_per_call_ms=guesser_latency_per_call,
         cost_adjusted_question_score=(
             question_score * guesser_cost_per_episode
@@ -578,8 +541,7 @@ def _public_run(
     if len(run.episodes) != completed_trial_count:
         raise ValueError("publication requires one validated detail artifact per completed trial")
     episodes = {
-        (episode.identity.target_id, episode.identity.trial_id): episode
-        for episode in run.episodes
+        (episode.identity.target_id, episode.identity.trial_id): episode for episode in run.episodes
     }
     subjects = tuple(
         _subject(
@@ -590,18 +552,33 @@ def _public_run(
         for subject in run.summary.subjects
     )
     subject_averages = tuple(
-        subject.average_questions
-        for subject in subjects
-        if subject.average_questions is not None
+        subject.average_questions for subject in subjects if subject.average_questions is not None
     )
     question_score = (
         _average(subject_averages)
-        if len(subject_averages) == len(subjects)
-        and subject_averages
+        if len(subject_averages) == len(subjects) and subject_averages
         else None
     )
+    confidence_interval = (
+        stratified_question_score_confidence_interval(
+            tuple(
+                tuple(
+                    trial.penalized_questions
+                    for trial in subject.trials
+                    if trial.penalized_questions is not None
+                )
+                for subject in subjects
+            ),
+            estimate=question_score,
+        )
+        if question_score is not None
+        else None
+    )
+    if confidence_interval is not None and confidence_interval.estimate != question_score:
+        raise ValueError("question score and confidence interval estimate disagree")
     counts = run.summary.summary.counts
     published_question_score = question_score if not reasons else None
+    published_confidence_interval = confidence_interval if not reasons else None
     totals = _public_run_totals(run)
     return PublicRun(
         execution_id=run.summary.execution_id,
@@ -621,6 +598,7 @@ def _public_run(
         max_questions=run.manifest.definition.game_policy.max_questions,
         success_rate=run.summary.summary.success_rate,
         question_score=published_question_score,
+        question_score_confidence_interval=published_confidence_interval,
         total_cost_usd=_total_cost(run),
         successful=counts.successful,
         model_failed=counts.model_failed,
@@ -683,11 +661,7 @@ def _rank_efficiency(
     prior_score: Decimal | None = None
     prior_rank = 0
     for index, row in enumerate(sorted_by_efficiency, start=1):
-        rank = (
-            prior_rank
-            if prior_score == row.cost_adjusted_question_score
-            else index
-        )
+        rank = prior_rank if prior_score == row.cost_adjusted_question_score else index
         efficiency_rank_by_id[row.model.model_id] = rank
         prior_rank = rank
         prior_score = row.cost_adjusted_question_score
@@ -765,8 +739,7 @@ def compile_publication(
         raise ValueError(f"active cohort has unknown targets: {missing_targets}")
 
     loaded_by_identity = {
-        (run.summary.model.model_id, run.summary.execution_id): run
-        for run in runs
+        (run.summary.model.model_id, run.summary.execution_id): run for run in runs
     }
     projected_runs: list[PublicRun] = []
     for loaded_run in runs:
@@ -788,9 +761,7 @@ def compile_publication(
     )
     selected_by_model = {run.model_id: run for run in selected}
     public_models_by_id = {
-        model_id: _public_model(
-            loaded_by_identity[(model_id, selected_run.execution_id)]
-        )
+        model_id: _public_model(loaded_by_identity[(model_id, selected_run.execution_id)])
         for model_id, selected_run in selected_by_model.items()
     }
     public_models = tuple(
@@ -811,26 +782,19 @@ def compile_publication(
                 execution_id=selected_run.execution_id,
                 completed_at=selected_run.completed_at,
                 question_score=selected_run.question_score,
+                question_score_confidence_interval=(
+                    selected_run.question_score_confidence_interval
+                ),
                 success_rate=selected_run.success_rate,
                 total_cost_usd=selected_run.total_cost_usd,
-                guesser_cost_per_episode_usd=(
-                    selected_run.comparison.guesser_cost_per_episode_usd
-                ),
-                full_cost_per_episode_usd=(
-                    selected_run.comparison.full_cost_per_episode_usd
-                ),
-                runtime_per_episode_ms=(
-                    selected_run.comparison.runtime_per_episode_ms
-                ),
+                guesser_cost_per_episode_usd=(selected_run.comparison.guesser_cost_per_episode_usd),
+                full_cost_per_episode_usd=(selected_run.comparison.full_cost_per_episode_usd),
+                runtime_per_episode_ms=(selected_run.comparison.runtime_per_episode_ms),
                 guesser_think_time_per_episode_ms=(
                     selected_run.comparison.guesser_think_time_per_episode_ms
                 ),
-                guesser_latency_per_call_ms=(
-                    selected_run.comparison.guesser_latency_per_call_ms
-                ),
-                cost_adjusted_question_score=(
-                    selected_run.comparison.cost_adjusted_question_score
-                ),
+                guesser_latency_per_call_ms=(selected_run.comparison.guesser_latency_per_call_ms),
+                cost_adjusted_question_score=(selected_run.comparison.cost_adjusted_question_score),
                 efficiency_status=selected_run.comparison.efficiency_status,
                 successful=selected_run.successful,
                 terminal_trials=selected_run.terminal_trials,
@@ -842,9 +806,7 @@ def compile_publication(
     winner = None
     if evaluated:
         evaluated_scores = tuple(
-            row.question_score
-            for row in evaluated
-            if row.question_score is not None
+            row.question_score for row in evaluated if row.question_score is not None
         )
         winning_score = min(evaluated_scores)
         winners = tuple(row for row in evaluated if row.question_score == winning_score)

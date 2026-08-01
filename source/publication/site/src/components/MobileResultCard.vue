@@ -136,7 +136,7 @@ defineProps<{
 
 .mobile-result-metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
   margin: 0;
   padding: 0.7rem 0.9rem 0.8rem;
   border-top: var(--rule-subtle);

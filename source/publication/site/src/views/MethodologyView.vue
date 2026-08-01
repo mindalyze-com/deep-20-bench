@@ -210,6 +210,38 @@ const penalty = computed(() => {
               First, average the trials for each subject. Then average the subject results. This
               gives every subject equal weight. Infrastructure failures are not scored.
             </p>
+            <h3>Repeated-trial confidence interval</h3>
+            <p>
+              Each model score includes a 95% confidence interval for repeated seeded trials on
+              these fixed subjects. The calculation estimates the trial variance separately for
+              each subject, divides it by that subject’s trial count, and combines the seven
+              equally weighted variance estimates. It uses a Welch–Satterthwaite t interval so
+              subjects may have different trial variance.
+            </p>
+            <div class="formula" aria-label="Question score confidence interval formula">
+              <div>
+                <span>Standard error</span>
+                <strong>√[Σ(subject trial variance ÷ trials) ÷ subjects²]</strong>
+              </div>
+              <div>
+                <span>95% interval</span>
+                <strong>model score ± t critical value × standard error</strong>
+              </div>
+            </div>
+            <p>
+              A wider interval means the repeated trials were less consistent. The interval does
+              not cover new subjects, model or provider changes, or future benchmark versions.
+              It assumes separate seeded calls act as independent repetitions within each
+              subject. A unique seed supports that assumption but does not prove it. The interval
+              describes the mean score, not the range of individual trials. Individual model
+              intervals are not a pairwise significance test.
+            </p>
+            <p>
+              The <RouterLink :to="{ name: 'results-reliability' }">Stability result view</RouterLink>
+              ranks the exact interval width from narrowest to widest. Every model uses the same
+              95% confidence level. Question score remains visible but does not affect this rank,
+              so a consistently poor model can still be highly repeatable.
+            </p>
           </div>
         </div>
       </section>

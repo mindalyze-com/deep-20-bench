@@ -96,6 +96,21 @@ const scoreDots = computed<ScoreDot[]>(() =>
     label: row.model.display_name,
     value: Number(row.question_score),
     display: number(row.question_score, 1),
+    confidenceLower:
+      row.question_score_confidence_interval === null
+        ? undefined
+        : Number(row.question_score_confidence_interval.lower),
+    confidenceUpper:
+      row.question_score_confidence_interval === null
+        ? undefined
+        : Number(row.question_score_confidence_interval.upper),
+    confidenceDisplay:
+      row.question_score_confidence_interval === null
+        ? undefined
+        : `${number(row.question_score_confidence_interval.lower, 2)}–${number(
+            row.question_score_confidence_interval.upper,
+            2,
+          )}`,
     link: row.execution_id === null ? undefined : runLink(row),
   })),
 );
@@ -263,12 +278,22 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 variant="hero"
                 theme="dark"
                 explain
+                :confidence-interval="
+                  manifest.winner.joint
+                    ? null
+                    : (winnerRows[0]?.question_score_confidence_interval ?? null)
+                "
               />
             </article>
 
             <div class="leaderboard-layout">
               <div class="score-chart">
-                <p class="chart-title">Score comparison</p>
+                <p class="chart-title">Score and repeatability</p>
+                <p class="chart-description">
+                  The dot is the average question score. The line shows how consistently the
+                  model repeated that result. Shorter lines mean more consistent runs; longer
+                  lines mean more volatile runs.
+                </p>
                 <ScoreDotPlot :items="scoreDots" />
               </div>
             </div>
@@ -288,7 +313,12 @@ const scoreDots = computed<ScoreDot[]>(() =>
                     <th class="model-column">Model</th>
                     <th class="run-column">Run</th>
                     <th>Reasoning</th>
-                    <th data-numeric>Score</th>
+                    <th data-numeric>
+                      <span class="table-header-stack">
+                        <span>Score</span>
+                        <span>Repeatability range</span>
+                      </span>
+                    </th>
                     <th data-numeric>Success</th>
                     <th data-numeric>Contract</th>
                     <th data-numeric>Run cost</th>
@@ -326,7 +356,14 @@ const scoreDots = computed<ScoreDot[]>(() =>
                       <span v-else aria-hidden="true">—</span>
                     </td>
                     <td><ReasoningEffort :effort="row.model.reasoning_effort" compact /></td>
-                    <td data-numeric>{{ number(row.question_score) }}</td>
+                    <td data-numeric>
+                      {{ number(row.question_score) }}
+                      <small v-if="row.question_score_confidence_interval">
+                        {{ number(row.question_score_confidence_interval.lower, 2) }}–{{
+                          number(row.question_score_confidence_interval.upper, 2)
+                        }}
+                      </small>
+                    </td>
                     <td data-numeric>{{ percent(row.success_rate) }}</td>
                     <td data-numeric>
                       {{ percent(row.contract?.compliance_rate) }}
@@ -350,6 +387,16 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 :to="row.execution_id === null ? null : runLink(row)"
                 :metrics="[
                   { label: 'Score', value: number(row.question_score) },
+                  {
+                    label: 'Repeatability',
+                    value:
+                      row.question_score_confidence_interval === null
+                        ? '—'
+                        : `${number(row.question_score_confidence_interval.lower, 2)}–${number(
+                            row.question_score_confidence_interval.upper,
+                            2,
+                          )}`,
+                  },
                   { label: 'Success', value: percent(row.success_rate) },
                   { label: 'Cost', value: money(row.total_cost_usd) },
                 ]"
@@ -775,6 +822,14 @@ dd {
   font-size: var(--text-micro);
   font-weight: 760;
   text-transform: uppercase;
+}
+
+.chart-description {
+  max-width: 52rem;
+  margin: 0.55rem 0 0;
+  padding: 0 clamp(1.2rem, 3vw, 2rem);
+  color: var(--muted);
+  font-size: var(--text-small);
 }
 
 .score-chart :deep(.score-dot-plot) {

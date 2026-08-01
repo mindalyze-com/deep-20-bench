@@ -33,36 +33,57 @@ watch(
 
 const copy = computed(() => {
   switch (route.name) {
+    case "results-reliability":
+      return {
+        label: "Repeated-trial consistency",
+        title: "Stability",
+        description:
+          "Whether a model produces similar results from run to run or varies between runs.",
+        tone: "stability",
+      };
     case "results-cost":
       return {
         label: "Recorded spend",
         title: "Cost",
-        description: "Full-run and per-episode provider costs.",
+        description:
+          "Recorded provider costs for the tested model and benchmark support models.",
+        tone: "cost",
       };
     case "results-time":
       return {
-        label: "Guesser latency",
+        label: "Recorded model latency",
         title: "Time",
-        description: "Provider-reported response time for the model under test.",
+        description:
+          "Provider-reported model-call time and end-to-end benchmark runtime.",
+        tone: "time",
       };
     case "results-efficiency":
       return {
         label: "Cost × quality",
         title: "Efficiency",
-        description: "Question score adjusted by recorded Guesser cost.",
+        description:
+          "Compare question quality with the recorded cost of the model under test.",
+        tone: "efficiency",
       };
     default:
       return {
         label: "Official comparison",
         title: "Results",
-        description: "Quality, reliability, cost, and time for one active cohort.",
+        description:
+          "Question score, stability, cost, and time for the current official runs.",
+        tone: "score",
       };
   }
 });
 </script>
 
 <template>
-  <div id="route-content" class="results-workspace" tabindex="-1">
+  <div
+    id="route-content"
+    class="results-workspace"
+    :class="`results-workspace--${copy.tone}`"
+    tabindex="-1"
+  >
     <header class="results-workspace-header">
       <div>
         <p class="eyebrow">{{ copy.label }}</p>
@@ -84,12 +105,40 @@ const copy = computed(() => {
 
 <style scoped>
 .results-workspace {
+  --result-accent: var(--blue);
+  --result-accent-ink: var(--blue-ink);
+  --result-accent-soft: var(--surface-accent-soft);
+
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   height: 100%;
   min-height: 0;
   overflow: hidden;
   background: var(--paper);
+}
+
+.results-workspace--stability {
+  --result-accent: var(--result-stability);
+  --result-accent-ink: var(--result-stability-ink);
+  --result-accent-soft: var(--result-stability-soft);
+}
+
+.results-workspace--cost {
+  --result-accent: var(--coral);
+  --result-accent-ink: var(--state-danger-ink);
+  --result-accent-soft: var(--surface-danger-soft);
+}
+
+.results-workspace--time {
+  --result-accent: var(--chart-acid);
+  --result-accent-ink: var(--result-time-ink);
+  --result-accent-soft: var(--surface-success-soft);
+}
+
+.results-workspace--efficiency {
+  --result-accent: var(--result-efficiency);
+  --result-accent-ink: var(--result-efficiency-ink);
+  --result-accent-soft: var(--result-efficiency-soft);
 }
 
 .results-workspace-header {
@@ -105,7 +154,11 @@ const copy = computed(() => {
 
 .results-workspace-header .eyebrow {
   margin-bottom: 0.25rem;
-  color: var(--blue-ink);
+  color: var(--result-accent-ink);
+}
+
+.results-workspace :deep(.results-view .eyebrow) {
+  color: var(--result-accent-ink);
 }
 
 .results-workspace-header h1 {
@@ -198,7 +251,9 @@ const copy = computed(() => {
   }
 
   .results-workspace-header :deep(.results-nav a) {
-    padding-block: 0.8rem;
+    min-width: 44px;
+    padding: 0.8rem 0.45rem;
+    justify-content: center;
   }
 
   .results-workspace-body {

@@ -104,6 +104,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
         :max-questions="run.max_questions"
         label="Question score"
         explain
+        :confidence-interval="run.question_score_confidence_interval"
       />
     </header>
 

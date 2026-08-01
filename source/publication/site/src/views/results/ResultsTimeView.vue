@@ -3,11 +3,13 @@ import { computed, onActivated, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import ErrorState from "@/components/ErrorState.vue";
+import InfoPopover from "@/components/InfoPopover.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
+import ResultHelp from "@/components/ResultHelp.vue";
 import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard, getOfficialRuns } from "@/lib/api";
 import { duration, integer } from "@/lib/format";
@@ -24,7 +26,7 @@ const applyRouteContext = (): void => {
   setRouteContext({
     title: "Time results",
     description:
-      "Compare Guesser response time and total benchmark runtime across official Deep20Bench runs.",
+      "Compare tested-model response time and end-to-end runtime across official Deep20Bench runs.",
     level: null,
     position: null,
     crumbs: [],
@@ -87,21 +89,21 @@ const totalBenchmarkTime = computed(() =>
 );
 
 const summaryMetrics = computed<MetricGridItem[]>(() => [
-  { key: "runs", label: "Selected runs", value: guesserRuns.value.length },
+  { key: "runs", label: "Models", value: guesserRuns.value.length },
   {
     key: "median",
-    label: "Median Guesser runtime",
+    label: "Median model time",
     value: duration(medianGuesserTime.value),
     tone: "accent",
   },
   {
     key: "guesser",
-    label: "Combined Guesser runtime",
+    label: "Combined model time",
     value: duration(totalGuesserTime.value),
   },
   {
     key: "benchmark",
-    label: "Combined benchmark runtime",
+    label: "Combined end-to-end time",
     value: duration(totalBenchmarkTime.value),
   },
 ]);
@@ -127,7 +129,7 @@ const benchmarkTimeBars = computed(() =>
       Number(run.comparison.runtime_per_episode_ms ?? 0),
     )} per episode · ${duration(
       run.totals.guesser_think_time_ms,
-    )} Guesser runtime`,
+    )} model time`,
     link: `/runs/${run.execution_id}/`,
   })),
 );
@@ -187,33 +189,50 @@ void load();
           :max-columns="4"
         />
 
-        <section class="panel time-panel" aria-labelledby="time-chart-title">
-          <header class="panel-heading">
-            <div>
-              <p class="eyebrow">Guesser-only runtime</p>
-              <h2 id="time-chart-title">Guesser response time.</h2>
-            </div>
-            <p>
-              Each bar sums the provider-reported response time of the model under test.
-              Runs are ordered from shortest to longest.
-            </p>
-          </header>
-          <MetricBars
-            :items="guesserTimeBars"
-            direction-label="Guesser runtime · lower is faster"
-            color="acid"
-            value-format="duration"
-          />
+        <div class="result-chart-stack">
+          <section class="panel time-panel" aria-labelledby="time-chart-title">
+            <header class="panel-heading panel-heading--with-help">
+              <div>
+                <p class="eyebrow">Tested-model latency</p>
+                <h2 id="time-chart-title">Model response time across the run.</h2>
+              </div>
+              <p>
+                Each bar adds the provider-reported latency of every call to the model under
+                test. Shorter is faster. This is not the wall-clock benchmark runtime.
+              </p>
+              <ResultHelp label="Time metric explanations">
+                <InfoPopover label="Model time">
+                  <p>
+                    The model under test is called the Guesser in the methodology. Model time
+                    adds the provider-reported latency of all its calls in the run.
+                  </p>
+                </InfoPopover>
+                <InfoPopover label="End-to-end time">
+                  <p>
+                    End-to-end time is the wall-clock runtime of the full benchmark run. It
+                    includes model calls, adjudication, scheduling, concurrency, and other
+                    benchmark work.
+                  </p>
+                </InfoPopover>
+              </ResultHelp>
+            </header>
+            <MetricBars
+              :items="guesserTimeBars"
+              direction-label="Model response time · lower is faster"
+              color="acid"
+              value-format="duration"
+            />
+          </section>
 
-          <section class="runtime-ledger panel-frame" aria-labelledby="runtime-ledger-title">
+          <section class="panel runtime-ledger" aria-labelledby="runtime-ledger-title">
             <header class="panel-heading panel-heading--compact">
               <div>
                 <p class="eyebrow">Total benchmark runtime</p>
                 <h3 id="runtime-ledger-title">End-to-end elapsed time.</h3>
               </div>
               <p>
-                Each bar shows the recorded time from run creation to its final state,
-                including adjudication and benchmark overhead.
+                Each bar is the wall-clock time from run creation to final status. It includes
+                model calls, adjudication, scheduling, concurrency, and other benchmark work.
               </p>
             </header>
             <MetricBars
@@ -223,7 +242,7 @@ void load();
               value-format="duration"
             />
           </section>
-        </section>
+        </div>
 
         <div
           class="table-wrap ranking-table-wrap results-table-wrap"
@@ -235,25 +254,25 @@ void load();
               <tr>
                 <th class="rank-column">
                   <span aria-hidden="true">#</span>
-                  <span class="visually-hidden">Guesser rank</span>
+                  <span class="visually-hidden">Model-time rank</span>
                 </th>
                 <th class="model-column">Model</th>
                 <th class="run-column">Run</th>
-                <th data-numeric>Guesser runtime</th>
-                <th data-numeric>Benchmark runtime</th>
+                <th data-numeric>Model time</th>
+                <th data-numeric>End-to-end time</th>
                 <th data-numeric>
                   <span class="table-header-stack">
-                    <span>Guesser time</span>
+                    <span>Model time</span>
                     <span>per episode</span>
                   </span>
                 </th>
                 <th data-numeric>
                   <span class="table-header-stack">
-                    <span>Guesser latency</span>
+                    <span>Model latency</span>
                     <span>per call</span>
                   </span>
                 </th>
-                <th data-numeric>Guesser calls</th>
+                <th data-numeric>Model calls</th>
               </tr>
             </thead>
             <tbody>
@@ -308,11 +327,11 @@ void load();
             :to="runLink(run)"
             :metrics="[
               {
-                label: 'Guesser',
+                label: 'Model',
                 value: duration(run.totals.guesser_think_time_ms),
               },
               {
-                label: 'Benchmark',
+                label: 'End-to-end',
                 value: duration(run.totals.runtime_ms),
               },
               {
@@ -329,9 +348,8 @@ void load();
         </div>
 
         <p class="results-note">
-          Guesser runtime sums every recorded Guesser call. Total benchmark runtime is
-          end-to-end elapsed time, so it also includes adjudication, scheduling,
-          concurrency, and other benchmark work.
+          The first chart ranks model-call time. The second ranks end-to-end runtime, so the
+          order can change.
         </p>
       </div>
     </section>
@@ -339,13 +357,8 @@ void load();
 </template>
 
 <style scoped>
-.results-summary,
-.time-panel {
+.results-summary {
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
-}
-
-.runtime-ledger {
-  margin: 0;
 }
 
 .results-table {

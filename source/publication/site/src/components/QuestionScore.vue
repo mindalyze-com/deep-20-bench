@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import InfoPopover from "@/components/InfoPopover.vue";
 import { number } from "@/lib/format";
+import type { QuestionScoreConfidenceInterval } from "@/lib/types";
 
 const props = withDefaults(
   defineProps<{
@@ -12,6 +13,7 @@ const props = withDefaults(
     variant?: "default" | "compact" | "metric" | "hero";
     theme?: "light" | "dark";
     explain?: boolean;
+    confidenceInterval?: QuestionScoreConfidenceInterval | null;
   }>(),
   {
     maxQuestions: 50,
@@ -19,6 +21,7 @@ const props = withDefaults(
     variant: "default",
     theme: "light",
     explain: false,
+    confidenceInterval: null,
   },
 );
 
@@ -38,6 +41,9 @@ const percentage = computed(() =>
     <span class="score-label">{{ label }}</span>
     <strong>{{ number(score) }}</strong>
     <span class="score-unit">{{ score === null ? "not available" : "questions · lower is better" }}</span>
+    <span v-if="confidenceInterval !== null" class="score-confidence">
+      95% CI {{ number(confidenceInterval.lower, 2) }}–{{ number(confidenceInterval.upper, 2) }}
+    </span>
     <span v-if="variant !== 'compact' && score !== null" class="score-scale" aria-hidden="true">
       <i :style="{ width: `${percentage}%` }"></i>
     </span>
@@ -49,6 +55,10 @@ const percentage = computed(() =>
       <p class="score-help-copy">
         Trial values are averaged within each subject, then across subjects. A failed trial
         receives the declared failure penalty.
+      </p>
+      <p v-if="confidenceInterval !== null" class="score-help-copy">
+        The interval estimates repeated-trial uncertainty on the fixed benchmark subjects. It
+        uses a stratified Welch t interval over the trials within each subject.
       </p>
     </InfoPopover>
   </div>
@@ -62,12 +72,18 @@ const percentage = computed(() =>
 }
 
 .score-label,
-.score-unit {
+.score-unit,
+.score-confidence {
   color: var(--muted);
   font-size: var(--text-micro);
   font-weight: 740;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.score-confidence {
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 strong {
@@ -104,6 +120,10 @@ strong {
   display: none;
 }
 
+.question-score--compact .score-confidence {
+  display: none;
+}
+
 .question-score--compact strong {
   font-family: inherit;
   font-size: 1rem;
@@ -122,6 +142,10 @@ strong {
 
 .question-score--dark .score-label,
 .question-score--dark .score-unit {
+  color: white;
+}
+
+.question-score--dark .score-confidence {
   color: white;
 }
 

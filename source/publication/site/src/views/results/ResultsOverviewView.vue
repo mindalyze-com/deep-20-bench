@@ -3,12 +3,14 @@ import { computed, onActivated, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import ErrorState from "@/components/ErrorState.vue";
+import InfoPopover from "@/components/InfoPopover.vue";
 import LoadingState from "@/components/LoadingState.vue";
-import MetricBars from "@/components/MetricBars.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
+import ResultHelp from "@/components/ResultHelp.vue";
 import RunTableAction from "@/components/RunTableAction.vue";
+import ScoreDotPlot, { type ScoreDot } from "@/components/ScoreDotPlot.vue";
 import { getLeaderboard } from "@/lib/api";
 import { duration, money, moneyEpisode, number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
@@ -73,16 +75,31 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   },
   {
     key: "time",
-    label: "Combined Guesser time",
+    label: "Combined model time",
     value: duration(selectedGuesserTime.value),
   },
 ]);
 
-const scoreBars = computed(() =>
+const scoreDots = computed<ScoreDot[]>(() =>
   rows.value.map((row) => ({
     label: row.model.display_name,
     value: Number(row.question_score ?? 0),
     display: number(row.question_score),
+    confidenceLower:
+      row.question_score_confidence_interval === null
+        ? undefined
+        : Number(row.question_score_confidence_interval.lower),
+    confidenceUpper:
+      row.question_score_confidence_interval === null
+        ? undefined
+        : Number(row.question_score_confidence_interval.upper),
+    confidenceDisplay:
+      row.question_score_confidence_interval === null
+        ? undefined
+        : `${number(row.question_score_confidence_interval.lower, 2)}–${number(
+            row.question_score_confidence_interval.upper,
+            2,
+          )}`,
     detail: `Rank ${row.rank ?? "—"} · ${percent(row.success_rate)} success`,
     link:
       row.execution_id === null ? undefined : `/runs/${row.execution_id}/`,
@@ -136,21 +153,41 @@ void load();
         />
 
         <section class="panel comparison-panel" aria-labelledby="overview-chart-title">
-          <header class="panel-heading">
+          <header class="panel-heading panel-heading--with-help">
             <div>
               <p class="eyebrow">Primary result</p>
-              <h2 id="overview-chart-title">Question score.</h2>
+              <h2 id="overview-chart-title">Score and repeatability.</h2>
             </div>
             <p>
-              Lower is better. Scores are ordered from best to worst. Cost and time
-              describe only the model under test where stated.
+              The dot is the average question score; lower is better. The line is its 95%
+              repeatability range. A shorter line means the model produced more consistent
+              results across repeated runs. A longer line means more variation.
             </p>
+            <ResultHelp label="Overview metric explanations">
+              <InfoPopover label="Question score">
+                <p>
+                  The score is the average number of questions used per subject. Lower is
+                  better. Failed trials receive the benchmark penalty.
+                </p>
+              </InfoPopover>
+              <InfoPopover label="Repeatability range">
+                <p>
+                  The line is a 95% confidence interval around the average score. A shorter
+                  line means the model was more consistent across the repeated runs in this
+                  benchmark.
+                </p>
+                <p>It is not the range of scores expected in one future run.</p>
+              </InfoPopover>
+              <InfoPopover label="Success and contract">
+                <p>
+                  Success is the share of trials that count toward scoring and ended with a
+                  correct answer. Contract is the share of evaluated model outputs that
+                  followed the required structured format.
+                </p>
+              </InfoPopover>
+            </ResultHelp>
           </header>
-          <MetricBars
-            :items="scoreBars"
-            direction-label="Question score · lower is better"
-            color="blue"
-          />
+          <ScoreDotPlot :items="scoreDots" />
         </section>
 
         <div
@@ -167,18 +204,23 @@ void load();
                 </th>
                 <th class="model-column">Model</th>
                 <th class="run-column">Run</th>
-                <th data-numeric>Score</th>
+                <th data-numeric>
+                  <span class="table-header-stack">
+                    <span>Score</span>
+                    <span>Repeatability range</span>
+                  </span>
+                </th>
                 <th data-numeric>Success</th>
                 <th data-numeric>Contract</th>
                 <th data-numeric>
                   <span class="table-header-stack">
-                    <span>Guesser cost</span>
+                    <span>Model cost</span>
                     <span>per episode</span>
                   </span>
                 </th>
                 <th data-numeric>
                   <span class="table-header-stack">
-                    <span>Guesser time</span>
+                    <span>Model time</span>
                     <span>per episode</span>
                   </span>
                 </th>
@@ -215,19 +257,24 @@ void load();
                 </td>
                 <td data-label="Question score" data-numeric>
                   {{ number(row.question_score) }}
+                  <small v-if="row.question_score_confidence_interval">
+                    {{ number(row.question_score_confidence_interval.lower, 2) }}–{{
+                      number(row.question_score_confidence_interval.upper, 2)
+                    }}
+                  </small>
                 </td>
                 <td data-label="Success" data-numeric>{{ percent(row.success_rate) }}</td>
                 <td data-label="Contract" data-numeric>
                   {{ percent(row.contract?.compliance_rate ?? null) }}
                 </td>
-                <td data-label="Guesser cost / episode" data-numeric>
+                <td data-label="Model cost / episode" data-numeric>
                   {{
                     row.guesser_cost_per_episode_usd === null
                       ? "—"
                       : moneyEpisode(row.guesser_cost_per_episode_usd)
                   }}
                 </td>
-                <td data-label="Guesser time / episode" data-numeric>
+                <td data-label="Model time / episode" data-numeric>
                   {{
                     row.guesser_think_time_per_episode_ms === null
                       ? "—"
@@ -249,6 +296,16 @@ void load();
             :to="row.execution_id === null ? null : runLink(row)"
             :metrics="[
               { label: 'Score', value: number(row.question_score) },
+              {
+                label: 'Repeatability',
+                value:
+                  row.question_score_confidence_interval === null
+                    ? '—'
+                    : `${number(row.question_score_confidence_interval.lower, 2)}–${number(
+                        row.question_score_confidence_interval.upper,
+                        2,
+                      )}`,
+              },
               { label: 'Success', value: percent(row.success_rate) },
               {
                 label: 'Cost',
@@ -262,8 +319,8 @@ void load();
         </div>
 
         <p class="results-note">
-          Guesser time is provider-reported model response latency. It excludes Oracle,
-          Reviewer, Judge, Validator, scheduling, and benchmark overhead.
+          The range uses repeated seeded runs on the seven fixed subjects. It does not cover
+          different subjects, model versions, or providers.
         </p>
       </div>
     </section>
@@ -277,6 +334,10 @@ void load();
 
 .comparison-panel {
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.comparison-panel :deep(.score-dot-plot) {
+  padding: 0 clamp(1rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem);
 }
 
 .results-table-wrap {
