@@ -73,9 +73,9 @@ const titleId = `metric-definition-title-${useId()}`;
   max-width: 18ch;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  font-size: var(--result-card-title-size);
   font-weight: 500;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.035em;
   line-height: 1;
 }
 
@@ -89,7 +89,7 @@ const titleId = `metric-definition-title-${useId()}`;
 
 .metric-definition-formula {
   display: grid;
-  align-content: center;
+  align-content: start;
   gap: 0.65rem;
   border-left: var(--border-emphasis-width) solid var(--result-accent);
   background: var(--result-accent-soft);

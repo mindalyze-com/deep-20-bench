@@ -1673,6 +1673,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
         assert "ranking-table-wrap" in table_source
         assert "ranking-table" in table_source
         assert "panel-heading--with-help" in table_source
+        assert "result-chart-panel" in table_source
     assert overview.count("<ResultHelp") == 1
     assert reliability.count("<ResultHelp") == 1
     assert cost.count("<ResultHelp") == 1
@@ -1696,9 +1697,10 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert 'label="How this page is ordered"' in cost
     assert "Total benchmark cost" in cost
     assert 'direction-label="Total benchmark cost by component"' in cost
-    assert 'class="panel component-ledger"' in cost
+    assert 'class="panel result-chart-panel component-ledger"' in cost
     assert 'class="component-ledger panel-frame"' not in cost
     assert 'class="result-chart-stack"' in cost
+    assert cost.count("result-chart-panel") == 2
     assert "`value-signal value-signal--${costBand(index)}`" in cost
     assert "min-width: 4rem;" in cost
     assert "Model response time across the run." in time
@@ -1713,16 +1715,28 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert 'label="End-to-end time"' in time
     assert "Total benchmark runtime" in time
     assert 'direction-label="Total benchmark runtime · lower is faster"' in time
-    assert 'class="panel runtime-ledger"' in time
+    assert 'class="panel result-chart-panel runtime-ledger"' in time
     assert 'class="runtime-ledger panel-frame"' not in time
     assert 'class="result-chart-stack"' in time
+    assert time.count("result-chart-panel") == 2
     assert ".result-chart-stack" in app_css
+    assert ".result-chart-panel" in app_css
+    assert ".result-chart-panel > .panel-heading h2" in app_css
+    assert ".result-chart-panel > .panel-heading h3" in app_css
+    assert "align-items: start;" in app_css
     assert "gap: clamp(1.5rem, 4vw, 2.5rem);" in app_css
+    assert ".result-chart-panel > .panel-heading" in app_css
+    assert "@media (min-width: 761px)" in app_css
+    assert "border-bottom: 0;" in app_css
     assert "Average penalized trial values within each subject" in efficiency
     assert "12.3 questions × $0.0500 per episode" in efficiency
     assert "Model cost range" in efficiency
     assert 'label="Adjusted score"' in efficiency
     assert 'label="Trade-off map"' in efficiency
+    assert 'class="tradeoff-panel panel-frame result-chart-panel"' in efficiency
+    assert 'class="panel-heading panel-heading--with-help panel-heading--compact"' in efficiency
+    assert '<h3 id="tradeoff-title">Cost and question score.</h3>' in efficiency
+    assert efficiency.count("result-chart-panel") == 2
     assert 'color="efficiency"' in efficiency
     assert "pareto_efficient" not in efficiency
     assert "frontier-badge" not in efficiency
@@ -1743,12 +1757,17 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "Lower-left is better" in reliability_scatter
     assert 'class="result-help"' in result_help
     assert "<slot />" in result_help
+    assert "padding: 0;" not in result_help
     assert "font-size: var(--text-caption);" in result_help
     assert "opacity: 0.78;" in result_help
     assert '.panel-heading--with-help' in app_css
     assert 'grid-template-areas: "title text help";' in app_css
     assert ".panel-heading--with-help > .result-help" in app_css
+    assert "padding-left: 1rem;" in app_css
     assert 'class="metric-definition-card"' in metric_definition_card
+    assert "font-size: var(--result-card-title-size);" in metric_definition_card
+    assert "align-content: start;" in metric_definition_card
+    assert "--result-card-title-size: clamp(1.5rem, 2.5vw, 2.1rem);" in app_css
     assert '<details class="disclosure metric-definition-details">' in metric_definition_card
     assert "<MetricDefinitionCard" in efficiency
     assert "<MetricDefinitionCard" in reliability

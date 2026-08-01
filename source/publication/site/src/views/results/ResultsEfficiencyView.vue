@@ -157,7 +157,10 @@ void load();
             :max-columns="4"
           />
 
-          <section class="panel efficiency-panel" aria-labelledby="efficiency-title">
+          <section
+            class="panel result-chart-panel efficiency-panel"
+            aria-labelledby="efficiency-title"
+          >
             <header class="panel-heading panel-heading--with-help">
               <div>
                 <p class="eyebrow">Official ranking</p>
@@ -191,11 +194,16 @@ void load();
             />
           </section>
 
-          <section class="tradeoff-panel panel-frame" aria-labelledby="tradeoff-title">
-            <header class="panel-heading panel-heading--with-help">
+          <section
+            class="tradeoff-panel panel-frame result-chart-panel"
+            aria-labelledby="tradeoff-title"
+          >
+            <header
+              class="panel-heading panel-heading--with-help panel-heading--compact"
+            >
               <div>
                 <p class="eyebrow">Trade-off map</p>
-                <h2 id="tradeoff-title">Cost and question score.</h2>
+                <h3 id="tradeoff-title">Cost and question score.</h3>
               </div>
               <p>
                 Further left means lower model cost. Lower means a better question score.

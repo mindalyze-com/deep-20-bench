@@ -22,7 +22,6 @@ withDefaults(
   gap: 0;
   min-width: 0;
   margin: 0;
-  padding: 0;
   color: var(--result-accent-ink, var(--blue-ink));
 }
 

@@ -159,7 +159,7 @@ void load();
           />
 
           <section
-            class="panel reliability-scatter-panel"
+            class="panel result-chart-panel reliability-scatter-panel"
             aria-labelledby="reliability-scatter-title"
           >
             <header class="panel-heading panel-heading--with-help">

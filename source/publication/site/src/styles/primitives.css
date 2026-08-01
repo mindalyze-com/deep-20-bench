@@ -128,10 +128,12 @@
 }
 
 .panel-heading--compact h2,
-.panel-heading--compact h3 {
+.panel-heading--compact h3,
+.result-chart-panel > .panel-heading h2,
+.result-chart-panel > .panel-heading h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.5vw, 2.1rem);
+  font-size: var(--result-card-title-size);
   font-weight: 500;
   letter-spacing: -0.035em;
   line-height: 1;
@@ -191,6 +193,16 @@
   display: grid;
   gap: clamp(1.5rem, 4vw, 2.5rem);
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.result-chart-panel > .panel-heading {
+  align-items: start;
+}
+
+@media (min-width: 761px) {
+  .result-chart-panel > .panel-heading {
+    border-bottom: 0;
+  }
 }
 
 .panel-body {
@@ -751,6 +763,19 @@ a.card:hover {
 }
 
 @media (max-width: 760px) {
+  .result-chart-panel {
+    display: grid;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+    border: 0;
+    background: transparent;
+  }
+
+  .result-chart-panel > .panel-heading,
+  .result-chart-panel > :last-child {
+    border: var(--rule-default);
+    background-color: var(--surface-raised);
+  }
+
   .episode-panel {
     height: auto;
     overflow: visible;

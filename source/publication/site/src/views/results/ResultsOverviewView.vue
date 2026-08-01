@@ -152,7 +152,10 @@ void load();
           :max-columns="4"
         />
 
-        <section class="panel comparison-panel" aria-labelledby="overview-chart-title">
+        <section
+          class="panel result-chart-panel comparison-panel"
+          aria-labelledby="overview-chart-title"
+        >
           <header class="panel-heading panel-heading--with-help">
             <div>
               <p class="eyebrow">Primary result</p>

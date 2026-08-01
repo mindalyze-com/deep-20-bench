@@ -200,7 +200,10 @@ void load();
         />
 
         <div class="result-chart-stack">
-          <section class="panel cost-panel" aria-labelledby="cost-chart-title">
+          <section
+            class="panel result-chart-panel cost-panel"
+            aria-labelledby="cost-chart-title"
+          >
             <header class="panel-heading panel-heading--with-help">
               <div>
                 <p class="eyebrow">Tested-model cost</p>
@@ -240,7 +243,10 @@ void load();
             />
           </section>
 
-          <section class="panel component-ledger" aria-labelledby="component-ledger-title">
+          <section
+            class="panel result-chart-panel component-ledger"
+            aria-labelledby="component-ledger-title"
+          >
             <header class="panel-heading panel-heading--compact">
               <div>
                 <p class="eyebrow">Total benchmark cost</p>

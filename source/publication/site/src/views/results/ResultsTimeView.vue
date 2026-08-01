@@ -190,7 +190,10 @@ void load();
         />
 
         <div class="result-chart-stack">
-          <section class="panel time-panel" aria-labelledby="time-chart-title">
+          <section
+            class="panel result-chart-panel time-panel"
+            aria-labelledby="time-chart-title"
+          >
             <header class="panel-heading panel-heading--with-help">
               <div>
                 <p class="eyebrow">Tested-model latency</p>
@@ -224,7 +227,10 @@ void load();
             />
           </section>
 
-          <section class="panel runtime-ledger" aria-labelledby="runtime-ledger-title">
+          <section
+            class="panel result-chart-panel runtime-ledger"
+            aria-labelledby="runtime-ledger-title"
+          >
             <header class="panel-heading panel-heading--compact">
               <div>
                 <p class="eyebrow">Total benchmark runtime</p>
