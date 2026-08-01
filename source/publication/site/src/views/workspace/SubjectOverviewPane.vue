@@ -91,8 +91,8 @@ const facts = computed<MetricGridItem[]>(() => {
       <aside class="episode-prompt">
         <span aria-hidden="true">↖</span>
         <div>
-          <strong>Select an episode.</strong>
-          <p>Open an attempt to inspect its transcript, reliability, and usage.</p>
+          <strong>Choose an episode.</strong>
+          <p>Open it to inspect the transcript, reliability, and usage.</p>
         </div>
       </aside>
     </div>

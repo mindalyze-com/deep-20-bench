@@ -1613,6 +1613,19 @@ class PublicationManifestDocument(FrozenModel):
     lab_runs: tuple[PublicationRunReference, ...]
 
 
+class PublicationAppBuildDocument(FrozenModel):
+    document_type: Literal["app_build"] = "app_build"
+    schema_version: Literal[1] = 1
+    built_at: datetime
+
+    @field_validator("built_at")
+    @classmethod
+    def build_time_has_timezone(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("application build time must include a timezone")
+        return value
+
+
 class PublicationLeaderboardDocument(FrozenModel):
     document_type: Literal["leaderboard"] = "leaderboard"
     schema_version: Literal[2] = 2
@@ -1697,6 +1710,7 @@ class PublicationEpisodeDocument(FrozenModel):
 
 PublicationDocument = Annotated[
     PublicationManifestDocument
+    | PublicationAppBuildDocument
     | PublicationLeaderboardDocument
     | PublicationRepeatAveragesDocument
     | PublicationRunDocument

@@ -219,13 +219,13 @@ onActivated(applySubjectContext);
           </div>
         </header>
 
-        <nav class="episode-list" aria-label="Runs for this subject">
+        <nav class="episode-list" aria-label="Episodes for this subject">
           <div class="episode-list-heading">
             <p class="eyebrow rail-section-label">
               <span aria-hidden="true">02</span>
-              Runs
+              Episodes
             </p>
-            <strong>{{ trials.length }} attempts</strong>
+            <strong>{{ trials.length }} · choose one</strong>
           </div>
           <component
             :is="hasEpisode(trial) ? 'RouterLink' : 'span'"
@@ -260,6 +260,13 @@ onActivated(applySubjectContext);
               ]"
               aria-hidden="true"
             ></i>
+            <span
+              v-if="hasEpisode(trial)"
+              class="episode-link-arrow"
+              aria-hidden="true"
+            >
+              →
+            </span>
           </component>
         </nav>
 
@@ -426,7 +433,7 @@ onActivated(applySubjectContext);
 .episode-list > span {
   position: relative;
   display: grid;
-  grid-template-columns: 1.7rem minmax(0, 1fr) auto auto;
+  grid-template-columns: 1.7rem minmax(0, 1fr) auto auto auto;
   gap: 0.7rem;
   align-items: center;
   min-height: 62px;
@@ -437,7 +444,17 @@ onActivated(applySubjectContext);
 }
 
 .episode-list > a:hover {
-  background: rgb(255 255 255 / 42%);
+  background: rgb(255 255 255 / 66%);
+}
+
+.episode-list > a:active {
+  background: rgb(255 255 255 / 82%);
+}
+
+.episode-list > a:focus-visible {
+  z-index: 1;
+  outline: var(--focus-ring);
+  outline-offset: -3px;
 }
 
 .episode-list > a[aria-current="page"] {
@@ -453,6 +470,7 @@ onActivated(applySubjectContext);
 }
 
 .episode-list > span.disabled {
+  grid-template-columns: 1.7rem minmax(0, 1fr) auto auto;
   opacity: 0.52;
 }
 
@@ -523,6 +541,12 @@ onActivated(applySubjectContext);
 
 .episode-status.breached {
   box-shadow: 0 0 0 2px var(--paper-bright), 0 0 0 3px var(--coral);
+}
+
+.episode-link-arrow {
+  color: var(--blue-ink);
+  font-size: 0.9rem;
+  font-weight: 760;
 }
 
 .episode-rail-footer {

@@ -401,6 +401,51 @@ test("workspace routes stay within the viewport", async ({ page }) => {
   }
 });
 
+test("workspace rows show persistent drill-down affordances", async ({
+  page,
+}, testInfo) => {
+  const mobile = testInfo.project.name.startsWith("mobile");
+  await page.goto(runPath);
+  await waitForPublication(page);
+
+  const subjectLinks = page.locator(
+    mobile ? ".mobile-subjects a" : ".subject-rail-list a",
+  );
+  const subjectArrows = subjectLinks.locator(
+    mobile ? ":scope > span:last-child" : ".rail-link-arrow",
+  );
+  await expect(subjectArrows).toHaveCount(await subjectLinks.count());
+  await expect(subjectArrows.first()).toBeVisible();
+  if (!mobile) {
+    await expect(page.locator(".subject-list-heading")).toContainText("Subjects");
+    await expect(page.locator(".subject-list-heading")).toContainText("choose one");
+  }
+
+  await subjectLinks.first().focus();
+  await expect(subjectLinks.first()).toHaveCSS("outline-style", "solid");
+  await expect(subjectLinks.first()).toHaveCSS("outline-offset", "-3px");
+
+  await subjectLinks.first().click();
+  await expect(page).toHaveURL(new RegExp(`/subjects/${targetId}/$`));
+  await waitForPublication(page);
+  const episodeLinks = page.locator(".episode-list > a");
+  await expect(page.locator(".episode-list-heading")).toContainText("Episodes");
+  await expect(page.locator(".episode-list-heading")).toContainText("choose one");
+  await expect(page.locator(".episode-link-arrow")).toHaveCount(
+    await episodeLinks.count(),
+  );
+  await expect(page.locator(".episode-link-arrow").first()).toBeVisible();
+  await expect(
+    page.locator(".episode-list > span.disabled .episode-link-arrow"),
+  ).toHaveCount(0);
+
+  await episodeLinks.first().focus();
+  await expect(episodeLinks.first()).toHaveCSS("outline-style", "solid");
+  await expect(episodeLinks.first()).toHaveCSS("outline-offset", "-3px");
+  await episodeLinks.first().click();
+  await expect(page).toHaveURL(new RegExp(`/episodes/${trialId}/$`));
+});
+
 test("result navigation, tables, and charts use the shared workspace", async ({
   page,
 }, testInfo) => {
@@ -576,11 +621,36 @@ test("mobile navigation and episode tabs meet the touch target minimum", async (
   await page.goto(episodePath);
   await waitForPublication(page);
   const mobileMenu = page.locator(".mobile-navigation");
-  await expectMinimumSize(mobileMenu.locator("summary"), 44);
+  const mobileMenuTrigger = mobileMenu.locator("summary");
+  await expectMinimumSize(mobileMenuTrigger, 44);
+  const triggerFontSize = await mobileMenuTrigger.evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).fontSize),
+  );
+  expect(triggerFontSize).toBeGreaterThanOrEqual(13);
+  await expectMinimumSize(mobileMenu.locator(".mobile-navigation-glyph"), 20);
+  await expect(mobileMenu.locator(".mobile-navigation-glyph")).toHaveCSS(
+    "color",
+    "rgb(214, 255, 38)",
+  );
   await mobileMenu.locator("summary").click();
   await expect(mobileMenu).toHaveAttribute("open", "");
   await expectMinimumSize(mobileMenu.locator("nav a"), 44);
+  const navigationFontSizes = await mobileMenu.locator("nav a").evaluateAll(
+    (elements) =>
+      elements.map((element) =>
+        Number.parseFloat(getComputedStyle(element).fontSize),
+      ),
+  );
+  expect(Math.min(...navigationFontSizes)).toBeGreaterThanOrEqual(14);
   await expectMinimumSize(page.locator(".episode-tabs button"), 44);
+
+  await page.goto(runPath);
+  await waitForPublication(page);
+  await expectMinimumSize(page.locator(".mobile-subjects a"), 44);
+
+  await page.goto(subjectPath);
+  await waitForPublication(page);
+  await expectMinimumSize(page.locator(".episode-list > a"), 44);
 });
 
 test("mobile pages use one document scroll and no fixed site navigation", async ({
@@ -655,6 +725,9 @@ test("focused publication surfaces match visual baselines", async ({
 
   await page.goto("results/");
   await waitForPublication(page);
+  if (mobile) {
+    await expect(page.locator(".site-header")).toHaveScreenshot("site-header.png");
+  }
   await expect(page.locator(".results-workspace-header")).toHaveScreenshot(
     "results-workspace-header.png",
   );
@@ -685,14 +758,16 @@ test("focused publication surfaces match visual baselines", async ({
   await expect(page.locator(".workspace-metrics")).toHaveScreenshot(
     "run-summary-metrics.png",
   );
+  await expect(
+    page.locator(mobile ? ".mobile-subjects" : ".model-rail"),
+  ).toHaveScreenshot("run-subject-list.png");
 
   await page.goto(subjectPath);
   await waitForPublication(page);
-  if (mobile) {
-    await expect(page.locator(".episode-rail")).toHaveScreenshot(
-      "subject-episode-list.png",
-    );
-  } else {
+  await expect(page.locator(".episode-rail")).toHaveScreenshot(
+    "subject-episode-list.png",
+  );
+  if (!mobile) {
     await expect(page.locator(".subject-overview-inner")).toHaveScreenshot(
       "subject-overview.png",
     );

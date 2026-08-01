@@ -67,7 +67,17 @@ watch(() => route.fullPath, closeMobileNavigation);
       @keydown.esc="closeMobileNavigation"
     >
       <summary>
-        <span class="mobile-navigation-glyph" aria-hidden="true">☰</span>
+        <svg
+          class="mobile-navigation-glyph"
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.25"
+          stroke-linecap="square"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
         <span>Menu</span>
       </summary>
       <nav aria-label="Mobile primary navigation">

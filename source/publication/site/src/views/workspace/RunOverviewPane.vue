@@ -456,6 +456,20 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
     border-bottom: 0;
   }
 
+  .mobile-subjects a:hover {
+    background: var(--surface-accent-soft);
+  }
+
+  .mobile-subjects a:active {
+    background: var(--surface-rail);
+  }
+
+  .mobile-subjects a:focus-visible {
+    z-index: 1;
+    outline: var(--focus-ring);
+    outline-offset: -3px;
+  }
+
   .mobile-subjects a > span:first-child,
   .mobile-subjects small {
     color: var(--muted);
@@ -467,6 +481,12 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
     font-size: 0.78rem;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .mobile-subjects a > span:last-child {
+    color: var(--blue-ink);
+    font-size: 0.9rem;
+    font-weight: 760;
   }
 }
 </style>

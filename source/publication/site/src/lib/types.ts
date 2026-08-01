@@ -335,6 +335,12 @@ export interface ManifestDocument {
   lab_runs: PublicationRunReference[];
 }
 
+export interface AppBuildDocument {
+  document_type: "app_build";
+  schema_version: 1;
+  built_at: string;
+}
+
 export interface LeaderboardDocument {
   document_type: "leaderboard";
   schema_version: 2;

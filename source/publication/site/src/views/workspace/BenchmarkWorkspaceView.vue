@@ -126,6 +126,11 @@ onActivated(applyRunContext);
           </span>
         </RouterLink>
 
+        <div class="subject-list-heading">
+          <p class="eyebrow">Subjects</p>
+          <strong>{{ subjects.length }} · choose one</strong>
+        </div>
+
         <nav class="subject-rail-list" aria-label="Subjects in this run">
           <RouterLink
             v-for="(subject, index) in subjects"
@@ -159,6 +164,7 @@ onActivated(applyRunContext);
               }"
               aria-hidden="true"
             ></span>
+            <span class="rail-link-arrow" aria-hidden="true">→</span>
           </RouterLink>
         </nav>
 
@@ -189,7 +195,7 @@ onActivated(applyRunContext);
 
 .model-rail {
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
@@ -249,7 +255,6 @@ onActivated(applyRunContext);
 .subject-rail-list a {
   position: relative;
   display: grid;
-  grid-template-columns: 1.6rem minmax(0, 1fr) auto;
   gap: 0.7rem;
   align-items: center;
   min-height: 58px;
@@ -259,10 +264,30 @@ onActivated(applyRunContext);
   text-decoration: none;
 }
 
+.run-overview-link {
+  grid-template-columns: 1.6rem minmax(0, 1fr) auto;
+}
+
+.subject-rail-list a {
+  grid-template-columns: 1.6rem minmax(0, 1fr) auto auto;
+}
+
 .run-overview-link:hover,
 .subject-rail-list a:hover {
-  background: rgb(255 255 255 / 5%);
+  background: rgb(255 255 255 / 8%);
   color: var(--text-inverse);
+}
+
+.run-overview-link:active,
+.subject-rail-list a:active {
+  background: rgb(255 255 255 / 12%);
+}
+
+.run-overview-link:focus-visible,
+.subject-rail-list a:focus-visible {
+  z-index: 1;
+  outline: 3px solid var(--acid);
+  outline-offset: -3px;
 }
 
 .run-overview-link[aria-current="page"],
@@ -284,6 +309,28 @@ onActivated(applyRunContext);
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: thin;
+}
+
+.subject-list-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  min-height: 42px;
+  padding: 0.65rem 0.9rem;
+  border-bottom: var(--rule-inverse-subtle);
+  background: rgb(0 0 0 / 10%);
+}
+
+.subject-list-heading .eyebrow {
+  margin: 0;
+  color: var(--acid);
+}
+
+.subject-list-heading strong {
+  color: var(--text-inverse-subtle);
+  font-size: var(--text-caption);
+  font-weight: 700;
 }
 
 .rail-item-index {
@@ -332,6 +379,12 @@ onActivated(applyRunContext);
 
 .rail-status.breached {
   background: var(--coral);
+}
+
+.rail-link-arrow {
+  color: var(--acid);
+  font-size: 0.9rem;
+  font-weight: 760;
 }
 
 .model-rail-footer {

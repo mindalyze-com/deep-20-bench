@@ -5,12 +5,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from deep20_publication.cli import (
+    _application_build_document,
     _publication_build_time,
     _route_shells,
     _write_public_data,
     _write_route_shells,
 )
-from deep20_publication.models import PublishedDataset
+from deep20_publication.models import PublicationAppBuildDocument, PublishedDataset
 from deep20_publication.split import split_publication
 
 REPOSITORY = Path(__file__).resolve().parents[4]
@@ -34,6 +35,19 @@ def test_publication_build_time_is_fresh_or_reused_for_verification() -> None:
 
     assert before <= fresh <= after
     assert committed == datetime.fromisoformat(manifest["provenance"]["built_at"])
+
+
+def test_application_build_time_is_fresh_or_reused_for_verification() -> None:
+    before = datetime.now(UTC)
+    fresh = _application_build_document(REPOSITORY, check=False)
+    after = datetime.now(UTC)
+    committed = _application_build_document(REPOSITORY, check=True)
+    document = PublicationAppBuildDocument.model_validate_json(
+        (REPOSITORY / "docs" / "data" / "app-build.json").read_text(encoding="utf-8")
+    )
+
+    assert before <= fresh.built_at <= after
+    assert committed == document
 
 
 def test_file_scheme_entry_explains_how_to_start_the_preview() -> None:
@@ -81,17 +95,24 @@ def test_split_public_data_is_complete_and_removes_stale_files(
     stale.parent.mkdir(parents=True)
     stale.write_text("stale", encoding="utf-8")
 
-    _write_public_data(public, dataset)
+    app_build = PublicationAppBuildDocument(built_at=datetime(2026, 8, 1, 18, 0, tzinfo=UTC))
+    _write_public_data(public, dataset, app_build)
 
     data = public / "data"
     assert not stale.exists()
     assert (data / "deep20bench-v7.json").is_file()
     assert (data / "leaderboard.csv").is_file()
     manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
+    application = json.loads((data / "app-build.json").read_text(encoding="utf-8"))
     leaderboard = json.loads((data / "leaderboard.json").read_text(encoding="utf-8"))
     repeat_averages = json.loads((data / "repeat-averages.json").read_text(encoding="utf-8"))
     assert manifest["document_type"] == "manifest"
     assert manifest["dataset_schema_version"] == 7
+    assert application == {
+        "document_type": "app_build",
+        "schema_version": 1,
+        "built_at": "2026-08-01T18:00:00Z",
+    }
     assert leaderboard["document_type"] == "leaderboard"
     assert repeat_averages["document_type"] == "repeat_averages"
     assert repeat_averages["schema_version"] == 1

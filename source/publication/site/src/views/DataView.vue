@@ -3,12 +3,13 @@ import { onActivated, onDeactivated, ref } from "vue";
 
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
-import { getManifest, publicDownloadUrl } from "@/lib/api";
+import { getAppBuild, getManifest, publicDownloadUrl } from "@/lib/api";
 import { date, isoDateTime } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
-import type { ManifestDocument } from "@/lib/types";
+import type { AppBuildDocument, ManifestDocument } from "@/lib/types";
 
 const manifest = ref<ManifestDocument | null>(null);
+const appBuild = ref<AppBuildDocument | null>(null);
 const error = ref<string | null>(null);
 const active = ref(true);
 
@@ -34,7 +35,7 @@ onDeactivated(() => {
 
 const load = async (): Promise<void> => {
   try {
-    manifest.value = await getManifest();
+    [manifest.value, appBuild.value] = await Promise.all([getManifest(), getAppBuild()]);
     if (active.value) applyRouteContext();
   } catch (reason: unknown) {
     error.value = reason instanceof Error ? reason.message : "Publication data is unavailable.";
@@ -47,9 +48,12 @@ applyRouteContext();
 
 <template>
   <div id="route-content" class="page data-page" tabindex="-1">
-    <LoadingState v-if="manifest === null && error === null" label="Loading data details" />
+    <LoadingState
+      v-if="(manifest === null || appBuild === null) && error === null"
+      label="Loading data details"
+    />
     <ErrorState v-else-if="error !== null" :message="error" />
-    <template v-else-if="manifest !== null">
+    <template v-else-if="manifest !== null && appBuild !== null">
       <section class="page-hero">
         <div class="page-hero-inner">
           <div>
@@ -154,12 +158,20 @@ applyRouteContext();
         </div>
       </section>
 
-      <footer class="data-build-note" aria-label="Publication build information">
+      <footer class="data-build-note" aria-label="Publication and app build information">
         <p>
-          Publication built ·
-          <time :datetime="manifest.provenance.built_at">
-            {{ isoDateTime(manifest.provenance.built_at) }}
-          </time>
+          <span>
+            Publication built ·
+            <time :datetime="manifest.provenance.built_at">
+              {{ isoDateTime(manifest.provenance.built_at) }}
+            </time>
+          </span>
+          <span class="app-build-stamp">
+            App built ·
+            <time :datetime="appBuild.built_at">
+              {{ isoDateTime(appBuild.built_at) }}
+            </time>
+          </span>
         </p>
       </footer>
     </template>
@@ -315,6 +327,9 @@ applyRouteContext();
 }
 
 .data-build-note p {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: flex-end;
   margin: 0;
   color: rgb(12 17 27 / 34%);
   font-size: var(--text-micro);
@@ -323,8 +338,21 @@ applyRouteContext();
   text-align: right;
 }
 
+.app-build-stamp::before {
+  margin-right: 0.7rem;
+  content: "/";
+}
+
+.data-build-note p > span,
 .data-build-note time {
-  font-family: var(--font-mono);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+}
+
+.data-build-note time {
   font-variant-numeric: tabular-nums;
 }
 
@@ -342,6 +370,16 @@ applyRouteContext();
 
   .publisher-note {
     grid-column: 1;
+  }
+
+  .data-build-note p {
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .app-build-stamp::before {
+    margin-right: 0;
+    content: none;
   }
 }
 

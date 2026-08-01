@@ -47,7 +47,7 @@ The build:
    artifact, including both the reference file hash and signed episode envelope;
 3. compiles the active cohort and a strict public episode projection from
    `config/publication.yml`;
-4. records the UTC build time in typed publication provenance;
+4. records separate UTC publication and application build times in typed public metadata;
 5. writes the complete `deep20bench-v7.json` and `leaderboard.csv` downloads, plus typed,
    split JSON documents for the SPA;
 6. builds the Vue application and writes static entry shells for every execution, subject, and

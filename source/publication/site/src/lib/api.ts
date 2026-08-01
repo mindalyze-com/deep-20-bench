@@ -1,4 +1,5 @@
 import type {
+  AppBuildDocument,
   EpisodeDocument,
   LeaderboardDocument,
   ManifestDocument,
@@ -43,6 +44,9 @@ const request = <Document>(
 
 export const getManifest = (): Promise<ManifestDocument> =>
   request<ManifestDocument>("manifest.json", "manifest");
+
+export const getAppBuild = (): Promise<AppBuildDocument> =>
+  request<AppBuildDocument>("app-build.json", "app_build");
 
 export const getLeaderboard = (): Promise<LeaderboardDocument> =>
   request<LeaderboardDocument>("leaderboard.json", "leaderboard");

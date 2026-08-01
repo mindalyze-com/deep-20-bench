@@ -36,6 +36,7 @@ from .models import (
     GuesserViolationSnapshot,
     LoadedEpisode,
     LoadedRun,
+    PublicationAppBuildDocument,
     PublicationDataBundle,
     PublicationManifestDocument,
     PublicRejectedOutput,
@@ -87,6 +88,17 @@ def _publication_build_time(repository: Path, *, check: bool) -> datetime:
     manifest_path = repository / "docs" / "data" / "manifest.json"
     manifest = PublicationManifestDocument.model_validate(_read_json(manifest_path))
     return manifest.provenance.built_at
+
+
+def _application_build_document(
+    repository: Path,
+    *,
+    check: bool,
+) -> PublicationAppBuildDocument:
+    if not check:
+        return PublicationAppBuildDocument(built_at=datetime.now(UTC))
+    build_path = repository / "docs" / "data" / "app-build.json"
+    return PublicationAppBuildDocument.model_validate(_read_json(build_path))
 
 
 def _load_run(
@@ -310,7 +322,11 @@ def _ensure_site_dependencies(site_root: Path) -> None:
     subprocess.run(["npm", "ci"], cwd=site_root, check=True)
 
 
-def _write_public_data(public_directory: Path, dataset: PublishedDataset) -> None:
+def _write_public_data(
+    public_directory: Path,
+    dataset: PublishedDataset,
+    app_build: PublicationAppBuildDocument,
+) -> None:
     public_directory.mkdir(parents=True, exist_ok=True)
     data_directory = public_directory / "data"
     bundle = split_publication(dataset)
@@ -327,6 +343,10 @@ def _write_public_data(public_directory: Path, dataset: PublishedDataset) -> Non
         )
         (staged_directory / "manifest.json").write_text(
             publication_document_json(bundle.manifest),
+            encoding="utf-8",
+        )
+        (staged_directory / "app-build.json").write_text(
+            publication_document_json(app_build),
             encoding="utf-8",
         )
         (staged_directory / "leaderboard.json").write_text(
@@ -481,6 +501,7 @@ def build(
         )
         bundle = split_publication(dataset)
         _ensure_site_dependencies(site_root)
+        app_build = _application_build_document(root, check=check)
         with tempfile.TemporaryDirectory(prefix="deep20-publication-") as temporary:
             staging_root = Path(temporary)
             public_root = staging_root / "public"
@@ -489,7 +510,7 @@ def build(
                 public_root,
                 ignore=shutil.ignore_patterns("data"),
             )
-            _write_public_data(public_root, dataset)
+            _write_public_data(public_root, dataset, app_build)
             candidate = staging_root / "docs"
             _build_site(
                 site_root,

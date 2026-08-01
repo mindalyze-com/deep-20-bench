@@ -1106,6 +1106,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
         for path in sorted(source_root.rglob("*.py"))
     )
     assert "deep20_publication" not in execution_source
+    assert "app-build.json" not in execution_source
     assert "question_score_confidence_interval" not in execution_source
     assert "stratified-welch-t-v1" not in execution_source
     assert "confidenceIntervalWidth" not in execution_source
@@ -1314,8 +1315,17 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "Homepage built" not in homepage
     assert "home-build-note" not in homepage
     assert "Publication built" in data_page
+    assert "App built" in data_page
+    assert "getAppBuild" in data_page
     assert '<time :datetime="manifest.provenance.built_at">' in data_page
     assert "isoDateTime(manifest.provenance.built_at)" in data_page
+    assert '<time :datetime="appBuild.built_at">' in data_page
+    assert "isoDateTime(appBuild.built_at)" in data_page
+    assert "font-size: 0.92em" not in data_page
+    assert ".data-build-note p > span" in data_page
+    assert "font-family: inherit" in data_page
+    assert "font-family: var(--font-mono)" not in data_page
+    assert "opacity: 0.68" not in data_page
     assert data_page.index('<footer class="data-build-note"') > data_page.index(
         '<section class="data-contract"'
     )

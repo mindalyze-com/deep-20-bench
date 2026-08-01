@@ -8,6 +8,7 @@ from typing import cast
 from pydantic import JsonValue
 
 from deep20_publication.models import (
+    PublicationAppBuildDocument,
     PublicationDataBundle,
     PublicationEpisodeDocument,
     PublicationLeaderboardDocument,
@@ -214,6 +215,7 @@ def test_split_document_serialization_is_typed_deterministic_and_private_free() 
     bundle = split_publication(_dataset())
     documents: tuple[
         PublicationManifestDocument
+        | PublicationAppBuildDocument
         | PublicationLeaderboardDocument
         | PublicationRepeatAveragesDocument
         | PublicationRunDocument
@@ -221,6 +223,9 @@ def test_split_document_serialization_is_typed_deterministic_and_private_free() 
         | PublicationEpisodeDocument,
         ...,
     ] = (
+        PublicationAppBuildDocument(
+            built_at=_dataset().provenance.built_at,
+        ),
         bundle.manifest,
         bundle.leaderboard,
         bundle.repeat_averages,
