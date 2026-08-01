@@ -366,6 +366,12 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
 }
 
 @media (max-width: 760px) {
+  .pane-scroll {
+    height: auto;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+
   .run-overview-pane {
     padding: 1.2rem 1rem 2rem;
     scrollbar-gutter: auto;

@@ -61,13 +61,13 @@
   letter-spacing: 0.08em;
 }
 
-.site-header nav {
+.primary-navigation {
   display: flex;
   align-self: stretch;
   gap: clamp(1rem, 2.4vw, 2rem);
 }
 
-.site-header nav a {
+.primary-navigation a {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -77,12 +77,12 @@
   text-decoration: none;
 }
 
-.site-header nav a:hover,
-.site-header nav a[aria-current="page"] {
+.primary-navigation a:hover,
+.primary-navigation a[aria-current="page"] {
   color: var(--text-inverse);
 }
 
-.site-header nav a[aria-current="page"]::after {
+.primary-navigation a[aria-current="page"]::after {
   position: absolute;
   right: 0;
   bottom: -1px;
@@ -93,6 +93,10 @@
 }
 
 .nav-glyph {
+  display: none;
+}
+
+.mobile-navigation {
   display: none;
 }
 
@@ -232,8 +236,16 @@
 }
 
 @media (max-width: 760px) {
+  .app-shell,
+  .app-shell--drilldown {
+    display: block;
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
   .site-header {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     min-height: var(--header-height);
   }
 
@@ -241,36 +253,88 @@
     font-size: var(--text-ui);
   }
 
-  .site-header nav {
-    position: fixed;
-    z-index: 80;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    height: 62px;
-    gap: 0;
-    padding-bottom: env(safe-area-inset-bottom);
-    border-top: var(--rule-inverse);
-    background: var(--ink);
+  .primary-navigation {
+    display: none;
   }
 
-  .site-header nav a {
-    display: flex;
+  .mobile-navigation {
+    position: relative;
+    display: block;
+    justify-self: end;
+  }
+
+  .mobile-navigation summary {
+    display: inline-flex;
+    min-width: var(--control-min-size);
+    min-height: var(--control-min-size);
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.6rem;
+    color: var(--text-inverse-muted);
+    font-size: var(--text-caption);
+    font-weight: 700;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .mobile-navigation summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-navigation summary:hover,
+  .mobile-navigation[open] summary {
+    color: var(--text-inverse);
+  }
+
+  .mobile-navigation-glyph {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .mobile-navigation nav {
+    position: absolute;
+    z-index: 80;
+    top: calc(100% + 0.35rem);
+    right: 0;
+    display: grid;
+    width: min(17rem, calc(100vw - 2 * var(--gutter)));
+    gap: 0;
+    padding: 0.35rem;
+    border: var(--rule-inverse);
+    background: var(--ink);
+    box-shadow: var(--shadow-floating);
+  }
+
+  .mobile-navigation nav a {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
     min-width: 0;
     min-height: var(--control-min-size);
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.22rem;
-    font-size: var(--text-caption);
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.75rem;
+    color: var(--text-inverse-muted);
+    font-size: var(--text-small);
+    font-weight: 680;
+    text-decoration: none;
   }
 
-  .site-header nav a[aria-current="page"]::after {
+  .mobile-navigation nav a:hover,
+  .mobile-navigation nav a[aria-current="page"] {
+    color: var(--text-inverse);
+    background: rgb(255 255 255 / 6%);
+  }
+
+  .mobile-navigation nav a[aria-current="page"]::after {
+    position: absolute;
     top: 0;
-    right: 25%;
-    bottom: auto;
-    left: 25%;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    background: var(--acid);
+    content: "";
   }
 
   .nav-glyph {
@@ -287,12 +351,15 @@
   }
 
   .app-viewport {
-    padding-bottom: calc(62px + env(safe-area-inset-bottom));
+    min-height: 0;
+    overflow: visible;
+    padding-bottom: env(safe-area-inset-bottom);
     scrollbar-gutter: auto;
   }
 
+  .app-viewport--workspace,
   .app-viewport--results {
-    overflow-y: auto;
+    overflow: visible;
     overflow-anchor: none;
     overscroll-behavior-y: auto;
   }

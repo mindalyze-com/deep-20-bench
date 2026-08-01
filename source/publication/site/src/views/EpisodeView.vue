@@ -414,7 +414,10 @@ onActivated(applyRouteContext);
 
 @media (max-width: 760px) {
   .episode-view {
-    grid-template-rows: auto auto minmax(0, 1fr);
+    display: block;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
   }
 
   .episode-tabs {
@@ -441,7 +444,9 @@ onActivated(applyRouteContext);
     white-space: nowrap;
   }
 
-
+  .episode-content {
+    overflow: visible;
+  }
 }
 
 @media (max-height: 520px) {

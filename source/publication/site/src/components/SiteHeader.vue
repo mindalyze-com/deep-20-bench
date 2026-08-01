@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
+const mobileNavigation = ref<HTMLDetailsElement | null>(null);
 const links = [
   { label: "Overview", name: "home", glyph: "◉" },
   { label: "Results", name: "results", glyph: "▥" },
@@ -14,6 +15,12 @@ const links = [
 const active = computed(() =>
   typeof route.meta.nav === "string" ? route.meta.nav : null,
 );
+
+const closeMobileNavigation = (): void => {
+  if (mobileNavigation.value !== null) mobileNavigation.value.open = false;
+};
+
+watch(() => route.fullPath, closeMobileNavigation);
 </script>
 
 <template>
@@ -22,7 +29,7 @@ const active = computed(() =>
       <span aria-hidden="true">D20</span>
       <span>Deep20Bench</span>
     </RouterLink>
-    <nav aria-label="Primary navigation">
+    <nav class="primary-navigation" aria-label="Primary navigation">
       <RouterLink
         v-for="link in links"
         :key="link.name"
@@ -54,5 +61,27 @@ const active = computed(() =>
       <span aria-hidden="true">↗</span>
       <span class="visually-hidden">(opens in a new tab)</span>
     </a>
+    <details
+      ref="mobileNavigation"
+      class="mobile-navigation"
+      @keydown.esc="closeMobileNavigation"
+    >
+      <summary>
+        <span class="mobile-navigation-glyph" aria-hidden="true">☰</span>
+        <span>Menu</span>
+      </summary>
+      <nav aria-label="Mobile primary navigation">
+        <RouterLink
+          v-for="link in links"
+          :key="`mobile-${link.name}`"
+          :to="{ name: link.name }"
+          :aria-current="active === link.label ? 'page' : undefined"
+          @click="closeMobileNavigation"
+        >
+          <span class="nav-glyph" aria-hidden="true">{{ link.glyph }}</span>
+          <span>{{ link.label }}</span>
+        </RouterLink>
+      </nav>
+    </details>
   </header>
 </template>

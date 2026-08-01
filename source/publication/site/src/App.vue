@@ -18,6 +18,24 @@ const scrollPositions = new Map<string, number>();
 const contextCache = new Map<string, Omit<RouteContext, "version">>();
 let scrollRestoreVersion = 0;
 
+const usesDocumentScroll = (): boolean =>
+  window.matchMedia("(max-width: 760px)").matches;
+
+const readScrollTop = (element: HTMLElement): number =>
+  usesDocumentScroll() ? window.scrollY : element.scrollTop;
+
+const writeScrollTop = (element: HTMLElement, top: number): void => {
+  if (usesDocumentScroll()) window.scrollTo({ top });
+  else element.scrollTop = top;
+};
+
+const maximumScrollTop = (element: HTMLElement): number => {
+  if (usesDocumentScroll()) {
+    return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  }
+  return Math.max(0, element.scrollHeight - element.clientHeight);
+};
+
 const focusRouteContent = async (): Promise<void> => {
   await nextTick();
   const target = document.getElementById("route-content");
@@ -31,7 +49,7 @@ const restoreScroll = async (): Promise<void> => {
   const element = viewport.value;
   if (element === null) return;
   if (route.meta.workspace === true) {
-    element.scrollTop = 0;
+    writeScrollTop(element, 0);
     return;
   }
   const hash = route.hash.slice(1);
@@ -45,8 +63,7 @@ const restoreScroll = async (): Promise<void> => {
   const targetPosition = scrollPositions.get(route.path) ?? 0;
   const apply = (): void => {
     if (version !== scrollRestoreVersion) return;
-    const maximum = Math.max(0, element.scrollHeight - element.clientHeight);
-    element.scrollTop = Math.min(targetPosition, maximum);
+    writeScrollTop(element, Math.min(targetPosition, maximumScrollTop(element)));
   };
   apply();
   window.setTimeout(apply, 70);
@@ -56,10 +73,10 @@ const restoreScroll = async (): Promise<void> => {
 router.beforeEach((to, from) => {
   const element = viewport.value;
   if (element !== null && from.meta.workspace !== true) {
-    scrollPositions.set(from.path, element.scrollTop);
+    scrollPositions.set(from.path, readScrollTop(element));
   }
   if (element !== null && to.meta.workspace === true) {
-    element.scrollTop = 0;
+    writeScrollTop(element, 0);
     element.scrollLeft = 0;
   }
   if (from.path !== to.path && from.name !== undefined) {

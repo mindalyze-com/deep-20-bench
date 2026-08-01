@@ -225,7 +225,7 @@ onBeforeUnmount(() => {
   .info-popover-panel {
     position: fixed;
     right: 1rem !important;
-    bottom: calc(62px + env(safe-area-inset-bottom) + 1rem);
+    bottom: calc(env(safe-area-inset-bottom) + 1rem);
     left: 1rem !important;
     top: auto;
     width: auto;

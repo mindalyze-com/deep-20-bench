@@ -380,11 +380,18 @@ onActivated(applyRunContext);
 
 @media (max-width: 760px) {
   .benchmark-workspace {
+    display: block;
     grid-template-columns: minmax(0, 1fr);
+    height: auto;
+    overflow: visible;
   }
 
   .model-rail {
     display: none;
+  }
+
+  .workspace-stage {
+    overflow: visible;
   }
 }
 </style>

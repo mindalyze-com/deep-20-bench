@@ -313,10 +313,19 @@ test("result navigation, tables, and charts use the shared workspace", async ({
 
 test("route focus is quiet and interactive focus remains visible", async ({
   page,
-}) => {
+}, testInfo) => {
   await page.goto("");
   await waitForPublication(page);
-  await page.getByRole("link", { name: "Results", exact: true }).click();
+  if (testInfo.project.name.startsWith("mobile")) {
+    const mobileMenu = page.locator(".mobile-navigation");
+    await mobileMenu.locator("summary").click();
+    await mobileMenu.getByRole("link", { name: "Results", exact: true }).click();
+  } else {
+    await page.locator(".primary-navigation").getByRole("link", {
+      name: "Results",
+      exact: true,
+    }).click();
+  }
   const routeContent = page.locator("#route-content");
   await expect(page.locator(".results-nav")).toBeVisible();
   await page.evaluate(
@@ -413,8 +422,77 @@ test("mobile navigation and episode tabs meet the touch target minimum", async (
   test.skip(!testInfo.project.name.startsWith("mobile"));
   await page.goto(episodePath);
   await waitForPublication(page);
-  await expectMinimumSize(page.locator(".site-header nav a"), 44);
+  const mobileMenu = page.locator(".mobile-navigation");
+  await expectMinimumSize(mobileMenu.locator("summary"), 44);
+  await mobileMenu.locator("summary").click();
+  await expect(mobileMenu).toHaveAttribute("open", "");
+  await expectMinimumSize(mobileMenu.locator("nav a"), 44);
   await expectMinimumSize(page.locator(".episode-tabs button"), 44);
+});
+
+test("mobile pages use one document scroll and no fixed site navigation", async ({
+  page,
+}, testInfo) => {
+  test.skip(!testInfo.project.name.startsWith("mobile"));
+  await page.goto(episodePath);
+  await waitForPublication(page);
+  await expect(page.locator(".loading-state")).toHaveCount(0);
+
+  const initial = await page.evaluate(() => {
+    const main = document.querySelector<HTMLElement>(".app-viewport");
+    const panel = document.querySelector<HTMLElement>(".episode-panel");
+    const header = document.querySelector<HTMLElement>(".site-header");
+    if (main === null || panel === null || header === null) {
+      throw new Error("The mobile scroll surfaces are missing.");
+    }
+    return {
+      documentHeight: document.documentElement.scrollHeight,
+      viewportHeight: window.innerHeight,
+      mainOverflowY: getComputedStyle(main).overflowY,
+      panelOverflowY: getComputedStyle(panel).overflowY,
+      panelScrollTop: panel.scrollTop,
+      headerTop: header.getBoundingClientRect().top,
+    };
+  });
+
+  expect(initial.documentHeight).toBeGreaterThan(initial.viewportHeight * 2);
+  expect(initial.mainOverflowY).toBe("visible");
+  expect(initial.panelOverflowY).toBe("visible");
+  expect(initial.panelScrollTop).toBe(0);
+  await expect(page.locator(".primary-navigation")).toBeHidden();
+  await expect(page.locator(".mobile-navigation")).toHaveCSS("position", "relative");
+
+  await page.evaluate(() => window.scrollTo({ top: 600 }));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(500);
+  const afterScroll = await page.evaluate(() => {
+    const panel = document.querySelector<HTMLElement>(".episode-panel");
+    const header = document.querySelector<HTMLElement>(".site-header");
+    if (panel === null || header === null) {
+      throw new Error("The mobile scroll surfaces are missing.");
+    }
+    return {
+      panelScrollTop: panel.scrollTop,
+      headerTop: header.getBoundingClientRect().top,
+    };
+  });
+  expect(afterScroll.panelScrollTop).toBe(0);
+  expect(afterScroll.headerTop).toBeLessThan(initial.headerTop - 500);
+});
+
+test("mobile header menu provides global navigation and closes after selection", async ({
+  page,
+}, testInfo) => {
+  test.skip(!testInfo.project.name.startsWith("mobile"));
+  await page.goto(episodePath);
+  await waitForPublication(page);
+
+  const mobileMenu = page.locator(".mobile-navigation");
+  await mobileMenu.locator("summary").click();
+  await expect(mobileMenu).toHaveAttribute("open", "");
+  await mobileMenu.getByRole("link", { name: "Method", exact: true }).click();
+  await expect(page).toHaveURL(/\/methodology\/$/);
+  await expect(mobileMenu).not.toHaveAttribute("open", "");
+  await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
 });
 
 test("focused publication surfaces match visual baselines", async ({

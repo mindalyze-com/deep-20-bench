@@ -616,11 +616,19 @@ onActivated(applySubjectContext);
 
 @media (max-width: 760px) {
   .subject-workspace {
+    display: block;
     grid-template-columns: minmax(0, 1fr);
+    height: auto;
+    overflow: visible;
   }
 
   .episode-rail {
+    overflow: visible;
     border-right: 0;
+  }
+
+  .subject-stage {
+    overflow: visible;
   }
 
   .subject-workspace.has-episode .episode-rail {
@@ -633,9 +641,7 @@ onActivated(applySubjectContext);
 
   .subject-workspace:not(.has-episode) .episode-rail {
     display: block;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    scrollbar-width: thin;
+    overflow: visible;
   }
 
   .subject-workspace:not(.has-episode) .episode-list {

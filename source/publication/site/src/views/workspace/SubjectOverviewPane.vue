@@ -204,4 +204,13 @@ const facts = computed<MetricGridItem[]>(() => {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+@media (max-width: 760px) {
+  .subject-overview-pane {
+    height: auto;
+    overflow: visible;
+    padding: 1rem;
+    scrollbar-gutter: auto;
+  }
+}
 </style>
