@@ -84,6 +84,67 @@ const waitForPublication = async (page: Page): Promise<void> => {
   });
 };
 
+test("homepage remains useful without JavaScript", async ({ browser }, testInfo) => {
+  const mobile = testInfo.project.name.startsWith("mobile");
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 720 },
+  });
+  const page = await context.newPage();
+  await page.goto("http://127.0.0.1:4173/deep-20-bench/");
+
+  const staticHome = page.locator("main.static-home");
+  await expect(staticHome).toBeVisible();
+  await expect(staticHome).toHaveCSS("background-color", "rgb(243, 240, 232)");
+  await expect(page.locator(".static-header")).toHaveCSS(
+    "background-color",
+    "rgb(12, 17, 27)",
+  );
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Can an LLM ask its way to the answer?",
+  );
+  await expect(page.getByText("Executive summary", { exact: true })).toBeVisible();
+  await expect(page.getByText("What it does not claim", { exact: true })).toBeVisible();
+  await expect(page.getByText("Deep20Bench needs JavaScript")).toHaveCount(0);
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://mindalyze-com.github.io/deep-20-bench/",
+  );
+  const viewport = await page.evaluate(() => ({
+    client: document.documentElement.clientWidth,
+    scroll: document.documentElement.scrollWidth,
+  }));
+  expect(viewport.scroll).toBeLessThanOrEqual(viewport.client + 1);
+
+  await context.close();
+});
+
+test("JavaScript users do not see the static page while the app loads", async ({
+  page,
+}) => {
+  let releaseEntry = (): void => undefined;
+  const entryGate = new Promise<void>((resolve) => {
+    releaseEntry = resolve;
+  });
+  await page.route("**/src/main.ts", async (route) => {
+    await entryGate;
+    await route.continue();
+  });
+
+  const navigation = page.goto("");
+  const staticHome = page.locator("main.static-home");
+  await staticHome.waitFor({ state: "attached" });
+  await expect(staticHome).toBeHidden();
+  await expect(page.locator("html")).toHaveClass(/app-loading/);
+
+  releaseEntry();
+  await navigation;
+  await waitForPublication(page);
+  await expect(staticHome).toHaveCount(0);
+  await expect(page.locator("html")).not.toHaveClass(/app-loading/);
+});
+
 const expectNoViewportOverflow = async (page: Page): Promise<void> => {
   const overflow = await page.evaluate(() => ({
     client: document.documentElement.clientWidth,

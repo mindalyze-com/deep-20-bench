@@ -7,4 +7,5 @@ import App from "./App.vue";
 import { router } from "./router";
 import "./styles/app.css";
 
+document.documentElement.classList.remove("app-loading", "static-document");
 createApp(App).use(router).mount("#app");

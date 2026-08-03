@@ -1090,6 +1090,10 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
         for suffix in ("*.py", "*.ts", "*.vue")
         for path in sorted(source_root.rglob(suffix))
     )
+    static_home_source = (
+        REPOSITORY / "source" / "publication" / "site" / "static-home.ts"
+    ).read_text(encoding="utf-8")
+    source = f"{source}\n{static_home_source}"
 
     assert "deep20_game" not in source
     assert "deep20_oracle" not in source
@@ -1116,6 +1120,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
         for suffix in ("*.ts", "*.vue")
         for path in sorted((REPOSITORY / "source" / "publication" / "site" / "src").rglob(suffix))
     )
+    report_source = f"{report_source}\n{static_home_source}"
     assert "guesser_conversation" not in report_source
     assert "subject_snapshot" not in report_source
     assert "results-reliability" in report_source
@@ -1134,6 +1139,19 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
     ).read_text(encoding="utf-8")
     assert "Awaiting official run" not in report_source
     assert "Earlier official runs" not in report_source
+    assert "manifest.json" in static_home_source
+    assert "leaderboard.json" in static_home_source
+    assert "deep20bench-v7.json" in static_home_source
+    for private_source in (
+        "guesser_conversation",
+        "subject_snapshot",
+        "raw_response",
+        "oracle_search_results",
+        "provider_trace",
+        "error-outputs.jsonl",
+        "private/",
+    ):
+        assert private_source not in static_home_source
     route_source = "\n".join(
         path.read_text(encoding="utf-8")
         for path in (

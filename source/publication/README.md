@@ -97,6 +97,13 @@ download and is not imported into the application bundle. Browser promise cachin
 to these immutable public reporting files. It is application caching, not provider prompt
 caching, and it cannot affect model requests, benchmark execution, or Guesser-visible state.
 
+The generated entry HTML also contains a complete static executive summary. The build derives
+its current result and cohort facts from the same validated manifest and leaderboard used by the
+SPA. Browsers and crawlers without JavaScript receive the benchmark purpose, scope, result,
+method, limitations, and data links. The Vue application replaces this static page after it
+starts. The build also emits the canonical URL, Dataset structured data, `robots.txt`, and a
+homepage sitemap.
+
 The app uses clean history routes. Generated route shells make direct reloads work on static
 HTTP hosts. Direct `file://` navigation is not supported because clean history paths require an
 HTTP origin. Opening `docs/index.html` directly shows the local preview command instead of a

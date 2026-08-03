@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import tempfile
 from datetime import UTC, datetime
+from html import escape
 from pathlib import Path
 from typing import Annotated
 
@@ -436,11 +437,36 @@ def _route_shells(bundle: PublicationDataBundle) -> tuple[str, ...]:
 def _write_route_shells(output_root: Path, bundle: PublicationDataBundle) -> None:
     entry = output_root / "index.html"
     entry_html = entry.read_text(encoding="utf-8")
+    route_html = _route_shell_html(entry_html, bundle.manifest.site.base_path)
     for route in _route_shells(bundle):
         shell = output_root / route / "index.html"
         shell.parent.mkdir(parents=True, exist_ok=True)
-        shell.write_text(entry_html, encoding="utf-8")
-    (output_root / "404.html").write_text(entry_html, encoding="utf-8")
+        shell.write_text(route_html, encoding="utf-8")
+    (output_root / "404.html").write_text(route_html, encoding="utf-8")
+
+
+def _route_shell_html(entry_html: str, base_path: str) -> str:
+    static_home_start = '<main class="static-home" id="static-home">'
+    start = entry_html.find(static_home_start)
+    if start < 0:
+        return entry_html
+    end = entry_html.find("</main>", start)
+    if end < 0:
+        raise PublicationInputError("generated static homepage has no closing main tag")
+    end += len("</main>")
+    safe_base = escape(base_path, quote=True)
+    fallback = f"""<main class="static-route-fallback">
+        <div>
+          <p>Deep20Bench · Interactive publication</p>
+          <h1>This detailed view uses JavaScript.</h1>
+          <p>The complete executive summary and public data remain available without it.</p>
+          <nav aria-label="Non-JavaScript options">
+            <a href="{safe_base}">Read the executive summary</a>
+            <a href="{safe_base}data/leaderboard.csv">Download the leaderboard</a>
+          </nav>
+        </div>
+      </main>"""
+    return f"{entry_html[:start]}{fallback}{entry_html[end:]}"
 
 
 def _build_site(

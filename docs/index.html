@@ -1,25 +1,39 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="static-document">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Tests how LLMs use world knowledge, question planning, and state tracking to identify a hidden subject."
+      content="Deep20Bench tests how LLMs use world knowledge, question strategy, state tracking, and decision discipline in Twenty Questions."
     />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="theme-color" content="#0c111b" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Deep20Bench" />
+    <meta property="og:title" content="Deep20Bench · Twenty Questions for LLMs" />
     <meta
       property="og:description"
-      content="Tests how LLMs use world knowledge, question planning, and state tracking to identify a hidden subject."
+      content="A controlled benchmark of how well language models ask questions, track answers, and identify a hidden subject."
     />
-    <meta property="og:image" content="/deep-20-bench/og.png" />
+    <meta property="og:url" content="https://mindalyze-com.github.io/deep-20-bench/" />
+    <meta property="og:image" content="https://mindalyze-com.github.io/deep-20-bench/og.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Deep20Bench · Twenty Questions for LLMs" />
+    <meta
+      name="twitter:description"
+      content="A controlled benchmark of how well language models ask questions, track answers, and identify a hidden subject."
+    />
+    <link rel="canonical" href="https://mindalyze-com.github.io/deep-20-bench/" />
     <link rel="icon" href="/deep-20-bench/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/deep-20-bench/static.css" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Deep20Bench","description":"Tests how LLMs use world knowledge, question planning, and state tracking to identify a hidden subject.","url":"https://mindalyze-com.github.io/deep-20-bench/","creator":{"@type":"Person","name":"Patrick Heusser"},"dateModified":"2026-08-03T18:29:16.702075Z","isAccessibleForFree":true,"keywords":["large language models","LLM benchmark","Twenty Questions","question strategy","state tracking"],"variableMeasured":["question score","success rate","contract compliance","cost","runtime"],"measurementTechnique":"7 subjects, 5 repeated trials per subject, 11 evaluated models","distribution":[{"@type":"DataDownload","encodingFormat":"text/csv","contentUrl":"https://mindalyze-com.github.io/deep-20-bench/data/leaderboard.csv"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://mindalyze-com.github.io/deep-20-bench/data/deep20bench-v7.json"}]}</script>
     <script>
+      const documentRoot = document.documentElement;
       if (window.location.protocol === "file:") {
-        document.documentElement.dataset.filePreview = "";
+        documentRoot.dataset.filePreview = "";
+      } else {
+        documentRoot.classList.add("app-loading");
+        window.setTimeout(() => documentRoot.classList.remove("app-loading"), 10_000);
       }
     </script>
     <style>
@@ -92,14 +106,221 @@
       html[data-file-preview] a {
         color: #d6ff26;
       }
+
+      html[data-file-preview] .static-home,
+      html[data-file-preview] .static-route-fallback {
+        display: none;
+      }
+
+      html.app-loading,
+      html.app-loading body {
+        background: #0c111b;
+      }
+
+      html.app-loading .static-home,
+      html.app-loading .static-route-fallback {
+        display: none;
+      }
     </style>
-    <title>Deep20Bench</title>
-    <script type="module" crossorigin src="/deep-20-bench/_assets/index-ZePg0DI7.js"></script>
+    <title>Deep20Bench · Twenty Questions Benchmark for LLMs</title>
+    <script type="module" crossorigin src="/deep-20-bench/_assets/index-CLGEjj8K.js"></script>
     <link rel="modulepreload" crossorigin href="/deep-20-bench/_assets/runtime-core.esm-bundler-9Jv_OLm3.js">
     <link rel="stylesheet" crossorigin href="/deep-20-bench/_assets/index-BgxSEwFi.css">
   </head>
   <body>
     <div id="app">
+
+      <main class="static-home" id="static-home">
+        <header class="static-header">
+          <a class="static-brand" href="/deep-20-bench/" aria-label="Deep20Bench overview">
+            <span>D20B</span>
+            <strong>Deep20Bench</strong>
+          </a>
+          <nav aria-label="Publication navigation">
+            <a href="/deep-20-bench/results/">Results</a>
+            <a href="/deep-20-bench/methodology/">Method</a>
+            <a href="/deep-20-bench/data/">Data</a>
+          </nav>
+        </header>
+
+        <section class="static-hero">
+          <div class="static-hero-copy">
+            <p class="static-eyebrow">Independent benchmark · Twenty Questions for LLMs</p>
+            <h1>Can an LLM ask its way to the answer?</h1>
+            <p class="static-lead">
+              A model identifies a hidden person, place, or thing by asking yes-or-no
+              questions. Deep20Bench measures knowledge, question strategy, state tracking,
+              and decision discipline.
+            </p>
+            <div class="static-actions">
+              <a class="static-button static-button--primary" href="/deep-20-bench/results/">
+                See the benchmark <span aria-hidden="true">→</span>
+              </a>
+              <a class="static-button static-button--quiet" href="#executive-summary">
+                Read the summary
+              </a>
+            </div>
+          </div>
+          <dl class="static-facts" aria-label="Benchmark size">
+            <div><dt>Models tested</dt><dd>11</dd></div>
+            <div><dt>Subjects</dt><dd>7</dd></div>
+            <div><dt>Trials per model</dt><dd>35</dd></div>
+            <div><dt>Official trials</dt><dd>385</dd></div>
+          </dl>
+        </section>
+
+        <section class="static-section static-summary" id="executive-summary">
+          <div class="static-section-heading">
+            <p class="static-eyebrow">Executive summary</p>
+            <h2>A focused test of adaptive reasoning.</h2>
+            <p>
+              Deep20Bench tests whether a model can turn broad knowledge into a useful sequence
+              of questions, retain the answers, and commit to an exact guess.
+            </p>
+          </div>
+          <div class="static-summary-grid">
+            <article>
+              <span>01</span>
+              <h3>What it measures</h3>
+              <p>Question quality, use of prior answers, and success before the turn limit.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Why it matters</h3>
+              <p>Useful systems must often clarify uncertainty before they can act well.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>What it does not claim</h3>
+              <p>This is a narrow task benchmark, not a general ranking of model intelligence.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="static-section static-results">
+          <div class="static-section-heading static-section-heading--split">
+            <div>
+              <p class="static-eyebrow">Current official results</p>
+              <h2>Which models ask best?</h2>
+            </div>
+            <p>Published August 3, 2026. Every model completes 35 trials.</p>
+          </div>
+
+          <div class="static-result-card">
+            <div class="static-winner-copy">
+              <p class="static-eyebrow">Official leader</p>
+              <h3>Claude Opus 5 (high)</h3>
+              <p>
+                The current leader averages <strong>12.34</strong>
+                questions. The 11-model cohort spans 12.34–32.23. Lower is better.
+              </p>
+            </div>
+            <div class="static-score" aria-label="Question score 12.34">
+              <strong>12.34</strong>
+              <span>question score</span>
+            </div>
+          </div>
+          <ol class="static-leaders" aria-label="Top three official results">
+
+              <li>
+                <span class="static-rank">1</span>
+                <div>
+                  <a href="/deep-20-bench/runs/BX-20260728-official-M0006-010/">
+                    Claude Opus 5 (high)
+                  </a>
+                  <small>high reasoning · 100% success</small>
+                </div>
+                <strong>12.34</strong>
+              </li>
+              <li>
+                <span class="static-rank">2</span>
+                <div>
+                  <a href="/deep-20-bench/runs/BX-20260728-official-M0007-010/">
+                    Kimi K3 (high)
+                  </a>
+                  <small>high reasoning · 94.3% success</small>
+                </div>
+                <strong>12.74</strong>
+              </li>
+              <li>
+                <span class="static-rank">3</span>
+                <div>
+                  <a href="/deep-20-bench/runs/BX-20260728-official-M0002-011/">
+                    gpt-oss-120B (high)
+                  </a>
+                  <small>high reasoning · 94.3% success</small>
+                </div>
+                <strong>13.63</strong>
+              </li>
+          </ol>
+          <a class="static-text-link" href="/deep-20-bench/results/">Explore all results and runs →</a>
+        </section>
+
+        <section class="static-section static-method">
+          <div class="static-section-heading">
+            <p class="static-eyebrow">How the benchmark works</p>
+            <h2>Simple rules. Controlled answers.</h2>
+          </div>
+          <div class="static-method-grid">
+            <article>
+              <strong>1</strong>
+              <div>
+                <h3>Ask</h3>
+                <p>The Guesser asks up to 50 counted yes-or-no questions.</p>
+              </div>
+            </article>
+            <article>
+              <strong>2</strong>
+              <div>
+                <h3>Check</h3>
+                <p>An Oracle researches each question. A Reviewer checks every YES or NO. A blind Judge resolves disagreement.</p>
+              </div>
+            </article>
+            <article>
+              <strong>3</strong>
+              <div>
+                <h3>Score</h3>
+                <p>Lower is better. A failed trial contributes 51 questions. Subjects carry equal weight.</p>
+              </div>
+            </article>
+          </div>
+          <div class="static-boundary">
+            <p class="static-eyebrow">Core control</p>
+            <h3>The model under test sees only the game.</h3>
+            <p>
+              It receives the category, its prior actions, and final YES, NO, or UNKNOWN tokens.
+              It never sees private adjudicator prompts, evidence, searches, or hidden subject data.
+            </p>
+            <a class="static-text-link" href="/deep-20-bench/methodology/">Read the full methodology →</a>
+          </div>
+        </section>
+
+        <section class="static-section static-data">
+          <div>
+            <p class="static-eyebrow">Open evidence</p>
+            <h2>Inspect the result behind the score.</h2>
+          </div>
+          <div>
+            <p>
+              The publication links scores to model runs, subjects, episode transcripts,
+              answer evidence, contract violations, usage, cost, and timing.
+            </p>
+            <div class="static-actions">
+              <a class="static-button static-button--primary" href="/deep-20-bench/data/leaderboard.csv">Download CSV</a>
+              <a class="static-button static-button--quiet" href="/deep-20-bench/data/deep20bench-v7.json">Download JSON</a>
+            </div>
+          </div>
+        </section>
+
+        <footer class="static-footer">
+          <p><strong>Deep20Bench</strong> · Created by Patrick Heusser</p>
+          <nav aria-label="Publication resources">
+            <a href="/deep-20-bench/story/">Origin and prior work</a>
+            <a href="/deep-20-bench/data/">Data and citation</a>
+            <a href="https://github.com/mindalyze-com/deep-20-bench">Source code</a>
+          </nav>
+        </footer>
+      </main>
       <main class="file-preview">
         <div class="file-preview-inner">
           <p class="file-preview-label">Local preview</p>
@@ -117,7 +338,6 @@
           </p>
         </div>
       </main>
-      <noscript>Deep20Bench needs JavaScript to show the publication.</noscript>
     </div>
   </body>
 </html>

@@ -61,6 +61,23 @@ def test_file_scheme_entry_explains_how_to_start_the_preview() -> None:
     assert "http://127.0.0.1:4173/deep-20-bench/" in entry
 
 
+def test_generated_homepage_has_a_static_executive_summary() -> None:
+    entry = (REPOSITORY / "docs" / "index.html").read_text(encoding="utf-8")
+
+    assert '<main class="static-home" id="static-home">' in entry
+    assert "Can an LLM ask its way to the answer?" in entry
+    assert "Executive summary" in entry
+    assert "What it does not claim" in entry
+    assert "The model under test sees only the game." in entry
+    assert "Deep20Bench needs JavaScript" not in entry
+    assert '<script type="application/ld+json">' in entry
+    assert 'rel="canonical" href="https://mindalyze-com.github.io/deep-20-bench/"' in entry
+    assert "deep20-static-home" not in entry
+    assert "deep20-structured-data" not in entry
+    assert 'classList.add("app-loading")' in entry
+    assert 'classList.remove("app-loading")' in entry
+
+
 def _published_dataset() -> PublishedDataset:
     source = REPOSITORY / "docs" / "data" / "deep20bench-v7.json"
     return PublishedDataset.model_validate_json(source.read_text(encoding="utf-8"))
@@ -84,6 +101,28 @@ def test_route_shells_cover_every_known_static_route(tmp_path: Path) -> None:
     for route in routes:
         assert (output / route / "index.html").read_text(encoding="utf-8") == entry
     assert (output / "404.html").read_text(encoding="utf-8") == entry
+
+
+def test_route_shells_do_not_duplicate_the_static_homepage(tmp_path: Path) -> None:
+    bundle = split_publication(_published_dataset())
+    output = tmp_path / "docs"
+    output.mkdir()
+    entry = """<!doctype html>
+<div id="app">
+  <main class="static-home" id="static-home"><h1>Executive summary</h1></main>
+</div>
+"""
+    (output / "index.html").write_text(entry, encoding="utf-8")
+
+    _write_route_shells(output, bundle)
+
+    assert (output / "index.html").read_text(encoding="utf-8") == entry
+    route = (output / "results" / "index.html").read_text(encoding="utf-8")
+    assert 'class="static-home"' not in route
+    assert 'class="static-route-fallback"' in route
+    assert "This detailed view uses JavaScript." in route
+    assert f'href="{bundle.manifest.site.base_path}"' in route
+    assert f'href="{bundle.manifest.site.base_path}data/leaderboard.csv"' in route
 
 
 def test_split_public_data_is_complete_and_removes_stale_files(
