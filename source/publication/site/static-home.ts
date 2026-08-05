@@ -5,7 +5,6 @@ import type { IndexHtmlTransformResult, Plugin } from "vite";
 
 const HOME_MARKER = "<!-- deep20-static-home -->";
 const STRUCTURED_DATA_MARKER = "<!-- deep20-structured-data -->";
-const PUBLICATION_ORIGIN = "https://mindalyze-com.github.io";
 
 interface StaticSiteMetadata {
   title: string;
@@ -309,7 +308,7 @@ const renderHome = (publication: StaticPublication, base: string): string => {
         <section class="static-hero">
           <div class="static-hero-copy">
             <p class="static-eyebrow">Independent benchmark · Twenty Questions for LLMs</p>
-            <h1>Can an LLM ask its way to the answer?</h1>
+            <h1>Deep20Bench: can an LLM ask its way to the answer?</h1>
             <p class="static-lead">
               A model identifies a hidden person, place, or thing by asking yes-or-no
               questions. Deep20Bench measures knowledge, question strategy, state tracking,
@@ -439,13 +438,16 @@ const renderHome = (publication: StaticPublication, base: string): string => {
       </main>`;
 };
 
-const renderStructuredData = (publication: StaticPublication, base: string): string => {
-  const canonicalUrl = new URL(base, PUBLICATION_ORIGIN).href;
+const renderStructuredData = (
+  publication: StaticPublication,
+  canonicalUrl: string,
+): string => {
   const { manifest, leaderboard } = publication;
   const data = {
     "@context": "https://schema.org",
     "@type": "Dataset",
     name: manifest.site.title,
+    alternateName: ["Deep20 Bench", "D20B"],
     description: manifest.site.description,
     url: canonicalUrl,
     creator: {
@@ -455,7 +457,10 @@ const renderStructuredData = (publication: StaticPublication, base: string): str
     dateModified: manifest.builtAt,
     isAccessibleForFree: true,
     keywords: [
+      "Deep20Bench",
+      "Deep20 Bench",
       "large language models",
+      "large language model benchmark",
       "LLM benchmark",
       "Twenty Questions",
       "question strategy",
@@ -473,12 +478,12 @@ const renderStructuredData = (publication: StaticPublication, base: string): str
       {
         "@type": "DataDownload",
         encodingFormat: "text/csv",
-        contentUrl: new URL(`${base}data/leaderboard.csv`, PUBLICATION_ORIGIN).href,
+        contentUrl: new URL("data/leaderboard.csv", canonicalUrl).href,
       },
       {
         "@type": "DataDownload",
         encodingFormat: "application/json",
-        contentUrl: new URL(`${base}data/deep20bench-v7.json`, PUBLICATION_ORIGIN).href,
+        contentUrl: new URL("data/deep20bench-v7.json", canonicalUrl).href,
       },
     ],
   };
@@ -495,16 +500,61 @@ const replaceMarker = (html: string, marker: string, content: string): string =>
 
 const removeTrailingWhitespace = (html: string): string => html.replace(/[ \t]+$/gm, "");
 
-export const staticHomepagePlugin = (publicDirectory: string, base: string): Plugin => ({
+const replaceUniqueTag = (
+  html: string,
+  pattern: RegExp,
+  replacement: string,
+  label: string,
+): string => {
+  const matches = html.match(pattern);
+  if (matches === null || matches.length !== 1) {
+    throw new Error(`Expected exactly one ${label} tag in index.html.`);
+  }
+  return html.replace(pattern, replacement);
+};
+
+const renderCanonicalMetadata = (html: string, canonicalUrl: string): string => {
+  const escapedUrl = escapeHtml(canonicalUrl);
+  const escapedImageUrl = escapeHtml(new URL("og.png", canonicalUrl).href);
+  const withOpenGraphUrl = replaceUniqueTag(
+    html,
+    /<meta property="og:url" content="[^"]*" \/>/g,
+    `<meta property="og:url" content="${escapedUrl}" />`,
+    "Open Graph URL",
+  );
+  const withOpenGraphImage = replaceUniqueTag(
+    withOpenGraphUrl,
+    /<meta property="og:image" content="[^"]*" \/>/g,
+    `<meta property="og:image" content="${escapedImageUrl}" />`,
+    "Open Graph image",
+  );
+  return replaceUniqueTag(
+    withOpenGraphImage,
+    /<link rel="canonical" href="[^"]*" \/>/g,
+    `<link rel="canonical" href="${escapedUrl}" />`,
+    "canonical URL",
+  );
+};
+
+export const staticHomepagePlugin = (
+  publicDirectory: string,
+  base: string,
+  canonicalUrl: string,
+): Plugin => ({
   name: "deep20-static-homepage",
   transformIndexHtml(html): IndexHtmlTransformResult {
     const publication = loadPublication(publicDirectory);
-    const withHome = replaceMarker(html, HOME_MARKER, renderHome(publication, base));
+    const withMetadata = renderCanonicalMetadata(html, canonicalUrl);
+    const withHome = replaceMarker(
+      withMetadata,
+      HOME_MARKER,
+      renderHome(publication, base),
+    );
     return removeTrailingWhitespace(
       replaceMarker(
         withHome,
         STRUCTURED_DATA_MARKER,
-        renderStructuredData(publication, base),
+        renderStructuredData(publication, canonicalUrl),
       ),
     );
   },

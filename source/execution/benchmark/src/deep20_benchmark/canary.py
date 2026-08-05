@@ -19,27 +19,66 @@ from deep20_game.models import (
 from deep20_game.openrouter_provider import OpenRouterGameProvider
 from deep20_game.prompt import initial_guesser_messages
 from deep20_game.service_util import validate_game_trace
-from deep20_oracle.models import JsonObject, ProviderTrace, ProviderUsage, StrictModel
+from deep20_oracle.config import EvidenceReviewConfig, ProviderRouting
+from deep20_oracle.errors import OracleError
+from deep20_oracle.models import (
+    Evidence,
+    EvidenceDecisionBasis,
+    EvidenceReviewRequest,
+    EvidenceReviewResult,
+    JsonObject,
+    OracleAnswer,
+    OracleRole,
+    ProviderTrace,
+    ProviderUsage,
+    StrictModel,
+    Subject,
+)
+from deep20_oracle.openrouter_provider import OpenRouterProvider
+from deep20_oracle.prompt import render_evidence_review_messages
+from deep20_oracle.provider import ProviderExchange, ProviderRequest
+from deep20_oracle.service import validate_oracle_provider_trace
 from deep20_oracle.util import (
     canonical_json,
     openrouter_provider_matches,
 )
-from pydantic import Field, TypeAdapter, ValidationError
+from pydantic import Field, HttpUrl, TypeAdapter, ValidationError
 
 from .catalog import BenchmarkCatalogEntry
 from .models import BenchmarkLlmRole, BenchmarkModelId, BenchmarkModelSnapshot
-from .preflight import execution_route_requirements
+from .preflight import ExecutionRouteRequirement, execution_route_requirements
 
 _ECHO_CANARY_VERSION = "startup-echo-canary-v1"
 _ECHO_PROMPT = "Reply with exactly: Hi"
 _ECHO_RESPONSE = "Hi"
+_REVIEWER_CANARY_VERSION = "startup-reviewer-canary-v1"
+_JUDGE_CANARY_VERSION = "startup-judge-canary-v1"
 _GUESSER_CANARY_VARIATION_TOKEN = "Q7MV2KZA"
+_STRUCTURED_CANARY_REVIEW = EvidenceReviewRequest(
+    subject=Subject(
+        target_id="T-0000",
+        canonical_name="Ada Lovelace",
+        aliases=("Augusta Ada King",),
+        entity_type="person",
+        description="The mathematician identified by Wikidata Q7259.",
+        reference_url=HttpUrl("https://www.wikidata.org/wiki/Q7259"),
+    ),
+    question="Was this person born before 1900?",
+    evidence=(
+        Evidence(
+            source_url=HttpUrl("https://www.britannica.com/biography/Ada-Lovelace"),
+            excerpt="Ada Lovelace was born on December 10, 1815.",
+            validation="model_reported",
+        ),
+    ),
+)
 
 
 class EchoCanaryRequest(StrictModel):
     role: BenchmarkLlmRole
     model: str = Field(min_length=1)
     provider: str = Field(min_length=1)
+    provider_routing: ProviderRouting = ProviderRouting.EXACT
     session_id: str = Field(min_length=1, max_length=256)
     prompt_cache_key: str = Field(min_length=1, max_length=256)
 
@@ -58,6 +97,12 @@ class EchoCanaryExchange(StrictModel):
 
 class EchoCanaryProvider(Protocol):
     def complete(self, request: EchoCanaryRequest) -> EchoCanaryExchange: ...
+
+    def close(self) -> None: ...
+
+
+class EvidenceReviewCanaryProvider(Protocol):
+    def complete(self, request: ProviderRequest) -> ProviderExchange: ...
 
     def close(self) -> None: ...
 
@@ -113,6 +158,14 @@ class OpenRouterEchoCanaryProvider:
 
     @staticmethod
     def _request_payload(request: EchoCanaryRequest) -> JsonObject:
+        provider_preferences: JsonObject = {
+            "allow_fallbacks": (
+                request.provider_routing is ProviderRouting.AUTOMATIC
+            ),
+            "require_parameters": True,
+        }
+        if request.provider_routing is ProviderRouting.EXACT:
+            provider_preferences["only"] = [request.provider]
         return {
             "model": request.model,
             "messages": [
@@ -122,11 +175,7 @@ class OpenRouterEchoCanaryProvider:
                 }
             ],
             "max_tokens": 512,
-            "provider": {
-                "only": [request.provider],
-                "allow_fallbacks": False,
-                "require_parameters": True,
-            },
+            "provider": provider_preferences,
             "session_id": request.session_id,
             "prompt_cache_key": request.prompt_cache_key,
             "x_open_router_metadata": "enabled",
@@ -212,6 +261,8 @@ class LlmCanaryResult(StrictModel):
     role: BenchmarkLlmRole
     model: str = Field(min_length=1)
     provider: str = Field(min_length=1)
+    provider_routing: ProviderRouting = ProviderRouting.EXACT
+    resolved_provider: str | None = None
     valid: bool
     answer: str | None = None
     finish_reason: str | None = None
@@ -241,9 +292,14 @@ def _validate_echo(
         return "requested_provider_mismatch"
     if exchange.resolved_model != request.model:
         return "resolved_model_mismatch"
-    if exchange.resolved_provider is None or not openrouter_provider_matches(
-        request.provider,
-        exchange.resolved_provider,
+    if exchange.resolved_provider is None:
+        return "resolved_provider_missing"
+    if (
+        request.provider_routing is ProviderRouting.EXACT
+        and not openrouter_provider_matches(
+            request.provider,
+            exchange.resolved_provider,
+        )
     ):
         return "resolved_provider_mismatch"
     if exchange.finish_reason != "stop":
@@ -257,26 +313,178 @@ def _validate_echo(
     return None
 
 
+def _evidence_review_canary_request(
+    invocation_id: str,
+    *,
+    role: OracleRole,
+) -> ProviderRequest:
+    if role not in {OracleRole.REVIEWER, OracleRole.JUDGE}:
+        raise ValueError("structured startup canary requires Reviewer or Judge role")
+    version = (
+        _REVIEWER_CANARY_VERSION
+        if role is OracleRole.REVIEWER
+        else _JUDGE_CANARY_VERSION
+    )
+    return ProviderRequest(
+        messages=render_evidence_review_messages(
+            _STRUCTURED_CANARY_REVIEW,
+            role=role,
+        ),
+        output_schema=EvidenceReviewResult.model_json_schema(),
+        response_schema_name=f"{role.value}_canary_result",
+        session_id=f"deep20-{version}-{invocation_id}",
+        prompt_cache_key=f"deep20-{version}",
+    )
+
+
+def _run_evidence_review_canary(
+    requirement: ExecutionRouteRequirement,
+    *,
+    config: EvidenceReviewConfig,
+    role: OracleRole,
+    invocation_id: str,
+    provider: EvidenceReviewCanaryProvider,
+) -> LlmCanaryResult:
+    try:
+        exchange = provider.complete(
+            _evidence_review_canary_request(invocation_id, role=role)
+        )
+        trace = exchange.trace
+        validate_oracle_provider_trace(
+            trace,
+            config=config,
+            role=role,
+        )
+        if trace.finish_reason != "stop":
+            raise ValueError(
+                f"{role.value.title()} canary response did not finish with stop"
+            )
+        decision = EvidenceReviewResult.model_validate_json(
+            exchange.raw_output
+        ).validate_evidence_count(len(_STRUCTURED_CANARY_REVIEW.evidence))
+        if (
+            decision.answer is not OracleAnswer.YES
+            or decision.basis is not EvidenceDecisionBasis.EVIDENCE
+            or decision.evidence_indices != (1,)
+        ):
+            raise ValueError(
+                f"{role.value.title()} canary returned an unexpected decision"
+            )
+    except OracleError as error:
+        return LlmCanaryResult(
+            role=requirement.role,
+            model=requirement.model,
+            provider=requirement.provider,
+            provider_routing=requirement.provider_routing,
+            valid=False,
+            error_code=error.code,
+        )
+    except (ValidationError, ValueError):
+        return LlmCanaryResult(
+            role=requirement.role,
+            model=requirement.model,
+            provider=requirement.provider,
+            provider_routing=requirement.provider_routing,
+            valid=False,
+            error_code=f"invalid_{role.value}_canary_output",
+        )
+
+    usage = trace.usage
+    return LlmCanaryResult(
+        role=requirement.role,
+        model=requirement.model,
+        provider=requirement.provider,
+        provider_routing=requirement.provider_routing,
+        resolved_provider=trace.resolved_provider,
+        valid=True,
+        answer=decision.answer,
+        finish_reason=trace.finish_reason,
+        evidence_count=len(decision.evidence_indices),
+        search_count=usage.search_count,
+        cached_input_tokens=usage.cached_input_tokens,
+        cache_write_tokens=usage.cache_write_tokens,
+        output_tokens=usage.output_tokens,
+        latency_ms=trace.latency_ms,
+        cost_usd=usage.cost_usd,
+    )
+
+
 def run_startup_canaries(
     model: BenchmarkModelSnapshot,
     benchmark: BenchmarkCatalogEntry,
     *,
     api_key: str,
     provider: EchoCanaryProvider | None = None,
+    reviewer_provider: EvidenceReviewCanaryProvider | None = None,
+    judge_provider: EvidenceReviewCanaryProvider | None = None,
 ) -> StartupCanaryResult:
-    """Ask every configured role for one isolated plain-text `Hi` response."""
+    """Probe route reachability and both structured evidence-review contracts."""
+
+    injected = tuple(
+        item is not None for item in (provider, reviewer_provider, judge_provider)
+    )
+    if any(injected) and not all(injected):
+        raise ValueError(
+            "inject echo, Reviewer, and Judge canary providers together"
+        )
 
     echo_provider: EchoCanaryProvider = (
         OpenRouterEchoCanaryProvider(api_key) if provider is None else provider
+    )
+    structured_reviewer_provider: EvidenceReviewCanaryProvider = (
+        OpenRouterProvider(
+            api_key,
+            benchmark.oracle_configuration.reviewer,
+            enable_web_search=False,
+            title="Deep20Bench Startup Reviewer Canary",
+        )
+        if reviewer_provider is None
+        else reviewer_provider
+    )
+    structured_judge_provider: EvidenceReviewCanaryProvider = (
+        OpenRouterProvider(
+            api_key,
+            benchmark.oracle_configuration.judge,
+            enable_web_search=False,
+            title="Deep20Bench Startup Judge Canary",
+        )
+        if judge_provider is None
+        else judge_provider
     )
     results: list[LlmCanaryResult] = []
     invocation_id = uuid4().hex
     try:
         for requirement in execution_route_requirements(model, benchmark):
+            if requirement.role in {
+                BenchmarkLlmRole.REVIEWER,
+                BenchmarkLlmRole.JUDGE,
+            }:
+                role = OracleRole(requirement.role.value)
+                role_config = (
+                    benchmark.oracle_configuration.reviewer
+                    if role is OracleRole.REVIEWER
+                    else benchmark.oracle_configuration.judge
+                )
+                role_provider = (
+                    structured_reviewer_provider
+                    if role is OracleRole.REVIEWER
+                    else structured_judge_provider
+                )
+                results.append(
+                    _run_evidence_review_canary(
+                        requirement,
+                        config=role_config,
+                        role=role,
+                        invocation_id=invocation_id,
+                        provider=role_provider,
+                    )
+                )
+                continue
             request = EchoCanaryRequest(
                 role=requirement.role,
                 model=requirement.model,
                 provider=requirement.provider,
+                provider_routing=requirement.provider_routing,
                 session_id=(f"deep20-{_ECHO_CANARY_VERSION}-{invocation_id}-{requirement.role}"),
                 prompt_cache_key=(f"deep20-{_ECHO_CANARY_VERSION}-{requirement.role}"),
             )
@@ -289,6 +497,8 @@ def run_startup_canaries(
                         role=requirement.role,
                         model=requirement.model,
                         provider=requirement.provider,
+                        provider_routing=requirement.provider_routing,
+                        resolved_provider=exchange.resolved_provider,
                         valid=error_code is None,
                         answer=(_ECHO_RESPONSE if error_code is None else None),
                         finish_reason=exchange.finish_reason,
@@ -306,12 +516,15 @@ def run_startup_canaries(
                         role=requirement.role,
                         model=requirement.model,
                         provider=requirement.provider,
+                        provider_routing=requirement.provider_routing,
                         valid=False,
                         error_code=error.code,
                     )
                 )
     finally:
         echo_provider.close()
+        structured_reviewer_provider.close()
+        structured_judge_provider.close()
     roles = tuple(results)
     return StartupCanaryResult(
         valid=all(role.valid for role in roles),

@@ -67,9 +67,11 @@ reviewer:
 judge:
   gateway: openrouter
   model: anthropic/claude-opus-5
-  provider: anthropic
+  provider: openrouter-auto
+  provider_routing: automatic
   reasoning_effort: medium
-  allow_fallbacks: false
+  allow_fallbacks: true
+  token_limit_parameter: max_tokens
   max_output_tokens: 4096
   timeout_seconds: 120
   recovery: {max_elapsed_seconds: 300, max_request_attempts: 8, no_result_retries: 1, invalid_output_retries: 1}
@@ -81,20 +83,25 @@ Configuration fields:
 | --- | --- |
 | `gateway` | Currently fixed to `openrouter`. |
 | `model` | Exact OpenRouter provider/model slug; dynamic selectors are rejected. |
-| `provider` | Requested OpenRouter provider route. |
+| `provider` | Requested OpenRouter provider route, or `openrouter-auto` for automatic routing. |
+| `provider_routing` | `exact` by default, or `automatic` to let OpenRouter select the backend. |
 | `reasoning_effort` | Reasoning effort passed to the selected model. |
 | `allow_fallbacks` | Whether OpenRouter may route to a fallback endpoint. |
+| `token_limit_parameter` | Request field used for the output ceiling. The default is `max_completion_tokens`; use `max_tokens` when the selected endpoints require it. |
 | `parallel_search` | Whether OpenRouter web search explicitly uses the lower-cost Parallel engine. |
 | `max_search_results` | Maximum results available to web search, from 1 to 10. |
 | `max_output_tokens` | Provider output ceiling, from 128 to 65,536. |
 | `timeout_seconds` | Request timeout, from 1 to 600 seconds. |
 | `recovery` | Typed, bounded retry policy for transient provider failures and invalid output. |
-| `reviewer` | Exact no-web route that blindly checks every Oracle `YES` or `NO`. |
-| `judge` | Exact no-web route whose answer is final when Oracle and Reviewer disagree. |
+| `reviewer` | No-web route that blindly checks every Oracle `YES` or `NO`. |
+| `judge` | No-web route whose answer is final when Oracle and Reviewer disagree. |
 
-The default roles deliberately use three model vendors: OpenAI for research, Google AI Studio
-for review, and Anthropic for disputed-case judgment. This reduces correlated model-family
-errors while preserving exact routing and disabled fallbacks.
+The default roles deliberately use three model families: OpenAI for research, Google for
+review, and Anthropic for disputed-case judgment. The Oracle and Reviewer use exact backend
+routes. The Judge keeps the exact `anthropic/claude-opus-5` model but lets OpenRouter select an
+available backend. Its route sends `max_tokens` so automatic routing can use endpoints that
+support the Judge's structured-output contract. The resolved Judge provider is retained in
+typed results for later reporting.
 
 A run manifest freezes the complete configuration and rejects later calls that try to reuse
 the same run ID with a different configuration. This validation happens before the provider

@@ -1,0 +1,447 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260805-official-M0014-011",
+  "target_id": "T-0001",
+  "trial_id": "trial-002",
+  "episode": {
+    "episode_run_id": "BR-e442ffbdd9c55c103273b480cbebae925fa620ef",
+    "episode_id": "EP-019fd2914e1574e5a7b2fcaee8c06146",
+    "subject_name": "Albert Einstein",
+    "subject_description": "Albert Einstein, the German-born theoretical physicist known for relativity, identified by Wikidata entity Q937.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Albert_Einstein",
+    "started_at": "2026-08-05T15:36:05.909157Z",
+    "completed_at": "2026-08-05T15:39:09.574780Z",
+    "duration_ms": 183666,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 10,
+    "counted_questions": 9,
+    "ask_count": 9,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1110680299999999995",
+    "total_tokens": 63169,
+    "contract": {
+      "evaluated_outputs": 10,
+      "valid_outputs": 10,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0014",
+        "requested_model": "anthropic/claude-fable-5",
+        "requested_provider": "anthropic",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "anthropic/claude-fable-5"
+        ],
+        "resolved_providers": [
+          "Anthropic"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance",
+        "providers": [
+          {
+            "provider": "Anthropic",
+            "calls": 10,
+            "cost_usd": "0.0780755",
+            "latency_ms": 86863
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 9,
+            "cost_usd": "0.0153544299999999995",
+            "latency_ms": 81319
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 1,
+            "cost_usd": "0.0000587",
+            "latency_ms": 1207
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "reasoning_effort": "medium",
+        "calls": 9,
+        "cost_usd": "0.0153544299999999995",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 9,
+            "cost_usd": "0.0153544299999999995",
+            "latency_ms": 81319
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "provider_routing": "exact",
+        "reasoning_effort": "medium",
+        "calls": 9,
+        "cost_usd": "0.0071944",
+        "providers": [
+          {
+            "provider": "Google AI Studio",
+            "calls": 9,
+            "cost_usd": "0.0071944",
+            "latency_ms": 10987
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "openrouter-auto",
+        "provider_routing": "automatic",
+        "reasoning_effort": "medium",
+        "calls": 1,
+        "cost_usd": "0.010385",
+        "providers": [
+          {
+            "provider": "Amazon Bedrock",
+            "calls": 1,
+            "cost_usd": "0.010385",
+            "latency_ms": 3091
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"BKXG3AZI\"}",
+      "required_formats": null,
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 10,
+        "cost_usd": "0.0780755",
+        "latency_ms": 86863,
+        "total_tokens": 16187,
+        "input_tokens": 15340,
+        "cached_input_tokens": 13563,
+        "cache_write_tokens": 1757,
+        "output_tokens": 847,
+        "reasoning_tokens": 328,
+        "estimated_cache_savings_usd": "0.1176745"
+      },
+      "oracle": {
+        "calls": 9,
+        "cost_usd": "0.0329338299999999995",
+        "latency_ms": 95397,
+        "total_tokens": 46580,
+        "input_tokens": 42763,
+        "cached_input_tokens": 6213,
+        "cache_write_tokens": 0,
+        "output_tokens": 3817,
+        "reasoning_tokens": 2431,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0000587",
+        "latency_ms": 1207,
+        "total_tokens": 402,
+        "input_tokens": 365,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 37,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is this person currently alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.biography.com/scientists/albert-einstein",
+            "excerpt": "Albert Einstein ... DIED: April 18, 1955",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "http://news.bbc.co.uk/onthisday/hi/dates/stories/april/18/newsid_3721000/3721783.stm",
+            "excerpt": "1955: Albert Einstein dies ... Albert Einstein has died in hospital in Princeton, New Jersey, aged 76.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person currently alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Did this person die before the year 1900?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.biography.com/scientists/albert-einstein",
+            "excerpt": "Albert Einstein ... DIED: April 18, 1955",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person die before the year 1900?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Was this person primarily known for work in politics or government?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www-archiv.fdm.uni-hamburg.de/b-online/library/history/einstein.html",
+            "excerpt": "Einstein was primarily a physicist, but was also a humanist, a political activist, a war time pacifist.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Albert_Einstein",
+            "excerpt": "Albert Einstein was a German-born theoretical physicist best known for developing the theory of relativity.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known for work in politics or government?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Was this person primarily known as an artist, entertainer, or performer (e.g., music, film, art)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Einstein",
+            "excerpt": "Albert Einstein was a famous physicist.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.pbs.org/wnet/americanmasters/albert-einstein-how-i-see-the-world/585",
+            "excerpt": "Albert Einstein is considered one of the greatest scientific thinkers of all time.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known as an artist, entertainer, or performer (e.g., music, film, art)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Was this person primarily known as a scientist, inventor, or academic?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Einstein",
+            "excerpt": "Albert Einstein was a famous physicist. His research spanned from quantum mechanics to theories about gravity and motion.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.alberteinstein.com/biography/",
+            "excerpt": "Albert Einstein was a theoretical physicist and the most famous scientist in human history.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known as a scientist, inventor, or academic?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Was this person primarily known for work in physics?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Albert_Einstein",
+            "excerpt": "Albert Einstein was a German-born theoretical physicist best known for developing the theory of relativity.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Einstein",
+            "excerpt": "Albert Einstein’s greatest discovery is most likely the general theory of relativity.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known for work in physics?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Did this person win a Nobel Prize?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/physics/1921/summary",
+            "excerpt": "The Nobel Prize in Physics 1921 was awarded to Albert Einstein.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person win a Nobel Prize?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Was this person born in Europe?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/physics/1921/einstein/biographical",
+            "excerpt": "Albert Einstein was born at Ulm, in Württemberg, Germany, on March 14, 1879.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person born in Europe?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Was this person born in Germany?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/physics/1921/einstein/biographical",
+            "excerpt": "Albert Einstein was born at Ulm, in Württemberg, Germany, on March 14, 1879.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person born in Germany?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Albert Einstein",
+        "guess_description": "German-born theoretical physicist who developed the theory of relativity and won the 1921 Nobel Prize in Physics",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Albert Einstein, the same German-born theoretical physicist associated with relativity.",
+        "counted": false,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"German-born theoretical physicist who developed the theory of relativity and won the 1921 Nobel Prize in Physics\",\"name\":\"Albert Einstein\",\"question\":null}}"
+      }
+    ]
+  }
+}

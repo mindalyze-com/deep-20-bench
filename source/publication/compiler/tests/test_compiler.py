@@ -11,6 +11,7 @@ import pytest
 from deep20_publication.cli import _load_run, _read_json, _read_yaml
 from deep20_publication.compiler import (
     _average,
+    _public_oracle_support_role,
     _public_run_comparison,
     _public_run_totals,
     _rank,
@@ -35,17 +36,22 @@ from deep20_publication.models import (
     CompletedTrialSummary,
     ContractReliabilitySnapshot,
     EpisodeResultArtifact,
+    EvidenceReviewConfigurationSnapshot,
     LeaderboardRow,
     LoadedEpisode,
     LoadedRun,
     PartialTrialMetrics,
+    PublicEpisodeModelVersion,
     PublicModel,
     PublicRun,
     PublicRunComparison,
     PublicRunCostTotals,
     PublicRunTotals,
     PublishedDataset,
+    RecoveryPolicySnapshot,
     RepairAggregateSnapshot,
+    ResolvedProviderUsageSnapshot,
+    RoleProviderUsageSnapshot,
     SupersededInfrastructureAttemptSnapshot,
     TrialArtifactReferences,
     TrialIdentity,
@@ -498,6 +504,16 @@ def _qualification_context() -> tuple[LoadedRun, CohortConfig]:
                 "guesser": {
                     "configuration": _model_configuration(identity.model_id),
                     "metrics": {},
+                    "provider_usage": {
+                        "providers": [
+                            {
+                                "provider": "test-provider",
+                                "calls": 1,
+                                "cost_usd": "0.01",
+                                "latency_ms": 1_000,
+                            }
+                        ]
+                    },
                 },
                 "oracle": {
                     "configuration": {
@@ -537,6 +553,17 @@ def _qualification_context() -> tuple[LoadedRun, CohortConfig]:
                 "validator": {
                     "configuration": _model_configuration("validator"),
                     "metrics": {},
+                    "provider_usage": {
+                        "providers": [
+                            {
+                                "provider": "test-provider",
+                                "calls": 1,
+                                "cost_usd": "0.02",
+                                "latency_ms": 2_000,
+                            }
+                        ],
+                        "fallback_calls": 1,
+                    },
                 },
             },
             "failure": None,
@@ -1060,6 +1087,13 @@ def test_compiler_uses_run_model_metadata_and_requires_all_trials() -> None:
     assert episode.oracle_support.judge.requested_model == "test-provider/current-model"
     assert episode.oracle_support.reviewer.calls == 0
     assert episode.oracle_support.judge.calls == 0
+    guesser_model = next(model for model in episode.models if model.role == "guesser")
+    validator_model = next(model for model in episode.models if model.role == "validator")
+    assert guesser_model.provider_routing == "exact"
+    assert guesser_model.providers[0].provider == "test-provider"
+    assert guesser_model.providers[0].calls == 1
+    assert validator_model.providers[0].cost_usd == Decimal("0.02")
+    assert validator_model.fallback_calls == 1
     assert episode.guesser_disclosure is not None
     assert episode.guesser_disclosure.system_message == "SYNTHETIC_GUESSER_SYSTEM"
     assert episode.guesser_disclosure.begin_message.startswith(
@@ -1077,6 +1111,95 @@ def test_subject_catalog_hash_matches_benchmark_producer_contract() -> None:
     _, subject_hash = parse_subject_catalog(_read_yaml(subject_path), str(subject_path))
 
     assert subject_hash == "2cb28dee2ab7639a755940e30525b011f5683d3971fcc0d70bcb7cdd29baea0a"
+
+
+def test_public_judge_support_exposes_safe_resolved_provider_totals() -> None:
+    configuration = EvidenceReviewConfigurationSnapshot(
+        gateway="openrouter",
+        model="anthropic/claude-opus-5",
+        provider="openrouter-auto",
+        provider_routing="automatic",
+        reasoning_effort="medium",
+        allow_fallbacks=True,
+        max_output_tokens=4_096,
+        timeout_seconds=120,
+        recovery=RecoveryPolicySnapshot.model_validate(_recovery_policy()),
+    )
+    usage = RoleProviderUsageSnapshot(
+        providers=(
+            ResolvedProviderUsageSnapshot(
+                provider="Amazon Bedrock",
+                calls=2,
+                cost_usd=Decimal("0.02"),
+                latency_ms=3_000,
+            ),
+        ),
+        fallback_calls=1,
+    )
+
+    published = _public_oracle_support_role(
+        configuration,
+        calls=2,
+        cost_usd=Decimal("0.02"),
+        provider_usage=usage,
+    )
+
+    assert published.provider_routing == "automatic"
+    assert published.requested_provider == "openrouter-auto"
+    assert published.providers == usage.providers
+    assert published.fallback_calls == 1
+    serialized = published.model_dump_json()
+    assert "provider_trace" not in serialized
+    assert "response_id" not in serialized
+
+
+def test_legacy_public_support_role_defaults_to_exact_without_route_totals() -> None:
+    from deep20_publication.models import PublicOracleSupportRole
+
+    legacy = PublicOracleSupportRole.model_validate(
+        {
+            "requested_model": "anthropic/claude-opus-5",
+            "requested_provider": "anthropic",
+            "reasoning_effort": "medium",
+            "calls": 3,
+            "cost_usd": "0.03",
+        }
+    )
+
+    assert legacy.provider_routing == "exact"
+    assert legacy.providers == ()
+    assert legacy.unreported_calls == 0
+
+
+def test_legacy_public_episode_model_defaults_to_exact_without_route_totals() -> None:
+    legacy = PublicEpisodeModelVersion.model_validate(
+        {
+            "role": "guesser",
+            "configuration_id": "M-legacy",
+            "requested_model": "test/legacy",
+            "requested_provider": "test-provider",
+            "resolved_models": ["test/legacy"],
+            "resolved_providers": ["Test Provider"],
+            "reasoning_effort": "medium",
+            "prompt_version": "legacy-v1",
+        }
+    )
+
+    assert legacy.provider_routing == "exact"
+    assert legacy.providers == ()
+    assert legacy.unreported_calls == 0
+
+
+def test_episode_drilldown_discloses_provider_routing_and_legacy_state() -> None:
+    source = _episode_source()
+
+    assert "Resolved provider details" in source
+    assert "OpenRouter automatic routing" in source
+    assert "row.values.providers" in source
+    assert "model.providers" in source
+    assert "model.resolved_providers" in source
+    assert "Fallback calls" in source
+    assert "Legacy run" in source
 
 
 def test_publication_and_report_ui_have_no_execution_component_imports() -> None:
@@ -1273,7 +1396,7 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     assert "Primary Oracle" in run_source
     assert "run.totals.total_tokens" in run_source
     assert "current.totals.guesser_think_time_ms" in run_source
-    assert "Run cost" in leaderboard_source
+    assert "{ label: 'Cost', value: money(row.total_cost_usd) }" in leaderboard_source
 
 
 def test_generated_homepage_matches_the_official_result_state() -> None:
@@ -1305,7 +1428,7 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
         REPOSITORY / "source" / "publication" / "site" / "src" / "views" / "MethodologyView.vue"
     ).read_text(encoding="utf-8")
 
-    assert "Can an LLM ask its way to the answer?" in homepage
+    assert "Deep20Bench: can an LLM ask its way to the answer?" in homepage
     assert "Simple rules. Several abilities." in homepage
     assert "Three checks. One final answer." in homepage
     assert "An independent Reviewer checks every YES or" in homepage
@@ -1440,8 +1563,10 @@ def test_generated_question_scores_use_subject_averages_then_average() -> None:
         assert Decimal(run["question_score"]) == expected_score
 
     leaderboard_by_model = {row["model"]["model_id"]: row for row in dataset["leaderboard"]}
+    fable = leaderboard_by_model["M-0014"]
     opus = leaderboard_by_model["M-0006"]
     kimi = leaderboard_by_model["M-0007"]
+    assert Decimal(fable["question_score"]) == Decimal("12.05714285714285714285714286")
     assert Decimal(opus["question_score"]) == Decimal("12.34285714285714285714285714")
     assert Decimal(kimi["question_score"]) == Decimal("12.74285714285714285714285714")
     opus_interval = opus["question_score_confidence_interval"]
@@ -1451,8 +1576,9 @@ def test_generated_question_scores_use_subject_averages_then_average() -> None:
     assert Decimal(opus_interval["upper"]) == pytest.approx(Decimal("13.2728992905099725"))
     assert opus_interval["subject_count"] == 7
     assert opus_interval["trial_count"] == 35
-    assert opus["rank"] == 1
-    assert kimi["rank"] == 2
+    assert fable["rank"] == 1
+    assert opus["rank"] == 2
+    assert kimi["rank"] == 3
 
 
 def test_pre_question_score_run_compiles_without_migration() -> None:
@@ -1864,8 +1990,8 @@ def test_mobile_drilldowns_keep_all_facts_and_compact_turn_navigation() -> None:
     assert ':max-columns="4"' in run_overview
     assert 'class="attempt-score-track"' in subject_workspace
     assert 'class="eyebrow rail-section-label"' in subject_workspace
-    assert 'aria-label="Runs for this subject"' in subject_workspace
-    assert "{{ trials.length }} attempts" in subject_workspace
+    assert 'aria-label="Episodes for this subject"' in subject_workspace
+    assert "{{ trials.length }} · choose one" in subject_workspace
     assert "@media (max-height: 520px) and (min-width: 761px)" in subject_workspace
     assert 'exact-active-class="active"' in results_nav
 

@@ -7,7 +7,11 @@ import pytest
 from deep20_benchmark import cli
 from deep20_benchmark.canary import LlmCanaryResult, StartupCanaryResult
 from deep20_benchmark.cli import benchmark_app
-from deep20_benchmark.models import BenchmarkLlmRole
+from deep20_benchmark.models import (
+    BenchmarkLlmRole,
+    BenchmarkRequest,
+    ExecutionStatus,
+)
 from typer._click.utils import strip_ansi
 from typer.testing import CliRunner
 
@@ -69,7 +73,7 @@ def test_success_relies_on_concise_result_log_without_dumping_typed_result(
                 outcome=SimpleNamespace(has_infrastructure_failures=False),
                 model_dump_json=lambda **_kwargs: pytest.fail(
                     "successful benchmark result must not be dumped to the console"
-                )
+                ),
             )
 
     monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
@@ -77,7 +81,11 @@ def test_success_relies_on_concise_result_log_without_dumping_typed_result(
     monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
-    monkeypatch.setattr(cli, "ArtifactStore", lambda _root: object())
+    monkeypatch.setattr(
+        cli,
+        "ArtifactStore",
+        lambda _root: SimpleNamespace(load_state=lambda *_args: None),
+    )
     monkeypatch.setattr(cli, "BenchmarkRunner", FakeRunner)
     monkeypatch.setattr(cli, "prevent_idle_system_sleep", nullcontext)
 
@@ -110,16 +118,18 @@ def test_official_execution_with_no_canary_skips_route_probes(
             pass
 
         def run(self, _request: object, **_kwargs: object) -> object:
-            return SimpleNamespace(
-                outcome=SimpleNamespace(has_infrastructure_failures=False)
-            )
+            return SimpleNamespace(outcome=SimpleNamespace(has_infrastructure_failures=False))
 
     monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
     monkeypatch.setattr(cli, "load_model_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
-    monkeypatch.setattr(cli, "ArtifactStore", lambda _root: object())
+    monkeypatch.setattr(
+        cli,
+        "ArtifactStore",
+        lambda _root: SimpleNamespace(load_state=lambda *_args: None),
+    )
     monkeypatch.setattr(cli, "BenchmarkRunner", FakeRunner)
     monkeypatch.setattr(
         cli,
@@ -168,9 +178,7 @@ def test_official_execution_runs_paid_startup_canaries_by_default(
             pass
 
         def run(self, _request: object, **_kwargs: object) -> object:
-            return SimpleNamespace(
-                outcome=SimpleNamespace(has_infrastructure_failures=False)
-            )
+            return SimpleNamespace(outcome=SimpleNamespace(has_infrastructure_failures=False))
 
     def fake_canaries(
         model: object,
@@ -191,7 +199,11 @@ def test_official_execution_runs_paid_startup_canaries_by_default(
     )
     monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
-    monkeypatch.setattr(cli, "ArtifactStore", lambda _root: object())
+    monkeypatch.setattr(
+        cli,
+        "ArtifactStore",
+        lambda _root: SimpleNamespace(load_state=lambda *_args: None),
+    )
     monkeypatch.setattr(cli, "BenchmarkRunner", FakeRunner)
     monkeypatch.setattr(cli, "run_startup_canaries", fake_canaries)
 
@@ -213,6 +225,70 @@ def test_official_execution_runs_paid_startup_canaries_by_default(
     assert canary_inputs == (selected_model, selected_benchmark, "unused")
 
 
+@pytest.mark.parametrize("command", ("run", "repair"))
+def test_completed_official_execution_skips_paid_canaries_and_keeps_runner_request(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    command: str,
+) -> None:
+    captured_request: BenchmarkRequest | None = None
+
+    class FakeStore:
+        def load_state(self, model_id: object, execution_id: object) -> object:
+            assert str(model_id) == "M-0004"
+            assert str(execution_id) == f"BX-{command}-completed-001"
+            return SimpleNamespace(status=ExecutionStatus.COMPLETED)
+
+    class FakeRunner:
+        def __init__(self, *, store: object, **_kwargs: object) -> None:
+            assert isinstance(store, FakeStore)
+
+        def run(self, request: BenchmarkRequest, **_kwargs: object) -> object:
+            nonlocal captured_request
+            captured_request = request
+            return SimpleNamespace(outcome=SimpleNamespace(has_infrastructure_failures=False))
+
+    monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
+    monkeypatch.setattr(cli, "load_model_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
+    monkeypatch.setattr(cli, "ArtifactStore", lambda _root: FakeStore())
+    monkeypatch.setattr(cli, "BenchmarkRunner", FakeRunner)
+    monkeypatch.setattr(
+        cli,
+        "run_startup_canaries",
+        lambda *_args, **_kwargs: pytest.fail(
+            "a completed execution must not make startup provider calls"
+        ),
+    )
+
+    result = CliRunner().invoke(
+        benchmark_app,
+        [
+            command,
+            "B-0001",
+            "--run-id",
+            f"BX-{command}-completed-001",
+            "--model",
+            "M-0004",
+            "--benchmark-mode",
+            "official",
+            "--iterations",
+            "5",
+            "--seed",
+            "17",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert captured_request is not None
+    assert str(captured_request.model_id) == "M-0004"
+    assert str(captured_request.execution_id) == f"BX-{command}-completed-001"
+    assert captured_request.iterations_override == 5
+    assert captured_request.base_seed == 17
+
+
 def test_repair_exits_nonzero_when_infrastructure_failures_remain(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -224,9 +300,7 @@ def test_repair_exits_nonzero_when_infrastructure_failures_remain(
         def run(self, _request: object, **_kwargs: object) -> object:
             return SimpleNamespace(
                 outcome=SimpleNamespace(has_infrastructure_failures=True),
-                summary=SimpleNamespace(
-                    counts=SimpleNamespace(infrastructure_failed=2)
-                ),
+                summary=SimpleNamespace(counts=SimpleNamespace(infrastructure_failed=2)),
             )
 
     monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
@@ -234,7 +308,11 @@ def test_repair_exits_nonzero_when_infrastructure_failures_remain(
     monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
-    monkeypatch.setattr(cli, "ArtifactStore", lambda _root: object())
+    monkeypatch.setattr(
+        cli,
+        "ArtifactStore",
+        lambda _root: SimpleNamespace(load_state=lambda *_args: None),
+    )
     monkeypatch.setattr(cli, "BenchmarkRunner", FakeRunner)
     monkeypatch.setattr(cli, "prevent_idle_system_sleep", nullcontext)
 
@@ -255,10 +333,7 @@ def test_repair_exits_nonzero_when_infrastructure_failures_remain(
     assert result.exit_code == 1
     payload = json.loads(result.output)
     assert payload["error"]["code"] == "benchmark_infrastructure_failures_remain"
-    assert (
-        "contains 2 infrastructure-failed terminal trial(s)"
-        in payload["error"]["message"]
-    )
+    assert "contains 2 infrastructure-failed terminal trial(s)" in payload["error"]["message"]
 
 
 def test_failed_startup_canary_prevents_benchmark_artifacts_and_execution(
@@ -297,7 +372,11 @@ def test_failed_startup_canary_prevents_benchmark_artifacts_and_execution(
     )
     monkeypatch.setattr(cli, "load_subject_catalog", forbidden)
     monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
-    monkeypatch.setattr(cli, "ArtifactStore", forbidden)
+    monkeypatch.setattr(
+        cli,
+        "ArtifactStore",
+        lambda _root: SimpleNamespace(load_state=lambda *_args: None),
+    )
     monkeypatch.setattr(cli, "BenchmarkRunner", forbidden)
     monkeypatch.setattr(
         cli,

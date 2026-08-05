@@ -1,0 +1,2140 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260805-official-M0014-011
+    model_id: M-0014
+    target_id: T-0002
+    trial_id: trial-003
+    trial_number: 3
+    episode_run_id: BR-93f6665567d013ada7e540321db1e40a9d8b4c65
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-93f6665567d013ada7e540321db1e40a9d8b4c65
+      episode_id: EP-019fd2b6f21d758a8e5874b9e5602ff1
+      subject:
+        target_id: T-0002
+        canonical_name: Albert Schweitzer
+        aliases:
+        - Schweitzer
+        - Dr. Albert Schweitzer
+        entity_type: person
+        description: Albert Schweitzer, the Alsatian physician, theologian, philosopher,
+          organist, and 1952 Nobel Peace Prize laureate known for founding a hospital
+          at Lambaréné, identified by Wikidata entity Q49325.
+        reference_url: https://en.wikipedia.org/wiki/Albert_Schweitzer
+      started_at: '2026-08-05T16:17:12.733745+00:00'
+      completed_at: '2026-08-05T16:37:31.656997+00:00'
+      duration_ms: 1218923
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 44
+      counted_questions: 43
+      guesser_call_count: 44
+      ask_count: 36
+      guess_count: 8
+      rejected_guess_count: 7
+      oracle_unknown_count: 8
+      oracle_quality:
+        reviewed_questions: 28
+        agreements: 22
+        disagreements: 6
+        judge_invocations: 6
+        oracle_answers_changed: 0
+        final_unknown_answers: 8
+        judge_yes_answers: 1
+        judge_no_answers: 5
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0316306'
+        judge_cost_usd: '0.079035'
+        quality_control_cost_usd: '0.1106656'
+        question_types:
+        - question_type: other
+          reviewed_questions: 26
+          disagreements: 6
+        - question_type: temporal_comparison
+          reviewed_questions: 2
+          disagreements: 0
+      contract:
+        evaluated_outputs: 44
+        valid_outputs: 44
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '1.4679830'
+        oracle: '0.2399792849999999988'
+        validator: '0.0005432'
+        total: '1.7085054849999999988'
+      tokens:
+        guesser: 135309
+        oracle: 463294
+        validator: 3627
+        total: 602230
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0014
+        requested_model: anthropic/claude-fable-5
+        requested_provider: anthropic
+        resolved_models:
+        - anthropic/claude-fable-5
+        resolved_providers:
+        - Anthropic
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the person a real (non-fictional) person?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b7038173aca3c4b4c8c8d8290f
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer Born 14 January 1875... Died 4 September 1965...
+            Albert Schweitzer was awarded the Nobel Peace Prize.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fd2b6f21d758a8e5874bbc1ce2129
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the person still alive?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b72c987178ba713aef2b1404c2
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Dr. Albert Schweitzer (1875-1965).
+          validation: model_reported
+        - source_url: https://archive.nytimes.com/www.nytimes.com/learning/general/onthisday/bday/0114.html
+          excerpt: Albert Schweitzer died last night in his jungle hospital here.
+            He was 90 years old.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fd2b71a167295a32c904a89a07f54
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Did the person die before the year 1900?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b7644a7218a8df22871a6c47ae
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Albert Schweitzer ... Born: 14 January 1875 ... Died: 4 September
+            1965, Lambaréné, Gabon.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fd2b751607228bbb2474d88e7571d
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Was the person primarily known for work in politics or government?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b79e78772185bba9bceccb4d94
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Schweitzer devoted more than half a century to practicing medicine
+            in a remote location.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fd2b7869975afae82f1ff489c96b0
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Was the person primarily known for work in the arts or entertainment
+          (music, film, literature, visual art)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b815a67551a2889869cb9e070d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelpeaceprize.org/laureates/1952
+          excerpt: The Nobel Peace Prize recognized Albert Schweitzer for his altruism
+            and tireless humanitarian work; he was a doctor, missionary, philosopher
+            and musician.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/amp/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Schweitzer devoted more than half a century to practicing medicine
+            in a remote location, and his humanitarianism affected many patients.
+          validation: model_reported
+        - source_url: https://www.nytimes.com/1965/09/06/archives/albert-schweitzer-90-dies-at-his-hospital-doctor-won-nobel-peace.html
+          excerpt: Doctor won Nobel Peace Prize for work in Africa; he was also noted
+            as a musician and theologian.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019fd2b7f75977c8a2f93a654cccbae9
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Was the person primarily known as a scientist or inventor?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b871ba75d0a9e9cb6007649f64
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: Doctor, Missionary, Philosopher and Musician
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: The latter activity resulted in several volumes over the years
+            that made his reputation as a major, albeit somewhat controversial, theologian.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019fd2b85b1373efa6436b606f283780
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Was the person primarily known as an athlete or sports figure?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b8cdb1727ca32711c602d5048f
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: Doctor, Missionary, Philosopher and Musician ... tireless humanitarian
+            work ... built and ran a hospital at the mission station Lambarene in
+            Gabon.
+          validation: model_reported
+        - source_url: https://www.nobelpeaceprize.org/laureates/1952
+          excerpt: Albert Schweitzer ... Doctor, Missionary, Philosopher and Musician
+            ... [awarded] for his altruism, reverence for life, and tireless humanitarian
+            work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019fd2b8b52577d0bc925acc4ff81c81
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Was the person primarily known as a business person or entrepreneur?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b937707724a6659b2dc957eb1d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: The mere mention of the name Schweitzer instantly conjured up images
+            of selflessness, heroism and the very model of a modern, humane physician.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: Doctor, Missionary, Philosopher and Musician
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019fd2b91637766f9f9f078077d6921b
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Was the person primarily known as a religious figure?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b9bd9772be826f448287fa15ca
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019fd2b99b9d76d393edb3f25ce94f82
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Was the person primarily known as an explorer or adventurer?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2ba06e575ff8908095f8fda392b
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelpeaceprize.org/laureates/1952
+          excerpt: Albert Schweitzer — Doctor, Missionary, Philosopher and Musician;
+            awarded for his altruism, reverence for life, and tireless humanitarian
+            work.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Minister turned doctor in Africa; Theologian and philosopher.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019fd2b9f0cc75de8d040025c20f3a3c
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Was the person known as an activist or social reformer?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2ba6f6a7444841b6fcf9a1d2dd1
+        answer: 'YES'
+        evidence:
+        - source_url: https://academic.oup.com/book/9266/chapter/162607150
+          excerpt: Schweitzer in all of his facets, from theologian and philosopher
+            to musician and physician, husband, writer, and political activist.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019fd2ba52c874069206f12da31889ee
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Was the person from the United States?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2babdae75bf808c4595b887fe65
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: 'Born: 14 January 1875, Kaysersberg, Germany (now France) ... Residence
+            at the time of the award: France'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019fd2baa183762e8c16ff0ab5fb933f
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Was the person from India?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bafdae7188a5f75db03ba42639
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Albert Schweitzer was born 14 January 1875, Kaysersberg, Germany
+            (now France).
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: Schweitzer was born in Alsace in the then German Empire.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-019fd2bad4fd762a974a58021245c98a
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Was the person a woman?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bb3e4474da9bf898a47519bc95
+        answer: 'NO'
+        evidence:
+        - source_url: https://academic.oup.com/book/9266/chapter/162607150
+          excerpt: Schweitzer ... from theologian and philosopher to musician and
+            physician, husband, writer, and political activist.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical
+          excerpt: The Nobel Peace Prize for 1952 ... was given to him on December
+            10, 1953.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-019fd2bb1f0b7334bf4de5982a9e9ce6
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: ASK
+        question: Was the person from Africa?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bb9b5277b5b85f3245a22d633f
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: 'Born: 14 January 1875, Kaysersberg, Germany (now France) ... Died:
+            4 September 1965, Lambaréné, Gabon.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-019fd2bb7e2e741f9c34052c7ad5646f
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: ASK
+        question: Was the person from Europe?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bbe2d37202b794ad5c7f3d8736
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: 'Born: 14 January 1875, Kaysersberg, Germany (now France).'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 16
+      guesser_call_id: GC-019fd2bbc3ba715895be1e6a9becef47
+    - turn_type: action
+      turn_number: 17
+      action:
+        action: ASK
+        question: Was the person from Germany?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bc2f5874009215abe0640892c0
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Albert Schweitzer — Born: 14 January 1875, Kaysersberg, Germany
+            (now France).'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 17
+      guesser_call_id: GC-019fd2bc07d176e4b9b2c21f207f5f21
+    - turn_type: action
+      turn_number: 18
+      action:
+        action: ASK
+        question: Was the person known for resisting the Nazi regime?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bc8eaa75f4855a8f4c2a4a8dbb
+        answer: 'YES'
+        evidence:
+        - source_url: https://academic.oup.com/book/9266/chapter/162608330
+          excerpt: Schweitzer refused to cooperate with the Nazis and refused to return
+            to Germany.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 18
+      guesser_call_id: GC-019fd2bc6145718983a40b894831c604
+    - turn_type: action
+      turn_number: 19
+      action:
+        action: ASK
+        question: Was the person a member of the White Rose resistance group?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bd5ba075208e396af1a5e4af16
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.bbc.com/news/world-europe-57008360
+          excerpt: 'There were just six members of the "White Rose" group: Hans Scholl,
+            Alexander Schmorell, Sophie Scholl, Christoph Probst, Willi Graf and Kurt
+            Huber.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 19
+      guesser_call_id: GC-019fd2bd3539756b81d43c56ab0c4946
+    - turn_type: action
+      turn_number: 20
+      action:
+        action: GUESS
+        question: null
+        name: Dietrich Bonhoeffer
+        description: German Lutheran pastor and theologian who resisted the Nazi regime
+          and was executed in 1945
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd2bdb24573dca5c730c4792977e6
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Dietrich Bonhoeffer, whereas the trusted
+          subject is Albert Schweitzer.
+        oracle_quality: null
+      counted: true
+      counted_questions: 20
+      guesser_call_id: GC-019fd2bd935173d78ef0852af998eb56
+    - turn_type: action
+      turn_number: 21
+      action:
+        action: ASK
+        question: Did the person survive World War II (live beyond 1945)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bdeb3e70e7a6db8faa4757fc3f
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Albert Schweitzer — Born: 14 January 1875; Died: 4 September 1965.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 21
+      guesser_call_id: GC-019fd2bdb8b37268bb70966611d3b350
+    - turn_type: action
+      turn_number: 22
+      action:
+        action: GUESS
+        question: null
+        name: Martin Niemöller
+        description: German pastor and anti-Nazi activist famous for the confession
+          'First they came...', survived concentration camps and died in 1984
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd2be437f7624ac97fd4f85ca3e46
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Albert Schweitzer, while the proposal
+          identifies Martin Niemöller, a different person.
+        oracle_quality: null
+      counted: true
+      counted_questions: 22
+      guesser_call_id: GC-019fd2be07ac775eb71b758069bd122c
+    - turn_type: action
+      turn_number: 23
+      action:
+        action: ASK
+        question: Is the person famous for saving Jews during the Holocaust?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2be82a376a2b7a80bb169bb5295
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: 'Prize motivation: “for his altruism, reverence for life”; Role:
+            Missionary surgeon; Founder of Lambaréné.'
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: He dedicated himself to medical studies, seeking to build and run
+            a hospital in Africa to alleviate suffering. The hospital in Lambaréné
+            became his life’s work.
+          validation: model_reported
+        - source_url: https://www.cambridge.org/core/blog/2014/09/19/albert-schweitzer-and-the-jews
+          excerpt: The article discusses Schweitzer’s relationship to Judaism and
+            notes his retrospective guilt regarding the Holocaust, rather than identifying
+            him as a rescuer of Jews.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 23
+      guesser_call_id: GC-019fd2be488973bcbca327b6fe825ee5
+    - turn_type: action
+      turn_number: 24
+      action:
+        action: ASK
+        question: Was the person involved in the July 20, 1944 plot to assassinate
+          Hitler?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bf2fe0744caaafdc59de696f6b
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 24
+      guesser_call_id: GC-019fd2beee877449b9b354158b51cad3
+    - turn_type: action
+      turn_number: 25
+      action:
+        action: ASK
+        question: Was the person a lawyer or judge by profession?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bfc1a177fa923031cc08b34dd3
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/nomination/archive/show.php?id=8383
+          excerpt: 'Profession: Doctor of Philosophy, Theology and Medicine. Musician
+            and missionary.'
+          validation: model_reported
+        - source_url: https://www.lbi.org/griffinger/record/229888
+          excerpt: Albert Schweitzer was a physician, Protestant theologian, organist,
+            and missionary.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 25
+      guesser_call_id: GC-019fd2bf97a070b6a7d2578c7a9dd6d3
+    - turn_type: action
+      turn_number: 26
+      action:
+        action: ASK
+        question: Was the person a Catholic clergyman?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c052ae73219a786c2c513c290d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.churchtimes.co.uk/articles/2025/5-september/comment/columnists/angela-tilby-albert-schweitzer-s-scholarship-led-to-service
+          excerpt: Ordained as a Lutheran pastor, he held doctorates in theology and
+            philosophy.
+          validation: model_reported
+        - source_url: https://www.mayoclinicproceedings.org/article/S0025-6196(19)30465-3/abstract
+          excerpt: His father, Louis Schweitzer, was an Evangelical Lutheran pastor.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 26
+      guesser_call_id: GC-019fd2bff26b731a95c1ee87365dc500
+    - turn_type: action
+      turn_number: 27
+      action:
+        action: ASK
+        question: Was the person a Protestant pastor or theologian?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c0a0ce74779a62d16f1320aee3
+        answer: 'YES'
+        evidence:
+        - source_url: http://justus.anglican.org/resources/bio/238.html
+          excerpt: Albert Schweitzer, theologian... was ordained to the Lutheran ministry
+            and became a preacher and a lecturer in philosophy.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 27
+      guesser_call_id: GC-019fd2c0756972e8b6a8e6442e4f6f4d
+    - turn_type: action
+      turn_number: 28
+      action:
+        action: ASK
+        question: Was the person imprisoned in a concentration camp during the Nazi
+          era?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c0fabe73a49fc8caff63fa0d36
+        answer: 'NO'
+        evidence:
+        - source_url: https://history.rcp.ac.uk/blog/albert-schweitzer-marriage-theology-and-medicine
+          excerpt: After a brief period of imprisonment as a prisoner of war in a
+            French internment camp between the years 1917–1918, Schweitzer resided
+            in Europe for six more years before he returned once again to his Hospital
+            in Lambaréné.
+          validation: model_reported
+        - source_url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/
+          excerpt: Schweitzer finally returned to Lambaréné in 1924 and remained there
+            for the rest of his life.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 28
+      guesser_call_id: GC-019fd2c0c6f57008962e28420b28a364
+    - turn_type: action
+      turn_number: 29
+      action:
+        action: ASK
+        question: Did the person die after 1980?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c1b70e76b7ab0d54341bb2a247
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Died: 4 September 1965, Lambaréné, Gabon'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 29
+      guesser_call_id: GC-019fd2c16c5e728984f40971d0ca803a
+    - turn_type: action
+      turn_number: 30
+      action:
+        action: ASK
+        question: Did the person hold the office of bishop in the Protestant church?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c20a2f71ab8a0ae14b13ada09d
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 30
+      guesser_call_id: GC-019fd2c1d096739598bd8696742eace4
+    - turn_type: action
+      turn_number: 31
+      action:
+        action: ASK
+        question: Was the person known for opposing the Nazi euthanasia program (Aktion
+          T4)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c2b71e770b9107cd024fc9c0e1
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 31
+      guesser_call_id: GC-019fd2c25d9b74c3a147346cea133872
+    - turn_type: action
+      turn_number: 32
+      action:
+        action: ASK
+        question: Was the person a leading member of the Confessing Church (Bekennende
+          Kirche)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c36925759c8705bc9b68c82963
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 32
+      guesser_call_id: GC-019fd2c339b574b0b479d113d9d14761
+    - turn_type: action
+      turn_number: 33
+      action:
+        action: GUESS
+        question: null
+        name: Friedrich von Bodelschwingh the Younger
+        description: German Protestant pastor and head of the Bethel Institution who
+          resisted the Nazi euthanasia program, briefly elected Reich Bishop in 1933,
+          died in 1946
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd2c3dbb076d6832237bbd93ec6a5
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Friedrich von Bodelschwingh the Younger,
+          a different person from Albert Schweitzer.
+        oracle_quality: null
+      counted: true
+      counted_questions: 33
+      guesser_call_id: GC-019fd2c398b1752f82caff95ce0e802e
+    - turn_type: action
+      turn_number: 34
+      action:
+        action: ASK
+        question: Did the person spend most of the Nazi era in exile outside Germany?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c41f7473d3a0ab89a4c6ee9690
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 34
+      guesser_call_id: GC-019fd2c3e4d17646b86c8801e317ee9e
+    - turn_type: action
+      turn_number: 35
+      action:
+        action: ASK
+        question: Was the person known as a pacifist or peace activist?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c4a1e1760e80dce22872ebbeb3
+        answer: 'YES'
+        evidence:
+        - source_url: https://disarmament.blogs.pace.edu/nyc-nuclear-archive/antinuclear-movement-1950s-1960s/
+          excerpt: In 1957, widely respected humanitarian Albert Schweitzer gave a
+            speech condemning atomic bombs.
+          validation: model_reported
+        - source_url: https://www.barnesandnoble.com/w/out-of-my-life-and-thought-albert-schweitzer/1100423191
+          excerpt: Schweitzer is celebrated ... as a catalyst of environmental and
+            peace activism.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 35
+      guesser_call_id: GC-019fd2c4727c74b09be7068e0ff2a549
+    - turn_type: action
+      turn_number: 36
+      action:
+        action: GUESS
+        question: null
+        name: Friedrich Siegmund-Schultze
+        description: German Protestant theologian, pacifist, and social reformer who
+          founded social settlement work in Berlin, opposed the Nazis and lived in
+          exile in Switzerland, died 1969
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd2c50ae8745f8955435b64d7e44b
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Friedrich Siegmund-Schultze, while the
+          trusted subject is Albert Schweitzer.
+        oracle_quality: null
+      counted: true
+      counted_questions: 36
+      guesser_call_id: GC-019fd2c4ea887727be42f83192d64765
+    - turn_type: action
+      turn_number: 37
+      action:
+        action: ASK
+        question: Was the person associated with the religious socialist movement
+          or socialism?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c55c2b70d4b618f0d540a8237e
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 37
+      guesser_call_id: GC-019fd2c5106575f3b70193d20424557e
+    - turn_type: action
+      turn_number: 38
+      action:
+        action: ASK
+        question: Was the person recognized as Righteous Among the Nations by Yad
+          Vashem?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c5fd3d7673a3c5f42d3658afc5
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 38
+      guesser_call_id: GC-019fd2c5b38977c9b3ead95e2210b015
+    - turn_type: action
+      turn_number: 39
+      action:
+        action: GUESS
+        question: null
+        name: Wilhelm Mensching
+        description: German Protestant pastor and pacifist from Petzen who opposed
+          the Nazis, hid a Jewish woman during the war, and led the Fellowship of
+          Reconciliation work in Germany; died 1964
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd2c68ea57160ba804be78ed6e18d
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies Wilhelm Mensching, whereas the trusted
+          subject is Albert Schweitzer.
+        oracle_quality: null
+      counted: true
+      counted_questions: 39
+      guesser_call_id: GC-019fd2c63cea71ac858ee26df5f112c2
+    - turn_type: action
+      turn_number: 40
+      action:
+        action: ASK
+        question: Did the person die in the 1960s?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c6eaac702cb60b678c0ed58854
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Died: 4 September 1965, Lambaréné, Gabon'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 40
+      guesser_call_id: GC-019fd2c6935b7147b5dc1991827efbee
+    - turn_type: action
+      turn_number: 41
+      action:
+        action: ASK
+        question: Was the person a university professor of theology?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c75ffd75188f951f8866608b3b
+        answer: 'YES'
+        evidence:
+        - source_url: https://museeprotestant.org/en/notice/albert-schweitzer-prix-nobel-de-la-paix
+          excerpt: Albert Schweitzer ... was a theologian (professor at the theology
+            school of Strasbourg).
+          validation: model_reported
+        - source_url: https://www.schweitzer.org/en/discover/timeline/studies
+          excerpt: Schweitzer studied and taught at the University of Strasbourg's
+            Protestant Faculty of Theology.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 41
+      guesser_call_id: GC-019fd2c6ff397788a8151622c876bdba
+    - turn_type: action
+      turn_number: 42
+      action:
+        action: GUESS
+        question: null
+        name: Hans Joachim Iwand
+        description: German Protestant theologian and professor, leading Confessing
+          Church member who resisted the Nazis and became a prominent peace activist
+          after the war; died 1960
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd2c8126370e1a780ca67f8b99c8a
+        answer: 'NO'
+        evidence: []
+        explanation: The proposed identity is Hans Joachim Iwand, a different German
+          theologian, whereas the trusted subject is Albert Schweitzer.
+        oracle_quality: null
+      counted: true
+      counted_questions: 42
+      guesser_call_id: GC-019fd2c799aa7674bfcd25e275bba0d5
+    - turn_type: action
+      turn_number: 43
+      action:
+        action: GUESS
+        question: null
+        name: Paul Tillich
+        description: German-American Protestant theologian and professor, religious
+          socialist dismissed by the Nazis in 1933 for opposing them, died in 1965
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd2c8d6ff7758812629c33d2817bd
+        answer: 'NO'
+        evidence: []
+        explanation: The trusted subject is Albert Schweitzer, while the proposed
+          identity is Paul Tillich, a different theologian.
+        oracle_quality: null
+      counted: true
+      counted_questions: 43
+      guesser_call_id: GC-019fd2c81e0f7107ab517740fbc39b03
+    - turn_type: action
+      turn_number: 44
+      action:
+        action: GUESS
+        question: null
+        name: Albert Schweitzer
+        description: Alsatian-German theologian, philosopher, physician, and Nobel
+          Peace Prize-winning humanitarian and pacifist who founded a hospital in
+          Lambaréné; died 1965
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd2c986a27371b415eb35600d3677
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity exactly matches Albert Schweitzer, including
+          the distinctive Lambaréné hospital and Nobel Peace Prize details.
+        oracle_quality: null
+      counted: false
+      counted_questions: 43
+      guesser_call_id: GC-019fd2c8df137205a4b005efd17744e0
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"AMZAISLM"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person a real (non-fictional) person?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person still alive?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die before the year 1900?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known for work in politics or government?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known for work in the arts or entertainment (music, film,
+        literature, visual art)?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known as a scientist or inventor?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known as an athlete or sports figure?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known as a business person or entrepreneur?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known as a religious figure?"}}'
+      turn_number: 9
+    - role: user
+      content: UNKNOWN
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known as an explorer or adventurer?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person known as an activist or social reformer?"}}'
+      turn_number: 11
+    - role: user
+      content: 'YES'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person from the United States?"}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person from India?"}}'
+      turn_number: 13
+    - role: user
+      content: 'NO'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a woman?"}}'
+      turn_number: 14
+    - role: user
+      content: 'NO'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person from Africa?"}}'
+      turn_number: 15
+    - role: user
+      content: 'NO'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person from Europe?"}}'
+      turn_number: 16
+    - role: user
+      content: 'YES'
+      turn_number: 16
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person from Germany?"}}'
+      turn_number: 17
+    - role: user
+      content: 'YES'
+      turn_number: 17
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person known for resisting the Nazi regime?"}}'
+      turn_number: 18
+    - role: user
+      content: 'YES'
+      turn_number: 18
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a member of the White Rose resistance group?"}}'
+      turn_number: 19
+    - role: user
+      content: 'NO'
+      turn_number: 19
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"German Lutheran pastor
+        and theologian who resisted the Nazi regime and was executed in 1945","name":"Dietrich
+        Bonhoeffer","question":null}}'
+      turn_number: 20
+    - role: user
+      content: 'NO'
+      turn_number: 20
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person survive World War II (live beyond 1945)?"}}'
+      turn_number: 21
+    - role: user
+      content: 'YES'
+      turn_number: 21
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"German pastor and anti-Nazi
+        activist famous for the confession ''First they came...'', survived concentration
+        camps and died in 1984","name":"Martin Niemöller","question":null}}'
+      turn_number: 22
+    - role: user
+      content: 'NO'
+      turn_number: 22
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person famous for saving Jews during the Holocaust?"}}'
+      turn_number: 23
+    - role: user
+      content: 'NO'
+      turn_number: 23
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person involved in the July 20, 1944 plot to assassinate Hitler?"}}'
+      turn_number: 24
+    - role: user
+      content: UNKNOWN
+      turn_number: 24
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a lawyer or judge by profession?"}}'
+      turn_number: 25
+    - role: user
+      content: 'NO'
+      turn_number: 25
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a Catholic clergyman?"}}'
+      turn_number: 26
+    - role: user
+      content: 'NO'
+      turn_number: 26
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a Protestant pastor or theologian?"}}'
+      turn_number: 27
+    - role: user
+      content: 'YES'
+      turn_number: 27
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person imprisoned in a concentration camp during the Nazi era?"}}'
+      turn_number: 28
+    - role: user
+      content: 'NO'
+      turn_number: 28
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die after 1980?"}}'
+      turn_number: 29
+    - role: user
+      content: 'NO'
+      turn_number: 29
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person hold the office of bishop in the Protestant church?"}}'
+      turn_number: 30
+    - role: user
+      content: UNKNOWN
+      turn_number: 30
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person known for opposing the Nazi euthanasia program (Aktion T4)?"}}'
+      turn_number: 31
+    - role: user
+      content: UNKNOWN
+      turn_number: 31
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a leading member of the Confessing Church (Bekennende Kirche)?"}}'
+      turn_number: 32
+    - role: user
+      content: UNKNOWN
+      turn_number: 32
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"German Protestant pastor
+        and head of the Bethel Institution who resisted the Nazi euthanasia program,
+        briefly elected Reich Bishop in 1933, died in 1946","name":"Friedrich von
+        Bodelschwingh the Younger","question":null}}'
+      turn_number: 33
+    - role: user
+      content: 'NO'
+      turn_number: 33
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person spend most of the Nazi era in exile outside Germany?"}}'
+      turn_number: 34
+    - role: user
+      content: UNKNOWN
+      turn_number: 34
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person known as a pacifist or peace activist?"}}'
+      turn_number: 35
+    - role: user
+      content: 'YES'
+      turn_number: 35
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"German Protestant theologian,
+        pacifist, and social reformer who founded social settlement work in Berlin,
+        opposed the Nazis and lived in exile in Switzerland, died 1969","name":"Friedrich
+        Siegmund-Schultze","question":null}}'
+      turn_number: 36
+    - role: user
+      content: 'NO'
+      turn_number: 36
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person associated with the religious socialist movement or socialism?"}}'
+      turn_number: 37
+    - role: user
+      content: UNKNOWN
+      turn_number: 37
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person recognized as Righteous Among the Nations by Yad Vashem?"}}'
+      turn_number: 38
+    - role: user
+      content: UNKNOWN
+      turn_number: 38
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"German Protestant pastor
+        and pacifist from Petzen who opposed the Nazis, hid a Jewish woman during
+        the war, and led the Fellowship of Reconciliation work in Germany; died 1964","name":"Wilhelm
+        Mensching","question":null}}'
+      turn_number: 39
+    - role: user
+      content: 'NO'
+      turn_number: 39
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die in the 1960s?"}}'
+      turn_number: 40
+    - role: user
+      content: 'YES'
+      turn_number: 40
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a university professor of theology?"}}'
+      turn_number: 41
+    - role: user
+      content: 'YES'
+      turn_number: 41
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"German Protestant theologian
+        and professor, leading Confessing Church member who resisted the Nazis and
+        became a prominent peace activist after the war; died 1960","name":"Hans Joachim
+        Iwand","question":null}}'
+      turn_number: 42
+    - role: user
+      content: 'NO'
+      turn_number: 42
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"German-American Protestant
+        theologian and professor, religious socialist dismissed by the Nazis in 1933
+        for opposing them, died in 1965","name":"Paul Tillich","question":null}}'
+      turn_number: 43
+    - role: user
+      content: 'NO'
+      turn_number: 43
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Alsatian-German theologian,
+        philosopher, physician, and Nobel Peace Prize-winning humanitarian and pacifist
+        who founded a hospital in Lambaréné; died 1965","name":"Albert Schweitzer","question":null}}'
+      turn_number: 44
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0014
+          gateway: openrouter
+          model: anthropic/claude-fable-5
+          provider: anthropic
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 512
+            ttl_seconds: 300
+            input_usd_per_million: '10.00'
+            cached_input_usd_per_million: '1.00'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 44
+          cost_usd: '1.4679830'
+          latency_ms: 619035
+          total_tokens: 135309
+          input_tokens: 109036
+          cached_input_tokens: 105078
+          cache_write_tokens: 3870
+          output_tokens: 26273
+          reasoning_tokens: 7228
+          estimated_cache_savings_usd: '0.9360270'
+          recovery:
+            request_attempts: 44
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Anthropic
+            calls: 44
+            cost_usd: '1.4679830'
+            latency_ms: 619035
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 36
+          cost_usd: '0.2399792849999999988'
+          latency_ms: 584735
+          total_tokens: 463294
+          input_tokens: 439713
+          cached_input_tokens: 218681
+          cache_write_tokens: 0
+          output_tokens: 23581
+          reasoning_tokens: 15614
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 70
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 36
+              cost_usd: '0.1293136849999999988'
+              latency_ms: 503707
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 28
+              cost_usd: '0.0316306'
+              latency_ms: 46068
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers:
+            - provider: Amazon Bedrock
+              calls: 6
+              cost_usd: '0.079035'
+              latency_ms: 34960
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 8
+          cost_usd: '0.0005432'
+          latency_ms: 14110
+          total_tokens: 3627
+          input_tokens: 3266
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 361
+          reasoning_tokens: 47
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 8
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 8
+            cost_usd: '0.0005432'
+            latency_ms: 14110
+          unreported_calls: 0
+          fallback_calls: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0014/BX-20260805-official-M0014-011/subjects/T-0002/trials/trial-003/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: e2d249e90a222848b18e2bcfc3660d4c08a407a7bcce980e57ccdcc93d79d610

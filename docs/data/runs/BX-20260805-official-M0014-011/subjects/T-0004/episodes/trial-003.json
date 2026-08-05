@@ -1,0 +1,473 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260805-official-M0014-011",
+  "target_id": "T-0004",
+  "trial_id": "trial-003",
+  "episode": {
+    "episode_run_id": "BR-0214013be8e26d9782d92c8102f11b1196b78446",
+    "episode_id": "EP-019fd2f02d61734f9f80b94af481eb27",
+    "subject_name": "Garfield",
+    "subject_description": "Garfield, the lazy, cynical, lasagna-loving orange cat created by Jim Davis and protagonist of the Garfield comic strip, identified by Wikidata entity Q767120.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Garfield_(character)",
+    "started_at": "2026-08-05T17:19:43.457219Z",
+    "completed_at": "2026-08-05T17:23:11.861428Z",
+    "duration_ms": 208404,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 11,
+    "counted_questions": 10,
+    "ask_count": 10,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1379685950000000004",
+    "total_tokens": 90597,
+    "contract": {
+      "evaluated_outputs": 11,
+      "valid_outputs": 11,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0014",
+        "requested_model": "anthropic/claude-fable-5",
+        "requested_provider": "anthropic",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "anthropic/claude-fable-5"
+        ],
+        "resolved_providers": [
+          "Anthropic"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance",
+        "providers": [
+          {
+            "provider": "Anthropic",
+            "calls": 11,
+            "cost_usd": "0.0937595",
+            "latency_ms": 67228
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 10,
+            "cost_usd": "0.0237024950000000004",
+            "latency_ms": 116957
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 1,
+            "cost_usd": "0.000062",
+            "latency_ms": 1930
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "reasoning_effort": "medium",
+        "calls": 10,
+        "cost_usd": "0.0237024950000000004",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 10,
+            "cost_usd": "0.0237024950000000004",
+            "latency_ms": 116957
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "provider_routing": "exact",
+        "reasoning_effort": "medium",
+        "calls": 10,
+        "cost_usd": "0.0088296",
+        "providers": [
+          {
+            "provider": "Google AI Studio",
+            "calls": 10,
+            "cost_usd": "0.0088296",
+            "latency_ms": 13376
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "openrouter-auto",
+        "provider_routing": "automatic",
+        "reasoning_effort": "medium",
+        "calls": 1,
+        "cost_usd": "0.011615",
+        "providers": [
+          {
+            "provider": "Amazon Bedrock",
+            "calls": 1,
+            "cost_usd": "0.011615",
+            "latency_ms": 8670
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"fictional_character\",\"event\":\"BEGIN\",\"variation_token\":\"AMZAISLM\"}",
+      "required_formats": null,
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 11,
+        "cost_usd": "0.0937595",
+        "latency_ms": 67228,
+        "total_tokens": 18076,
+        "input_tokens": 16953,
+        "cached_input_tokens": 15152,
+        "cache_write_tokens": 1779,
+        "output_tokens": 1123,
+        "reasoning_tokens": 503,
+        "estimated_cache_savings_usd": "0.1319205"
+      },
+      "oracle": {
+        "calls": 10,
+        "cost_usd": "0.0441470950000000004",
+        "latency_ms": 139003,
+        "total_tokens": 72106,
+        "input_tokens": 66463,
+        "cached_input_tokens": 16722,
+        "cache_write_tokens": 0,
+        "output_tokens": 5643,
+        "reasoning_tokens": 3814,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.000062",
+        "latency_ms": 1930,
+        "total_tokens": 415,
+        "input_tokens": 374,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 41,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the character human?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.musicbrainz.org/artist/88019054-68a7-4478-9965-5e9673369667",
+            "excerpt": "Garfield is a fictional American cat and the protagonist of the comic strip of the same name.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character human?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the character an animal?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://variety.com/2019/tv/news/garfield-nickelodedon-licensing-rights-viacom-1203293468",
+            "excerpt": "Viacom's Nickelodeon Acquires Comic-Strip Cat Garfield",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://musicbrainz.org/artist/88019054-68a7-4478-9965-5e9673369667",
+            "excerpt": "Garfield is a fictional American cat and the protagonist of the comic strip of the same name.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character an animal?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Did the character originate in an animated film or TV cartoon?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.hollywoodreporter.com/movies/movie-news/chris-pratt-garfield-animated-feature-1235039314",
+            "excerpt": "Created by Jim Davis, Garfield first appeared in comics sections in 1978.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield",
+            "excerpt": "Garfield, American newspaper comic strip... The strip quickly achieved widespread popularity, spinning off a series of animated television specials.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in an animated film or TV cartoon?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Did the character originate in a book or other literature?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://history.howstuffworks.com/american-history/garfield.htm",
+            "excerpt": "\"Garfield\" is the most widely syndicated comic strip in the world.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/dictionary/comic-strip",
+            "excerpt": "A comic strip is a series of cartoon drawings that tell a story or part of a story.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in a book or other literature?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Did the character originate in a video game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield%3Anmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features... Garfield has been represented in books, films, television specials, video games, amusement park attractions, and merchandise.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Jim-Davis-American-cartoonist",
+            "excerpt": "Davis changed the name of the comic strip to Garfield.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in a video game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Did the character originate in a comic strip or comic book?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.si.edu/object/camera-ready-comic-art-drawing-garfield%3Anmah_1367415",
+            "excerpt": "In 1978 he launched Garfield for United Features.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Jim-Davis-American-cartoonist",
+            "excerpt": "Davis changed the name of the comic strip to Garfield.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character originate in a comic strip or comic book?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is the character a dog?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.gocomics.com/garfield",
+            "excerpt": "Garfield, the orange tabby cat",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.theatlantic.com/culture/archive/2023/09/garfield-comic-appreciation/675308",
+            "excerpt": "The comic is about what it's like to live with a cat, because Garfield is a cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a dog?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the character a cat (including big cats like tigers)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield-character",
+            "excerpt": "Garfield — cartoon character.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a cat (including big cats like tigers)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is the character a tiger?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Jim-Davis-American-cartoonist",
+            "excerpt": "The grumpy orange cat was named after Davis’s cantankerous and gruff-on-the-outside but soft-on-the-inside grandfather.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a tiger?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Is the character an orange/ginger cat?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Garfield",
+            "excerpt": "Garfield is a round-bodied, orange and black tabby cat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character an orange/ginger cat?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Garfield",
+        "guess_description": "The lazy, lasagna-loving orange cat from Jim Davis's comic strip",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Garfield, the fictional orange cat created by Jim Davis and known for laziness and lasagna.",
+        "counted": false,
+        "counted_questions": 10,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"The lazy, lasagna-loving orange cat from Jim Davis's comic strip\",\"name\":\"Garfield\",\"question\":null}}"
+      }
+    ]
+  }
+}

@@ -41,6 +41,7 @@ from .models import (
     PublicSubject,
     PublicTrial,
     PublishedDataset,
+    RoleProviderUsageSnapshot,
     SubjectCatalog,
     SubjectSummary,
     Winner,
@@ -151,16 +152,25 @@ def _public_component_telemetry(
     )
 
 
-def _public_model_version(version: EpisodeModelVersion) -> PublicEpisodeModelVersion:
+def _public_model_version(
+    version: EpisodeModelVersion,
+    *,
+    provider_routing: Literal["exact", "automatic"],
+    provider_usage: RoleProviderUsageSnapshot,
+) -> PublicEpisodeModelVersion:
     return PublicEpisodeModelVersion(
         role=version.role,
         configuration_id=version.configuration_id,
         requested_model=version.requested_model,
         requested_provider=version.requested_provider,
+        provider_routing=provider_routing,
         resolved_models=version.resolved_models,
         resolved_providers=version.resolved_providers,
         reasoning_effort=version.reasoning_effort,
         prompt_version=version.prompt_version,
+        providers=provider_usage.providers,
+        unreported_calls=provider_usage.unreported_calls,
+        fallback_calls=provider_usage.fallback_calls,
     )
 
 
@@ -169,13 +179,18 @@ def _public_oracle_support_role(
     *,
     calls: int,
     cost_usd: Decimal,
+    provider_usage: RoleProviderUsageSnapshot,
 ) -> PublicOracleSupportRole:
     return PublicOracleSupportRole(
         requested_model=configuration.model,
         requested_provider=configuration.provider,
+        provider_routing=configuration.provider_routing,
         reasoning_effort=configuration.reasoning_effort,
         calls=calls,
         cost_usd=cost_usd,
+        providers=provider_usage.providers,
+        unreported_calls=provider_usage.unreported_calls,
+        fallback_calls=provider_usage.fallback_calls,
     )
 
 
@@ -319,13 +334,22 @@ def _public_episode(episode: LoadedEpisode) -> PublicEpisodeDetail:
         total_cost_usd=result.summary.costs_usd.total,
         total_tokens=result.summary.tokens.total,
         contract=_contract(result.summary.contract),
-        models=tuple(
-            _public_model_version(version)
-            for version in (
+        models=(
+            _public_model_version(
                 result.models.under_test,
+                provider_routing="exact",
+                provider_usage=result.llm_details.guesser.provider_usage,
+            ),
+            _public_model_version(
                 result.models.oracle,
+                provider_routing=oracle_configuration.provider_routing,
+                provider_usage=result.llm_details.oracle.provider_usage.oracle,
+            ),
+            _public_model_version(
                 result.models.validator,
-            )
+                provider_routing="exact",
+                provider_usage=result.llm_details.validator.provider_usage,
+            ),
         ),
         oracle_support=PublicOracleSupportUsage(
             oracle=_public_oracle_support_role(
@@ -334,16 +358,19 @@ def _public_episode(episode: LoadedEpisode) -> PublicEpisodeDetail:
                 cost_usd=(
                     result.summary.costs_usd.oracle - oracle_quality.quality_control_cost_usd
                 ),
+                provider_usage=result.llm_details.oracle.provider_usage.oracle,
             ),
             reviewer=_public_oracle_support_role(
                 oracle_configuration.reviewer,
                 calls=oracle_quality.reviewed_questions,
                 cost_usd=oracle_quality.reviewer_cost_usd,
+                provider_usage=result.llm_details.oracle.provider_usage.reviewer,
             ),
             judge=_public_oracle_support_role(
                 oracle_configuration.judge,
                 calls=oracle_quality.judge_invocations,
                 cost_usd=oracle_quality.judge_cost_usd,
+                provider_usage=result.llm_details.oracle.provider_usage.judge,
             ),
         ),
         guesser_disclosure=guesser_disclosure,

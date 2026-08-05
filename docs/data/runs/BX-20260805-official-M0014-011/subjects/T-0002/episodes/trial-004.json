@@ -1,0 +1,803 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260805-official-M0014-011",
+  "target_id": "T-0002",
+  "trial_id": "trial-004",
+  "episode": {
+    "episode_run_id": "BR-4ccc86590b642ef3219110ea0c3ad86782500e74",
+    "episode_id": "EP-019fd2c98bf271c3bc8b656f3634e01d",
+    "subject_name": "Albert Schweitzer",
+    "subject_description": "Albert Schweitzer, the Alsatian physician, theologian, philosopher, organist, and 1952 Nobel Peace Prize laureate known for founding a hospital at Lambaréné, identified by Wikidata entity Q49325.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Albert_Schweitzer",
+    "started_at": "2026-08-05T16:37:31.762042Z",
+    "completed_at": "2026-08-05T16:48:46.273235Z",
+    "duration_ms": 674511,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 28,
+    "counted_questions": 27,
+    "ask_count": 22,
+    "guess_count": 6,
+    "rejected_guess_count": 5,
+    "oracle_unknown_count": 2,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.5915952099999999988",
+    "total_tokens": 299760,
+    "contract": {
+      "evaluated_outputs": 28,
+      "valid_outputs": 28,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0014",
+        "requested_model": "anthropic/claude-fable-5",
+        "requested_provider": "anthropic",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "anthropic/claude-fable-5"
+        ],
+        "resolved_providers": [
+          "Anthropic"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance",
+        "providers": [
+          {
+            "provider": "Anthropic",
+            "calls": 28,
+            "cost_usd": "0.4485450",
+            "latency_ms": 333966
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 22,
+            "cost_usd": "0.0638587099999999988",
+            "latency_ms": 265026
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 6,
+            "cost_usd": "0.0003666",
+            "latency_ms": 13129
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "reasoning_effort": "medium",
+        "calls": 22,
+        "cost_usd": "0.0638587099999999988",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 22,
+            "cost_usd": "0.0638587099999999988",
+            "latency_ms": 265026
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "provider_routing": "exact",
+        "reasoning_effort": "medium",
+        "calls": 20,
+        "cost_usd": "0.0228099",
+        "providers": [
+          {
+            "provider": "Google AI Studio",
+            "calls": 20,
+            "cost_usd": "0.0228099",
+            "latency_ms": 35415
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "openrouter-auto",
+        "provider_routing": "automatic",
+        "reasoning_effort": "medium",
+        "calls": 5,
+        "cost_usd": "0.056015",
+        "providers": [
+          {
+            "provider": "Amazon Bedrock",
+            "calls": 5,
+            "cost_usd": "0.056015",
+            "latency_ms": 26349
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"BYOMPCJW\"}",
+      "required_formats": null,
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 28,
+        "cost_usd": "0.4485450",
+        "latency_ms": 333966,
+        "total_tokens": 62984,
+        "input_tokens": 55765,
+        "cached_input_tokens": 52985,
+        "cache_write_tokens": 2724,
+        "output_tokens": 7219,
+        "reasoning_tokens": 2750,
+        "estimated_cache_savings_usd": "0.4700550"
+      },
+      "oracle": {
+        "calls": 22,
+        "cost_usd": "0.1426836099999999988",
+        "latency_ms": 326790,
+        "total_tokens": 234185,
+        "input_tokens": 219778,
+        "cached_input_tokens": 95561,
+        "cache_write_tokens": 0,
+        "output_tokens": 14407,
+        "reasoning_tokens": 9910,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 6,
+        "cost_usd": "0.0003666",
+        "latency_ms": 13129,
+        "total_tokens": 2591,
+        "input_tokens": 2376,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 215,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is this person a real (non-fictional) person?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer Born 14 January 1875... Died 4 September 1965.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person a real (non-fictional) person?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is this person currently alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://archives.yale.edu/agents/people/58742",
+            "excerpt": "Albert Schweitzer (1875-1965) ... Existence: 1875-01-04 - 1965-09-04",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person currently alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Did this person die before the year 1900?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer — Born: 14 January 1875. Died: 4 September 1965.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person die before the year 1900?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Was this person primarily known for work in politics or government?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history",
+            "excerpt": "The mere mention of the name Schweitzer instantly conjured up images of selflessness, heroism and the very model of a modern, humane physician.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nytimes.com/1965/09/06/archives/albert-schweitzer-90-dies-at-his-hospital-doctor-won-nobel-peace.html",
+            "excerpt": "Doctor Won Nobel Peace Prize for Work in Africa He Was Also Noted as Musician and Theologian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known for work in politics or government?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Was this person primarily known for work in the arts or entertainment (e.g., music, film, literature)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelpeaceprize.org/laureates/1952",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his altruism, reverence for life, and tireless humanitarian work.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://press.jhu.edu/books/authors/albert-schweitzer",
+            "excerpt": "Although he was highly gifted in science, theology, and music and as an author, Schweitzer dedicated the last six decades of his life to medicine and to a hospital he founded.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known for work in the arts or entertainment (e.g., music, film, literature)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Was this person primarily known as a scientist or for scientific work?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Doctor, Missionary, Philosopher and Musician; awarded the Nobel Peace Prize for his altruism, reverence for life, and tireless humanitarian work.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work. He was a theologian and philosopher who later became a doctor in Africa.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known as a scientist or for scientific work?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Was this person primarily known as an athlete or for sports?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work. Minister turned doctor in Africa; theologian and philosopher.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nytimes.com/1965/09/06/archives/albert-schweitzer-90-dies-at-his-hospital-doctor-won-nobel-peace.html",
+            "excerpt": "Doctor Won Nobel Peace Prize for Work in Africa He Was Also Noted as Musician and Theologian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known as an athlete or for sports?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Was this person primarily known for business or entrepreneurship?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history",
+            "excerpt": "Dr. Albert Schweitzer, a renowned medical missionary... founded a hospital in Lambaréné.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known for business or entrepreneurship?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Was this person primarily known as a religious figure?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known as a religious figure?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Was this person known for activism or leading a social movement?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://academic.oup.com/book/9266/chapter/162607150",
+            "excerpt": "Schweitzer in all of his facets ... as a ... political activist.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelpeaceprize.org/laureates/1952",
+            "excerpt": "The respect of the Nobel Prize Laureate for all life made him issue his warning against nuclear tests and the dangers from radioactive fall-out.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person known for activism or leading a social movement?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Was this person a man?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.pbs.org/newshour/amp/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history",
+            "excerpt": "A complex man, to be sure, but his humanitarianism did affect the lives of many patients.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a man?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Was this person American?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://media.un.org/avlibrary/en/asset/d108/d1089939",
+            "excerpt": "Albert Schweitzer (German-French theologian, musician, philosopher, and physician)",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/ceremony-speech/",
+            "excerpt": "Albert Schweitzer was born in Alsace in 1875, a few years after this province had become part of the German Empire.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person American?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Mahatma Gandhi",
+        "guess_description": "Indian independence leader known for nonviolent civil disobedience",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Mahatma Gandhi, while the trusted subject is Albert Schweitzer.",
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Indian independence leader known for nonviolent civil disobedience\",\"name\":\"Mahatma Gandhi\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Was this person from Africa?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Born: 14 January 1875, Kaysersberg, Germany (now France) ... Residence at the time of the award: France.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person from Africa?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Was this person from Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Born: 14 January 1875, Kaysersberg, Germany (now France).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person from Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Was this person from Europe?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Born: 14 January 1875, Kaysersberg, Germany (now France).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person from Europe?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Did this person die after the year 1950?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Died: 4 September 1965, Lambaréné, Gabon",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person die after the year 1950?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Was this person French?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://www.mayoclinicproceedings.org/article/S0025-6196(19)30465-3/abstract",
+            "excerpt": "Although Schweitzer considered himself French — and would formally take French citizenship after World War I",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person French?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Was this person a Catholic priest?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [
+          {
+            "source_url": "https://www.peninsuladailynews.com/2017/06/04/issues-of-faith-calling-on-albert-schweitzer-and-his-stand-to-reason/",
+            "excerpt": "Schweitzer, an ordained Lutheran minister",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.churchtimes.co.uk/articles/2025/5-september/comment/columnists/angela-tilby-albert-schweitzer-s-scholarship-led-to-service",
+            "excerpt": "Ordained as a Lutheran pastor",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a Catholic priest?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Was this person known for environmental activism?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [
+          {
+            "source_url": "https://www.barnesandnoble.com/w/out-of-my-life-and-thought-albert-schweitzer/1100423191",
+            "excerpt": "Schweitzer is celebrated ... as a catalyst of environmental and peace activism.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person known for environmental activism?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Jacques Cousteau",
+        "guess_description": "French ocean explorer, filmmaker, and marine conservation advocate",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Jacques Cousteau, while the trusted subject is Albert Schweitzer.",
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French ocean explorer, filmmaker, and marine conservation advocate\",\"name\":\"Jacques Cousteau\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Pierre Rabhi",
+        "guess_description": "French farmer, writer, and pioneer of agroecology who founded the Colibris movement",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Pierre Rabhi, a different person from Albert Schweitzer.",
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French farmer, writer, and pioneer of agroecology who founded the Colibris movement\",\"name\":\"Pierre Rabhi\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "ASK",
+        "question": "Did this person run in a French presidential election?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person run in a French presidential election?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "ASK",
+        "question": "Did this person die after the year 2000?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer ... Died: 4 September 1965, Lambaréné, Gabon",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person die after the year 2000?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "ASK",
+        "question": "Was this person a Protestant?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [
+          {
+            "source_url": "http://justus.anglican.org/resources/bio/238.html",
+            "excerpt": "He was ordained to the Lutheran ministry and became a preacher and a lecturer in philosophy.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a Protestant?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Jacques Ellul",
+        "guess_description": "French Protestant philosopher, sociologist, and theologian known for his critique of technology and pioneering environmental thought",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Jacques Ellul, a different person from the trusted subject Albert Schweitzer.",
+        "counted": true,
+        "counted_questions": 26,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French Protestant philosopher, sociologist, and theologian known for his critique of technology and pioneering environmental thought\",\"name\":\"Jacques Ellul\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 27,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Théodore Monod",
+        "guess_description": "French naturalist, desert explorer, Protestant humanist, and environmental and pacifist activist who died in 2000",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Théodore Monod, a different person from Albert Schweitzer.",
+        "counted": true,
+        "counted_questions": 27,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French naturalist, desert explorer, Protestant humanist, and environmental and pacifist activist who died in 2000\",\"name\":\"Théodore Monod\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 28,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Albert Schweitzer",
+        "guess_description": "Alsatian-French theologian, physician, and humanitarian known for his 'Reverence for Life' philosophy and his hospital in Lambaréné, Gabon",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity exactly matches Albert Schweitzer, including the distinctive Lambaréné hospital and theological, medical, and humanitarian work.",
+        "counted": false,
+        "counted_questions": 27,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Alsatian-French theologian, physician, and humanitarian known for his 'Reverence for Life' philosophy and his hospital in Lambaréné, Gabon\",\"name\":\"Albert Schweitzer\",\"question\":null}}"
+      }
+    ]
+  }
+}

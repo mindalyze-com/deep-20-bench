@@ -97,12 +97,16 @@ download and is not imported into the application bundle. Browser promise cachin
 to these immutable public reporting files. It is application caching, not provider prompt
 caching, and it cannot affect model requests, benchmark execution, or Guesser-visible state.
 
-The generated entry HTML also contains a complete static executive summary. The build derives
-its current result and cohort facts from the same validated manifest and leaderboard used by the
-SPA. Browsers and crawlers without JavaScript receive the benchmark purpose, scope, result,
-method, limitations, and data links. The Vue application replaces this static page after it
-starts. The build also emits the canonical URL, Dataset structured data, `robots.txt`, and a
-homepage sitemap.
+The generated entry HTML contains a complete static executive summary. The build derives its
+current result and cohort facts from the same validated manifest and leaderboard used by the
+SPA. It also generates a concise static summary for each editorial route in the sitemap. The
+results summary includes the current official leader and top three model scores. Browsers and
+crawlers without JavaScript receive the benchmark purpose, scope, result, method, limitations,
+and data links. The Vue application replaces each static summary after it starts. The build also
+emits route-specific titles, descriptions, canonical URLs, Dataset structured data for the
+homepage, `robots.txt`, and a sitemap generated from the explicit public editorial-route policy.
+Run, subject, episode, error, and download URLs are excluded from the sitemap. Dynamic HTML
+detail routes retain the generic JavaScript fallback and use `noindex, follow`.
 
 The app uses clean history routes. Generated route shells make direct reloads work on static
 HTTP hosts. Direct `file://` navigation is not supported because clean history paths require an
@@ -291,11 +295,13 @@ snapshot, not the owner-only diagnostics. Episode pages show the typed rejection
 captured text when one exists, and the required formats from the exact `FORMAT_ERROR` event.
 Calls with no textual completion are labeled as such.
 
-The technical section exposes requested/resolved models and providers, prompt-contract versions,
-token/cache/latency/cost telemetry, and immutable episode provenance. The compiler intentionally
-does not project system instructions, raw Guesser conversation records, variation tokens, call
-IDs, response IDs, support-model outputs, sessions, cache keys, recovery diagnostics,
-credentials, or headers.
+The technical section exposes requested/resolved models and providers, routing policy, safe
+per-provider call/cost/latency totals, fallback counts, prompt-contract versions, component
+telemetry, and immutable episode provenance for every LLM role. Legacy episodes keep their
+recorded resolved-provider names and state that per-call provider totals were not retained. The
+compiler intentionally does not project system instructions, raw Guesser conversation records,
+variation tokens, call IDs, response IDs, support-model outputs, sessions, cache keys, recovery
+diagnostics, credentials, or headers.
 The package accepts only the current manifest/summary schema 3, episode schema 9, and game
 protocol 9. It has no legacy adapter, schema downgrade, or per-run exclusion path. Every
 discovered run must satisfy the current strict read contract. Internal read-model names remain

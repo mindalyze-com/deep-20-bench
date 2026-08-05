@@ -6,7 +6,13 @@ from types import SimpleNamespace
 
 import httpx
 import pytest
-from deep20_oracle.config import EvidenceReviewConfig, OracleConfig
+from deep20_oracle.config import (
+    OPENROUTER_AUTO_PROVIDER,
+    EvidenceReviewConfig,
+    OracleConfig,
+    ProviderRouting,
+    TokenLimitParameter,
+)
 from deep20_oracle.errors import OracleProviderError
 from deep20_oracle.models import OracleResult, RecoveryReason
 from deep20_oracle.openrouter_provider import OpenRouterProvider
@@ -125,6 +131,8 @@ def test_openrouter_adapter_makes_one_search_and_schema_request() -> None:
     assert sent["provider"]["allow_fallbacks"] is False
     assert sent["session_id"] == "oracle-session"
     assert sent["prompt_cache_key"] == "oracle-cache-key-parallel"
+    assert sent["max_completion_tokens"] == config.max_output_tokens
+    assert "max_tokens" not in sent
     assert "require_parameters" not in sent["provider"]
     assert sent["retries"].strategy == "none"
     evidence_schema = sent["response_format"]["json_schema"]["schema"]["$defs"]["Evidence"]
@@ -192,6 +200,64 @@ def test_evidence_review_adapter_has_no_web_tool_and_uses_isolated_cache_suffix(
     assert sent["reasoning_effort"] == "medium"
     assert sent["response_format"]["json_schema"]["name"] == "reviewer_result"
     assert sent["prompt_cache_key"] == "reviewer-cache-key-no-web"
+    assert sent["max_completion_tokens"] == config.max_output_tokens
+    assert "max_tokens" not in sent
+    assert sent["provider"]["require_parameters"] is True
+
+
+def test_exact_evidence_review_route_uses_configured_max_tokens_parameter() -> None:
+    config = EvidenceReviewConfig(
+        model="google/gemini-3.5-flash-lite",
+        provider="google-ai-studio",
+        reasoning_effort="medium",
+        token_limit_parameter=TokenLimitParameter.MAX_TOKENS,
+    )
+    provider = OpenRouterProvider.__new__(OpenRouterProvider)
+    provider.config = config
+    provider.enable_web_search = False
+
+    sent = provider._request_payload(
+        ProviderRequest(
+            messages=({"role": "user", "content": "evidence data"},),
+            output_schema=OracleResult.model_json_schema(),
+            response_schema_name="reviewer_result",
+        )
+    )
+
+    assert sent["provider"] == {
+        "allow_fallbacks": False,
+        "only": ["google-ai-studio"],
+        "require_parameters": True,
+    }
+    assert sent["max_tokens"] == config.max_output_tokens
+    assert "max_completion_tokens" not in sent
+
+
+def test_automatic_evidence_review_route_lets_openrouter_select_provider() -> None:
+    config = EvidenceReviewConfig(
+        model="anthropic/claude-opus-5",
+        provider=OPENROUTER_AUTO_PROVIDER,
+        provider_routing=ProviderRouting.AUTOMATIC,
+        allow_fallbacks=True,
+        token_limit_parameter=TokenLimitParameter.MAX_TOKENS,
+    )
+    provider = OpenRouterProvider.__new__(OpenRouterProvider)
+    provider.config = config
+    provider.enable_web_search = False
+
+    sent = provider._request_payload(
+        ProviderRequest(
+            messages=({"role": "user", "content": "evidence data"},),
+            output_schema=OracleResult.model_json_schema(),
+        )
+    )
+
+    assert sent["provider"] == {
+        "allow_fallbacks": True,
+        "require_parameters": True,
+    }
+    assert sent["max_tokens"] == config.max_output_tokens
+    assert "max_completion_tokens" not in sent
 
 
 def test_openrouter_adapter_preserves_http_error_response_in_trace() -> None:

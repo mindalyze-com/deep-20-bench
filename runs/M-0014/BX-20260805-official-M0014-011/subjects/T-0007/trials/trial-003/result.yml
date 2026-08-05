@@ -1,0 +1,744 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260805-official-M0014-011
+    model_id: M-0014
+    target_id: T-0007
+    trial_id: trial-003
+    trial_number: 3
+    episode_run_id: BR-b08d553a640a8fe255fe926a8e32a55b96520ce7
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-b08d553a640a8fe255fe926a8e32a55b96520ce7
+      episode_id: EP-019fd317068974e1896f1717af8bfd5d
+      subject:
+        target_id: T-0007
+        canonical_name: Mario
+        aliases:
+        - Super Mario
+        - Jumpman
+        entity_type: video_game_character
+        description: Mario, the fictional Nintendo video-game character created by
+          Shigeru Miyamoto and protagonist of the Mario franchise, identified by Wikidata
+          entity Q12379.
+        reference_url: https://en.wikipedia.org/wiki/Mario
+      started_at: '2026-08-05T18:02:09.417048+00:00'
+      completed_at: '2026-08-05T18:05:00.568696+00:00'
+      duration_ms: 171152
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 8
+      counted_questions: 7
+      guesser_call_count: 8
+      ask_count: 7
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      oracle_quality:
+        reviewed_questions: 7
+        agreements: 7
+        disagreements: 0
+        judge_invocations: 0
+        oracle_answers_changed: 0
+        final_unknown_answers: 0
+        judge_yes_answers: 0
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0052733'
+        judge_cost_usd: '0'
+        quality_control_cost_usd: '0.0052733'
+        question_types:
+        - question_type: other
+          reviewed_questions: 6
+          disagreements: 0
+        - question_type: temporal_comparison
+          reviewed_questions: 1
+          disagreements: 0
+      contract:
+        evaluated_outputs: 8
+        valid_outputs: 8
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.0748925'
+        oracle: '0.0204927599999999987'
+        validator: '0.0000589'
+        total: '0.0954441599999999987'
+      tokens:
+        guesser: 12694
+        oracle: 45565
+        validator: 404
+        total: 58663
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0014
+        requested_model: anthropic/claude-fable-5
+        requested_provider: anthropic
+        resolved_models:
+        - anthropic/claude-fable-5
+        resolved_providers:
+        - Anthropic
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the character human (or human-like)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd31717a471feb5dc7559698b634a
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Super-Mario-Bros
+          excerpt: It stars Mario and Luigi, two Italian plumbers who find themselves
+            in the Mushroom Kingdom.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fd317068974e1896f171929a8fba2
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the character male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3176ae6769ba08306c0e8fb53f6
+        answer: 'YES'
+        evidence:
+        - source_url: https://mario.nintendo.com/about
+          excerpt: Meet Mario, the mustached hero of the Mushroom Kingdom.
+          validation: model_reported
+        - source_url: https://www.scrippsnews.com/business/company-news/nintendo-video-game-character-mario-isn-t-a-plumber-anymore
+          excerpt: Nintendo's iconic video game character... the mustachioed man.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fd31759f771deac82d76dac7873ce
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Did the character first appear in a game released before the year
+          2000?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd317e13276c7a5c006fb36d657c6
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.bbc.co.uk/news/articles/cj6x5574enpo
+          excerpt: The character's first appearance was in 1981, in the arcade game
+            Donkey Kong, when he was known as Jumpman.
+          validation: model_reported
+        - source_url: https://www.britannica.com/topic/Super-Mario-Bros
+          excerpt: Mario debuted as Jumpman in Donkey Kong (1981) before appearing
+            in Mario Bros. (1983).
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fd317cde571f382512509aa6158f2
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is the character the main protagonist of his game series?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3181d7076a4832ffae3836fa829
+        answer: 'YES'
+        evidence:
+        - source_url: https://simple.wikipedia.org/wiki/Mario_(franchise)
+          excerpt: Mario ... is the main protagonist throughout most of the series.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fd3180104724d9bc028fcfc489c56
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Did the character first appear in a game made by a Japanese company?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3186fc177489301685556854067
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/print/article/1468272
+          excerpt: Donkey Kong, originally released in 1981 by the Japanese Nintendo
+            Company Ltd.; the game marked the first appearance of Jumpman, better
+            known as Mario.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019fd318578170d0b64a9ffbb56620d1
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Did the character first appear in a game made by Nintendo?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd318c40c720c8ff170290977bf3b
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/print/article/1468272
+          excerpt: Donkey Kong, originally released in 1981 by the Japanese Nintendo
+            Company Ltd., marked the first appearance of Jumpman, better known as
+            Mario.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019fd318a99d77c18aed240bfe380bd4
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Does the character primarily use a sword as his weapon?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd319193a72499abe960ad308380c
+        answer: 'NO'
+        evidence:
+        - source_url: https://cyberpost.co/has-mario-ever-had-a-gun/
+          excerpt: Outside of the Mario + Rabbids games, Mario’s main “weapon” is
+            arguably his jump. However, he also frequently uses fireballs.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019fd318f94477d189bba5fc63f00356
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: GUESS
+        question: null
+        name: Mario
+        description: Nintendo's mustachioed Italian plumber, protagonist of the Super
+          Mario series
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd319982572c78fd239470294ddb5
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity matches Mario, the Nintendo video-game
+          character and protagonist of the Super Mario series.
+        oracle_quality: null
+      counted: false
+      counted_questions: 7
+      guesser_call_id: GC-019fd3197dce7130b0da749685e990c4
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"video_game_character","event":"BEGIN","variation_token":"AMZAISLM"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character human (or human-like)?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character male?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the character first appear in a game released before the year 2000?"}}'
+      turn_number: 3
+    - role: user
+      content: 'YES'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character the main protagonist of his game series?"}}'
+      turn_number: 4
+    - role: user
+      content: 'YES'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the character first appear in a game made by a Japanese company?"}}'
+      turn_number: 5
+    - role: user
+      content: 'YES'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the character first appear in a game made by Nintendo?"}}'
+      turn_number: 6
+    - role: user
+      content: 'YES'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        the character primarily use a sword as his weapon?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Nintendo''s mustachioed
+        Italian plumber, protagonist of the Super Mario series","name":"Mario","question":null}}'
+      turn_number: 8
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0014
+          gateway: openrouter
+          model: anthropic/claude-fable-5
+          provider: anthropic
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 512
+            ttl_seconds: 300
+            input_usd_per_million: '10.00'
+            cached_input_usd_per_million: '1.00'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 8
+          cost_usd: '0.0748925'
+          latency_ms: 48802
+          total_tokens: 12694
+          input_tokens: 11816
+          cached_input_tokens: 10145
+          cache_write_tokens: 1655
+          output_tokens: 878
+          reasoning_tokens: 342
+          estimated_cache_savings_usd: '0.0871675'
+          recovery:
+            request_attempts: 8
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Anthropic
+            calls: 8
+            cost_usd: '0.0748925'
+            latency_ms: 48802
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 7
+          cost_usd: '0.0204927599999999987'
+          latency_ms: 119362
+          total_tokens: 45565
+          input_tokens: 42592
+          cached_input_tokens: 10106
+          cache_write_tokens: 0
+          output_tokens: 2973
+          reasoning_tokens: 1876
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 14
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 7
+              cost_usd: '0.0152194599999999987'
+              latency_ms: 109523
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 7
+              cost_usd: '0.0052733'
+              latency_ms: 9839
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers: []
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0000589'
+          latency_ms: 2793
+          total_tokens: 404
+          input_tokens: 367
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 37
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.0000589'
+            latency_ms: 2793
+          unreported_calls: 0
+          fallback_calls: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0014/BX-20260805-official-M0014-011/subjects/T-0007/trials/trial-003/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: ef7cc6a104547a452e1377a11514931bcef6761c5f023f7be838991ada6d0fb7

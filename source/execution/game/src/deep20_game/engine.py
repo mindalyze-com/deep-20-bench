@@ -65,8 +65,11 @@ from .models import (
     GuessValidatorCall,
     LlmVersion,
     OracleLlmDetails,
+    OracleProviderUsage,
     OracleQualityTotals,
     OracleQuestionTypeTotals,
+    ResolvedProviderUsage,
+    RoleProviderUsage,
     TerminalReason,
     TurnAdjudication,
     TurnProgress,
@@ -148,6 +151,63 @@ class ValidatorClient(Protocol):
 
 
 @dataclass
+class _MutableResolvedProviderUsage:
+    provider: str
+    calls: int = 0
+    cost_usd: Decimal = Decimal(0)
+    latency_ms: int = 0
+
+
+@dataclass
+class _MutableRoleProviderUsage:
+    providers: dict[str, _MutableResolvedProviderUsage] = field(
+        default_factory=dict
+    )
+    unreported_calls: int = 0
+    fallback_calls: int = 0
+
+    def observe(
+        self,
+        trace: ProviderTrace,
+        *,
+        cost_usd: Decimal | None,
+        latency_ms: int,
+    ) -> None:
+        self.fallback_calls += int(
+            getattr(trace, "fallback_occurred", None) is True
+        )
+        if trace.resolved_provider is None:
+            self.unreported_calls += 1
+            return
+        key = trace.resolved_provider.casefold()
+        usage = self.providers.get(key)
+        if usage is None:
+            usage = _MutableResolvedProviderUsage(provider=trace.resolved_provider)
+            self.providers[key] = usage
+        usage.calls += 1
+        usage.cost_usd += cost_usd or Decimal(0)
+        usage.latency_ms += latency_ms
+
+    def frozen(self) -> RoleProviderUsage:
+        return RoleProviderUsage(
+            providers=tuple(
+                ResolvedProviderUsage(
+                    provider=usage.provider,
+                    calls=usage.calls,
+                    cost_usd=usage.cost_usd,
+                    latency_ms=usage.latency_ms,
+                )
+                for usage in sorted(
+                    self.providers.values(),
+                    key=lambda item: item.provider.casefold(),
+                )
+            ),
+            unreported_calls=self.unreported_calls,
+            fallback_calls=self.fallback_calls,
+        )
+
+
+@dataclass
 class _MutableTotals:
     calls: int = 0
     cost_usd: Decimal = Decimal(0)
@@ -181,6 +241,15 @@ class _MutableTotals:
     question_type_disagreements: dict[OracleQuestionType, int] = field(
         default_factory=dict
     )
+    provider_usage: _MutableRoleProviderUsage = field(
+        default_factory=lambda: _MutableRoleProviderUsage()
+    )
+    reviewer_provider_usage: _MutableRoleProviderUsage = field(
+        default_factory=lambda: _MutableRoleProviderUsage()
+    )
+    judge_provider_usage: _MutableRoleProviderUsage = field(
+        default_factory=lambda: _MutableRoleProviderUsage()
+    )
 
     def add_metrics(
         self,
@@ -199,6 +268,11 @@ class _MutableTotals:
         self.recovery = combine_recovery_totals(self.recovery, metrics.recovery)
         if trace is not None:
             self._add_route(trace)
+            self.provider_usage.observe(
+                trace,
+                cost_usd=metrics.cost_usd,
+                latency_ms=metrics.latency_ms,
+            )
 
     def add_oracle(self, call: OracleCall) -> None:
         self.calls += 1
@@ -214,6 +288,12 @@ class _MutableTotals:
             call.metrics.recovery,
         )
         self._add_route(call.audit.provider)
+        oracle_metrics = call.metrics.oracle or call.metrics
+        self.provider_usage.observe(
+            call.audit.provider,
+            cost_usd=oracle_metrics.cost_usd,
+            latency_ms=oracle_metrics.latency_ms,
+        )
         adjudication = call.adjudication
         if adjudication.reviewer is not None:
             self.reviewed_questions += 1
@@ -244,8 +324,26 @@ class _MutableTotals:
             )
         if call.metrics.reviewer is not None:
             self.reviewer_cost_usd += call.metrics.reviewer.cost_usd or Decimal(0)
+            reviewer_audit = getattr(call.audit, "reviewer", None)
+            if reviewer_audit is not None:
+                self.reviewer_provider_usage.observe(
+                    reviewer_audit.provider,
+                    cost_usd=call.metrics.reviewer.cost_usd,
+                    latency_ms=call.metrics.reviewer.latency_ms,
+                )
+            else:
+                self.reviewer_provider_usage.unreported_calls += 1
         if call.metrics.judge is not None:
             self.judge_cost_usd += call.metrics.judge.cost_usd or Decimal(0)
+            judge_audit = getattr(call.audit, "judge", None)
+            if judge_audit is not None:
+                self.judge_provider_usage.observe(
+                    judge_audit.provider,
+                    cost_usd=call.metrics.judge.cost_usd,
+                    latency_ms=call.metrics.judge.latency_ms,
+                )
+            else:
+                self.judge_provider_usage.unreported_calls += 1
 
     def _add_route(self, trace: ProviderTrace) -> None:
         if trace.resolved_model:
@@ -303,6 +401,13 @@ class _MutableTotals:
                     key=lambda item: item.value,
                 )
             ),
+        )
+
+    def frozen_oracle_provider_usage(self) -> OracleProviderUsage:
+        return OracleProviderUsage(
+            oracle=self.provider_usage.frozen(),
+            reviewer=self.reviewer_provider_usage.frozen(),
+            judge=self.judge_provider_usage.frozen(),
         )
 
 
@@ -966,14 +1071,17 @@ class GameEngine:
                 guesser=GameLlmDetails(
                     configuration=self.guesser_config,
                     metrics=frozen_totals["guesser"],
+                    provider_usage=totals["guesser"].provider_usage.frozen(),
                 ),
                 oracle=OracleLlmDetails(
                     configuration=self.oracle_config,
                     metrics=frozen_totals["oracle"],
+                    provider_usage=totals["oracle"].frozen_oracle_provider_usage(),
                 ),
                 validator=GameLlmDetails(
                     configuration=self.validator_config,
                     metrics=frozen_totals["validator"],
+                    provider_usage=totals["validator"].provider_usage.frozen(),
                 ),
             ),
             failure=failure,

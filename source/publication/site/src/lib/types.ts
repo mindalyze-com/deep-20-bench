@@ -237,10 +237,14 @@ export interface PublicEpisodeModelVersion {
   configuration_id: string | null;
   requested_model: string;
   requested_provider: string;
+  provider_routing: "exact" | "automatic";
   resolved_models: string[];
   resolved_providers: string[];
   reasoning_effort: string;
   prompt_version: string;
+  providers: ResolvedProviderUsage[];
+  unreported_calls: number;
+  fallback_calls: number;
 }
 
 export interface PublicComponentTelemetry {
@@ -259,9 +263,20 @@ export interface PublicComponentTelemetry {
 export interface PublicOracleSupportRole {
   requested_model: string;
   requested_provider: string;
+  provider_routing: "exact" | "automatic";
   reasoning_effort: string;
   calls: number;
   cost_usd: string;
+  providers: ResolvedProviderUsage[];
+  unreported_calls: number;
+  fallback_calls: number;
+}
+
+export interface ResolvedProviderUsage {
+  provider: string;
+  calls: number;
+  cost_usd: string;
+  latency_ms: number;
 }
 
 export interface PublicOracleSupportUsage {

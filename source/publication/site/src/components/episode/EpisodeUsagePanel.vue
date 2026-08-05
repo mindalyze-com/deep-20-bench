@@ -35,6 +35,16 @@ interface SupportRow {
   values: PublicOracleSupportRole;
 }
 
+interface ProviderRouteValues {
+  requested_provider: string;
+  provider_routing: "exact" | "automatic";
+}
+
+const routingLabel = (values: ProviderRouteValues): string =>
+  values.provider_routing === "automatic"
+    ? "OpenRouter automatic routing"
+    : `Exact provider · ${values.requested_provider}`;
+
 const evidenceCount = computed(() =>
   props.episode.turns.reduce(
     (total, turn) =>
@@ -158,6 +168,7 @@ const supportRows = computed<SupportRow[]>(() => [
               <dt>Resolved provider</dt>
               <dd>{{ model.resolved_providers.join(", ") || "Not reported" }}</dd>
             </div>
+            <div><dt>Routing</dt><dd>{{ routingLabel(model) }}</dd></div>
             <div>
               <dt>Prompt contract</dt>
               <dd><code>{{ model.prompt_version }}</code></dd>
@@ -167,6 +178,46 @@ const supportRows = computed<SupportRow[]>(() => [
               <dd><code>{{ model.configuration_id ?? "role-local" }}</code></dd>
             </div>
           </dl>
+          <details class="provider-routing-details">
+            <summary>Resolved provider details</summary>
+            <p
+              v-if="
+                model.providers.length === 0 &&
+                model.unreported_calls === 0
+              "
+            >
+              <template v-if="model.resolved_providers.length > 0">
+                Legacy run. Per-call routing totals were not retained. Recorded
+                resolved provider:
+                <strong>{{ model.resolved_providers.join(", ") }}</strong>.
+              </template>
+              <template v-else>
+                No resolved provider was recorded for this role.
+              </template>
+            </p>
+            <template v-else>
+              <div
+                v-for="provider in model.providers"
+                :key="provider.provider"
+                class="provider-routing-row"
+              >
+                <strong>{{ provider.provider }}</strong>
+                <span>{{ integer(provider.calls) }} calls</span>
+                <span>{{ moneyEpisode(provider.cost_usd) }}</span>
+                <span>{{ seconds(provider.latency_ms) }} s</span>
+              </div>
+              <dl class="provider-routing-totals">
+                <div>
+                  <dt>Fallback calls</dt>
+                  <dd>{{ integer(model.fallback_calls) }}</dd>
+                </div>
+                <div>
+                  <dt>Provider unreported</dt>
+                  <dd>{{ integer(model.unreported_calls) }}</dd>
+                </div>
+              </dl>
+            </template>
+          </details>
         </article>
       </div>
 
@@ -187,7 +238,48 @@ const supportRows = computed<SupportRow[]>(() => [
                 <dt>Reasoning</dt>
                 <dd>{{ reasoningEffortLabel(row.values.reasoning_effort) }}</dd>
               </div>
+              <div><dt>Routing</dt><dd>{{ routingLabel(row.values) }}</dd></div>
             </dl>
+            <details class="provider-routing-details">
+              <summary>Resolved provider details</summary>
+              <p v-if="row.values.calls === 0">
+                This role was not invoked in this episode.
+              </p>
+              <p
+                v-else-if="
+                  row.values.providers.length === 0 &&
+                  row.values.unreported_calls === 0
+                "
+              >
+                Legacy run. Per-call routing totals were not retained.
+                <template v-if="row.values.provider_routing === 'exact'">
+                  The configured provider was
+                  <strong>{{ row.values.requested_provider }}</strong>.
+                </template>
+              </p>
+              <template v-else>
+                <div
+                  v-for="provider in row.values.providers"
+                  :key="provider.provider"
+                  class="provider-routing-row"
+                >
+                  <strong>{{ provider.provider }}</strong>
+                  <span>{{ integer(provider.calls) }} calls</span>
+                  <span>{{ moneyEpisode(provider.cost_usd) }}</span>
+                  <span>{{ seconds(provider.latency_ms) }} s</span>
+                </div>
+                <dl class="provider-routing-totals">
+                  <div>
+                    <dt>Fallback calls</dt>
+                    <dd>{{ integer(row.values.fallback_calls) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Provider unreported</dt>
+                    <dd>{{ integer(row.values.unreported_calls) }}</dd>
+                  </div>
+                </dl>
+              </template>
+            </details>
           </article>
         </div>
       </section>
@@ -364,6 +456,48 @@ const supportRows = computed<SupportRow[]>(() => [
   font-weight: 500;
 }
 
+.provider-routing-details {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: var(--rule-default);
+}
+
+.provider-routing-details summary {
+  cursor: pointer;
+  color: var(--blue-ink);
+  font-size: var(--text-micro);
+  font-weight: 720;
+}
+
+.provider-routing-details p strong {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+}
+
+.provider-routing-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  align-items: baseline;
+  padding: 0.7rem 0;
+  border-bottom: var(--rule-default);
+  font-size: var(--text-micro);
+}
+
+.provider-routing-row strong {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.provider-routing-row span {
+  color: var(--text-secondary);
+}
+
+.provider-routing-totals {
+  margin-top: 0.4rem !important;
+}
+
 .telemetry-wrap {
   margin-top: 2rem;
 }
@@ -413,6 +547,10 @@ const supportRows = computed<SupportRow[]>(() => [
 }
 
 @media (max-width: 560px) {
+  .provider-routing-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .provenance-details > dl {
     grid-template-columns: 1fr;
   }

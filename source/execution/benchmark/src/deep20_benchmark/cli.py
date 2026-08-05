@@ -21,6 +21,7 @@ from .models import (
     BenchmarkId,
     BenchmarkModelId,
     BenchmarkRequest,
+    ExecutionStatus,
     InfrastructureCircuitBreaker,
     SubjectId,
     TrialRepairPolicy,
@@ -96,8 +97,16 @@ def _execute_suite(
             benchmarks = load_benchmark_catalog(
                 benchmarks_path or root / "config" / "benchmarks.yaml"
             )
+            store = ArtifactStore(root)
+            existing_state = store.load_state(
+                request.model_id,
+                request.execution_id,
+            )
+            execution_is_completed = (
+                existing_state is not None and existing_state.status is ExecutionStatus.COMPLETED
+            )
             api_key = load_openrouter_api_key(root)
-            if benchmark_mode is BenchmarkMode.OFFICIAL and canary:
+            if benchmark_mode is BenchmarkMode.OFFICIAL and canary and not execution_is_completed:
                 model = models.model(request.model_id)
                 benchmark = benchmarks.entry(request.benchmark_id)
                 canary_result = run_startup_canaries(
@@ -114,7 +123,6 @@ def _execute_suite(
                     )
                     raise ValueError(f"LLM startup canary failed: {failures}")
             subjects = load_subject_catalog(subjects_path or root / "config" / "subjects.yaml")
-            store = ArtifactStore(root)
             runner = BenchmarkRunner(
                 store=store,
                 model_catalog=models,

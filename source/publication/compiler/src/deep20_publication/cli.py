@@ -3,10 +3,13 @@ from __future__ import annotations
 import filecmp
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
+from dataclasses import dataclass
 from datetime import UTC, datetime
+from decimal import Decimal
 from html import escape
 from pathlib import Path
 from typing import Annotated
@@ -47,6 +50,84 @@ from .serialize import dataset_json, leaderboard_csv, publication_document_json
 from .split import split_publication
 
 app = typer.Typer(help="Compile and render the independent Deep20Bench publication site.")
+
+
+@dataclass(frozen=True)
+class _EditorialPage:
+    route: str
+    browser_title: str
+    heading: str
+    description: str
+
+
+_EDITORIAL_PAGES = (
+    _EditorialPage(
+        route="results",
+        browser_title="Results · Deep20Bench",
+        heading="Deep20Bench results.",
+        description="Compare official model scores, outcomes, costs, time, and stability.",
+    ),
+    _EditorialPage(
+        route="results/reliability",
+        browser_title="Stability results · Deep20Bench",
+        heading="Stability results.",
+        description="Compare repeated-trial stability and contract compliance by model.",
+    ),
+    _EditorialPage(
+        route="results/cost",
+        browser_title="Cost results · Deep20Bench",
+        heading="Cost results.",
+        description="Compare recorded benchmark costs by model and component.",
+    ),
+    _EditorialPage(
+        route="results/time",
+        browser_title="Time results · Deep20Bench",
+        heading="Time results.",
+        description="Compare tested-model response time and end-to-end benchmark runtime.",
+    ),
+    _EditorialPage(
+        route="results/efficiency",
+        browser_title="Efficiency results · Deep20Bench",
+        heading="Efficiency results.",
+        description="Compare question score and recorded Guesser cost across official runs.",
+    ),
+    _EditorialPage(
+        route="methodology",
+        browser_title="Method · Deep20Bench",
+        heading="Deep20Bench method.",
+        description="Read the protocol, scoring method, eligibility rules, and isolation boundary.",
+    ),
+    _EditorialPage(
+        route="story",
+        browser_title="Story · Deep20Bench",
+        heading="Deep20Bench story.",
+        description="Read about the benchmark's origin, scope, creators, and related work.",
+    ),
+    _EditorialPage(
+        route="data",
+        browser_title="Data · Deep20Bench",
+        heading="Deep20Bench data.",
+        description="Download the public dataset and inspect its contents and citation details.",
+    ),
+)
+_EDITORIAL_ROUTES = tuple(page.route for page in _EDITORIAL_PAGES)
+_CANONICAL_LINK_PATTERN = re.compile(r'<link rel="canonical" href="[^"]*" />')
+_OPEN_GRAPH_URL_PATTERN = re.compile(r'<meta property="og:url" content="[^"]*" />')
+_ROBOTS_META_PATTERN = re.compile(r'<meta name="robots" content="[^"]*" />')
+_DESCRIPTION_META_PATTERN = re.compile(r'<meta\s+name="description"\s+content="[^"]*"\s*/>')
+_OPEN_GRAPH_TITLE_PATTERN = re.compile(r'<meta property="og:title" content="[^"]*" />')
+_OPEN_GRAPH_DESCRIPTION_PATTERN = re.compile(
+    r'<meta\s+property="og:description"\s+content="[^"]*"\s*/>'
+)
+_TWITTER_TITLE_PATTERN = re.compile(r'<meta name="twitter:title" content="[^"]*" />')
+_TWITTER_DESCRIPTION_PATTERN = re.compile(
+    r'<meta\s+name="twitter:description"\s+content="[^"]*"\s*/>'
+)
+_TITLE_PATTERN = re.compile(r"<title>.*?</title>", re.DOTALL)
+_STRUCTURED_DATA_PATTERN = re.compile(
+    r'\s*<script type="application/ld\+json">.*?</script>',
+    re.DOTALL,
+)
 
 
 @app.callback()
@@ -412,16 +493,6 @@ def _write_public_data(
 
 
 def _route_shells(bundle: PublicationDataBundle) -> tuple[str, ...]:
-    editorial = (
-        "results",
-        "results/reliability",
-        "results/cost",
-        "results/time",
-        "results/efficiency",
-        "methodology",
-        "story",
-        "data",
-    )
     runs = tuple(f"runs/{document.run.execution_id}" for document in bundle.runs)
     subjects = tuple(
         f"runs/{document.execution_id}/subjects/{document.target_id}"
@@ -431,21 +502,251 @@ def _route_shells(bundle: PublicationDataBundle) -> tuple[str, ...]:
         (f"runs/{document.execution_id}/subjects/{document.target_id}/episodes/{document.trial_id}")
         for document in bundle.episodes
     )
-    return (*editorial, *runs, *subjects, *episodes)
+    return (*_EDITORIAL_ROUTES, *runs, *subjects, *episodes)
 
 
-def _write_route_shells(output_root: Path, bundle: PublicationDataBundle) -> None:
+def _canonical_route_url(canonical_url: str, route: str) -> str:
+    return canonical_url if route == "" else f"{canonical_url}{route}/"
+
+
+def _sitemap_routes() -> tuple[str, ...]:
+    return ("", *_EDITORIAL_ROUTES)
+
+
+def _editorial_page(route: str) -> _EditorialPage | None:
+    return next((page for page in _EDITORIAL_PAGES if page.route == route), None)
+
+
+def _decimal_text(value: Decimal) -> str:
+    return f"{value:.2f}".rstrip("0").rstrip(".")
+
+
+def _current_results_html(bundle: PublicationDataBundle, safe_base: str) -> str:
+    winner = bundle.manifest.winner
+    evaluated = tuple(
+        row
+        for row in bundle.leaderboard.leaderboard
+        if row.status == "evaluated"
+        and row.execution_id is not None
+        and row.rank is not None
+        and row.question_score is not None
+    )
+    if winner is None or not evaluated:
+        return """<section class="static-route-result">
+            <h2>Official results are in progress.</h2>
+            <p>Scores appear after a complete, integrity-checked run covers every subject.</p>
+          </section>"""
+
+    leader_rows: list[str] = []
+    for row in evaluated[:3]:
+        execution_id = row.execution_id
+        rank = row.rank
+        question_score = row.question_score
+        if execution_id is None or rank is None or question_score is None:
+            raise PublicationInputError("evaluated leaderboard row is incomplete")
+        leader_rows.append(
+            f"""<li>
+              <span>{rank}</span>
+              <a href="{safe_base}runs/{escape(execution_id, quote=True)}/">
+                {escape(row.model.display_name)}
+              </a>
+              <strong>{_decimal_text(question_score)} questions</strong>
+            </li>"""
+        )
+    leaders = "\n".join(leader_rows)
+    leader_label = "Joint official leaders" if winner.joint else "Official leader"
+    return f"""<section class="static-route-result" aria-labelledby="static-result-title">
+            <p>{leader_label}</p>
+            <h2 id="static-result-title">{escape(" · ".join(winner.display_names))}</h2>
+            <p>
+              The current leader has a question score of
+              <strong>{_decimal_text(winner.question_score)}</strong>. Lower is better.
+            </p>
+            <ol aria-label="Top three official model results">
+              {leaders}
+            </ol>
+          </section>"""
+
+
+def _editorial_fallback_html(
+    page: _EditorialPage,
+    bundle: PublicationDataBundle,
+    safe_base: str,
+) -> str:
+    results = _current_results_html(bundle, safe_base) if page.route == "results" else ""
+    return f"""<main class="static-route-fallback static-route-fallback--editorial">
+        <div>
+          <p>Deep20Bench · Static publication summary</p>
+          <h1>{escape(page.heading)}</h1>
+          <p>{escape(page.description)}</p>
+          {results}
+          <nav aria-label="Publication navigation">
+            <a href="{safe_base}">Overview</a>
+            <a href="{safe_base}results/">Results</a>
+            <a href="{safe_base}methodology/">Method</a>
+            <a href="{safe_base}data/">Data</a>
+          </nav>
+        </div>
+      </main>"""
+
+
+def _write_search_files(output_root: Path, canonical_url: str) -> None:
+    locations = "\n".join(
+        "  <url>\n"
+        f"    <loc>{escape(_canonical_route_url(canonical_url, route), quote=False)}</loc>\n"
+        "  </url>"
+        for route in _sitemap_routes()
+    )
+    (output_root / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f"{locations}\n"
+        "</urlset>\n",
+        encoding="utf-8",
+    )
+    (output_root / "robots.txt").write_text(
+        "User-agent: *\n"
+        "Allow: /\n\n"
+        f"Sitemap: {canonical_url}sitemap.xml\n",
+        encoding="utf-8",
+    )
+
+
+def _replace_required_tag(
+    html: str,
+    pattern: re.Pattern[str],
+    replacement: str,
+    label: str,
+) -> str:
+    updated, count = pattern.subn(replacement, html)
+    if count != 1:
+        raise PublicationInputError(f"generated HTML must contain exactly one {label} tag")
+    return updated
+
+
+def _route_metadata_html(
+    html: str,
+    *,
+    canonical_url: str | None,
+    indexable: bool,
+    editorial_page: _EditorialPage | None,
+) -> str:
+    if canonical_url is None:
+        html, count = _CANONICAL_LINK_PATTERN.subn("", html)
+        if count != 1:
+            raise PublicationInputError(
+                "generated HTML must contain exactly one canonical URL tag"
+            )
+    else:
+        safe_url = escape(canonical_url, quote=True)
+        html = _replace_required_tag(
+            html,
+            _CANONICAL_LINK_PATTERN,
+            f'<link rel="canonical" href="{safe_url}" />',
+            "canonical URL",
+        )
+        html = _replace_required_tag(
+            html,
+            _OPEN_GRAPH_URL_PATTERN,
+            f'<meta property="og:url" content="{safe_url}" />',
+            "Open Graph URL",
+        )
+    if editorial_page is not None:
+        safe_title = escape(editorial_page.browser_title)
+        safe_description = escape(editorial_page.description, quote=True)
+        html = _replace_required_tag(
+            html,
+            _TITLE_PATTERN,
+            f"<title>{safe_title}</title>",
+            "document title",
+        )
+        html = _replace_required_tag(
+            html,
+            _DESCRIPTION_META_PATTERN,
+            f'<meta name="description" content="{safe_description}" />',
+            "description",
+        )
+        html = _replace_required_tag(
+            html,
+            _OPEN_GRAPH_TITLE_PATTERN,
+            f'<meta property="og:title" content="{safe_title}" />',
+            "Open Graph title",
+        )
+        html = _replace_required_tag(
+            html,
+            _OPEN_GRAPH_DESCRIPTION_PATTERN,
+            f'<meta property="og:description" content="{safe_description}" />',
+            "Open Graph description",
+        )
+        html = _replace_required_tag(
+            html,
+            _TWITTER_TITLE_PATTERN,
+            f'<meta name="twitter:title" content="{safe_title}" />',
+            "Twitter title",
+        )
+        html = _replace_required_tag(
+            html,
+            _TWITTER_DESCRIPTION_PATTERN,
+            f'<meta name="twitter:description" content="{safe_description}" />',
+            "Twitter description",
+        )
+    robots = (
+        "index, follow, max-image-preview:large" if indexable else "noindex, follow"
+    )
+    html = _replace_required_tag(
+        html,
+        _ROBOTS_META_PATTERN,
+        f'<meta name="robots" content="{robots}" />',
+        "robots",
+    )
+    html, structured_count = _STRUCTURED_DATA_PATTERN.subn("", html)
+    if structured_count != 1:
+        raise PublicationInputError(
+            "generated HTML must contain exactly one Dataset structured-data block"
+        )
+    return re.sub(r"[ \t]+$", "", html, flags=re.MULTILINE)
+
+
+def _write_route_shells(
+    output_root: Path,
+    bundle: PublicationDataBundle,
+    canonical_url: str,
+) -> None:
     entry = output_root / "index.html"
     entry_html = entry.read_text(encoding="utf-8")
-    route_html = _route_shell_html(entry_html, bundle.manifest.site.base_path)
     for route in _route_shells(bundle):
         shell = output_root / route / "index.html"
         shell.parent.mkdir(parents=True, exist_ok=True)
+        editorial_page = _editorial_page(route)
+        route_html = _route_shell_html(
+            entry_html,
+            bundle.manifest.site.base_path,
+            route=route,
+            bundle=bundle,
+            canonical_url=_canonical_route_url(canonical_url, route),
+            indexable=editorial_page is not None,
+        )
         shell.write_text(route_html, encoding="utf-8")
-    (output_root / "404.html").write_text(route_html, encoding="utf-8")
+    not_found_html = _route_shell_html(
+        entry_html,
+        bundle.manifest.site.base_path,
+        route=None,
+        bundle=bundle,
+        canonical_url=None,
+        indexable=False,
+    )
+    (output_root / "404.html").write_text(not_found_html, encoding="utf-8")
 
 
-def _route_shell_html(entry_html: str, base_path: str) -> str:
+def _route_shell_html(
+    entry_html: str,
+    base_path: str,
+    *,
+    route: str | None,
+    bundle: PublicationDataBundle,
+    canonical_url: str | None,
+    indexable: bool,
+) -> str:
     static_home_start = '<main class="static-home" id="static-home">'
     start = entry_html.find(static_home_start)
     if start < 0:
@@ -455,7 +756,11 @@ def _route_shell_html(entry_html: str, base_path: str) -> str:
         raise PublicationInputError("generated static homepage has no closing main tag")
     end += len("</main>")
     safe_base = escape(base_path, quote=True)
-    fallback = f"""<main class="static-route-fallback">
+    editorial_page = None if route is None else _editorial_page(route)
+    fallback = (
+        _editorial_fallback_html(editorial_page, bundle, safe_base)
+        if editorial_page is not None
+        else f"""<main class="static-route-fallback">
         <div>
           <p>Deep20Bench · Interactive publication</p>
           <h1>This detailed view uses JavaScript.</h1>
@@ -466,7 +771,14 @@ def _route_shell_html(entry_html: str, base_path: str) -> str:
           </nav>
         </div>
       </main>"""
-    return f"{entry_html[:start]}{fallback}{entry_html[end:]}"
+    )
+    route_html = f"{entry_html[:start]}{fallback}{entry_html[end:]}"
+    return _route_metadata_html(
+        route_html,
+        canonical_url=canonical_url,
+        indexable=indexable,
+        editorial_page=editorial_page,
+    )
 
 
 def _build_site(
@@ -474,19 +786,22 @@ def _build_site(
     public_root: Path,
     output_root: Path,
     base_path: str,
+    canonical_url: str,
     bundle: PublicationDataBundle,
 ) -> None:
     environment = dict(os.environ)
     environment["DEEP20_OUTPUT_DIR"] = str(output_root)
     environment["DEEP20_PUBLIC_DIR"] = str(public_root)
     environment["DEEP20_BASE_PATH"] = base_path
+    environment["DEEP20_CANONICAL_URL"] = canonical_url
     subprocess.run(
         ["npm", "run", "build"],
         cwd=site_root,
         env=environment,
         check=True,
     )
-    _write_route_shells(output_root, bundle)
+    _write_route_shells(output_root, bundle, canonical_url)
+    _write_search_files(output_root, canonical_url)
 
 
 @app.command("build")
@@ -543,6 +858,7 @@ def build(
                 public_root,
                 candidate,
                 config.site.base_path,
+                str(config.site.canonical_url),
                 bundle,
             )
             if check:

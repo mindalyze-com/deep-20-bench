@@ -275,12 +275,36 @@ def test_immediate_correct_guess_reveals_only_category(
     assert isinstance(result.llm.guesser.configuration, ModelConfig)
     assert isinstance(result.llm.oracle.configuration, OracleConfig)
     assert result.llm.oracle.metrics.calls == 0
+    guesser_provider_usage = result.llm.guesser.provider_usage
+    assert guesser_provider_usage.unreported_calls == 0
+    assert guesser_provider_usage.fallback_calls == 0
+    assert len(guesser_provider_usage.providers) == 1
+    assert guesser_provider_usage.providers[0].provider == "openai"
+    assert guesser_provider_usage.providers[0].calls == 1
+    assert guesser_provider_usage.providers[0].cost_usd == Decimal("0.01")
+    assert guesser_provider_usage.providers[0].latency_ms == 1_000
+    validator_provider_usage = result.llm.validator.provider_usage
+    assert len(validator_provider_usage.providers) == 1
+    assert validator_provider_usage.providers[0].provider == "openai"
+    visible_conversation = json.dumps(
+        [message.model_dump(mode="json") for message in result.guesser_conversation]
+    )
+    assert "provider_usage" not in visible_conversation
+    assert "resolved_provider" not in visible_conversation
     stored_result = yaml.safe_load(
         (audit_writer.runs_root / "immediate" / "result.yml").read_text()
     )
     assert stored_result["summary"]["total_turns"] == 1
     assert stored_result["models"]["under_test"]["requested_model"] == "openai/test-model"
     assert stored_result["models"]["under_test"]["resolved_models"] == ["openai/test-model"]
+    assert stored_result["llm_details"]["guesser"]["provider_usage"]["providers"] == [
+        {
+            "provider": "openai",
+            "calls": 1,
+            "cost_usd": "0.01",
+            "latency_ms": 1_000,
+        }
+    ]
     assert (
         stored_result["models"]["oracle"]["prompt_version"]
         == "live-web-oracle-v7-direct-negative-evidence"
@@ -485,6 +509,20 @@ def test_disagreement_metadata_never_enters_guesser_visible_projection(
             call.metrics = call.metrics.model_copy(
                 update={"judge": call.metrics.reviewer}
             )
+            call.audit.reviewer = SimpleNamespace(
+                provider=SimpleNamespace(
+                    resolved_model="google/gemini-3.5-flash-lite",
+                    resolved_provider="Google AI Studio",
+                    fallback_occurred=False,
+                )
+            )
+            call.audit.judge = SimpleNamespace(
+                provider=SimpleNamespace(
+                    resolved_model="anthropic/claude-opus-5",
+                    resolved_provider="Amazon Bedrock",
+                    fallback_occurred=True,
+                )
+            )
             call.guesser_answer = lambda: OracleAnswer.NO
             return call
 
@@ -520,6 +558,7 @@ def test_disagreement_metadata_never_enters_guesser_visible_projection(
     assert "model_knowledge" not in visible
     assert "complete enumeration" not in visible
     assert "no other evidence was found" not in visible
+    assert "Amazon Bedrock" not in visible
     assert result.turns[0].adjudication.answer is OracleAnswer.NO
     assert result.turns[0].adjudication.oracle_quality is not None
     assert result.turns[0].adjudication.oracle_quality.judge_invoked is True
@@ -539,6 +578,12 @@ def test_disagreement_metadata_never_enters_guesser_visible_projection(
     assert len(result.summary.oracle_quality.question_types) == 1
     assert result.summary.oracle_quality.question_types[0].reviewed_questions == 1
     assert result.summary.oracle_quality.question_types[0].disagreements == 1
+    judge_usage = result.llm_details.oracle.provider_usage.judge
+    assert judge_usage.fallback_calls == 1
+    assert judge_usage.unreported_calls == 0
+    assert len(judge_usage.providers) == 1
+    assert judge_usage.providers[0].provider == "Amazon Bedrock"
+    assert judge_usage.providers[0].calls == 1
 
 
 def test_validator_unknown_is_scored_terminal_failure(

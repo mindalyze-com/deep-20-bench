@@ -7,6 +7,12 @@ import { staticHomepagePlugin } from "./static-home";
 
 const configuredBase = process.env.DEEP20_BASE_PATH ?? "/deep-20-bench/";
 const base = configuredBase.endsWith("/") ? configuredBase : `${configuredBase}/`;
+const configuredCanonicalUrl =
+  process.env.DEEP20_CANONICAL_URL ??
+  "https://mindalyze-com.github.io/deep-20-bench/";
+const canonicalUrl = configuredCanonicalUrl.endsWith("/")
+  ? configuredCanonicalUrl
+  : `${configuredCanonicalUrl}/`;
 
 export default defineConfig(({ command }) => {
   const publicDir =
@@ -18,7 +24,10 @@ export default defineConfig(({ command }) => {
   return {
     base,
     publicDir,
-    plugins: [vue(), staticHomepagePlugin(publicDir, base)],
+    plugins: [vue(), staticHomepagePlugin(publicDir, base, canonicalUrl)],
+    define: {
+      __DEEP20_CANONICAL_URL__: JSON.stringify(canonicalUrl),
+    },
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),

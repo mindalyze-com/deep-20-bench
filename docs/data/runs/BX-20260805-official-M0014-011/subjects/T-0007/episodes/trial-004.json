@@ -1,0 +1,435 @@
+{
+  "document_type": "episode",
+  "schema_version": 1,
+  "execution_id": "BX-20260805-official-M0014-011",
+  "target_id": "T-0007",
+  "trial_id": "trial-004",
+  "episode": {
+    "episode_run_id": "BR-ca2507154511ad73efb0876165fdc0f89b0528ee",
+    "episode_id": "EP-019fd319a36972228fb262072511c100",
+    "subject_name": "Mario",
+    "subject_description": "Mario, the fictional Nintendo video-game character created by Shigeru Miyamoto and protagonist of the Mario franchise, identified by Wikidata entity Q12379.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Mario",
+    "started_at": "2026-08-05T18:05:00.649601Z",
+    "completed_at": "2026-08-05T18:10:09.221804Z",
+    "duration_ms": 308572,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 10,
+    "counted_questions": 9,
+    "ask_count": 9,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 2,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.1485483900000000004",
+    "total_tokens": 113322,
+    "contract": {
+      "evaluated_outputs": 10,
+      "valid_outputs": 10,
+      "violations": 0,
+      "counted_penalties": 0,
+      "affected_trials": 0,
+      "compliance_rate": "1",
+      "status": "clean"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0014",
+        "requested_model": "anthropic/claude-fable-5",
+        "requested_provider": "anthropic",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "anthropic/claude-fable-5"
+        ],
+        "resolved_providers": [
+          "Anthropic"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance",
+        "providers": [
+          {
+            "provider": "Anthropic",
+            "calls": 10,
+            "cost_usd": "0.1021985",
+            "latency_ms": 97008
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v7-direct-negative-evidence",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 9,
+            "cost_usd": "0.0295740900000000004",
+            "latency_ms": 194493
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v1",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 1,
+            "cost_usd": "0.0000708",
+            "latency_ms": 4239
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      }
+    ],
+    "oracle_support": {
+      "oracle": {
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "reasoning_effort": "medium",
+        "calls": 9,
+        "cost_usd": "0.0295740900000000004",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 9,
+            "cost_usd": "0.0295740900000000004",
+            "latency_ms": 194493
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      "reviewer": {
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "provider_routing": "exact",
+        "reasoning_effort": "medium",
+        "calls": 7,
+        "cost_usd": "0.0052900",
+        "providers": [
+          {
+            "provider": "Google AI Studio",
+            "calls": 7,
+            "cost_usd": "0.0052900",
+            "latency_ms": 8598
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      "judge": {
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "openrouter-auto",
+        "provider_routing": "automatic",
+        "reasoning_effort": "medium",
+        "calls": 1,
+        "cost_usd": "0.011415",
+        "providers": [
+          {
+            "provider": "Amazon Bedrock",
+            "calls": 1,
+            "cost_usd": "0.011415",
+            "latency_ms": 3987
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      }
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"video_game_character\",\"event\":\"BEGIN\",\"variation_token\":\"BYOMPCJW\"}",
+      "required_formats": null,
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 10,
+        "cost_usd": "0.1021985",
+        "latency_ms": 97008,
+        "total_tokens": 16594,
+        "input_tokens": 15263,
+        "cached_input_tokens": 13486,
+        "cache_write_tokens": 1757,
+        "output_tokens": 1331,
+        "reasoning_tokens": 597,
+        "estimated_cache_savings_usd": "0.1169815"
+      },
+      "oracle": {
+        "calls": 9,
+        "cost_usd": "0.0462790900000000004",
+        "latency_ms": 207078,
+        "total_tokens": 96295,
+        "input_tokens": 91741,
+        "cached_input_tokens": 39654,
+        "cache_write_tokens": 0,
+        "output_tokens": 4554,
+        "reasoning_tokens": 2866,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0000708",
+        "latency_ms": 4239,
+        "total_tokens": 433,
+        "input_tokens": 378,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 55,
+        "reasoning_tokens": 19,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "action",
+        "turn_number": 1,
+        "action": "ASK",
+        "question": "Is the character a playable protagonist in their main game series?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 1,
+        "evidence": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/List_of_Mario_role-playing_games",
+            "excerpt": "All games feature Mario as the protagonist, who is often accompanied by one or more playable characters.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://mario.fandom.com/wiki/List_of_major_characters",
+            "excerpt": "Mario is often the main and only playable protagonist in the earlier games ... Mario is playable along others.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a playable protagonist in their main game series?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the character human?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.syfy.com/syfy-wire/super-mario-bros-movie-gives-mario-an-origin-story",
+            "excerpt": "Miyamoto described Mario as “a person who will never hurt any other people.”",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Super-Mario-Bros",
+            "excerpt": "It stars Mario and Luigi, two Italian plumbers who find themselves in the Mushroom Kingdom.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character human?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the character male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.bbc.com/culture/article/20230323-super-mario-bros-the-ultimate-video-game-icon",
+            "excerpt": "Mario ... \"he's\" more popular than ever.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.scrippsnews.com/business/company-news/nintendo-video-game-character-mario-isn-t-a-plumber-anymore",
+            "excerpt": "Nintendo's iconic video game character ... the mustachioed man.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Did the character first appear in a game released before the year 2000?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.bbc.co.uk/newsround/articles/ce845p9de3xo",
+            "excerpt": "Mario was actually first introduced to the world in the 1981 arcade game, Donkey Kong.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear in a game released before the year 2000?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Was the character created by a Japanese company?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.upi.com/Archives/1993/06/02/Nintendo-sells-100-millionth-Mario-game/6185738993600",
+            "excerpt": "Mario, a character created by Nintendo's Shigeru Miyamoto... Nintendo Co. Ltd., of Kyoto, Japan",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was the character created by a Japanese company?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Does the character primarily wield a sword as their weapon?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.mariowiki.com/Masher",
+            "excerpt": "The Masher is a hammer weapon for Mario in Super Mario RPG.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.ign.com/wikis/new-super-mario-bros/Basics",
+            "excerpt": "Fire Mario has the added ability to shoot fireballs.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character primarily wield a sword as their weapon?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Does the character regularly use firearms?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character regularly use firearms?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is the character a martial artist who primarily fights hand-to-hand?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a martial artist who primarily fights hand-to-hand?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Did the character first appear in a platform game?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://time.com/3901489/donkey-kong-anniversary",
+            "excerpt": "Before Mario was Mario, he was Jumpman... Jumpman's first appearance was in Donkey Kong, described as the first of the so-called platform games.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Donkey-Kong",
+            "excerpt": "The original Donkey Kong featured... Jumpman, better known as Mario... Users navigated an extensive series of levels using timely jumps and ladder-climbing skills.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did the character first appear in a platform game?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Mario",
+        "guess_description": "Nintendo's mustachioed Italian plumber, hero of the Super Mario series who first appeared in Donkey Kong (1981).",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposal identifies Mario, the Nintendo video-game character, matching the trusted subject.",
+        "counted": false,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Nintendo's mustachioed Italian plumber, hero of the Super Mario series who first appeared in Donkey Kong (1981).\",\"name\":\"Mario\",\"question\":null}}"
+      }
+    ]
+  }
+}

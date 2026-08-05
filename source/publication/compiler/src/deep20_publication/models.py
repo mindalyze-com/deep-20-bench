@@ -909,12 +909,42 @@ class EpisodeComponentMetrics(FrozenModel):
     recovery: RecoveryTotalsSnapshot = Field(default_factory=RecoveryTotalsSnapshot)
 
 
+class ResolvedProviderUsageSnapshot(FrozenModel):
+    provider: str = Field(min_length=1)
+    calls: int = Field(ge=1)
+    cost_usd: Decimal = Field(ge=0)
+    latency_ms: int = Field(ge=0)
+
+
+class RoleProviderUsageSnapshot(FrozenModel):
+    providers: tuple[ResolvedProviderUsageSnapshot, ...] = ()
+    unreported_calls: int = Field(default=0, ge=0)
+    fallback_calls: int = Field(default=0, ge=0)
+
+
+class OracleProviderUsageSnapshot(FrozenModel):
+    oracle: RoleProviderUsageSnapshot = Field(
+        default_factory=RoleProviderUsageSnapshot
+    )
+    reviewer: RoleProviderUsageSnapshot = Field(
+        default_factory=RoleProviderUsageSnapshot
+    )
+    judge: RoleProviderUsageSnapshot = Field(
+        default_factory=RoleProviderUsageSnapshot
+    )
+
+
 class EvidenceReviewConfigurationSnapshot(FrozenModel):
     gateway: str = Field(min_length=1)
     model: str = Field(min_length=1)
     provider: str = Field(min_length=1)
+    provider_routing: Literal["exact", "automatic"] = "exact"
     reasoning_effort: str = Field(min_length=1)
     allow_fallbacks: bool
+    token_limit_parameter: Literal["max_completion_tokens", "max_tokens"] = Field(
+        default="max_completion_tokens",
+        exclude_if=lambda value: value == "max_completion_tokens",
+    )
     max_output_tokens: int = Field(ge=1)
     timeout_seconds: int = Field(ge=1)
     recovery: RecoveryPolicySnapshot
@@ -930,11 +960,17 @@ class OracleConfigurationSnapshot(EvidenceReviewConfigurationSnapshot):
 class ModelLlmDetail(FrozenModel):
     configuration: ModelConfigurationSnapshot
     metrics: EpisodeComponentMetrics
+    provider_usage: RoleProviderUsageSnapshot = Field(
+        default_factory=RoleProviderUsageSnapshot
+    )
 
 
 class OracleLlmDetail(FrozenModel):
     configuration: OracleConfigurationSnapshot
     metrics: EpisodeComponentMetrics
+    provider_usage: OracleProviderUsageSnapshot = Field(
+        default_factory=OracleProviderUsageSnapshot
+    )
 
 
 class EpisodeLlmDetails(FrozenModel):
@@ -1132,6 +1168,18 @@ class SiteMetadata(FrozenModel):
     citation_label: str = Field(min_length=1, max_length=240)
 
 
+class PublicationSiteConfig(SiteMetadata):
+    canonical_url: HttpUrl
+
+    @model_validator(mode="after")
+    def canonical_url_matches_base_path(self) -> PublicationSiteConfig:
+        if self.canonical_url.path != self.base_path:
+            raise ValueError("site canonical_url path must match base_path")
+        if self.canonical_url.query is not None or self.canonical_url.fragment is not None:
+            raise ValueError("site canonical_url must not contain a query or fragment")
+        return self
+
+
 class ScorePolicy(FrozenModel):
     version: Literal["average-then-average-v1"] = "average-then-average-v1"
     failure_penalty_offset: int = Field(default=1, ge=1, le=100)
@@ -1170,7 +1218,7 @@ class CohortConfig(FrozenModel):
 
 class PublicationConfig(FrozenModel):
     version: Literal[1] = 1
-    site: SiteMetadata
+    site: PublicationSiteConfig
     score: ScorePolicy
     cohorts: tuple[CohortConfig, ...] = Field(min_length=1)
 
@@ -1286,10 +1334,14 @@ class PublicEpisodeModelVersion(FrozenModel):
     configuration_id: str | None
     requested_model: str
     requested_provider: str
+    provider_routing: Literal["exact", "automatic"] = "exact"
     resolved_models: tuple[str, ...]
     resolved_providers: tuple[str, ...]
     reasoning_effort: str
     prompt_version: str
+    providers: tuple[ResolvedProviderUsageSnapshot, ...] = ()
+    unreported_calls: int = Field(default=0, ge=0)
+    fallback_calls: int = Field(default=0, ge=0)
 
 
 class PublicComponentTelemetry(FrozenModel):
@@ -1314,9 +1366,13 @@ class PublicEpisodeTelemetry(FrozenModel):
 class PublicOracleSupportRole(FrozenModel):
     requested_model: str
     requested_provider: str
+    provider_routing: Literal["exact", "automatic"] = "exact"
     reasoning_effort: str
     calls: int = Field(ge=0)
     cost_usd: Decimal = Field(ge=0)
+    providers: tuple[ResolvedProviderUsageSnapshot, ...] = ()
+    unreported_calls: int = Field(default=0, ge=0)
+    fallback_calls: int = Field(default=0, ge=0)
 
 
 class PublicOracleSupportUsage(FrozenModel):

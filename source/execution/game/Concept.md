@@ -42,14 +42,19 @@ The five LLM-backed roles are deliberately independent:
 | Guesser | Chooses the next question or proposes an identity | `config/guesser.yaml` | Changed between benchmark candidates |
 | Oracle | Researches a factual question with live web search and proposes an evidence-bearing answer | `config/oracle.yaml` | Pinned across comparable runs |
 | Reviewer | Blindly derives an answer from the question and numbered Oracle evidence, without web or the Oracle answer | `config/oracle.yaml` → `reviewer` | Pinned across comparable runs |
-| Judge | Blindly resolves an Oracle–Reviewer disagreement; its answer is final | `config/oracle.yaml` → `judge` | Pinned across comparable runs |
+| Judge | Blindly resolves an Oracle–Reviewer disagreement; its answer is final | `config/oracle.yaml` → `judge` | Fixed model and routing policy across comparable runs |
 | Guess Validator | Decides whether a proposed identity matches the subject | `config/guess-validator.yaml` | Pinned across comparable runs |
 
-Each provider-backed role has its own provider instance, prompt, output schema, route settings,
+Each provider-backed role has its own provider instance, prompt, output schema, routing policy,
 session namespace, cache namespace, and audit trace. Sharing a model family in the default
 files does not couple the roles. A benchmark comparison changes only the Guesser configuration
 while holding the game policy, subject catalog, Oracle, Reviewer, Judge, and Guess Validator
 fixed. The run manifest records all of those inputs so accidental drift is detectable.
+
+An exact routing policy fixes both the model and backend provider. An automatic routing policy
+still fixes the model, but lets OpenRouter select an available backend. The final result retains
+safe per-role resolved-provider totals for reporting. Raw provider traces remain private and are
+never added to Guesser-visible history.
 
 ## Game contract
 

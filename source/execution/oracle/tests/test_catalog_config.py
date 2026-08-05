@@ -4,7 +4,14 @@ from pathlib import Path
 
 import pytest
 from deep20_oracle.catalog import load_subject_catalog
-from deep20_oracle.config import OracleConfig, load_oracle_config
+from deep20_oracle.config import (
+    OPENROUTER_AUTO_PROVIDER,
+    EvidenceReviewConfig,
+    OracleConfig,
+    ProviderRouting,
+    TokenLimitParameter,
+    load_oracle_config,
+)
 from deep20_oracle.sinks import OracleSuccessRecord
 from pydantic import ValidationError
 from yaml.constructor import ConstructorError
@@ -20,9 +27,16 @@ def test_repository_configuration_and_catalog_are_valid() -> None:
     assert config.reviewer.model == "google/gemini-3.5-flash-lite"
     assert config.reviewer.provider == "google-ai-studio"
     assert config.reviewer.reasoning_effort == "medium"
+    assert (
+        config.reviewer.token_limit_parameter
+        is TokenLimitParameter.MAX_TOKENS
+    )
     assert config.judge.model == "anthropic/claude-opus-5"
-    assert config.judge.provider == "anthropic"
+    assert config.judge.provider == "openrouter-auto"
+    assert config.judge.provider_routing is ProviderRouting.AUTOMATIC
     assert config.judge.reasoning_effort == "medium"
+    assert config.judge.allow_fallbacks is True
+    assert config.judge.token_limit_parameter is TokenLimitParameter.MAX_TOKENS
     assert len({config.provider, config.reviewer.provider, config.judge.provider}) == 3
     assert catalog.subject("T-0001").canonical_name == "Albert Einstein"
     schweitzer = catalog.subject("T-0002")
@@ -67,6 +81,34 @@ def test_parallel_search_defaults_true_and_serializes_explicit_false() -> None:
 
     assert default_config.parallel_search is True
     assert native_config.model_dump(mode="json")["parallel_search"] is False
+
+
+def test_exact_route_serialization_is_legacy_compatible() -> None:
+    config = EvidenceReviewConfig(
+        model="anthropic/claude-opus-5",
+        provider="anthropic",
+    )
+
+    assert "provider_routing" not in config.model_dump(mode="json")
+    assert "token_limit_parameter" not in config.model_dump(mode="json")
+
+
+def test_automatic_route_requires_explicit_auto_provider_and_fallbacks() -> None:
+    config = EvidenceReviewConfig(
+        model="anthropic/claude-opus-5",
+        provider=OPENROUTER_AUTO_PROVIDER,
+        provider_routing=ProviderRouting.AUTOMATIC,
+        allow_fallbacks=True,
+    )
+
+    assert config.model_dump(mode="json")["provider_routing"] == "automatic"
+    with pytest.raises(ValidationError, match="requires provider fallbacks"):
+        EvidenceReviewConfig.model_validate(
+            {
+                **config.model_dump(mode="json"),
+                "allow_fallbacks": False,
+            }
+        )
 
 
 def test_oracle_contract_rejects_retired_versions() -> None:

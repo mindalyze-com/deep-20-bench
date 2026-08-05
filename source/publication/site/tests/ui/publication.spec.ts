@@ -28,7 +28,8 @@ interface SubjectDocumentFixture {
   trials: TrialFixture[];
 }
 
-const dataRoot = path.resolve(process.cwd(), "../../../docs/data");
+const docsRoot = path.resolve(process.cwd(), "../../../docs");
+const dataRoot = path.join(docsRoot, "data");
 const manifest = JSON.parse(
   readFileSync(path.join(dataRoot, "manifest.json"), "utf8"),
 ) as PublicationManifest;
@@ -101,12 +102,24 @@ test("homepage remains useful without JavaScript", async ({ browser }, testInfo)
     "rgb(12, 17, 27)",
   );
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Can an LLM ask its way to the answer?",
+    "Deep20Bench: can an LLM ask its way to the answer?",
   );
   await expect(page.getByText("Executive summary", { exact: true })).toBeVisible();
   await expect(page.getByText("What it does not claim", { exact: true })).toBeVisible();
   await expect(page.getByText("Deep20Bench needs JavaScript")).toHaveCount(0);
   await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  const structuredData = await page
+    .locator('script[type="application/ld+json"]')
+    .textContent();
+  expect(structuredData).not.toBeNull();
+  const dataset = JSON.parse(structuredData!) as {
+    alternateName?: string[];
+    keywords?: string[];
+  };
+  expect(dataset.alternateName).toEqual(["Deep20 Bench", "D20B"]);
+  expect(dataset.keywords).toEqual(
+    expect.arrayContaining(["Deep20Bench", "Deep20 Bench", "LLM benchmark"]),
+  );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
     "https://mindalyze-com.github.io/deep-20-bench/",
@@ -116,6 +129,30 @@ test("homepage remains useful without JavaScript", async ({ browser }, testInfo)
     scroll: document.documentElement.scrollWidth,
   }));
   expect(viewport.scroll).toBeLessThanOrEqual(viewport.client + 1);
+
+  await context.close();
+});
+
+test("sitemap pages remain useful without JavaScript", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+
+  for (const routePath of staticPaths.slice(1)) {
+    await page.setContent(
+      readFileSync(path.join(docsRoot, routePath, "index.html"), "utf8"),
+    );
+    const fallback = page.locator("main.static-route-fallback--editorial");
+    await expect(fallback).toBeVisible();
+    await expect(fallback.getByRole("heading", { level: 1 })).not.toHaveText(
+      "This detailed view uses JavaScript.",
+    );
+  }
+
+  await page.setContent(
+    readFileSync(path.join(docsRoot, "results", "index.html"), "utf8"),
+  );
+  await expect(page.getByText("The current leader has a question score of")).toBeVisible();
+  await expect(page.getByRole("list", { name: "Top three official model results" })).toBeVisible();
 
   await context.close();
 });
@@ -190,6 +227,10 @@ test("public routes stay within the viewport", async ({ page }) => {
     await page.goto(routePath);
     await waitForPublication(page);
     await expect(page.locator("h1").first()).toBeVisible();
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      `https://mindalyze-com.github.io/deep-20-bench/${routePath}`,
+    );
     await expectNoViewportOverflow(page);
   }
 });

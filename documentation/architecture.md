@@ -169,8 +169,12 @@ read/write tokens, and search count as one nested operational object, with separ
 Oracle/Reviewer/Judge metrics for the roles that ran. Typed per-turn adjudication retains the
 blind decisions, disagreement path, and a deterministic question-shape category. Post-run
 aggregation reports agreement, disagreement by question type, Judge outcomes, Oracle answer
-change rate, final `UNKNOWN` counts, and quality-control cost while retaining the full provider
-records only inside privileged audit state.
+change rate, final `UNKNOWN` counts, quality-control cost, and safe per-role resolved-provider
+totals. The full provider records remain only inside privileged audit state. The aggregates do
+not include call IDs, attempts, response metadata, evidence, prompts, or raw output.
+The episode result applies the same safe provider aggregation to Guesser and Guess Validator
+calls, so post-run reporting can identify the concrete backend used by every LLM role without
+changing any model-visible request or message history.
 
 There is no semantic repair prompt, answer cache, response cache, or persisted knowledge state.
 The OpenRouter adapters share a typed recovery policy for transport failures and explicit

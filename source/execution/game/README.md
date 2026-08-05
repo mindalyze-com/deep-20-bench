@@ -14,7 +14,7 @@ Start here:
   artifacts, and tests.
 
 The benchmark variable is the Guesser configuration. The Oracle, Reviewer, Judge, and Guess
-Validator have independently pinned routes and remain fixed when comparing Guesser models.
+Validator have independently fixed models and routing policies when comparing Guesser models.
 Reviewer and Judge settings are nested under the Oracle configuration because the three roles
 form one factual-adjudication component.
 `deep20-benchmark` invokes this one-episode engine repeatedly and owns scheduling, durable

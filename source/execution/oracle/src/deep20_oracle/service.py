@@ -6,7 +6,7 @@ from typing import TypeVar
 
 from pydantic import ValidationError
 
-from .config import ModelRouteConfig, OracleConfig
+from .config import ModelRouteConfig, OracleConfig, ProviderRouting
 from .diagnostics import diagnose_exception
 from .errors import OracleError, OracleProtocolError
 from .models import (
@@ -95,7 +95,14 @@ def validate_oracle_provider_trace(
             code="resolved_model_mismatch",
             details={"provider_trace": trace.model_dump(mode="json")},
         )
-    if trace.resolved_provider is not None and not openrouter_provider_matches(
+    if config.provider_routing is ProviderRouting.AUTOMATIC:
+        if trace.resolved_provider is None:
+            raise OracleProtocolError(
+                "automatic routing did not report the resolved provider",
+                code="resolved_provider_missing",
+                details={"provider_trace": trace.model_dump(mode="json")},
+            )
+    elif trace.resolved_provider is not None and not openrouter_provider_matches(
         trace.requested_provider,
         trace.resolved_provider,
     ):

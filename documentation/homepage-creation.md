@@ -266,9 +266,9 @@ The site is a focused static Vue publication with route entry shells:
 - Expandable Oracle trails containing the reported source URL and excerpt for each adjudicated
   question, with an explicit warning that this evidence is model-reported rather than
   independently certified.
-- A technical panel with requested and resolved component models/providers, reasoning effort,
-  prompt-contract versions, call and token counts, cache reads/writes, latency, recorded cost,
-  timestamps, and immutable episode/run identifiers.
+- A technical panel with requested and resolved component models/providers, routing policy,
+  per-provider call/cost/latency totals, fallback counts, reasoning effort, prompt-contract
+  versions, token and cache totals, timestamps, and immutable episode/run identifiers.
 - Methodology, Guesser isolation, reproducibility, citation, licensing, and downloadable-data
   pages.
 - Rendered engineering documentation.

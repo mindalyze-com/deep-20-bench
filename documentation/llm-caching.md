@@ -82,11 +82,12 @@ Both versioned stable prefixes include the bounded, labelled model-knowledge fal
 does not add conversation memory or response reuse. Their prompts are intentionally short and
 are not padded to cross a provider cache threshold.
 
-The current Reviewer route is `google/gemini-3.5-flash-lite` pinned to Google AI Studio, while
-the Judge route is `anthropic/claude-opus-5` pinned to Anthropic. These routes were selected
-independently from the OpenAI research Oracle to reduce correlated model-family errors.
-Google AI Studio and Anthropic have different cache thresholds, write/read pricing, and cache
-controls; measurements and savings claims must therefore remain role- and provider-specific.
+The current Reviewer route is `google/gemini-3.5-flash-lite` pinned to Google AI Studio. The
+Judge keeps the exact `anthropic/claude-opus-5` model and uses OpenRouter automatic backend
+routing. These models were selected independently from the OpenAI research Oracle to reduce
+correlated model-family errors. Cache thresholds, write/read pricing, and controls may differ
+between the resolved Judge providers, so measurements and savings claims must remain role- and
+resolved-provider-specific.
 
 Each role uses a distinct session namespace and a prompt-cache key derived from its role,
 prompt version, and subject snapshot. Neither namespace is shared with the Oracle, Guesser,

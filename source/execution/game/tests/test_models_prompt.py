@@ -7,7 +7,12 @@ from pathlib import Path
 import pytest
 from deep20_benchmark.catalog import load_model_catalog
 from deep20_benchmark.models import BenchmarkModelId
-from deep20_game.config import GamePolicy, load_game_policy, load_model_config
+from deep20_game.config import (
+    GamePolicy,
+    ReasoningControl,
+    load_game_policy,
+    load_model_config,
+)
 from deep20_game.models import (
     GuesserAction,
     GuesserSuccessRecord,
@@ -280,7 +285,7 @@ def test_repository_model_catalog_has_expected_active_ids() -> None:
     catalog = load_model_catalog(root / "config/models.yaml")
 
     assert tuple(catalog.models) == (
-        *(f"M-{number:04d}" for number in range(1, 13)),
+        *(f"M-{number:04d}" for number in range(1, 15)),
         "M-0101",
         "M-0104",
     )
@@ -313,6 +318,18 @@ def test_gpt_5_nano_benchmark_route_has_reasoning_output_headroom() -> None:
     assert configuration.model == "openai/gpt-5-nano"
     assert configuration.reasoning_effort == "medium"
     assert configuration.max_output_tokens == 32_768
+
+
+@pytest.mark.parametrize("model_id", ["M-0011", "M-0013"])
+def test_qwen_benchmark_routes_use_generic_reasoning_control(model_id: str) -> None:
+    root = Path(__file__).parents[4]
+    configuration = (
+        load_model_catalog(root / "config/models.yaml")
+        .model(BenchmarkModelId(model_id))
+        .configuration
+    )
+
+    assert configuration.reasoning_control is ReasoningControl.GENERIC
 
 
 @pytest.mark.parametrize(
@@ -435,6 +452,19 @@ def test_gpt_5_nano_benchmark_route_has_reasoning_output_headroom() -> None:
             1_024,
         ),
         (
+            "M-0011",
+            "Qwen3.7 Plus (high)",
+            "qwen/qwen3.7-plus",
+            "alibaba",
+            "high",
+            32_768,
+            300,
+            "supported",
+            Decimal("0.32"),
+            Decimal("0.064"),
+            1_024,
+        ),
+        (
             "M-0012",
             "Mistral Medium 3.5 (high)",
             "mistralai/mistral-medium-3-5",
@@ -446,6 +476,32 @@ def test_gpt_5_nano_benchmark_route_has_reasoning_output_headroom() -> None:
             Decimal("1.50"),
             Decimal("1.50"),
             1_024,
+        ),
+        (
+            "M-0013",
+            "Qwen3.8 Max (high)",
+            "qwen/qwen3.8-max",
+            "alibaba",
+            "high",
+            32_768,
+            300,
+            "supported",
+            Decimal("2.00"),
+            Decimal("0.25"),
+            1_024,
+        ),
+        (
+            "M-0014",
+            "Claude Fable 5 (high)",
+            "anthropic/claude-fable-5",
+            "anthropic",
+            "high",
+            32_768,
+            300,
+            "unsupported",
+            Decimal("10.00"),
+            Decimal("1.00"),
+            512,
         ),
         (
             "M-0101",
@@ -519,7 +575,7 @@ def test_active_benchmark_model_routes_are_fully_pinned(
     )
     expected_cache_control = (
         "ephemeral_5m"
-        if model_id in {"M-0005", "M-0006"}
+        if model_id in {"M-0005", "M-0006", "M-0013", "M-0014"}
         else "automatic"
     )
     assert model.configuration.prompt_cache.control == expected_cache_control
@@ -538,7 +594,10 @@ def test_active_benchmark_model_routes_are_fully_pinned(
         "M-0008",
         "M-0009",
         "M-0010",
+        "M-0011",
         "M-0012",
+        "M-0013",
+        "M-0014",
         "M-0101",
         "M-0104",
     ],

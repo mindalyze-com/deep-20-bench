@@ -34,15 +34,18 @@ benchmarks:
         provider: google-ai-studio
         reasoning_effort: medium
         allow_fallbacks: false
+        token_limit_parameter: max_tokens
         max_output_tokens: 4096
         timeout_seconds: 120
         recovery: *default_recovery
       judge:
         gateway: openrouter
         model: anthropic/claude-opus-5
-        provider: anthropic
+        provider: openrouter-auto
+        provider_routing: automatic
         reasoning_effort: medium
-        allow_fallbacks: false
+        allow_fallbacks: true
+        token_limit_parameter: max_tokens
         max_output_tokens: 4096
         timeout_seconds: 120
         recovery: *default_recovery

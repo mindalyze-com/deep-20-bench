@@ -6,6 +6,11 @@ from decimal import Decimal
 import pytest
 from conftest import FakeProvider, make_oracle, provider_trace
 from deep20_oracle.audit import RunAuditWriter
+from deep20_oracle.config import (
+    OPENROUTER_AUTO_PROVIDER,
+    EvidenceReviewConfig,
+    ProviderRouting,
+)
 from deep20_oracle.errors import AuditWriteError, OracleProtocolError, OracleProviderError
 from deep20_oracle.models import OracleAnswer, OracleRequest, OracleRole, RecoveryReason
 from deep20_oracle.provider import ProviderExchange, ProviderRequest
@@ -54,6 +59,30 @@ def test_google_vertex_route_accepts_google_resolved_provider_name(
         config=config,
         role=OracleRole.ORACLE,
     )
+
+
+def test_automatic_route_accepts_and_requires_reported_resolved_provider() -> None:
+    config = EvidenceReviewConfig(
+        model="anthropic/claude-opus-5",
+        provider=OPENROUTER_AUTO_PROVIDER,
+        provider_routing=ProviderRouting.AUTOMATIC,
+        allow_fallbacks=True,
+    )
+    trace = provider_trace(
+        raw_output=YES_PAYLOAD,
+        search_count=0,
+        model=config.model,
+        provider=config.provider,
+    ).model_copy(update={"resolved_provider": "Amazon Bedrock"})
+
+    validate_oracle_provider_trace(trace, config=config, role=OracleRole.JUDGE)
+
+    with pytest.raises(OracleProtocolError, match="did not report"):
+        validate_oracle_provider_trace(
+            trace.model_copy(update={"resolved_provider": None}),
+            config=config,
+            role=OracleRole.JUDGE,
+        )
 
 
 def records_for(writer: RunAuditWriter, run_id: str = "test-run") -> list[dict]:

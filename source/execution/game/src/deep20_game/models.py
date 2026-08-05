@@ -356,6 +356,37 @@ class ComponentTotals(StrictModel):
     recovery: RecoveryTotals = Field(default_factory=RecoveryTotals)
 
 
+class ResolvedProviderUsage(StrictModel):
+    provider: str = Field(min_length=1)
+    calls: int = Field(ge=1)
+    cost_usd: Decimal = Field(ge=0)
+    latency_ms: int = Field(ge=0)
+
+
+class RoleProviderUsage(StrictModel):
+    providers: tuple[ResolvedProviderUsage, ...] = ()
+    unreported_calls: int = Field(default=0, ge=0)
+    fallback_calls: int = Field(default=0, ge=0)
+
+    @model_validator(mode="after")
+    def valid_provider_totals(self) -> RoleProviderUsage:
+        if len({item.provider.casefold() for item in self.providers}) != len(
+            self.providers
+        ):
+            raise ValueError("resolved provider usage must be unique")
+        if self.fallback_calls > (
+            sum(item.calls for item in self.providers) + self.unreported_calls
+        ):
+            raise ValueError("fallback calls cannot exceed observed calls")
+        return self
+
+
+class OracleProviderUsage(StrictModel):
+    oracle: RoleProviderUsage = Field(default_factory=RoleProviderUsage)
+    reviewer: RoleProviderUsage = Field(default_factory=RoleProviderUsage)
+    judge: RoleProviderUsage = Field(default_factory=RoleProviderUsage)
+
+
 class EpisodeTotals(StrictModel):
     guesser: ComponentTotals
     oracle: ComponentTotals
@@ -365,11 +396,13 @@ class EpisodeTotals(StrictModel):
 class GameLlmDetails(StrictModel):
     configuration: ModelConfig
     metrics: ComponentTotals
+    provider_usage: RoleProviderUsage = Field(default_factory=RoleProviderUsage)
 
 
 class OracleLlmDetails(StrictModel):
     configuration: OracleConfig
     metrics: ComponentTotals
+    provider_usage: OracleProviderUsage = Field(default_factory=OracleProviderUsage)
 
 
 class EpisodeLlmDetails(StrictModel):

@@ -40,12 +40,22 @@ complete registered Guesser catalog, but it does not decide whether an official 
 uv run deep20 benchmark preflight
 ```
 
-Official runs make one small, real call for each configured role before any trial starts.
-Each call asks the exact model and provider route to reply with `Hi`. The calls do not include
-subject data, tools, web search, role prompts, or structured schemas. They use isolated sessions
-and separate prompt-cache namespaces. Unexpected output is discarded, and canary data never
-enters benchmark state or Guesser history. Use `--no-canary` to skip these paid calls. The
-standalone command still probes one Guesser's structured contract:
+Official runs make one small, real call for each configured role before any trial starts. The
+Guesser, Oracle, and Guess Validator calls ask the exact model under its configured routing
+policy to reply with `Hi`. The Reviewer and Judge calls use their real prompts and structured
+response schema with one fixed synthetic subject, question, and numbered evidence excerpt.
+Each must return the expected typed evidence decision. This catches route-specific
+structured-output and request-parameter failures before a trial needs either role.
+An execution whose durable state is already `completed` skips these paid startup calls. The
+runner still validates the immutable execution context and returns the existing typed result.
+
+Exact routes must resolve to their configured backend. Automatic routes must report the backend
+that OpenRouter selected. The Reviewer and Judge checks are blind and have no web access. They
+do not receive an Oracle answer, Reviewer answer, episode history, or a real benchmark subject.
+All checks use isolated sessions and separate prompt-cache namespaces. Unexpected output is
+discarded, and canary data never enters benchmark state or Guesser history. Use `--no-canary`
+to skip these paid calls. The standalone command still probes one Guesser's structured
+contract:
 
 ```bash
 uv run deep20 benchmark canary --model M-0001
@@ -110,6 +120,11 @@ execution expands to all registered subjects. IDs follow `BX-YYYYMMDD-MODE-MNNNN
 Standard output and error are merged within a separate
 `benchmark-logs/BX-YYYYMMDD-MODE-ALL-SSS/M-NNNN.log` file for each model, so concurrent output
 does not interleave. Reusing the same sequence resumes those execution IDs.
+
+Detached benchmark commands must be one-shot jobs. Do not submit them to a launchd service with
+`KeepAlive` enabled: launchd will restart a successfully completed execution. A direct `nohup`
+command must include `&` to run in the background. The benchmark also skips paid startup
+canaries for an already completed execution as a defensive safeguard.
 
 On macOS, every `benchmark run` and `benchmark repair` process automatically starts
 `/usr/bin/caffeinate` for its own lifetime. This applies to direct commands and commands started

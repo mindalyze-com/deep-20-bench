@@ -7,6 +7,7 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 from deep20_game.config import ModelConfig, ReasoningControl
+from deep20_oracle.config import EvidenceReviewConfig, ProviderRouting
 from deep20_oracle.models import JsonObject, StrictModel
 from deep20_oracle.util import timestamp
 from pydantic import Field, TypeAdapter
@@ -102,6 +103,7 @@ class ExecutionRouteRequirement(StrictModel):
     role: BenchmarkLlmRole
     model: str = Field(min_length=1)
     provider: str = Field(min_length=1)
+    provider_routing: ProviderRouting = ProviderRouting.EXACT
     max_output_tokens: int = Field(ge=1)
     required_parameters: tuple[str, ...] = ()
 
@@ -110,6 +112,7 @@ class ExecutionRouteCapabilityCheck(StrictModel):
     role: BenchmarkLlmRole
     model: str
     provider: str
+    provider_routing: ProviderRouting = ProviderRouting.EXACT
     valid: bool
     active_endpoint_count: int = Field(ge=0)
     max_completion_tokens: int | None = Field(default=None, ge=1)
@@ -151,7 +154,10 @@ def _assess_route(
         endpoint
         for endpoint in data.endpoints
         if endpoint.status == 0
-        and _endpoint_matches_provider(endpoint, requirement.provider)
+        and (
+            requirement.provider_routing is ProviderRouting.AUTOMATIC
+            or _endpoint_matches_provider(endpoint, requirement.provider)
+        )
     )
     supported = tuple(
         sorted(
@@ -205,6 +211,17 @@ def _game_required_parameters(
     return tuple(required)
 
 
+def _evidence_review_required_parameters(
+    config: EvidenceReviewConfig,
+) -> tuple[str, ...]:
+    return (
+        config.token_limit_parameter.value,
+        "reasoning_effort",
+        "response_format",
+        "structured_outputs",
+    )
+
+
 def execution_route_requirements(
     model: BenchmarkModelSnapshot,
     benchmark: BenchmarkCatalogEntry,
@@ -215,6 +232,7 @@ def execution_route_requirements(
             role=BenchmarkLlmRole.GUESSER,
             model=model.configuration.model,
             provider=model.configuration.provider,
+            provider_routing=ProviderRouting.EXACT,
             max_output_tokens=model.configuration.max_output_tokens,
             required_parameters=_game_required_parameters(
                 model.configuration,
@@ -225,6 +243,7 @@ def execution_route_requirements(
             role=BenchmarkLlmRole.ORACLE,
             model=oracle.model,
             provider=oracle.provider,
+            provider_routing=oracle.provider_routing,
             max_output_tokens=oracle.max_output_tokens,
             required_parameters=(
                 "max_tokens",
@@ -238,30 +257,25 @@ def execution_route_requirements(
             role=BenchmarkLlmRole.REVIEWER,
             model=oracle.reviewer.model,
             provider=oracle.reviewer.provider,
+            provider_routing=oracle.reviewer.provider_routing,
             max_output_tokens=oracle.reviewer.max_output_tokens,
-            required_parameters=(
-                "max_tokens",
-                "reasoning_effort",
-                "response_format",
-                "structured_outputs",
+            required_parameters=_evidence_review_required_parameters(
+                oracle.reviewer
             ),
         ),
         ExecutionRouteRequirement(
             role=BenchmarkLlmRole.JUDGE,
             model=oracle.judge.model,
             provider=oracle.judge.provider,
+            provider_routing=oracle.judge.provider_routing,
             max_output_tokens=oracle.judge.max_output_tokens,
-            required_parameters=(
-                "max_tokens",
-                "reasoning_effort",
-                "response_format",
-                "structured_outputs",
-            ),
+            required_parameters=_evidence_review_required_parameters(oracle.judge),
         ),
         ExecutionRouteRequirement(
             role=BenchmarkLlmRole.VALIDATOR,
             model=benchmark.validator_configuration.model,
             provider=benchmark.validator_configuration.provider,
+            provider_routing=ProviderRouting.EXACT,
             max_output_tokens=benchmark.validator_configuration.max_output_tokens,
             required_parameters=_game_required_parameters(
                 benchmark.validator_configuration,
@@ -289,21 +303,30 @@ def validate_execution_routes(
         assessment = _assess_route(requirement, data)
         issues: list[str] = []
         if assessment.active_endpoint_count == 0:
-            issues.append("configured exact provider has no active endpoint")
+            issues.append(
+                "model has no active endpoint for automatic routing"
+                if requirement.provider_routing is ProviderRouting.AUTOMATIC
+                else "configured exact provider has no active endpoint"
+            )
         if assessment.missing_parameters:
             issues.append(
-                "exact route does not advertise required parameters: "
+                (
+                    "automatic route does not advertise required parameters: "
+                    if requirement.provider_routing is ProviderRouting.AUTOMATIC
+                    else "exact route does not advertise required parameters: "
+                )
                 + ", ".join(assessment.missing_parameters)
             )
         if assessment.output_limit_exceeded:
             issues.append(
-                "configured max_output_tokens exceeds the exact route capability"
+                "configured max_output_tokens exceeds the available route capability"
             )
         checks.append(
             ExecutionRouteCapabilityCheck(
                 role=requirement.role,
                 model=requirement.model,
                 provider=requirement.provider,
+                provider_routing=requirement.provider_routing,
                 valid=not issues,
                 active_endpoint_count=assessment.active_endpoint_count,
                 max_completion_tokens=assessment.max_completion_tokens,
@@ -338,6 +361,7 @@ def validate_catalog_routes(
             role=BenchmarkLlmRole.GUESSER,
             model=config.model,
             provider=config.provider,
+            provider_routing=ProviderRouting.EXACT,
             max_output_tokens=config.max_output_tokens,
             required_parameters=_game_required_parameters(
                 config,

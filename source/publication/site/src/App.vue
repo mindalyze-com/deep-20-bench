@@ -103,7 +103,7 @@ router.afterEach((to, from) => {
 });
 
 const canonicalUrl = computed(
-  () => `https://mindalyze-com.github.io/deep-20-bench${route.path}`,
+  () => new URL(route.path.replace(/^\//, ""), __DEEP20_CANONICAL_URL__).href,
 );
 
 watch(

@@ -39,7 +39,7 @@ const applyRouteContext = (): void => {
     title: "Deep20Bench",
     description:
       manifest.value?.site.description ??
-      "Tests how LLMs use world knowledge, question planning, and state tracking.",
+      "Deep20Bench is a Twenty Questions benchmark for large language models (LLMs), testing world knowledge, question strategy, state tracking, and decision discipline.",
     level: null,
     position: null,
     crumbs: [],
@@ -135,7 +135,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="home-hero-inner">
           <div class="hero-copy">
             <p class="eyebrow">Deep20Bench · Twenty Questions for LLMs</p>
-            <h1>Can an LLM ask its way to the answer?</h1>
+            <h1>Deep20Bench: can an LLM ask its way to the answer?</h1>
             <p>
               A model identifies a hidden person, place, or thing by asking yes-or-no questions.
               Deep20Bench measures knowledge, question strategy, and state tracking.

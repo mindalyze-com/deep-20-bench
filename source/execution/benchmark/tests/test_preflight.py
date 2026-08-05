@@ -14,6 +14,7 @@ from deep20_benchmark.preflight import (
 )
 from deep20_game.errors import GameProviderError
 from deep20_game.models import GameProviderExchange, GameProviderRequest
+from deep20_oracle.config import ProviderRouting, TokenLimitParameter
 from deep20_oracle.models import ProviderTrace
 from deep20_oracle.util import canonical_json
 
@@ -423,6 +424,64 @@ def test_execution_route_preflight_checks_every_configured_role() -> None:
     assert source.calls.count(benchmark.oracle_configuration.model) == 1
 
 
+def test_execution_route_preflight_checks_the_configured_reviewer_token_parameter() -> None:
+    root = Path(__file__).parents[4]
+    models = load_model_catalog(root / "config" / "models.yaml")
+    benchmarks = load_benchmark_catalog(root / "config" / "benchmarks.yaml")
+    model = models.model(BenchmarkModelId("M-0004"))
+    benchmark = benchmarks.entry(BenchmarkId("B-0001"))
+    reviewer = benchmark.oracle_configuration.reviewer.model_copy(
+        update={
+            "token_limit_parameter": TokenLimitParameter.MAX_COMPLETION_TOKENS,
+        }
+    )
+    oracle = benchmark.oracle_configuration.model_copy(
+        update={"reviewer": reviewer}
+    )
+    mismatched_benchmark = benchmark.model_copy(
+        update={"oracle_configuration": oracle}
+    )
+
+    class MaxTokensOnlyMetadata:
+        def endpoints(self, route_model: str) -> OpenRouterEndpointData:
+            providers = {
+                model.configuration.model: model.configuration.provider,
+                oracle.model: oracle.provider,
+                reviewer.model: reviewer.provider,
+                oracle.judge.model: "anthropic",
+            }
+            return OpenRouterEndpointData(
+                id=route_model,
+                endpoints=(
+                    OpenRouterEndpoint(
+                        provider_name=providers[route_model],
+                        tag=providers[route_model],
+                        max_completion_tokens=65_536,
+                        supported_parameters=(
+                            "max_tokens",
+                            "reasoning_effort",
+                            "response_format",
+                            "seed",
+                            "structured_outputs",
+                            "tools",
+                        ),
+                        status=0,
+                    ),
+                ),
+            )
+
+    result = validate_execution_routes(
+        model,
+        mismatched_benchmark,
+        MaxTokensOnlyMetadata(),
+    )
+
+    failures = tuple(route for route in result.routes if not route.valid)
+    assert len(failures) == 1
+    assert failures[0].role is BenchmarkLlmRole.REVIEWER
+    assert failures[0].missing_parameters == ("max_completion_tokens",)
+
+
 def test_execution_route_preflight_reports_the_failed_role() -> None:
     root = Path(__file__).parents[4]
     models = load_model_catalog(root / "config" / "models.yaml")
@@ -432,9 +491,10 @@ def test_execution_route_preflight_reports_the_failed_role() -> None:
 
     class MissingJudgeMetadata:
         def endpoints(self, route_model: str) -> OpenRouterEndpointData:
+            judge_route = route_model == benchmark.oracle_configuration.judge.model
             provider = (
                 "different-provider"
-                if route_model == benchmark.oracle_configuration.judge.model
+                if judge_route
                 else {
                     model.configuration.model: model.configuration.provider,
                     benchmark.oracle_configuration.model: (
@@ -460,7 +520,7 @@ def test_execution_route_preflight_reports_the_failed_role() -> None:
                             "structured_outputs",
                             "tools",
                         ),
-                        status=0,
+                        status=-5 if judge_route else 0,
                     ),
                 ),
             )
@@ -470,6 +530,7 @@ def test_execution_route_preflight_reports_the_failed_role() -> None:
     failures = tuple(route for route in result.routes if not route.valid)
     assert len(failures) == 1
     assert failures[0].role is BenchmarkLlmRole.JUDGE
+    assert failures[0].provider_routing is ProviderRouting.AUTOMATIC
     assert failures[0].issues == (
-        "configured exact provider has no active endpoint",
+        "model has no active endpoint for automatic routing",
     )

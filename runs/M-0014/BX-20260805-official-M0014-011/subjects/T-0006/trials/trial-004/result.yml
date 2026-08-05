@@ -1,0 +1,821 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260805-official-M0014-011
+    model_id: M-0014
+    target_id: T-0006
+    trial_id: trial-004
+    trial_number: 4
+    episode_run_id: BR-c7baeb26b5a8604fa1e513d5f293f8083c8212bf
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-c7baeb26b5a8604fa1e513d5f293f8083c8212bf
+      episode_id: EP-019fd30c3d3474a69de0da6d5a93a464
+      subject:
+        target_id: T-0006
+        canonical_name: Genghis Khan
+        aliases:
+        - Chinggis Khan
+        - Temüjin
+        - Temujin
+        entity_type: person
+        description: Genghis Khan, the founder and first khan of the Mongol Empire,
+          identified by Wikidata entity Q720.
+        reference_url: https://en.wikipedia.org/wiki/Genghis_Khan
+      started_at: '2026-08-05T17:50:22.516420+00:00'
+      completed_at: '2026-08-05T17:53:26.133514+00:00'
+      duration_ms: 183617
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 10
+      counted_questions: 9
+      guesser_call_count: 10
+      ask_count: 9
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      oracle_quality:
+        reviewed_questions: 9
+        agreements: 9
+        disagreements: 0
+        judge_invocations: 0
+        oracle_answers_changed: 0
+        final_unknown_answers: 0
+        judge_yes_answers: 0
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0057537'
+        judge_cost_usd: '0'
+        quality_control_cost_usd: '0.0057537'
+        question_types:
+        - question_type: negation
+          reviewed_questions: 1
+          disagreements: 0
+        - question_type: other
+          reviewed_questions: 6
+          disagreements: 0
+        - question_type: temporal_comparison
+          reviewed_questions: 2
+          disagreements: 0
+      contract:
+        evaluated_outputs: 10
+        valid_outputs: 10
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.0817780'
+        oracle: '0.0213400200000000002'
+        validator: '0.0000606'
+        total: '0.1031786200000000002'
+      tokens:
+        guesser: 16200
+        oracle: 44896
+        validator: 416
+        total: 61512
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0014
+        requested_model: anthropic/claude-fable-5
+        requested_provider: anthropic
+        resolved_models:
+        - anthropic/claude-fable-5
+        resolved_providers:
+        - Anthropic
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the person a real person (not fictional)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd30c559277e9bd68605208c9d647
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.history.com/articles/genghis-khan
+          excerpt: Mongol leader Genghis Khan (1162-1227) rose from humble beginnings
+            to establish the largest land empire in history.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: negation
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fd30c3d3474a69de0da6f8cfb8962
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the person currently alive?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd30c98da73d09e33e8f8cafcee79
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.history.com/this-day-in-history/August-18/genghis-khan-dies
+          excerpt: On August 18, 1227, ... Genghis Khan died.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fd30c89c4718caf25549bea4fb7b9
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Did the person die before the year 1900?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd30cdadc753b8b64db8023dd63f2
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.history.com/this-day-in-history/August-18/genghis-khan-dies
+          excerpt: On August 18, 1227, Genghis Khan died.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fd30cc97171dd9a4c9b836a28caa4
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is the person primarily known for being a political or military
+          leader (e.g., ruler, general, statesman)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd30d19e4718d92a0697e82a727bb
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/summary/Genghis-Khan
+          excerpt: Genghis Khan ... Mongolian warrior-ruler who consolidated nomadic
+            tribes into a unified Mongolia.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fd30d0177724a993884b2645ab972
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Was the person from Europe?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd30d5ea8708e8836ad4f0405cb51
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.who2.com/bio/genghis-khan-temujin
+          excerpt: 'Birthplace: Mongolia (now part of China).'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019fd30d4d36706db213841d49b97c25
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Was the person from Asia?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd30db7cc7192944a2bbd4a638769
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/summary/Genghis-Khan
+          excerpt: Genghis Khan ... (born 1162, near Lake Baikal, Mongolia)—died Aug.
+            18, 1227), Mongolian warrior-ruler.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019fd30da18f75888057129e9b3f98f9
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Did the person die before the year 1500?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd30dfd1971b787dd47b90b62c3e4
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.history.com/this-day-in-history/August-18/genghis-khan-dies
+          excerpt: On August 18, 1227, Genghis Khan died.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019fd30de71673ce94c5e933d3c4e2f7
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Was the person from East Asia (e.g., China, Mongolia, Japan, Korea)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd30e41fa728f856ecef7d90b8833
+        answer: 'YES'
+        evidence:
+        - source_url: https://afe.easia.columbia.edu/mongols/figures/figures.htm
+          excerpt: Chinggis Khan ... was born ... in the harsh desert lands of Mongolia.
+          validation: model_reported
+        - source_url: https://www.history.com/articles/genghis-khan
+          excerpt: Temujin, later Genghis Khan, was born around 1162 near the border
+            between modern Mongolia and Siberia.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019fd30e2794726183d68479f9f32142
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Was the person Mongol?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd30ebef77673b92743c9f2fa4157
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/summary/Genghis-Khan
+          excerpt: Genghis Khan, or Chinggis Khan, originally Temüjin, was a Mongolian
+            warrior-ruler.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019fd30ea2d57483b43d89c448d59b02
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: GUESS
+        question: null
+        name: Genghis Khan
+        description: Founder and first Great Khan of the Mongol Empire, one of history's
+          greatest conquerors
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd30f051e72bf9f8b06272b1e59f6
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity exactly matches the trusted subject, Genghis
+          Khan, and the description is consistent.
+        oracle_quality: null
+      counted: false
+      counted_questions: 9
+      guesser_call_id: GC-019fd30eeefa74549c10e34e87b048b9
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"BYOMPCJW"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person a real person (not fictional)?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person currently alive?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die before the year 1900?"}}'
+      turn_number: 3
+    - role: user
+      content: 'YES'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for being a political or military leader (e.g.,
+        ruler, general, statesman)?"}}'
+      turn_number: 4
+    - role: user
+      content: 'YES'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person from Europe?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person from Asia?"}}'
+      turn_number: 6
+    - role: user
+      content: 'YES'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die before the year 1500?"}}'
+      turn_number: 7
+    - role: user
+      content: 'YES'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person from East Asia (e.g., China, Mongolia, Japan, Korea)?"}}'
+      turn_number: 8
+    - role: user
+      content: 'YES'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person Mongol?"}}'
+      turn_number: 9
+    - role: user
+      content: 'YES'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Founder and first Great
+        Khan of the Mongol Empire, one of history''s greatest conquerors","name":"Genghis
+        Khan","question":null}}'
+      turn_number: 10
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0014
+          gateway: openrouter
+          model: anthropic/claude-fable-5
+          provider: anthropic
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 512
+            ttl_seconds: 300
+            input_usd_per_million: '10.00'
+            cached_input_usd_per_million: '1.00'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 10
+          cost_usd: '0.0817780'
+          latency_ms: 56190
+          total_tokens: 16200
+          input_tokens: 15277
+          cached_input_tokens: 13503
+          cache_write_tokens: 1754
+          output_tokens: 923
+          reasoning_tokens: 412
+          estimated_cache_savings_usd: '0.1171420'
+          recovery:
+            request_attempts: 10
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Anthropic
+            calls: 10
+            cost_usd: '0.0817780'
+            latency_ms: 56190
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 9
+          cost_usd: '0.0213400200000000002'
+          latency_ms: 125815
+          total_tokens: 44896
+          input_tokens: 41877
+          cached_input_tokens: 4272
+          cache_write_tokens: 0
+          output_tokens: 3019
+          reasoning_tokens: 1780
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 18
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 9
+              cost_usd: '0.0155863200000000002'
+              latency_ms: 115385
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 9
+              cost_usd: '0.0057537'
+              latency_ms: 10430
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers: []
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0000606'
+          latency_ms: 1357
+          total_tokens: 416
+          input_tokens: 378
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 38
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.0000606'
+            latency_ms: 1357
+          unreported_calls: 0
+          fallback_calls: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0014/BX-20260805-official-M0014-011/subjects/T-0006/trials/trial-004/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 0e9742ec2e2aaff8cd459a85ca9b47ba65f215c69c96067b18fb6febf83a5ec8

@@ -4,6 +4,7 @@ import pytest
 from deep20_benchmark.catalog import load_benchmark_catalog, load_model_catalog
 from deep20_benchmark.models import BenchmarkId, SubjectId
 from deep20_game.config import BenchmarkMode
+from deep20_oracle.config import ProviderRouting, TokenLimitParameter
 from pydantic import ValidationError
 
 
@@ -25,9 +26,22 @@ def test_repository_benchmark_enables_parallel_oracle_search() -> None:
     assert definition.oracle_configuration.reviewer.provider == "google-ai-studio"
     assert definition.oracle_configuration.reviewer.reasoning_effort == "medium"
     assert (
+        definition.oracle_configuration.reviewer.token_limit_parameter
+        is TokenLimitParameter.MAX_TOKENS
+    )
+    assert (
         definition.oracle_configuration.judge.model == "anthropic/claude-opus-5"
     )
-    assert definition.oracle_configuration.judge.provider == "anthropic"
+    assert definition.oracle_configuration.judge.provider == "openrouter-auto"
+    assert (
+        definition.oracle_configuration.judge.provider_routing
+        is ProviderRouting.AUTOMATIC
+    )
+    assert definition.oracle_configuration.judge.allow_fallbacks is True
+    assert (
+        definition.oracle_configuration.judge.token_limit_parameter
+        is TokenLimitParameter.MAX_TOKENS
+    )
     assert definition.oracle_configuration.judge.reasoning_effort == "medium"
     assert (
         len(

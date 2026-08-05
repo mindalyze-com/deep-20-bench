@@ -35,8 +35,8 @@ Defaults are loaded from:
 
 Use the corresponding `--game-config`, `--guesser-config`, `--validator-config`,
 `--oracle-config`, and `--catalog-path` options to select other files.
-The Reviewer and Judge are not separate CLI configuration files: their independently pinned
-no-web routes are the `reviewer` and `judge` sections of `config/oracle.yaml`.
+The Reviewer and Judge are not separate CLI configuration files: their independent no-web
+models and routing policies are the `reviewer` and `judge` sections of `config/oracle.yaml`.
 
 The default policy is experimental, reveals the subject's broad `entity_type`, permits 50
 counted questions, allows one final guess-only call, and includes Oracle evidence in the final

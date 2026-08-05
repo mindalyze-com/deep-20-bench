@@ -9,7 +9,7 @@ from typing import Any, Self
 import httpx
 from openrouter import OpenRouter
 
-from .config import ModelRouteConfig, OracleConfig
+from .config import ModelRouteConfig, OracleConfig, ProviderRouting
 from .diagnostics import provider_failure_code
 from .errors import OracleProviderError
 from .models import (
@@ -323,11 +323,17 @@ class OpenRouterProvider:
         schema = copy.deepcopy(request.output_schema)
         self._make_schema_strict(schema)
         enable_web_search = getattr(self, "enable_web_search", True)
+        provider_preferences: dict[str, Any] = {
+            "allow_fallbacks": self.config.allow_fallbacks,
+        }
+        if not enable_web_search:
+            provider_preferences["require_parameters"] = True
+        if self.config.provider_routing is ProviderRouting.EXACT:
+            provider_preferences["only"] = [self.config.provider]
         payload = {
             "model": self.config.model,
             "messages": list(request.messages),
             "reasoning_effort": self.config.reasoning_effort,
-            "max_completion_tokens": self.config.max_output_tokens,
             "response_format": {
                 "type": "json_schema",
                 "json_schema": {
@@ -336,13 +342,11 @@ class OpenRouterProvider:
                     "schema": schema,
                 },
             },
-            "provider": {
-                "only": [self.config.provider],
-                "allow_fallbacks": self.config.allow_fallbacks,
-            },
+            "provider": provider_preferences,
             "x_open_router_metadata": "enabled",
             "stream": False,
         }
+        payload[self.config.token_limit_parameter.value] = self.config.max_output_tokens
         if enable_web_search:
             assert isinstance(self.config, OracleConfig)
             search_parameters: dict[str, Any] = {
