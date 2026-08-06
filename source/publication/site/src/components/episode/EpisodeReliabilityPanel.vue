@@ -105,7 +105,7 @@ const violationTurns = computed(() =>
 .reliability-grid dt {
   color: var(--text-secondary);
   font-size: var(--text-caption);
-  font-weight: 780;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -131,7 +131,7 @@ const violationTurns = computed(() =>
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2rem, 3vw, 3rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.045em;
 }
 

@@ -94,7 +94,7 @@ defineProps<{
 .mobile-result-rank {
   color: var(--muted);
   font-size: var(--text-small);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   font-variant-numeric: tabular-nums;
 }
 
@@ -113,14 +113,14 @@ defineProps<{
 .mobile-result-identity strong {
   color: var(--blue-ink);
   font-size: 0.9rem;
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
 }
 
 .mobile-result-identity small {
   margin-top: 0.15rem;
   color: var(--muted);
   font-size: var(--text-micro);
-  font-weight: 520;
+  font-weight: var(--font-weight-semibold);
 }
 
 .mobile-result-chevron {
@@ -173,7 +173,7 @@ defineProps<{
   overflow: hidden;
   color: var(--muted);
   font-size: var(--text-caption);
-  font-weight: 710;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.05em;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -185,7 +185,7 @@ defineProps<{
   overflow: hidden;
   font-family: var(--font-body);
   font-size: 0.86rem;
-  font-weight: 740;
+  font-weight: var(--font-weight-bold);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
   text-overflow: ellipsis;
@@ -200,7 +200,7 @@ defineProps<{
   color: var(--blue-ink);
   font-family: var(--font-display);
   font-size: 1.18rem;
-  font-weight: 620;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: -0.025em;
 }
 
@@ -214,7 +214,7 @@ defineProps<{
   background: var(--surface-accent-soft);
   color: var(--blue-ink);
   font-size: 0.7rem;
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
   line-height: 1.35;
 }
 

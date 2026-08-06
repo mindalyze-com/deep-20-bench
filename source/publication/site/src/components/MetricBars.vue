@@ -20,6 +20,7 @@ import {
   chartAnimationEnabled,
   chartDisplayFont,
   chartFont,
+  chartFontWeightSemibold,
   chartTextSize,
   chartValueDomain,
   escapeHtml,
@@ -90,11 +91,11 @@ const tooltip = (parameters: CallbackDataParams | CallbackDataParams[]): string 
   return [
     '<div style="min-width:180px;max-width:280px;padding:3px 2px">',
     `<strong style="display:block;color:${theme.ink};font-size:.82rem;line-height:1.35">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:8px;color:${theme.ink};font-family:Iowan Old Style,Palatino Linotype,Georgia,serif;font-size:1.55rem;line-height:1">${escapeHtml(item.display)}</span>`,
+    `<span style="display:block;margin-top:8px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.55rem;line-height:1">${escapeHtml(item.display)}</span>`,
     detail,
     item.link === undefined
       ? ""
-      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase">View full run →</span>`,
+      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight: var(--font-weight-bold);letter-spacing:.06em;text-transform:uppercase">View full run →</span>`,
     "</div>",
   ].join("");
 };
@@ -171,7 +172,7 @@ const chartOption = (width: number): EChartsOption => {
         color: theme.inkSoft,
         fontFamily: chartFont,
         fontSize: categoryFontSize,
-        fontWeight: 650,
+        fontWeight: chartFontWeightSemibold,
         width: mobile ? 112 : 186,
         overflow: "truncate",
         ellipsis: "…",
@@ -201,7 +202,7 @@ const chartOption = (width: number): EChartsOption => {
           color: theme.ink,
           fontFamily: chartDisplayFont,
           fontSize: valueFontSize,
-          fontWeight: 600,
+          fontWeight: chartFontWeightSemibold,
           formatter: (parameters: CallbackDataParams): string =>
             props.items[parameters.dataIndex]?.display ?? "",
         },
@@ -312,7 +313,7 @@ figcaption {
   margin-bottom: 0.3rem;
   color: var(--muted);
   font-size: var(--text-micro);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -322,7 +323,7 @@ figcaption small {
   align-items: center;
   gap: 0.5rem;
   font-size: var(--text-micro);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.04em;
 }
 

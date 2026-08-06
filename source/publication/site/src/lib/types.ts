@@ -84,6 +84,8 @@ export interface LeaderboardRow {
   rank: number | null;
   model: PublicModel;
   efficiency_rank: number | null;
+  ideal_distance_rank: number | null;
+  product_efficiency_rank: number | null;
   pareto_efficient: boolean;
   status: "evaluated" | "awaiting_official_run";
   execution_id: string | null;
@@ -97,6 +99,9 @@ export interface LeaderboardRow {
   runtime_per_episode_ms: string | null;
   guesser_think_time_per_episode_ms: string | null;
   guesser_latency_per_call_ms: string | null;
+  ideal_distance_score: string | null;
+  normalized_question_score: string | null;
+  normalized_guesser_cost: string | null;
   cost_adjusted_question_score: string | null;
   efficiency_status: EfficiencyStatus;
   successful: number;
@@ -339,7 +344,7 @@ export interface PublicationRunReference {
 export interface ManifestDocument {
   document_type: "manifest";
   schema_version: 1;
-  dataset_schema_version: 7;
+  dataset_schema_version: 8;
   site: SiteMetadata;
   score_policy: ScorePolicy;
   active_cohort: CohortConfig;
@@ -358,7 +363,7 @@ export interface AppBuildDocument {
 
 export interface LeaderboardDocument {
   document_type: "leaderboard";
-  schema_version: 2;
+  schema_version: 3;
   leaderboard: LeaderboardRow[];
 }
 

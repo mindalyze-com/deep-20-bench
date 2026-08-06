@@ -1,0 +1,1189 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260805-official-M0013-011
+    model_id: M-0013
+    target_id: T-0003
+    trial_id: trial-001
+    trial_number: 1
+    episode_run_id: BR-db69ab2244fd0aa98d8b87fdc06ff64170db1892
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-db69ab2244fd0aa98d8b87fdc06ff64170db1892
+      episode_id: EP-019fd394c18b73749d42244c64057acd
+      subject:
+        target_id: T-0003
+        canonical_name: Stephen King
+        aliases:
+        - Stephen Edwin King
+        - Steven King
+        - Richard Bachman
+        entity_type: person
+        description: Stephen King, the American author known for horror, supernatural
+          fiction, suspense, and novels including Carrie, The Shining, and It, identified
+          by Wikidata entity Q39829.
+        reference_url: https://en.wikipedia.org/wiki/Stephen_King
+      started_at: '2026-08-05T20:19:29.291501+00:00'
+      completed_at: '2026-08-05T20:28:13.752221+00:00'
+      duration_ms: 524461
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 18
+      counted_questions: 17
+      guesser_call_count: 18
+      ask_count: 17
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 1
+      oracle_quality:
+        reviewed_questions: 16
+        agreements: 15
+        disagreements: 1
+        judge_invocations: 1
+        oracle_answers_changed: 0
+        final_unknown_answers: 1
+        judge_yes_answers: 1
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0185765'
+        judge_cost_usd: '0.010625'
+        quality_control_cost_usd: '0.0292015'
+        question_types:
+        - question_type: other
+          reviewed_questions: 16
+          disagreements: 1
+      contract:
+        evaluated_outputs: 18
+        valid_outputs: 18
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: noncompliant
+      costs_usd:
+        guesser: '0.082066'
+        oracle: '0.0656576399999999995'
+        validator: '0.0000613'
+        total: '0.1477849399999999995'
+      tokens:
+        guesser: 25367
+        oracle: 113709
+        validator: 418
+        total: 139494
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0013
+        requested_model: qwen/qwen3.8-max
+        requested_provider: alibaba
+        resolved_models:
+        - qwen/qwen3.8-max
+        resolved_providers:
+        - Alibaba
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the subject a real person who is alive today?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3954f2677f0ac5ce2b01bfa3eac
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King (born September 21, 1947, Portland, Maine, U.S.) is
+            an American novelist and short-story writer.
+          validation: model_reported
+        - source_url: https://apnews.com/article/stephen-king-life-of-chuck-interview-highlights-5f5ee6603eee6a233f22c274a36031a5
+          excerpt: Highlights from the Associated Press’ interview with Stephen King;
+            “King says” and speaks about his writing.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fd394c18b73749d42244e776430f0
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the subject primarily known as an entertainer (e.g., actor, musician,
+          comedian, or TV personality)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd395dcaf7731a3e49bbee0fa838a
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is an American novelist and short-story writer.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/tag/stephen-king
+          excerpt: Stephen King is best known for his works of horror.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fd3958e78765993a4cdbe78a2c6ae
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is the subject primarily known as an athlete?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd39622a0773b86ab0f9477b24457
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is an American novelist and short-story writer whose
+            books are credited with reviving the genre of horror fiction.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fd395fbc274f78c28d1fcec8d8d49
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is the subject primarily known as a politician or head of state?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd396821c71c2a118463f6f539fec
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is an American novelist and short-story writer.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/tag/stephen-king
+          excerpt: Stephen King is best known for his works of horror.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fd39659a1779ea74c246e73f1fbb4
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is the subject primarily known for work in science, technology,
+          or mathematics?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd396d5ab77b580ef9c422bdf0273
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/summary/Stephen-King
+          excerpt: U.S. writer of horror stories... one of the world’s best-selling
+            writers.
+          validation: model_reported
+        - source_url: https://www.encyclopedia.com/people/literature-and-arts/american-literature-biographies/stephen-king
+          excerpt: American author Stephen King is a very popular author of horror
+            fiction.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019fd396b721744687912e683a3829c5
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is the subject primarily known as a businessperson, entrepreneur,
+          or investor?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd39734e177ed947119d966f1be1b
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is an American novelist and short-story writer whose
+            books are credited with reviving the genre of horror fiction.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/tag/stephen-king
+          excerpt: Stephen King is best known for his works of horror.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019fd3971f4975a1b253566b8d3b8bb8
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is the subject primarily known as a writer or author?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd397a068774195de67452e9e344a
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is an American novelist and short-story writer whose
+            books are credited with reviving the genre of horror fiction in the late
+            20th century.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019fd3977d78766f82fdac370c0a2edb
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Is the subject primarily known as a novelist (fiction books)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd397cf6d73abaaf720cb396d3f23
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King ... is an American novelist and short-story writer
+            whose books are credited with reviving the genre of horror fiction.
+          validation: model_reported
+        - source_url: https://www.nytimes.com/newsgraphics/card-story/stephen-king-books
+          excerpt: Stephen King published his first novel, Carrie, in 1974. Since
+            then, he has written more than 70 novels.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019fd397bf287286ba2b0611ad18c7e5
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Is the subject widely known for writing science fiction or fantasy?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd39808b3776298deac922cf94d3f
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019fd397ee4471f09d046874ea964830
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Is the subject a citizen of the United States?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3986aa677c08bd8a6188776a8c8
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.forbes.com/profile/stephen-king
+          excerpt: 'Citizenship: United States'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019fd39848c27209bfc669007a0419cb
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Is the subject primarily known for writing literary fiction (as
+          opposed to genre fiction like romance, thriller, or young adult)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd39906c77241b66c8098f761302b
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is an American novelist and short-story writer whose
+            books are credited with reviving the genre of horror fiction.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/tag/stephen-king
+          excerpt: Stephen King is best known for his works of horror.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019fd398c5e170908c91207347b719d4
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Is the subject primarily known for writing thriller, mystery, or
+          crime fiction?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd39aef92729b8e2b386b32c9561f
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is an American novelist and short-story writer whose
+            books are credited with reviving the genre of horror fiction in the late
+            20th century.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/tag/stephen-king
+          excerpt: Novelist Stephen King is best known for his works of horror.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019fd3992edc7335959ac6743a7e74c1
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Is the subject primarily known for writing romance novels?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd39b2f35747fa6d5218387768637
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: His books are credited with reviving the genre of horror fiction
+            in the late 20th century.
+          validation: model_reported
+        - source_url: https://www.biography.com/authors-writers/stephen-king
+          excerpt: Stephen King is a 'New York Times'-bestselling novelist who made
+            his name in the horror and fantasy genres.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-019fd39b1c2c7480808bf8c3769448ee
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Is the subject primarily known for writing young adult fiction?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd39b8dda76bb8b04ae6c847ae8cf
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is an American novelist and short-story writer whose
+            books are credited with reviving the genre of horror fiction in the late
+            20th century.
+          validation: model_reported
+        - source_url: https://www.nytimes.com/newsgraphics/card-story/stephen-king-books
+          excerpt: He’s most famous for his horror novels and stories.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-019fd39b5c8675359d16053c1fbe5057
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: ASK
+        question: Is the subject widely known for writing horror novels?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd39bc48474368798dd5f59b16ce8
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nytimes.com/newsgraphics/card-story/stephen-king-books
+          excerpt: He’s most famous for his horror novels and stories.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/tag/stephen-king
+          excerpt: Stephen King is best known for his works of horror.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-019fd39bb0f177fbb1b61362092f7a1b
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: ASK
+        question: Is the subject male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd39c010c72fea171eb305523fc3e
+        answer: 'YES'
+        evidence:
+        - source_url: https://stephenking.com/the-author/
+          excerpt: Stephen Edwin King was born in Portland, Maine in 1947, the second
+            son of Donald and Nellie Ruth Pillsbury King.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 16
+      guesser_call_id: GC-019fd39bdf0c75aaa0676b3058ab974b
+    - turn_type: action
+      turn_number: 17
+      action:
+        action: ASK
+        question: Is the subject Stephen King?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd39c6fbb761091b66ea6b98cf1db
+        answer: 'YES'
+        evidence:
+        - source_url: https://stephenking.com/the-author
+          excerpt: Stephen Edwin King was born in Portland, Maine in 1947.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King (born September 21, 1947, Portland, Maine, U.S.) is
+            an American novelist and short-story writer.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 17
+      guesser_call_id: GC-019fd39c3f7771fe894ca46933c1381e
+    - turn_type: action
+      turn_number: 18
+      action:
+        action: GUESS
+        question: null
+        name: Stephen King
+        description: American novelist widely known for horror fiction such as The
+          Shining and It.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd39cb69b74d1bb1ff2b2763a4f58
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity matches Stephen King, the American author
+          associated with horror novels including The Shining and It.
+        oracle_quality: null
+      counted: false
+      counted_questions: 17
+      guesser_call_id: GC-019fd39c961b746a858532c8d5c08771
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"EAQCORIU"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject a real person who is alive today?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known as an entertainer (e.g., actor, musician, comedian,
+        or TV personality)?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known as an athlete?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known as a politician or head of state?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known for work in science, technology, or mathematics?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known as a businessperson, entrepreneur, or investor?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known as a writer or author?"}}'
+      turn_number: 7
+    - role: user
+      content: 'YES'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known as a novelist (fiction books)?"}}'
+      turn_number: 8
+    - role: user
+      content: 'YES'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject widely known for writing science fiction or fantasy?"}}'
+      turn_number: 9
+    - role: user
+      content: UNKNOWN
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject a citizen of the United States?"}}'
+      turn_number: 10
+    - role: user
+      content: 'YES'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known for writing literary fiction (as opposed to genre
+        fiction like romance, thriller, or young adult)?"}}'
+      turn_number: 11
+    - role: user
+      content: 'NO'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known for writing thriller, mystery, or crime fiction?"}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known for writing romance novels?"}}'
+      turn_number: 13
+    - role: user
+      content: 'NO'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject primarily known for writing young adult fiction?"}}'
+      turn_number: 14
+    - role: user
+      content: 'NO'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject widely known for writing horror novels?"}}'
+      turn_number: 15
+    - role: user
+      content: 'YES'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject male?"}}'
+      turn_number: 16
+    - role: user
+      content: 'YES'
+      turn_number: 16
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the subject Stephen King?"}}'
+      turn_number: 17
+    - role: user
+      content: 'YES'
+      turn_number: 17
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American novelist widely
+        known for horror fiction such as The Shining and It.","name":"Stephen King","question":null}}'
+      turn_number: 18
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0013
+          gateway: openrouter
+          model: qwen/qwen3.8-max
+          provider: alibaba
+          reasoning_effort: high
+          reasoning_control: generic
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: supported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '2.00'
+            cached_input_usd_per_million: '0.25'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 18
+          cost_usd: '0.082066'
+          latency_ms: 301757
+          total_tokens: 25367
+          input_tokens: 15742
+          cached_input_tokens: 4096
+          cache_write_tokens: 0
+          output_tokens: 9625
+          reasoning_tokens: 8995
+          estimated_cache_savings_usd: '0.00716800'
+          recovery:
+            request_attempts: 18
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Alibaba
+            calls: 18
+            cost_usd: '0.082066'
+            latency_ms: 301757
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 17
+          cost_usd: '0.0656576399999999995'
+          latency_ms: 219312
+          total_tokens: 113709
+          input_tokens: 103137
+          cached_input_tokens: 25289
+          cache_write_tokens: 0
+          output_tokens: 10572
+          reasoning_tokens: 7613
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 34
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 17
+              cost_usd: '0.0364561399999999995'
+              latency_ms: 189430
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 16
+              cost_usd: '0.0185765'
+              latency_ms: 26911
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers:
+            - provider: Amazon Bedrock
+              calls: 1
+              cost_usd: '0.010625'
+              latency_ms: 2971
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0000613'
+          latency_ms: 2963
+          total_tokens: 418
+          input_tokens: 379
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 39
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.0000613'
+            latency_ms: 2963
+          unreported_calls: 0
+          fallback_calls: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0013/BX-20260805-official-M0013-011/subjects/T-0003/trials/trial-001/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: e8e605a99d858b7661088d07a1aa7d1121eca69a9b3c8425c0be4facaa8ec712

@@ -81,6 +81,7 @@
 ## Writing style
 
 - Use short, simple, neutral language. Avoid marketing language, hype, and exaggeration.
+- Use hyphens (`-`), not em dashes.
 
 ## Console logging
 

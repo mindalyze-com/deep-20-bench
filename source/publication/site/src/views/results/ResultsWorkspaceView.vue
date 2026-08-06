@@ -35,15 +35,15 @@ const copy = computed(() => {
   switch (route.name) {
     case "results-reliability":
       return {
-        label: "Repeated-trial consistency",
+        label: "Repeated-trial stability",
         title: "Stability",
         description:
-          "Whether a model produces similar results from run to run or varies between runs.",
+          "Whether a model produces similar scores across repeated trials on the same fixed subjects.",
         tone: "stability",
       };
     case "results-cost":
       return {
-        label: "Recorded spend",
+        label: "Recorded costs",
         title: "Cost",
         description:
           "Recorded provider costs for the tested model and benchmark support models.",
@@ -51,7 +51,7 @@ const copy = computed(() => {
       };
     case "results-time":
       return {
-        label: "Recorded model latency",
+        label: "Model and benchmark time",
         title: "Time",
         description:
           "Provider-reported model-call time and end-to-end benchmark runtime.",
@@ -59,7 +59,7 @@ const copy = computed(() => {
       };
     case "results-efficiency":
       return {
-        label: "Cost × quality",
+        label: "Cost and quality",
         title: "Efficiency",
         description:
           "Compare question quality with the recorded cost of the model under test.",
@@ -84,13 +84,15 @@ const copy = computed(() => {
     :class="`results-workspace--${copy.tone}`"
     tabindex="-1"
   >
-    <header class="results-workspace-header">
-      <div>
-        <p class="eyebrow">{{ copy.label }}</p>
-        <h1>{{ copy.title }}</h1>
+    <header class="results-workspace-header site-boundary-shell">
+      <div class="results-workspace-header-inner site-boundary">
+        <div>
+          <p class="eyebrow">{{ copy.label }}</p>
+          <h1>{{ copy.title }}</h1>
+        </div>
+        <p>{{ copy.description }}</p>
+        <ResultsNav />
       </div>
-      <p>{{ copy.description }}</p>
-      <ResultsNav />
     </header>
 
     <div ref="resultsBody" class="results-workspace-body">
@@ -142,14 +144,18 @@ const copy = computed(() => {
 }
 
 .results-workspace-header {
+  min-height: 112px;
+  padding-top: 1.2rem;
+  border-bottom: var(--rule-default);
+  background: var(--paper-bright);
+}
+
+.results-workspace-header-inner {
   display: grid;
   grid-template-columns: minmax(12rem, 0.45fr) minmax(16rem, 0.55fr) auto;
   gap: clamp(1.5rem, 4vw, 4rem);
   align-items: end;
-  min-height: 112px;
-  padding: 1.2rem max(var(--gutter), calc((100vw - var(--max)) / 2)) 0;
-  border-bottom: var(--rule-default);
-  background: var(--paper-bright);
+  min-height: calc(112px - 1.2rem - var(--border-width));
 }
 
 .results-workspace-header .eyebrow {
@@ -165,12 +171,12 @@ const copy = computed(() => {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.5rem, 4vw, 4rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.055em;
   line-height: 0.9;
 }
 
-.results-workspace-header > p {
+.results-workspace-header-inner > p {
   max-width: 30rem;
   margin: 0 0 1.15rem;
   color: var(--muted);
@@ -209,6 +215,10 @@ const copy = computed(() => {
 
 @media (max-width: 900px) {
   .results-workspace-header {
+    min-height: 0;
+  }
+
+  .results-workspace-header-inner {
     grid-template-columns: auto minmax(0, 1fr);
     gap: 1rem 2rem;
     min-height: 0;
@@ -219,7 +229,7 @@ const copy = computed(() => {
     order: 3;
   }
 
-  .results-workspace-header > p {
+  .results-workspace-header-inner > p {
     margin-bottom: 0;
   }
 }
@@ -233,16 +243,19 @@ const copy = computed(() => {
   }
 
   .results-workspace-header {
+    padding-top: 0.85rem;
+  }
+
+  .results-workspace-header-inner {
     grid-template-columns: 1fr;
     gap: 0.35rem;
-    padding-top: 0.85rem;
   }
 
   .results-workspace-header h1 {
     font-size: 2.65rem;
   }
 
-  .results-workspace-header > p {
+  .results-workspace-header-inner > p {
     display: none;
   }
 

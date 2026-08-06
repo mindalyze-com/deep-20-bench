@@ -32,10 +32,25 @@ export interface ChartValueDomain {
   maximum: number;
 }
 
-export const chartFont =
-  'Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-export const chartDisplayFont =
-  '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif';
+const readTypographyToken = (name: string, fallback: string): string =>
+  window.getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+  fallback;
+
+const readTypographyWeight = (name: string, fallback: number): number => {
+  const value = Number.parseInt(readTypographyToken(name, String(fallback)), 10);
+  return Number.isFinite(value) ? value : fallback;
+};
+
+export const chartFont = readTypographyToken("--font-sans", "sans-serif");
+export const chartDisplayFont = readTypographyToken("--font-display", "serif");
+export const chartFontWeightSemibold = readTypographyWeight(
+  "--font-weight-semibold",
+  600,
+);
+export const chartFontWeightBold = readTypographyWeight(
+  "--font-weight-bold",
+  700,
+);
 
 export const chartValueDomain = (
   values: readonly number[],

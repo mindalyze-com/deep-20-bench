@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 
 import ComparisonRankingTable from "@/components/ComparisonRankingTable.vue";
 import ErrorState from "@/components/ErrorState.vue";
+import IllustrativeRoundExample from "@/components/IllustrativeRoundExample.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
@@ -13,7 +14,6 @@ import RunTableAction from "@/components/RunTableAction.vue";
 import ScoreDotPlot, { type ScoreDot } from "@/components/ScoreDotPlot.vue";
 import { getLeaderboard, getManifest } from "@/lib/api";
 import { money, number, percent } from "@/lib/format";
-import { illustrativeRound } from "@/lib/illustrative-round";
 import { setRouteContext } from "@/lib/route-context";
 import { useRepeatAverages } from "@/lib/use-repeat-averages";
 import type {
@@ -130,15 +130,17 @@ const scoreDots = computed<ScoreDot[]>(() =>
     <LoadingState v-if="manifest === null && error === null" label="Loading overview" />
     <ErrorState v-else-if="error !== null" :message="error" />
     <template v-else-if="manifest !== null && leaderboard !== null">
-      <section class="home-hero">
+      <section class="home-hero site-boundary-shell">
         <div class="hero-grid" aria-hidden="true"></div>
-        <div class="home-hero-inner">
+        <div class="home-hero-inner site-boundary">
           <div class="hero-copy">
             <p class="eyebrow">Deep20Bench · Twenty Questions for LLMs</p>
             <h1>Deep20Bench: can an LLM ask its way to the answer?</h1>
             <p>
               A model identifies a hidden person, place, or thing by asking yes-or-no questions.
-              Deep20Bench measures knowledge, question strategy, and state tracking.
+              Deep20Bench repeats this game across multiple subjects and rounds. The average
+              number of questions becomes the Deep20Bench score - lower is better. The benchmark
+              measures knowledge, question strategy, and state tracking.
             </p>
             <div class="hero-actions">
               <RouterLink class="button button-primary" :to="{ name: 'results' }">
@@ -146,26 +148,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
               </RouterLink>
             </div>
           </div>
-          <aside class="round-card" aria-label="Illustrative Twenty Questions round">
-            <div class="round-head">
-              <span>Illustrative round</span>
-              <span>Not benchmark data</span>
-            </div>
-            <div class="round-columns" aria-hidden="true">
-              <span>Turn</span>
-              <span>Question</span>
-              <span>Answer</span>
-            </div>
-            <ol>
-              <li v-for="(turn, index) in illustrativeRound.turns" :key="turn.prompt">
-                <span>{{ String(index + 1).padStart(2, "0") }}</span>
-                <p>{{ turn.prompt }}</p>
-                <strong>
-                  {{ turn.kind === "guess" ? `${turn.prompt} — ${turn.answer}` : turn.answer }}
-                </strong>
-              </li>
-            </ol>
-          </aside>
+          <IllustrativeRoundExample />
         </div>
       </section>
 
@@ -173,10 +156,10 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="content-inner">
           <header class="section-heading">
             <div>
-              <p class="eyebrow">Why this game works</p>
-              <h2>Simple rules. Several abilities.</h2>
+              <p class="eyebrow">Why this game works as an LLM benchmark</p>
+              <h2>The task requires several core competencies.</h2>
             </div>
-            <p>Each answer should change the model’s next question.</p>
+            <p>Each answer should improve the model’s next question.</p>
           </header>
           <div class="ability-grid">
             <article>
@@ -192,7 +175,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <article>
               <span>03</span>
               <h3>State tracking</h3>
-              <p>Use every prior YES, NO, and UNKNOWN.</p>
+              <p>Use all prior questions and answers to plan the next question.</p>
             </article>
             <article>
               <span>04</span>
@@ -202,46 +185,26 @@ const scoreDots = computed<ScoreDot[]>(() =>
           </div>
           <div class="adjudication">
             <div>
-              <p class="eyebrow">How answers are checked</p>
-              <h3>Three checks. One final answer.</h3>
+              <p class="eyebrow">How the game is played</p>
+              <h3>The Guesser asks. Three roles determine the answer.</h3>
             </div>
             <div class="adjudication-summary">
               <p>
-                The Oracle researches each question. An independent Reviewer checks every YES or
-                NO. If they disagree, a blind Judge decides. The Guesser receives only the final
-                answer.
+                The Guesser is the LLM under test: it asks yes-or-no questions and makes the final
+                guess. For every question, the Oracle must search the live web and cite evidence
+                instead of relying on memory. A blind Reviewer uses that evidence to make an
+                independent second decision on every YES or NO. If the decisions disagree, a blind
+                Judge decides. The Guesser is isolated from this process and receives only the
+                final YES, NO, or UNKNOWN.
               </p>
               <RouterLink
                 class="text-link"
                 :to="{ name: 'methodology', hash: '#answer-checks' }"
               >
-                See the full answer-checking method →
+                Read the full game and answer-checking method →
               </RouterLink>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section class="content-section cohort-section">
-        <div class="content-inner cohort-layout">
-          <div class="cohort-copy">
-            <p class="eyebrow">Benchmark design</p>
-            <h2>A score built from repeated trials.</h2>
-            <p>
-              Each model completes the full subject set several times. Trials are averaged within
-              each subject and then across subjects, so every subject contributes equally to the
-              final score.
-            </p>
-            <RouterLink class="text-link" :to="{ name: 'methodology' }">
-              Read the full method →
-            </RouterLink>
-          </div>
-          <dl class="cohort-facts">
-            <div><dt>Subjects</dt><dd>{{ manifest.active_cohort.target_ids.length }}</dd></div>
-            <div><dt>Trials / subject</dt><dd>{{ manifest.active_cohort.iterations }}</dd></div>
-            <div><dt>Trials / model</dt><dd>{{ totalTrials }}</dd></div>
-            <div><dt>Question limit</dt><dd>{{ manifest.active_cohort.max_questions }}</dd></div>
-          </dl>
         </div>
       </section>
 
@@ -299,10 +262,10 @@ const scoreDots = computed<ScoreDot[]>(() =>
               <div class="score-chart">
                 <h3 class="chart-title">Question score</h3>
                 <p class="chart-description">
-                  Lower is better. The blue marker is the average question score. The blue line
-                  is its 95% confidence interval across repeated runs. Shorter lines
-                  suggest more consistent performance; longer lines indicate more variation
-                  between runs.
+                  Lower is better. The blue marker is the average question score. The colored
+                  line is its 95% confidence interval (CI). The companion plot shows each exact
+                  CI width. Its three bands divide the displayed width scale into equal
+                  ranges.
                 </p>
                 <ScoreDotPlot
                   :items="scoreDots"
@@ -328,7 +291,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                     }"
                     @click="openRun(row)"
                   >
-                    <td class="rank-column">{{ row.rank ?? "—" }}</td>
+                    <td class="rank-column">{{ row.rank ?? "-" }}</td>
                     <td class="model-column">
                       <ModelRunLink
                         v-if="row.execution_id"
@@ -347,7 +310,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                         :to="runLink(row)"
                         :name="row.model.display_name"
                       />
-                      <span v-else aria-hidden="true">—</span>
+                      <span v-else aria-hidden="true">-</span>
                     </td>
                     <td class="primary-metric-column" data-numeric>
                       <QuestionScore
@@ -375,28 +338,28 @@ const scoreDots = computed<ScoreDot[]>(() =>
               <MobileResultCard
                 v-for="row in evaluated"
                 :key="`mobile-${row.model.model_id}`"
-                :rank="row.rank ?? '—'"
+                :rank="row.rank ?? '-'"
                 :name="row.model.display_name"
                 :provider="row.model.provider"
                 :to="row.execution_id === null ? null : runLink(row)"
                 :metrics="[
                   {
-                    label: 'Score',
+                    label: 'Question score',
                     value: number(row.question_score),
                     tone: 'primary',
                   },
                   {
-                    label: 'Repeatability',
+                    label: '95% CI',
                     value:
                       row.question_score_confidence_interval === null
-                        ? '—'
+                        ? '-'
                         : `${number(row.question_score_confidence_interval.lower, 2)}–${number(
                             row.question_score_confidence_interval.upper,
                             2,
                           )}`,
                   },
                   { label: 'Success', value: percent(row.success_rate) },
-                  { label: 'Cost', value: money(row.total_cost_usd) },
+                  { label: 'Run cost', value: money(row.total_cost_usd) },
                 ]"
               />
             </div>
@@ -420,15 +383,15 @@ const scoreDots = computed<ScoreDot[]>(() =>
           <header class="section-heading">
             <div>
               <p class="eyebrow">Why trust the comparison</p>
-              <h2>Controlled and inspectable.</h2>
+              <h2>Comparable runs. Inspectable results.</h2>
             </div>
-            <p>Scores stay compact while the evidence remains available.</p>
+            <p>The comparison keeps test conditions, failures, and evidence visible.</p>
           </header>
           <div class="trust-grid">
             <article>
               <span>01</span>
-              <h3>Strict isolation</h3>
-              <p>The Guesser sees the category, prior actions, and final answer tokens.</p>
+              <h3>The same test</h3>
+              <p>The same subjects, trial count, question limit, and scoring policy apply.</p>
             </article>
             <article>
               <span>02</span>
@@ -437,30 +400,32 @@ const scoreDots = computed<ScoreDot[]>(() =>
             </article>
             <article>
               <span>03</span>
-              <h3>Every score is inspectable</h3>
-              <p>Runs link to subjects, episodes, transcripts, evidence, and usage.</p>
+              <h3>Results can be audited</h3>
+              <p>Runs link to subjects, episodes, transcripts, evidence, usage, cost, and timing.</p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="origin-strip">
-        <div>
-          <p class="eyebrow">Origin</p>
-          <h2>From a holiday game to a benchmark.</h2>
-        </div>
-        <div>
-          <p>
-            Patrick Heusser and Markus Tuor came up with the idea while playing Twenty Questions
-            with the kids. Patrick then designed and built the benchmark.
-          </p>
-          <div class="button-row">
-            <RouterLink class="button button-secondary" :to="{ name: 'story' }">
-              Origin and prior work
-            </RouterLink>
-            <RouterLink class="button button-primary" :to="{ name: 'data' }">
-              Explore public data
-            </RouterLink>
+      <section class="origin-strip site-boundary-shell">
+        <div class="origin-strip-inner site-boundary">
+          <div>
+            <p class="eyebrow">Origin</p>
+            <h2>From a holiday game to a benchmark.</h2>
+          </div>
+          <div>
+            <p>
+              Patrick Heusser and Markus Tuor came up with the idea while playing Twenty Questions
+              with the kids. Patrick then designed and built the benchmark.
+            </p>
+            <div class="button-row">
+              <RouterLink class="button button-secondary" :to="{ name: 'story' }">
+                Origin and prior work
+              </RouterLink>
+              <RouterLink class="button button-primary" :to="{ name: 'data' }">
+                Explore public data
+              </RouterLink>
+            </div>
           </div>
         </div>
       </section>
@@ -471,7 +436,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 <style scoped>
 .home-hero {
   position: relative;
-  padding: clamp(3.6rem, 6.5vw, 6.2rem) var(--gutter);
+  padding-block: clamp(3.6rem, 6.5vw, 6.2rem);
   overflow: hidden;
   background: var(--ink);
   color: white;
@@ -487,8 +452,6 @@ const scoreDots = computed<ScoreDot[]>(() =>
   grid-template-columns: minmax(0, 1.12fr) minmax(21rem, 0.76fr);
   gap: clamp(3rem, 7vw, 7rem);
   align-items: center;
-  width: min(100%, var(--max));
-  margin-inline: auto;
 }
 
 .hero-grid {
@@ -502,8 +465,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
   mask-image: linear-gradient(to right, black, transparent 68%);
 }
 
-.hero-copy,
-.round-card {
+.hero-copy {
   position: relative;
 }
 
@@ -512,12 +474,11 @@ const scoreDots = computed<ScoreDot[]>(() =>
 }
 
 .hero-copy h1,
-.cohort-layout h2,
 .origin-strip h2 {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(3.35rem, 5.35vw, 5.15rem);
-  font-weight: 470;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.048em;
   line-height: 0.94;
 }
@@ -536,68 +497,6 @@ const scoreDots = computed<ScoreDot[]>(() =>
   gap: clamp(1.2rem, 3vw, 2.5rem);
   align-items: center;
   margin-top: 2rem;
-}
-
-.round-card {
-  border: var(--rule-inverse);
-  background: rgb(255 255 255 / 4%);
-}
-
-.round-head,
-.round-columns,
-.round-card li {
-  display: grid;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.78rem 0.95rem;
-  border-bottom: var(--rule-inverse-subtle);
-}
-
-.round-head,
-.round-columns {
-  grid-template-columns: 1fr auto;
-  font-size: var(--text-micro);
-  font-weight: 680;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.round-head span:last-child,
-.round-card li > span {
-  color: rgb(255 255 255 / 48%);
-}
-
-.round-columns {
-  grid-template-columns: 2rem 1fr auto;
-  color: rgb(255 255 255 / 47%);
-}
-
-.round-card ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.round-card li {
-  grid-template-columns: 2rem minmax(0, 1fr) auto;
-  min-height: 3.7rem;
-}
-
-.round-card li p {
-  margin: 0;
-  font-size: var(--text-small);
-}
-
-.round-card li strong {
-  color: var(--acid);
-  font-size: var(--text-micro);
-  letter-spacing: 0.02em;
-  text-align: right;
-  text-transform: uppercase;
-}
-
-.round-card li:last-child {
-  border-bottom: 0;
 }
 
 .ability-grid,
@@ -633,7 +532,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
   border: var(--border-width) solid var(--text-secondary);
   border-radius: 50%;
   color: var(--ink);
-  font: 620 var(--text-micro) var(--font-sans);
+  font: var(--font-weight-semibold) var(--text-micro) var(--font-sans);
   place-items: center;
 }
 
@@ -645,7 +544,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.4rem;
-  font-weight: 470;
+  font-weight: var(--font-weight-medium);
   line-height: 1.12;
 }
 
@@ -679,7 +578,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.3rem, 3.8vw, 3.8rem);
-  font-weight: 470;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.042em;
   line-height: 0.99;
 }
@@ -696,67 +595,16 @@ const scoreDots = computed<ScoreDot[]>(() =>
   color: var(--acid);
 }
 
-.cohort-section {
-  background: var(--surface-rail);
-}
-
-.cohort-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 21rem);
-  gap: clamp(2.5rem, 5vw, 5rem);
-  align-items: center;
-}
-
-.cohort-copy {
-  max-width: 48rem;
-}
-
-.cohort-layout h2 {
-  max-width: 13ch;
-  font-size: clamp(2.5rem, 3.9vw, 3.9rem);
-}
-
-.cohort-layout p {
-  color: var(--muted);
-  font-size: var(--text-small);
-  line-height: 1.6;
-}
-
 .text-link {
   color: var(--blue-ink);
   font-size: var(--text-small);
-  font-weight: 680;
-}
-
-.cohort-facts {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin: 0;
-  border: var(--rule-strong);
-}
-
-.cohort-facts div {
-  display: flex;
-  min-height: 7.6rem;
-  padding: 1rem;
-  border-right: var(--rule-strong);
-  border-bottom: var(--rule-strong);
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.cohort-facts div:nth-child(even) {
-  border-right: 0;
-}
-
-.cohort-facts div:nth-last-child(-n + 2) {
-  border-bottom: 0;
+  font-weight: var(--font-weight-semibold);
 }
 
 dt {
   color: var(--muted);
   font-size: var(--text-micro);
-  font-weight: 710;
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
 }
 
@@ -783,7 +631,7 @@ dd {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.2rem, 3.7vw, 3.7rem);
-  font-weight: 470;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.042em;
 }
 
@@ -799,7 +647,7 @@ dd {
   width: fit-content;
   margin-top: 0.6rem;
   color: var(--acid);
-  font-weight: 750;
+  font-weight: var(--font-weight-bold);
 }
 
 .leaderboard-layout {
@@ -819,7 +667,7 @@ dd {
   color: var(--ink);
   font-family: var(--font-display);
   font-size: clamp(2rem, 3.4vw, 3.2rem);
-  font-weight: 470;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.04em;
   line-height: 1;
 }
@@ -850,7 +698,7 @@ dd {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.3rem, 5vw, 4.7rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .empty-results > p {
@@ -879,22 +727,25 @@ dd {
 }
 
 .origin-strip {
+  padding-block: clamp(3.2rem, 6vw, 5.5rem);
+  background: var(--acid);
+}
+
+.origin-strip-inner {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(20rem, 1fr);
   gap: clamp(2rem, 8vw, 8rem);
-  padding: clamp(3.2rem, 6vw, 5.5rem) max(var(--gutter), calc((100vw - var(--max)) / 2));
-  background: var(--acid);
 }
 
 .origin-strip h2 {
   font-size: clamp(2.5rem, 4vw, 4rem);
 }
 
-.origin-strip > div:last-child {
+.origin-strip-inner > div:last-child {
   align-self: end;
 }
 
-.origin-strip > div:last-child > p {
+.origin-strip-inner > div:last-child > p {
   max-width: 42rem;
   line-height: 1.7;
 }
@@ -906,9 +757,8 @@ dd {
 
 @media (max-width: 940px) {
   .home-hero-inner,
-  .cohort-layout,
   .winner-card,
-  .origin-strip {
+  .origin-strip-inner {
     grid-template-columns: 1fr;
   }
 
@@ -938,10 +788,6 @@ dd {
   .hero-actions {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .round-card li strong {
-    max-width: 8rem;
   }
 
   .ability-grid,

@@ -342,7 +342,7 @@ onActivated(applySubjectContext);
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.1rem, 3.5vw, 3.3rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.052em;
   line-height: 0.95;
 }
@@ -395,7 +395,7 @@ onActivated(applySubjectContext);
 }
 
 .subject-score-line dd {
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
 }
 
 .episode-list {
@@ -426,7 +426,7 @@ onActivated(applySubjectContext);
 .episode-list-heading > strong {
   color: var(--muted);
   font-size: var(--text-caption);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .episode-list > a,
@@ -520,7 +520,7 @@ onActivated(applySubjectContext);
 
 .episode-score {
   font-size: 0.72rem;
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   font-variant-numeric: tabular-nums;
 }
 
@@ -546,7 +546,7 @@ onActivated(applySubjectContext);
 .episode-link-arrow {
   color: var(--blue-ink);
   font-size: 0.9rem;
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
 }
 
 .episode-rail-footer {
@@ -561,7 +561,7 @@ onActivated(applySubjectContext);
 
 .episode-rail-footer a {
   color: var(--blue-ink);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .subject-stage {
@@ -586,7 +586,7 @@ onActivated(applySubjectContext);
     margin-bottom: 1.3rem;
     color: var(--muted);
     font-size: var(--text-caption);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     text-decoration: none;
   }
 }

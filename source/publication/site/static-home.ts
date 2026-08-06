@@ -128,8 +128,8 @@ const parseManifest = (value: unknown): StaticManifest => {
 
 const parseLeaderboard = (value: unknown): StaticLeaderboardRow[] => {
   const document = objectValue(value, "leaderboard");
-  if (document.document_type !== "leaderboard" || document.schema_version !== 2) {
-    throw new Error("Static homepage requires leaderboard schema version 2.");
+  if (document.document_type !== "leaderboard" || document.schema_version !== 3) {
+    throw new Error("Static homepage requires leaderboard schema version 3.");
   }
   if (!Array.isArray(document.leaderboard)) {
     throw new Error("leaderboard.leaderboard must be an array.");
@@ -311,8 +311,10 @@ const renderHome = (publication: StaticPublication, base: string): string => {
             <h1>Deep20Bench: can an LLM ask its way to the answer?</h1>
             <p class="static-lead">
               A model identifies a hidden person, place, or thing by asking yes-or-no
-              questions. Deep20Bench measures knowledge, question strategy, state tracking,
-              and decision discipline.
+              questions. Deep20Bench repeats this game across multiple subjects and rounds. The
+              average number of questions becomes the Deep20Bench score - lower is better. The
+              benchmark measures knowledge, question strategy, state tracking, and decision
+              discipline.
             </p>
             <div class="static-actions">
               <a class="static-button static-button--primary" href="${pathUrl(base, "results/")}">
@@ -373,22 +375,22 @@ const renderHome = (publication: StaticPublication, base: string): string => {
 
         <section class="static-section static-method">
           <div class="static-section-heading">
-            <p class="static-eyebrow">How the benchmark works</p>
-            <h2>Simple rules. Controlled answers.</h2>
+            <p class="static-eyebrow">How the game is played</p>
+            <h2>The Guesser asks. Three roles determine the answer.</h2>
           </div>
           <div class="static-method-grid">
             <article>
               <strong>1</strong>
               <div>
                 <h3>Ask</h3>
-                <p>The Guesser asks up to ${cohort.maxQuestions} counted yes-or-no questions.</p>
+                <p>The Guesser is the LLM under test. It asks up to ${cohort.maxQuestions} counted yes-or-no questions and makes the final guess.</p>
               </div>
             </article>
             <article>
               <strong>2</strong>
               <div>
                 <h3>Check</h3>
-                <p>An Oracle researches each question. A Reviewer checks every YES or NO. A blind Judge resolves disagreement.</p>
+                <p>An Oracle searches the live web and cites evidence. A blind Reviewer makes a second decision on every YES or NO. A blind Judge resolves disagreement.</p>
               </div>
             </article>
             <article>
@@ -422,7 +424,7 @@ const renderHome = (publication: StaticPublication, base: string): string => {
             </p>
             <div class="static-actions">
               <a class="static-button static-button--primary" href="${pathUrl(base, "data/leaderboard.csv")}">Download CSV</a>
-              <a class="static-button static-button--quiet" href="${pathUrl(base, "data/deep20bench-v7.json")}">Download JSON</a>
+              <a class="static-button static-button--quiet" href="${pathUrl(base, "data/deep20bench-v8.json")}">Download JSON</a>
             </div>
           </div>
         </section>
@@ -483,7 +485,7 @@ const renderStructuredData = (
       {
         "@type": "DataDownload",
         encodingFormat: "application/json",
-        contentUrl: new URL("data/deep20bench-v7.json", canonicalUrl).href,
+        contentUrl: new URL("data/deep20bench-v8.json", canonicalUrl).href,
       },
     ],
   };

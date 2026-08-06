@@ -26,7 +26,7 @@
     <link rel="canonical" href="https://mindalyze-com.github.io/deep-20-bench/" />
     <link rel="icon" href="/deep-20-bench/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/deep-20-bench/static.css" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Deep20Bench","alternateName":["Deep20 Bench","D20B"],"description":"Deep20Bench is a Twenty Questions benchmark for large language models (LLMs), testing world knowledge, question strategy, state tracking, and decision discipline.","url":"https://mindalyze-com.github.io/deep-20-bench/","creator":{"@type":"Person","name":"Patrick Heusser"},"dateModified":"2026-08-05T20:51:08.173563Z","isAccessibleForFree":true,"keywords":["Deep20Bench","Deep20 Bench","large language models","large language model benchmark","LLM benchmark","Twenty Questions","question strategy","state tracking"],"variableMeasured":["question score","success rate","contract compliance","cost","runtime"],"measurementTechnique":"7 subjects, 5 repeated trials per subject, 12 evaluated models","distribution":[{"@type":"DataDownload","encodingFormat":"text/csv","contentUrl":"https://mindalyze-com.github.io/deep-20-bench/data/leaderboard.csv"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://mindalyze-com.github.io/deep-20-bench/data/deep20bench-v7.json"}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Deep20Bench","alternateName":["Deep20 Bench","D20B"],"description":"Deep20Bench is a Twenty Questions benchmark for large language models (LLMs), testing world knowledge, question strategy, state tracking, and decision discipline.","url":"https://mindalyze-com.github.io/deep-20-bench/","creator":{"@type":"Person","name":"Patrick Heusser"},"dateModified":"2026-08-06T21:20:36.178368Z","isAccessibleForFree":true,"keywords":["Deep20Bench","Deep20 Bench","large language models","large language model benchmark","LLM benchmark","Twenty Questions","question strategy","state tracking"],"variableMeasured":["question score","success rate","contract compliance","cost","runtime"],"measurementTechnique":"7 subjects, 5 repeated trials per subject, 12 evaluated models","distribution":[{"@type":"DataDownload","encodingFormat":"text/csv","contentUrl":"https://mindalyze-com.github.io/deep-20-bench/data/leaderboard.csv"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://mindalyze-com.github.io/deep-20-bench/data/deep20bench-v8.json"}]}</script>
     <script>
       const documentRoot = document.documentElement;
       if (window.location.protocol === "file:") {
@@ -44,9 +44,7 @@
       html[data-file-preview] {
         background: #0c111b;
         color: #f3f0e8;
-        font-family:
-          "Inter Tight Variable", Inter, ui-sans-serif, system-ui, -apple-system,
-          BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: var(--font-body);
       }
 
       html[data-file-preview] body {
@@ -70,18 +68,16 @@
       html[data-file-preview] .file-preview-label {
         color: #d6ff26;
         font-size: 0.72rem;
-        font-weight: 800;
+        font-weight: var(--font-weight-extrabold);
         letter-spacing: 0.14em;
         text-transform: uppercase;
       }
 
       html[data-file-preview] h1 {
         margin: 0.8rem 0 1rem;
-        font-family:
-          "Newsreader Variable", "Iowan Old Style", "Palatino Linotype", Georgia,
-          serif;
+        font-family: var(--font-display);
         font-size: clamp(2.8rem, 8vw, 5.6rem);
-        font-weight: 500;
+        font-weight: var(--font-weight-medium);
         letter-spacing: -0.055em;
         line-height: 0.95;
       }
@@ -123,9 +119,9 @@
       }
     </style>
     <title>Deep20Bench · Twenty Questions Benchmark for LLMs</title>
-    <script type="module" crossorigin src="/deep-20-bench/_assets/index-jlXAezrE.js"></script>
+    <script type="module" crossorigin src="/deep-20-bench/_assets/index-C8V5gpRL.js"></script>
     <link rel="modulepreload" crossorigin href="/deep-20-bench/_assets/runtime-core.esm-bundler-9Jv_OLm3.js">
-    <link rel="stylesheet" crossorigin href="/deep-20-bench/_assets/index-BgxSEwFi.css">
+    <link rel="stylesheet" crossorigin href="/deep-20-bench/_assets/index-BkcJShL1.css">
   </head>
   <body>
     <div id="app">
@@ -149,8 +145,10 @@
             <h1>Deep20Bench: can an LLM ask its way to the answer?</h1>
             <p class="static-lead">
               A model identifies a hidden person, place, or thing by asking yes-or-no
-              questions. Deep20Bench measures knowledge, question strategy, state tracking,
-              and decision discipline.
+              questions. Deep20Bench repeats this game across multiple subjects and rounds. The
+              average number of questions becomes the Deep20Bench score - lower is better. The
+              benchmark measures knowledge, question strategy, state tracking, and decision
+              discipline.
             </p>
             <div class="static-actions">
               <a class="static-button static-button--primary" href="/deep-20-bench/results/">
@@ -203,7 +201,7 @@
               <p class="static-eyebrow">Current official results</p>
               <h2>Which models ask best?</h2>
             </div>
-            <p>Published August 5, 2026. Every model completes 35 trials.</p>
+            <p>Published August 6, 2026. Every model completes 35 trials.</p>
           </div>
 
           <div class="static-result-card">
@@ -258,22 +256,22 @@
 
         <section class="static-section static-method">
           <div class="static-section-heading">
-            <p class="static-eyebrow">How the benchmark works</p>
-            <h2>Simple rules. Controlled answers.</h2>
+            <p class="static-eyebrow">How the game is played</p>
+            <h2>The Guesser asks. Three roles determine the answer.</h2>
           </div>
           <div class="static-method-grid">
             <article>
               <strong>1</strong>
               <div>
                 <h3>Ask</h3>
-                <p>The Guesser asks up to 50 counted yes-or-no questions.</p>
+                <p>The Guesser is the LLM under test. It asks up to 50 counted yes-or-no questions and makes the final guess.</p>
               </div>
             </article>
             <article>
               <strong>2</strong>
               <div>
                 <h3>Check</h3>
-                <p>An Oracle researches each question. A Reviewer checks every YES or NO. A blind Judge resolves disagreement.</p>
+                <p>An Oracle searches the live web and cites evidence. A blind Reviewer makes a second decision on every YES or NO. A blind Judge resolves disagreement.</p>
               </div>
             </article>
             <article>
@@ -307,7 +305,7 @@
             </p>
             <div class="static-actions">
               <a class="static-button static-button--primary" href="/deep-20-bench/data/leaderboard.csv">Download CSV</a>
-              <a class="static-button static-button--quiet" href="/deep-20-bench/data/deep20bench-v7.json">Download JSON</a>
+              <a class="static-button static-button--quiet" href="/deep-20-bench/data/deep20bench-v8.json">Download JSON</a>
             </div>
           </div>
         </section>

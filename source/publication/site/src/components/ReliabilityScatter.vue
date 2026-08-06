@@ -20,6 +20,7 @@ import {
   chartAnimationEnabled,
   chartDisplayFont,
   chartFont,
+  chartFontWeightSemibold,
   chartTextSize,
   chartValueDomain,
   escapeHtml,
@@ -83,14 +84,14 @@ const tooltip = (
   const theme = readChartTheme();
   return [
     '<div style="min-width:200px;max-width:290px;padding:3px 2px">',
-    `<strong style="display:block;color:${theme.ink};font:700 .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
+    `<strong style="display:block;color:${theme.ink};font: var(--font-weight-bold) .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
     `<span style="display:block;margin-top:8px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(item.scoreDisplay)} questions</span>`,
-    `<span style="display:block;margin-top:6px;color:${theme.inkSoft};font-size:.78rem;font-weight:650">CI width ${escapeHtml(item.intervalWidthDisplay)} questions</span>`,
-    `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">95% CI ${escapeHtml(item.confidenceDisplay)} · repeatability rank ${item.reliabilityRank}</span>`,
+    `<span style="display:block;margin-top:6px;color:${theme.inkSoft};font-size:.78rem;font-weight: var(--font-weight-semibold)">CI width ${escapeHtml(item.intervalWidthDisplay)} questions</span>`,
+    `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">95% CI ${escapeHtml(item.confidenceDisplay)} · stability rank ${item.reliabilityRank}</span>`,
     `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">Lower-left is better</span>`,
     item.link === undefined
       ? ""
-      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight:700;text-transform:uppercase">View full run →</span>`,
+      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight: var(--font-weight-bold);text-transform:uppercase">View full run →</span>`,
     "</div>",
   ].join("");
 };
@@ -104,10 +105,10 @@ const chartOption = (width: number): EChartsOption => {
     animationDuration: 480,
     aria: {
       enabled: true,
-      description: `Question score and repeated-trial repeatability. Lower-left is better: lower question score and smaller confidence interval width. ${props.items
+      description: `Question score and repeated-trial stability on the fixed subjects. Lower-left is better: lower question score and smaller CI width. ${props.items
         .map(
           (item) =>
-            `${item.label}, score ${item.scoreDisplay}, confidence interval width ${item.intervalWidthDisplay}`,
+            `${item.label}, score ${item.scoreDisplay}, CI width ${item.intervalWidthDisplay}`,
         )
         .join(". ")}.`,
     },
@@ -128,7 +129,7 @@ const chartOption = (width: number): EChartsOption => {
       scale: true,
       min: widthDomain.value.minimum,
       max: widthDomain.value.maximum,
-      name: "95% CI width · smaller is more repeatable",
+      name: "CI width · lower is better",
       nameLocation: "middle",
       nameGap: mobile ? 43 : 48,
       nameTextStyle: {
@@ -195,7 +196,7 @@ const chartOption = (width: number): EChartsOption => {
           color: theme.inkSoft,
           fontFamily: chartFont,
           fontSize: chartTextSize(width, 8, 11),
-          fontWeight: 650,
+          fontWeight: chartFontWeightSemibold,
           width: 148,
           overflow: "truncate",
           ellipsis: "…",
@@ -253,13 +254,13 @@ watch(() => [chartElement.value, props.items] as const, refresh, {
         <i aria-hidden="true"></i>
         <RouterLink v-if="item.link" :to="item.link">{{ item.label }}</RouterLink>
         <strong v-else>{{ item.label }}</strong>
-        <span>{{ item.scoreDisplay }} q · width {{ item.intervalWidthDisplay }}</span>
+        <span>{{ item.scoreDisplay }} q · CI width {{ item.intervalWidthDisplay }}</span>
       </li>
     </ul>
-    <ol class="visually-hidden" aria-label="Question score and repeatability data">
+    <ol class="visually-hidden" aria-label="Question score and stability data">
       <li v-for="item in items" :key="item.label">
-        {{ item.label }}: score {{ item.scoreDisplay }} questions; 95% confidence
-        interval width {{ item.intervalWidthDisplay }} questions; repeatability rank
+        {{ item.label }}: score {{ item.scoreDisplay }} questions; CI width
+        {{ item.intervalWidthDisplay }} questions; stability rank
         {{ item.reliabilityRank }}.
         <RouterLink v-if="item.link" :to="item.link" tabindex="-1">
           View full run for {{ item.label }}
@@ -289,7 +290,7 @@ figcaption {
 
 figcaption > span:first-child {
   margin-right: auto;
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -346,7 +347,7 @@ figcaption > span:first-child {
   .mobile-model-key strong {
     overflow: hidden;
     color: var(--ink);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     text-overflow: ellipsis;
     white-space: nowrap;
   }

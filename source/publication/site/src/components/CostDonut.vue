@@ -62,7 +62,7 @@ const tooltip = (
   const theme = readChartTheme();
   return [
     '<div style="min-width:150px;padding:2px">',
-    `<strong style="display:block;color:${theme.ink};font:700 12px/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
+    `<strong style="display:block;color:${theme.ink};font: var(--font-weight-bold) 12px/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
     `<span style="display:block;margin-top:7px;color:${theme.ink};font-size:1.3rem">${escapeHtml(item.display)}</span>`,
     `<span style="display:block;margin-top:4px;color:${theme.muted};font-size:.75rem">${share(item.value)} of full-run cost</span>`,
     "</div>",
@@ -222,7 +222,7 @@ figcaption span {
 .cost-donut-total span {
   color: var(--muted);
   font-size: var(--text-micro);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -231,7 +231,7 @@ figcaption span {
   margin-top: 0.35rem;
   font-family: var(--font-display);
   font-size: 1.55rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: -0.04em;
 }
 
@@ -269,7 +269,7 @@ li > span {
 li.primary > span,
 li.primary > strong {
   color: var(--ink);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
 }
 
 li small {

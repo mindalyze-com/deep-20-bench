@@ -79,12 +79,12 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   { key: "runs", label: "Models", value: runs.value.length },
   {
     key: "spend",
-    label: "Recorded spend",
+    label: "Total benchmark cost",
     value: money(totalSpend.value),
   },
   {
     key: "guesser",
-    label: "Tested-model spend",
+    label: "Total model cost",
     value: money(guesserSpend.value),
     tone: "accent",
   },
@@ -206,7 +206,7 @@ void load();
           >
             <header class="panel-heading panel-heading--with-help">
               <div>
-                <p class="eyebrow">Tested-model cost</p>
+                <p class="eyebrow">Model cost</p>
                 <h2 id="cost-chart-title">Model cost across the run.</h2>
               </div>
               <p>
@@ -218,7 +218,7 @@ void load();
                   <p>
                     Model cost covers calls to the model under test, called the Guesser in
                     the methodology. Support cost covers the Oracle, Reviewer, Judge, and
-                    Validator. Full cost combines both.
+                    Validator. Benchmark cost combines both.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="Per episode">
@@ -229,15 +229,15 @@ void load();
                 </InfoPopover>
                 <InfoPopover label="How this page is ordered">
                   <p>
-                    The first chart is ordered by tested-model cost. The breakdown and table
-                    are ordered by full-run cost, so their order can differ.
+                    The first chart is ordered by model cost. The breakdown and table are
+                    ordered by benchmark cost, so their order can differ.
                   </p>
                 </InfoPopover>
               </ResultHelp>
             </header>
             <MetricBars
               :items="guesserCostBars"
-              direction-label="Tested-model cost · lower is better"
+              direction-label="Model cost · lower is better"
               color="coral"
               value-format="currency"
             />
@@ -275,7 +275,7 @@ void load();
               <tr>
                 <th class="rank-column">
                   <span aria-hidden="true">#</span>
-                  <span class="visually-hidden">Full-cost rank</span>
+                  <span class="visually-hidden">Benchmark cost rank</span>
                 </th>
                 <th class="model-column">Model</th>
                 <th class="run-column">Run</th>
@@ -287,7 +287,7 @@ void load();
                 </th>
                 <th data-numeric>
                   <span class="table-header-stack">
-                    <span>Full cost</span>
+                    <span>Benchmark cost</span>
                     <span>per episode</span>
                   </span>
                 </th>
@@ -298,7 +298,7 @@ void load();
                   </span>
                 </th>
                 <th data-numeric>Support share</th>
-                <th data-numeric>Full run cost</th>
+                <th data-numeric>Benchmark run cost</th>
               </tr>
             </thead>
             <tbody>
@@ -349,14 +349,14 @@ void load();
             :to="runLink(run)"
             :metrics="[
               {
-                label: 'Model / ep.',
+                label: 'Model cost / episode',
                 value: moneyEpisode(run.comparison.guesser_cost_per_episode_usd),
               },
               {
-                label: 'Full / ep.',
+                label: 'Benchmark cost / episode',
                 value: moneyEpisode(run.comparison.full_cost_per_episode_usd),
               },
-              { label: 'Full run', value: money(run.totals.costs_usd.total) },
+              { label: 'Benchmark run cost', value: money(run.totals.costs_usd.total) },
             ]"
           />
         </div>

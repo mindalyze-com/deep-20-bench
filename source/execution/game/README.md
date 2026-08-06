@@ -8,9 +8,9 @@ typed protocols.
 
 Start here:
 
-- [Concept](Concept.md) — responsibilities, state transitions, session history, trust
+- [Concept](Concept.md) - responsibilities, state transitions, session history, trust
   boundaries, caching, and failure semantics.
-- [Usage](Usage.md) — configuration, one-game CLI commands, official cache probes, outputs,
+- [Usage](Usage.md) - configuration, one-game CLI commands, official cache probes, outputs,
   artifacts, and tests.
 
 The benchmark variable is the Guesser configuration. The Oracle, Reviewer, Judge, and Guess

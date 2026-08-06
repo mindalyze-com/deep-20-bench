@@ -54,8 +54,8 @@ applyRouteContext();
     />
     <ErrorState v-else-if="error !== null" :message="error" />
     <template v-else-if="manifest !== null && appBuild !== null">
-      <section class="page-hero">
-        <div class="page-hero-inner">
+      <section class="page-hero site-boundary-shell">
+        <div class="page-hero-inner site-boundary">
           <div>
             <p class="eyebrow">Public data</p>
             <h1>Download the data.</h1>
@@ -76,7 +76,7 @@ applyRouteContext();
               <p>Cohort rules, models, runs, subjects, episodes, scores, and build details.</p>
               <a
                 class="button button-primary"
-                :href="publicDownloadUrl('deep20bench-v7.json')"
+                :href="publicDownloadUrl('deep20bench-v8.json')"
                 download
               >
                 Download JSON ↓
@@ -158,21 +158,26 @@ applyRouteContext();
         </div>
       </section>
 
-      <footer class="data-build-note" aria-label="Publication and app build information">
-        <p>
-          <span>
-            Publication built ·
-            <time :datetime="manifest.provenance.built_at">
-              {{ isoDateTime(manifest.provenance.built_at) }}
-            </time>
-          </span>
-          <span class="app-build-stamp">
-            App built ·
-            <time :datetime="appBuild.built_at">
-              {{ isoDateTime(appBuild.built_at) }}
-            </time>
-          </span>
-        </p>
+      <footer
+        class="data-build-note site-boundary-shell"
+        aria-label="Publication and app build information"
+      >
+        <div class="data-build-note-inner site-boundary">
+          <p>
+            <span>
+              Publication built ·
+              <time :datetime="manifest.provenance.built_at">
+                {{ isoDateTime(manifest.provenance.built_at) }}
+              </time>
+            </span>
+            <span class="app-build-stamp">
+              App built ·
+              <time :datetime="appBuild.built_at">
+                {{ isoDateTime(appBuild.built_at) }}
+              </time>
+            </span>
+          </p>
+        </div>
       </footer>
     </template>
   </div>
@@ -203,7 +208,7 @@ applyRouteContext();
 .file-type {
   margin: 0;
   font-size: var(--text-micro);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -215,7 +220,7 @@ applyRouteContext();
   margin: auto 0 1rem;
   font-family: var(--font-display);
   font-size: clamp(2.3rem, 4vw, 4rem);
-  font-weight: 470;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.043em;
   line-height: 0.98;
 }
@@ -271,7 +276,7 @@ applyRouteContext();
 .provenance dt {
   color: var(--muted);
   font-size: var(--text-micro);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
 }
 
@@ -307,7 +312,7 @@ applyRouteContext();
   margin: 0 0 0.8rem;
   font-family: var(--font-display);
   font-size: 1.8rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .contract-columns p,
@@ -321,9 +326,12 @@ applyRouteContext();
 }
 
 .data-build-note {
+  padding-bottom: 1.1rem;
+}
+
+.data-build-note-inner {
   display: flex;
   justify-content: flex-end;
-  padding: 0 max(var(--gutter), calc((100vw - var(--max)) / 2)) 1.1rem;
 }
 
 .data-build-note p {

@@ -1,0 +1,2719 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260805-official-M0013-011
+    model_id: M-0013
+    target_id: T-0002
+    trial_id: trial-004
+    trial_number: 4
+    episode_run_id: BR-067597a9c3211ec0cfe863ab7da3efb7664db463
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-067597a9c3211ec0cfe863ab7da3efb7664db463
+      episode_id: EP-019fd33bc0db75609cdeb6b86f17d390
+      subject:
+        target_id: T-0002
+        canonical_name: Albert Schweitzer
+        aliases:
+        - Schweitzer
+        - Dr. Albert Schweitzer
+        entity_type: person
+        description: Albert Schweitzer, the Alsatian physician, theologian, philosopher,
+          organist, and 1952 Nobel Peace Prize laureate known for founding a hospital
+          at Lambaréné, identified by Wikidata entity Q49325.
+        reference_url: https://en.wikipedia.org/wiki/Albert_Schweitzer
+      started_at: '2026-08-05T18:42:16.411852+00:00'
+      completed_at: '2026-08-05T19:17:00.574496+00:00'
+      duration_ms: 2084163
+    outcome:
+      success: false
+      terminal_reason: guesser_protocol_failure
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 51
+      counted_questions: 50
+      guesser_call_count: 51
+      ask_count: 50
+      guess_count: 0
+      rejected_guess_count: 0
+      oracle_unknown_count: 4
+      oracle_quality:
+        reviewed_questions: 46
+        agreements: 29
+        disagreements: 17
+        judge_invocations: 17
+        oracle_answers_changed: 0
+        final_unknown_answers: 4
+        judge_yes_answers: 1
+        judge_no_answers: 16
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0787623'
+        judge_cost_usd: '0.194920'
+        quality_control_cost_usd: '0.2736823'
+        question_types:
+        - question_type: other
+          reviewed_questions: 43
+          disagreements: 17
+        - question_type: temporal_comparison
+          reviewed_questions: 3
+          disagreements: 0
+      contract:
+        evaluated_outputs: 51
+        valid_outputs: 51
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: noncompliant
+      costs_usd:
+        guesser: '0.376332'
+        oracle: '0.3836118750000000005'
+        validator: '0'
+        total: '0.7599438750000000005'
+      tokens:
+        guesser: 134016
+        oracle: 372967
+        validator: 0
+        total: 506983
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0013
+        requested_model: qwen/qwen3.8-max
+        requested_provider: alibaba
+        resolved_models:
+        - qwen/qwen3.8-max
+        resolved_providers:
+        - Alibaba
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models: []
+        resolved_providers: []
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is this person a real historical figure rather than fictional?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33bf9fb75a39486c5eacafe37c6
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer — Born 14 January 1875; died 4 September 1965.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fd33bc0db75609cdeb6bae6b4c929
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is this person primarily known for politics or government leadership?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33c3c8476e3abd8edfa9ae4934f
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Dr. Albert Schweitzer, a renowned medical missionary... Schweitzer
+            founded a hospital in Lambaréné.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fd33c0f8e73d39fc67bd13ec9422c
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is this person primarily known for scientific or mathematical work?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33cb0da7336b80eee8c3d70b7aa
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work. Minister turned
+            doctor in Africa; theologian and philosopher.
+          validation: model_reported
+        - source_url: https://press.jhu.edu/books/authors/albert-schweitzer
+          excerpt: Although he was highly gifted in science, theology, and music,
+            Schweitzer dedicated the last six decades of his life to medicine and
+            to a hospital he founded.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fd33c94eb7001b610480e41938622
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is this person primarily known as a writer, poet, playwright, or
+          author?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33d0f0371faa3c513f1c27f91e2
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/summary
+          excerpt: The Nobel Peace Prize 1952 was awarded to Albert Schweitzer for
+            his altruism, reverence for life, and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: The mere mention of Schweitzer instantly conjured up images of
+            selflessness, heroism and the very model of a modern, humane physician.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fd33cf68576fd98090fed4794a5df
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is this person primarily known as a musical performer or composer?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33d7b9f72f9921eb2e007ea62bf
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/summary
+          excerpt: The Nobel Peace Prize 1952 was awarded to Albert Schweitzer “for
+            his altruism, reverence for life, and tireless humanitarian work.”
+          validation: model_reported
+        - source_url: https://www.nytimes.com/1965/09/06/archives/albert-schweitzer-90-dies-at-his-hospital-doctor-won-nobel-peace.html
+          excerpt: Albert Schweitzer, 90, Dies at His Hospital; Doctor Won Nobel Peace
+            Prize for Work in Africa. He Was Also Noted as Musician and Theologian.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019fd33d6b52710688e98175e472b7b5
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is this person primarily known as a visual artist such as a painter
+          or sculptor?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33dd34e71a68ad55ab66c55936a
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work. Minister turned
+            doctor in Africa; theologian and philosopher.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Philosopher and musician Dr. Albert Schweitzer... made his reputation
+            as a major, albeit somewhat controversial, theologian.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019fd33dbf2576b794a081372c3a3db8
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is this person primarily known as an athlete or sports figure?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33e2de575b5ad938fc881602f73
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelpeaceprize.org/laureates/1952
+          excerpt: Albert Schweitzer — Doctor, Missionary, Philosopher and Musician;
+            awarded for his altruism and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Minister turned doctor in Africa; Theologian and philosopher.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Albert-Schweitzer
+          excerpt: Albert Schweitzer | Alsatian Theologian, Philosopher & Physician.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019fd33e08ff706abcf08758029880df
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Is this person primarily known as an actor, actress, or film performer?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33e835672139bf8f8bd9e459834
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Albert-Schweitzer
+          excerpt: Albert Schweitzer | Alsatian Theologian, Philosopher & Physician
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019fd33e6e0274f69b6150da502612e9
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Is this person primarily known as a military leader or commander?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33ecfe77487b1794bfa263e47dd
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Schweitzer devoted more than half a century to practicing medicine
+            in a remote location... for people who desperately needed medical care.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019fd33eb094776398676461ab7b8877
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Is this person primarily known as a monarch or member of royalty?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33f34c473c0888b12262be89588
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelpeaceprize.org/laureates/1952
+          excerpt: Albert Schweitzer — Doctor, Missionary, Philosopher and Musician.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/summary
+          excerpt: The Nobel Peace Prize 1952 was awarded to Albert Schweitzer "for
+            his altruism, reverence for life, and tireless humanitarian work."
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019fd33f187d753b8aa88a9fe0920118
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Is this person primarily known as an explorer, pioneer, or adventurer?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33f99ca733aa148fc62bc488904
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Albert-Schweitzer
+          excerpt: Albert Schweitzer | Alsatian Theologian, Philosopher & Physician
+          validation: model_reported
+        - source_url: https://www.nobelpeaceprize.org/laureates/1952
+          excerpt: Doctor, Missionary, Philosopher and Musician; awarded for his altruism,
+            reverence for life, and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019fd33f77f475a3b6cb6cec2985e8f4
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Is this person primarily known for founding or leading a major business
+          or technology company?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd33ff1807190940dc935ff9d61c2
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: The mere mention of the name Schweitzer instantly conjured up images
+            of selflessness, heroism and the very model of a modern, humane physician.
+            Among his many charitable works, Dr. Schweitzer founded a hospital in
+            Lambaréné.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019fd33fdfb470c4a963465312fea56e
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Is this person primarily known as a social activist, reformer, or
+          civil-rights leader?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3405c3170d9b58fc026308f42d8
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Albert-Schweitzer
+          excerpt: Albert Schweitzer | Alsatian Theologian, Philosopher & Physician
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Dr. Albert Schweitzer, a renowned medical missionary with a complicated
+            history
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 3
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-019fd340308373a0becdb3b116f6ddb0
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Is this person primarily known as a philosopher or religious thinker?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd340fad67107ad0a5a7dd1cc2fc8
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-019fd340c04d74bf9de12c8d3c789179
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: ASK
+        question: Is this person primarily known for religious leadership or spiritual
+          influence?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd341569a75c180a997dd625e66b7
+        answer: 'NO'
+        evidence:
+        - source_url: https://press.jhu.edu/books/authors/albert-schweitzer
+          excerpt: Although he was highly gifted in science, theology, and music,
+            Schweitzer dedicated the last six decades of his life to medicine and
+            to a hospital he founded in Lambaréné, Gabon.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/summary
+          excerpt: The Nobel Peace Prize was awarded to Albert Schweitzer for his
+            altruism, reverence for life, and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-019fd3411d4e7631abf4626f6ad59c27
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: ASK
+        question: Is this person primarily known as a designer or architect?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd341ed5873ae8d8e4b6ba9ed74aa
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelpeaceprize.org/laureates/1952
+          excerpt: Albert Schweitzer — Doctor, Missionary, Philosopher and Musician
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Minister turned doctor in Africa; Theologian and philosopher
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 16
+      guesser_call_id: GC-019fd341cd9b721e9f57d0a3eb78a6be
+    - turn_type: action
+      turn_number: 17
+      action:
+        action: ASK
+        question: Is this person primarily known for work in film, television, or
+          performing entertainment rather than as an actor?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3423c9e76159374b3e733d45ef2
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: Doctor, Missionary, Philosopher and Musician... he built and ran
+            a hospital at the mission station Lambarene in Gabon.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: The mere mention of Schweitzer instantly conjured up images of
+            selflessness, heroism and the very model of a modern, humane physician.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 17
+      guesser_call_id: GC-019fd342194d75f9ba2efb032b67d4fc
+    - turn_type: action
+      turn_number: 18
+      action:
+        action: ASK
+        question: Is this person primarily known as a serial killer, criminal, or
+          person convicted of major crimes?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd342e8f1766e922e1b0b5ac5808c
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/summary
+          excerpt: The Nobel Peace Prize 1952 was awarded to Albert Schweitzer for
+            his altruism, reverence for life, and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Dr. Schweitzer founded a hospital in Lambaréné ... In 1952, he
+            won the Nobel Peace Prize.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 18
+      guesser_call_id: GC-019fd342a0f4743796d75c6aafb585ab
+    - turn_type: action
+      turn_number: 19
+      action:
+        action: ASK
+        question: Is this person primarily known for work in law, judiciary, or legal
+          advocacy?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3439ae477989149929f7429c644
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.nobelpeaceprize.org/laureates/1952
+          excerpt: Albert Schweitzer — for his altruism, reverence for life, and tireless
+            humanitarian work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Dr. Albert Schweitzer ... a renowned medical missionary ... [and]
+            a major ... theologian.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 19
+      guesser_call_id: GC-019fd3433a7675aaa59a877472d8e480
+    - turn_type: action
+      turn_number: 20
+      action:
+        action: ASK
+        question: Is this person primarily known for medical, healthcare, or nursing
+          work?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd34415077367a3efeafb117e8a2f
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.lbi.org/griffinger/record/229888
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for 1952, primarily
+            for his work at his hospital at Lambaréné in French Equatorial Africa
+            (Gabon), which he had founded in 1913.
+          validation: model_reported
+        - source_url: https://magazine.hms.harvard.edu/articles/reverence-life
+          excerpt: He was renowned worldwide as a physician who delivered medical
+            care in areas of Africa that were bereft of such care.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 20
+      guesser_call_id: GC-019fd343d2d27039b9ab4151b1649bea
+    - turn_type: action
+      turn_number: 21
+      action:
+        action: ASK
+        question: Is this person primarily known as a physician?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd34476b871b9ba005395b943ef07
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 21
+      guesser_call_id: GC-019fd3443e9c71eaae13af27284b6776
+    - turn_type: action
+      turn_number: 22
+      action:
+        action: ASK
+        question: Did this person live primarily in the 19th century or earlier?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd344b30776cf9f2299758aa0ea09
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: 'Albert Schweitzer — Born: 14 January 1875 ... Died: 4 September
+            1965'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 22
+      guesser_call_id: GC-019fd34498fe7443bc4d85a3056068a2
+    - turn_type: action
+      turn_number: 23
+      action:
+        action: ASK
+        question: Is this person primarily known as a nurse?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd345236777f6a2201e7935e17134
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: Doctor, Missionary, Philosopher and Musician... Together with his
+            wife, who was a nurse, he built and ran a hospital at the mission station
+            Lambarene in Gabon.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: The mere mention of the name Schweitzer instantly conjured up images
+            of selflessness, heroism and the very model of a modern, humane physician.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 23
+      guesser_call_id: GC-019fd344f2b07387a017ec2cef684386
+    - turn_type: action
+      turn_number: 24
+      action:
+        action: ASK
+        question: Is this person primarily known for work in public health, epidemiology,
+          or health policy?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3457855770ebaa692166c2b2f93
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Albert-Schweitzer
+          excerpt: Albert Schweitzer was an Alsatian-German theologian, philosopher,
+            organist, and mission doctor.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: The hospital in Lambaréné became his life’s work.
+          validation: model_reported
+        - source_url: https://www.lbi.org/griffinger/record/229888
+          excerpt: Albert Schweitzer was a physician, Protestant theologian, organist,
+            and missionary, awarded the Nobel Peace Prize primarily for his work at
+            his hospital at Lambaréné.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 24
+      guesser_call_id: GC-019fd345696a77038bd0c796a21870bc
+    - turn_type: action
+      turn_number: 25
+      action:
+        action: ASK
+        question: Did this person live primarily in the 20th century or later?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3464cdf74f5b6f1d20b69d8674a
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was born 14 January 1875 and died 4 September
+            1965.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 25
+      guesser_call_id: GC-019fd3461caa7490a0c37a6f198211ac
+    - turn_type: action
+      turn_number: 26
+      action:
+        action: ASK
+        question: Is this person female?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd346b5a97080904475c32fddb25e
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 26
+      guesser_call_id: GC-019fd346724f71f882fbfb78a374acdd
+    - turn_type: action
+      turn_number: 27
+      action:
+        action: ASK
+        question: Is this person primarily known for work in psychology or psychiatry?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd347064b77d893cbfada3a8b260a
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/summary/1000/
+          excerpt: The Nobel Peace Prize 1952 was awarded to Albert Schweitzer "for
+            his altruism, reverence for life, and tireless humanitarian work."
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Minister turned doctor in Africa; Theologian and philosopher.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 27
+      guesser_call_id: GC-019fd346df9d72919b2eed559054e236
+    - turn_type: action
+      turn_number: 28
+      action:
+        action: ASK
+        question: Is this person primarily known for work in biomedical research,
+          such as discovering a pathogen, vaccine, drug, or medical technology?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd347882772989addf44d71858eff
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        - source_url: https://www.nobelpeaceprize.org/laureates/1952
+          excerpt: Albert Schweitzer — for his altruism, reverence for life, and tireless
+            humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 28
+      guesser_call_id: GC-019fd34748487341b38e6f6a6a1d39bc
+    - turn_type: action
+      turn_number: 29
+      action:
+        action: ASK
+        question: Did this person primarily practice or contribute to healthcare as
+          a surgeon?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd34809fd761bbeba3e59e6de3b42
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 29
+      guesser_call_id: GC-019fd347bc93714fb73184521e3b83a3
+    - turn_type: action
+      turn_number: 30
+      action:
+        action: ASK
+        question: Is this person primarily known for work as a medical doctor or clinician?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd349d48e737bb60ea6fa668f6a33
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 30
+      guesser_call_id: GC-019fd3485322700a8034065e0a978e6a
+    - turn_type: action
+      turn_number: 31
+      action:
+        action: ASK
+        question: Did this person's major healthcare-related contribution occur after
+          1950?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd34ab9ee70b085463e99b9892027
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/documentary
+          excerpt: Lambaréné, a hospital and medical mission, was founded and built
+            in 1913 by Dr Schweitzer and his wife Helene.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 31
+      guesser_call_id: GC-019fd34a0eae7116a916fa852179ff37
+    - turn_type: action
+      turn_number: 32
+      action:
+        action: ASK
+        question: Did this person live primarily in Europe?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd34c4be277dfb5cd77488abd8f4c
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.pbs.org/newshour/amp/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Schweitzer devoted more than half a century to practicing medicine
+            in a remote location...
+          validation: model_reported
+        - source_url: https://www.history.co.uk/this-day-in-history/14-january/nobel-prize-winner-albert-schweitzer-is-born
+          excerpt: He returned to Europe in 1927 but made frequent trips to Lambarene
+            and continued working there throughout World War II... He died ... at
+            his beloved hospital in Lambarene.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 32
+      guesser_call_id: GC-019fd34ae3f27312a634d9fdfa4a9420
+    - turn_type: action
+      turn_number: 33
+      action:
+        action: ASK
+        question: Did this person live primarily in North America?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd34d58dc774bba302896c074b829
+        answer: 'NO'
+        evidence:
+        - source_url: https://press.jhu.edu/books/authors/albert-schweitzer
+          excerpt: Schweitzer dedicated the last six decades of his life to medicine
+            and to a hospital he founded in Lambaréné, Gabon.
+          validation: model_reported
+        - source_url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/
+          excerpt: Schweitzer finally returned to Lambaréné in 1924 and remained there
+            for the rest of his life.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 33
+      guesser_call_id: GC-019fd34c9b5b70e387750796bae52209
+    - turn_type: action
+      turn_number: 34
+      action:
+        action: ASK
+        question: Did this person live primarily in Asia?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd34ff2f470e68caa14cd2d538c4b
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.encyclopedia.com/people/philosophy-and-religion/protestant-christianity-biographies/albert-schweitzer
+          excerpt: Schweitzer was born in Alsace, but spent most of his life in Gabon
+            (then French Equatorial Africa).
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 34
+      guesser_call_id: GC-019fd34d875177219a67c6441fdd806c
+    - turn_type: action
+      turn_number: 35
+      action:
+        action: ASK
+        question: Did this person live primarily in Oceania or the Pacific region?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd35027ce772dbd3101a8996c130b
+        answer: 'NO'
+        evidence:
+        - source_url: https://press.jhu.edu/books/authors/albert-schweitzer
+          excerpt: Schweitzer dedicated the last six decades of his life to medicine
+            and to a hospital he founded in French Equatorial Africa, the Albert Schweitzer
+            Hospital in Lambaréné, Gabon.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: On Long Friday 1913, Dr. Schweitzer and his wife set off for the
+            Lambaréné mission station... The hospital in Lambaréné became his life’s
+            work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 35
+      guesser_call_id: GC-019fd3500e0e73f18ef9735fc3090ca2
+    - turn_type: action
+      turn_number: 36
+      action:
+        action: ASK
+        question: Did this person live primarily in Africa?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd350e4ed74ca8456bc34715344f8
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.encyclopedia.com/people/philosophy-and-religion/protestant-christianity-biographies/albert-schweitzer
+          excerpt: Schweitzer was born in Alsace, but spent most of his life in Gabon
+            (then French Equatorial Africa).
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 36
+      guesser_call_id: GC-019fd350493971718a09a444e465b1e7
+    - turn_type: action
+      turn_number: 37
+      action:
+        action: ASK
+        question: Is this person primarily known for healthcare-related work in Africa
+          during the 20th century?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd35149fd70d48887a378f56629aa
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: He dedicated himself to medical studies, seeking to build and run
+            a hospital in Africa... The hospital in Lambaréné became his life’s work.
+          validation: model_reported
+        - source_url: https://press.jhu.edu/books/authors/albert-schweitzer
+          excerpt: Schweitzer dedicated the last six decades of his life to medicine
+            and to a hospital he founded... in French Equatorial Africa.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 37
+      guesser_call_id: GC-019fd35104487402b9b8766c50462abf
+    - turn_type: action
+      turn_number: 38
+      action:
+        action: ASK
+        question: Was this person's healthcare-related work primarily based in South
+          Africa?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd351a5cd73a9ad147f19235dd94d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: He set off for the Lambaréné mission station... The hospital in
+            Lambaréné became his life’s work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Schweitzer founded a hospital in Lambaréné, which... is today...
+            in the nation of Gabon.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 38
+      guesser_call_id: GC-019fd3516eb375fb99dbf80ba1b76723
+    - turn_type: action
+      turn_number: 39
+      action:
+        action: ASK
+        question: Was this person's healthcare-related work primarily based in East
+          Africa?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd35200be712896974a73ab3e18ec
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: The hospital in Lambaréné became his life’s work; Lambaréné was
+            in the French colony of Gabon.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Schweitzer founded a hospital in Lambaréné, today in Gabon.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 39
+      guesser_call_id: GC-019fd351c5fa7367ae208d93318a286a
+    - turn_type: action
+      turn_number: 40
+      action:
+        action: ASK
+        question: Did this person found or lead a hospital or medical mission in Africa?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd352d2ce71b78c1efb49940ed81e
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: He dedicated himself to medical studies, seeking to build and run
+            a hospital in Africa... The hospital in Lambaréné became his life’s work.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/documentary
+          excerpt: Lambaréné, a hospital and medical mission, was founded and built
+            in 1913 by Dr Schweitzer and his wife Helene.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 40
+      guesser_call_id: GC-019fd352412f7211b09198dee965a038
+    - turn_type: action
+      turn_number: 41
+      action:
+        action: ASK
+        question: Is this person primarily known as a medical doctor who founded or
+          led a hospital or medical mission in Africa during the 20th century?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3535ee476be9743160f3c2a65b5
+        answer: 'YES'
+        evidence:
+        - source_url: https://magazine.hms.harvard.edu/articles/reverence-life
+          excerpt: Schweitzer was renowned worldwide as a physician who delivered
+            medical care in areas of Africa... In 1913, with his wife, Hélène, he
+            established his eponymous hospital in Lambaréné, Gabon.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: The mere mention of the name Schweitzer instantly conjured up images
+            of... the very model of a modern, humane physician. Among his many charitable
+            works, Dr. Schweitzer founded a hospital in Lambaréné.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 41
+      guesser_call_id: GC-019fd352f4d771da8417d968cebf0443
+    - turn_type: action
+      turn_number: 42
+      action:
+        action: ASK
+        question: Was this person primarily associated with medical work in what is
+          now Nigeria?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd353f90b70c7a13928cbe142ccf4
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: The hospital in Lambaréné became his life’s work; Lambaréné is
+            in Gabon.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Schweitzer founded a hospital in Lambaréné, which is today in Gabon.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 42
+      guesser_call_id: GC-019fd35388447541a41a8eabb3713255
+    - turn_type: action
+      turn_number: 43
+      action:
+        action: ASK
+        question: Was this person primarily associated with medical work in what is
+          now Ghana?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3545ccd75b0a92cc34dcaaaf57a
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Dr. Schweitzer founded a hospital in Lambaréné, which is today
+            in Gabon, and devoted more than half a century to practicing medicine
+            there.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 43
+      guesser_call_id: GC-019fd35423bd768e9c4564cfb95a7870
+    - turn_type: action
+      turn_number: 44
+      action:
+        action: ASK
+        question: Was this person primarily associated with medical work in what is
+          now the Democratic Republic of the Congo?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd354e1f475d98b5f84be0bb53555
+        answer: 'NO'
+        evidence:
+        - source_url: https://press.jhu.edu/books/authors/albert-schweitzer
+          excerpt: Schweitzer dedicated the last six decades of his life to medicine
+            and to a hospital he founded ... in Lambaréné, Gabon.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: He set off for the Lambaréné mission station ... The hospital in
+            Lambaréné became his life’s work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 44
+      guesser_call_id: GC-019fd3548afc7141b95c28bbea6b48c3
+    - turn_type: action
+      turn_number: 45
+      action:
+        action: ASK
+        question: Was this person primarily associated with medical work in what is
+          now Uganda?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd3554175734a9f35cfffa59d3bf9
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: The hospital in Lambaréné became his life’s work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Dr. Schweitzer founded a hospital in Lambaréné, which is today
+            in Gabon.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 45
+      guesser_call_id: GC-019fd35501fd7667846643f365dc4c73
+    - turn_type: action
+      turn_number: 46
+      action:
+        action: ASK
+        question: Was this person primarily associated with medical work in what is
+          now Kenya?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd35585fc764ca4984a4fd1113f54
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: The hospital in Lambaréné became his life’s work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Dr. Schweitzer founded a hospital in Lambaréné, which is today
+            in Gabon.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 46
+      guesser_call_id: GC-019fd35561c5720588a376b4e0fc1d23
+    - turn_type: action
+      turn_number: 47
+      action:
+        action: ASK
+        question: Is this person primarily known for founding or leading a hospital
+          in Africa north of the Sahara?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd356c3c873eab1cfce7720439bef
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: The hospital in Lambaréné became his life’s work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Schweitzer founded a hospital in Lambaréné ... today ... in the
+            nation of Gabon.
+          validation: model_reported
+        - source_url: https://www.britannica.com/place/Gabon
+          excerpt: Gabon, country lying on the west coast of Africa, astride the Equator.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 47
+      guesser_call_id: GC-019fd355ec1875bbaf62c859deaedd7b
+    - turn_type: action
+      turn_number: 48
+      action:
+        action: ASK
+        question: Is this person primarily known for founding or leading a hospital
+          or medical mission in West Africa during the 20th century?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd357465d74328f6ba213fad5b9f3
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: He dedicated himself to medical studies, seeking to build and run
+            a hospital in Africa... The hospital in Lambaréné became his life’s work.
+          validation: model_reported
+        - source_url: https://press.jhu.edu/books/authors/albert-schweitzer
+          excerpt: Schweitzer dedicated the last six decades of his life to medicine
+            and to a hospital he founded with his wife... in French Equatorial Africa.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/amp/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Dr. Albert Schweitzer, a renowned medical missionary... founded
+            a hospital in Lambaréné.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 48
+      guesser_call_id: GC-019fd357015871c7b2b493d901d0b4ca
+    - turn_type: action
+      turn_number: 49
+      action:
+        action: ASK
+        question: Was this person's major healthcare-related work primarily associated
+          with a country in West Africa other than Nigeria, Ghana, or Sierra Leone?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd358484b7128bb62f2fa9ca61a92
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: The hospital in Lambaréné became his life’s work; Lambaréné was
+            in the French colony of Gabon.
+          validation: model_reported
+        - source_url: https://www.britannica.com/summary/Gabon
+          excerpt: Gabon, officially Gabonese Republic, country, central Africa.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 49
+      guesser_call_id: GC-019fd3579d18726492dcafd01426b829
+    - turn_type: action
+      turn_number: 50
+      action:
+        action: ASK
+        question: Was this person primarily associated with medical work in Sierra
+          Leone?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd35b12fa7114ba51ea5360980f52
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: The hospital in Lambaréné became his life’s work.
+          validation: model_reported
+        - source_url: https://www.pbs.org/newshour/health/dr-albert-schweitzer-a-renowned-medical-missionary-with-a-complicated-history
+          excerpt: Dr. Schweitzer founded a hospital in Lambaréné, which is today
+            in Gabon.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 50
+      guesser_call_id: GC-019fd3589c3073a18ba9b4f516cd33aa
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"BYOMPCJW"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person a real historical figure rather than fictional?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for politics or government leadership?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for scientific or mathematical work?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a writer, poet, playwright, or author?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a musical performer or composer?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a visual artist such as a painter or sculptor?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as an athlete or sports figure?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as an actor, actress, or film performer?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a military leader or commander?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a monarch or member of royalty?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as an explorer, pioneer, or adventurer?"}}'
+      turn_number: 11
+    - role: user
+      content: 'NO'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for founding or leading a major business or technology
+        company?"}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a social activist, reformer, or civil-rights
+        leader?"}}'
+      turn_number: 13
+    - role: user
+      content: 'NO'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a philosopher or religious thinker?"}}'
+      turn_number: 14
+    - role: user
+      content: UNKNOWN
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for religious leadership or spiritual influence?"}}'
+      turn_number: 15
+    - role: user
+      content: 'NO'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a designer or architect?"}}'
+      turn_number: 16
+    - role: user
+      content: 'NO'
+      turn_number: 16
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for work in film, television, or performing entertainment
+        rather than as an actor?"}}'
+      turn_number: 17
+    - role: user
+      content: 'NO'
+      turn_number: 17
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a serial killer, criminal, or person convicted
+        of major crimes?"}}'
+      turn_number: 18
+    - role: user
+      content: 'NO'
+      turn_number: 18
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for work in law, judiciary, or legal advocacy?"}}'
+      turn_number: 19
+    - role: user
+      content: 'NO'
+      turn_number: 19
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for medical, healthcare, or nursing work?"}}'
+      turn_number: 20
+    - role: user
+      content: 'YES'
+      turn_number: 20
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a physician?"}}'
+      turn_number: 21
+    - role: user
+      content: UNKNOWN
+      turn_number: 21
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live primarily in the 19th century or earlier?"}}'
+      turn_number: 22
+    - role: user
+      content: 'NO'
+      turn_number: 22
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a nurse?"}}'
+      turn_number: 23
+    - role: user
+      content: 'NO'
+      turn_number: 23
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for work in public health, epidemiology, or health
+        policy?"}}'
+      turn_number: 24
+    - role: user
+      content: 'NO'
+      turn_number: 24
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live primarily in the 20th century or later?"}}'
+      turn_number: 25
+    - role: user
+      content: 'YES'
+      turn_number: 25
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person female?"}}'
+      turn_number: 26
+    - role: user
+      content: 'NO'
+      turn_number: 26
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for work in psychology or psychiatry?"}}'
+      turn_number: 27
+    - role: user
+      content: 'NO'
+      turn_number: 27
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for work in biomedical research, such as discovering
+        a pathogen, vaccine, drug, or medical technology?"}}'
+      turn_number: 28
+    - role: user
+      content: 'NO'
+      turn_number: 28
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person primarily practice or contribute to healthcare as a surgeon?"}}'
+      turn_number: 29
+    - role: user
+      content: UNKNOWN
+      turn_number: 29
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for work as a medical doctor or clinician?"}}'
+      turn_number: 30
+    - role: user
+      content: UNKNOWN
+      turn_number: 30
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person''s major healthcare-related contribution occur after 1950?"}}'
+      turn_number: 31
+    - role: user
+      content: 'NO'
+      turn_number: 31
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live primarily in Europe?"}}'
+      turn_number: 32
+    - role: user
+      content: 'NO'
+      turn_number: 32
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live primarily in North America?"}}'
+      turn_number: 33
+    - role: user
+      content: 'NO'
+      turn_number: 33
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live primarily in Asia?"}}'
+      turn_number: 34
+    - role: user
+      content: 'NO'
+      turn_number: 34
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live primarily in Oceania or the Pacific region?"}}'
+      turn_number: 35
+    - role: user
+      content: 'NO'
+      turn_number: 35
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live primarily in Africa?"}}'
+      turn_number: 36
+    - role: user
+      content: 'YES'
+      turn_number: 36
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for healthcare-related work in Africa during the
+        20th century?"}}'
+      turn_number: 37
+    - role: user
+      content: 'YES'
+      turn_number: 37
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person''s healthcare-related work primarily based in South Africa?"}}'
+      turn_number: 38
+    - role: user
+      content: 'NO'
+      turn_number: 38
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person''s healthcare-related work primarily based in East Africa?"}}'
+      turn_number: 39
+    - role: user
+      content: 'NO'
+      turn_number: 39
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person found or lead a hospital or medical mission in Africa?"}}'
+      turn_number: 40
+    - role: user
+      content: 'YES'
+      turn_number: 40
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known as a medical doctor who founded or led a hospital
+        or medical mission in Africa during the 20th century?"}}'
+      turn_number: 41
+    - role: user
+      content: 'YES'
+      turn_number: 41
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with medical work in what is now Nigeria?"}}'
+      turn_number: 42
+    - role: user
+      content: 'NO'
+      turn_number: 42
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with medical work in what is now Ghana?"}}'
+      turn_number: 43
+    - role: user
+      content: 'NO'
+      turn_number: 43
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with medical work in what is now the Democratic
+        Republic of the Congo?"}}'
+      turn_number: 44
+    - role: user
+      content: 'NO'
+      turn_number: 44
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with medical work in what is now Uganda?"}}'
+      turn_number: 45
+    - role: user
+      content: 'NO'
+      turn_number: 45
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with medical work in what is now Kenya?"}}'
+      turn_number: 46
+    - role: user
+      content: 'NO'
+      turn_number: 46
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for founding or leading a hospital in Africa north
+        of the Sahara?"}}'
+      turn_number: 47
+    - role: user
+      content: 'NO'
+      turn_number: 47
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person primarily known for founding or leading a hospital or medical
+        mission in West Africa during the 20th century?"}}'
+      turn_number: 48
+    - role: user
+      content: 'YES'
+      turn_number: 48
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person''s major healthcare-related work primarily associated with a country
+        in West Africa other than Nigeria, Ghana, or Sierra Leone?"}}'
+      turn_number: 49
+    - role: user
+      content: 'NO'
+      turn_number: 49
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with medical work in Sierra Leone?"}}'
+      turn_number: 50
+    - role: user
+      content: 'NO'
+      turn_number: 50
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily associated with medical work in Nigeria?"}}'
+      turn_number: 51
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0013
+          gateway: openrouter
+          model: qwen/qwen3.8-max
+          provider: alibaba
+          reasoning_effort: high
+          reasoning_control: generic
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: supported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '2.00'
+            cached_input_usd_per_million: '0.25'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 51
+          cost_usd: '0.376332'
+          latency_ms: 1314819
+          total_tokens: 134016
+          input_tokens: 84093
+          cached_input_tokens: 52224
+          cache_write_tokens: 0
+          output_tokens: 49923
+          reasoning_tokens: 48047
+          estimated_cache_savings_usd: '0.09139200'
+          recovery:
+            request_attempts: 51
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Alibaba
+            calls: 51
+            cost_usd: '0.376332'
+            latency_ms: 1314819
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 50
+          cost_usd: '0.3836118750000000005'
+          latency_ms: 768005
+          total_tokens: 372967
+          input_tokens: 328774
+          cached_input_tokens: 66695
+          cache_write_tokens: 0
+          output_tokens: 44193
+          reasoning_tokens: 33354
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 113
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 50
+              cost_usd: '0.1099295750000000005'
+              latency_ms: 585771
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 46
+              cost_usd: '0.0787623'
+              latency_ms: 105735
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers:
+            - provider: Amazon Bedrock
+              calls: 17
+              cost_usd: '0.194920'
+              latency_ms: 76499
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 0
+          cost_usd: '0'
+          latency_ms: 0
+          total_tokens: 0
+          input_tokens: 0
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 0
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 0
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers: []
+          unreported_calls: 0
+          fallback_calls: 0
+    failure:
+      code: ask_after_question_limit
+      type: GuesserProtocolError
+      message: ASK is forbidden on the final guess-only opportunity
+      call_id: GC-019fd35b35aa71a6bd6013b3f17bb7df
+      diagnostics:
+        causes:
+        - exception_type: GuesserProtocolError
+          module: deep20_game.errors
+          message: ASK is forbidden on the final guess-only opportunity
+        frames: []
+        provider: null
+        metadata: {}
+  failure:
+    code: ask_after_question_limit
+    type: GuesserProtocolError
+    message: ASK is forbidden on the final guess-only opportunity
+    call_id: GC-019fd35b35aa71a6bd6013b3f17bb7df
+    diagnostics:
+      causes:
+      - exception_type: GuesserProtocolError
+        module: deep20_game.errors
+        message: ASK is forbidden on the final guess-only opportunity
+      frames: []
+      provider: null
+      metadata: {}
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0013/BX-20260805-official-M0013-011/subjects/T-0002/trials/trial-004/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 351231be3f8753cfdb14eac9370370d66093be86aedfd289c303a364cb9a7c9b

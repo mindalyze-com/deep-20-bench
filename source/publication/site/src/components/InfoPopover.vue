@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
   background: transparent;
   color: inherit;
   font-size: var(--text-small);
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
   line-height: 1.35;
   text-align: left;
   cursor: pointer;
@@ -146,7 +146,7 @@ onBeforeUnmount(() => {
   height: 1rem;
   border: var(--border-width) solid currentColor;
   border-radius: 50%;
-  font: 760 0.62rem/1 var(--font-sans);
+  font: var(--font-weight-bold) 0.62rem/1 var(--font-sans);
   opacity: 0.72;
 }
 

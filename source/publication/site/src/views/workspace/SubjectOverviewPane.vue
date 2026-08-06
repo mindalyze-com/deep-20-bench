@@ -132,7 +132,7 @@ const facts = computed<MetricGridItem[]>(() => {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(3rem, 6vw, 5.6rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.06em;
   line-height: 0.92;
 }
@@ -149,7 +149,7 @@ const facts = computed<MetricGridItem[]>(() => {
   margin-top: 1.2rem;
   color: var(--blue-ink);
   font-size: 0.72rem;
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
 }
 
 .subject-score-card {

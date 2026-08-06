@@ -32,7 +32,7 @@ defineProps<{
 }
 
 .model-run-link-name {
-  font-weight: 740;
+  font-weight: var(--font-weight-bold);
   text-decoration-color: transparent;
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
@@ -44,7 +44,7 @@ defineProps<{
   margin-top: 0.12rem;
   color: var(--muted);
   font-size: var(--text-micro);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   white-space: nowrap;
 }
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
-from decimal import Decimal
+from decimal import Decimal, localcontext
 from pathlib import Path
 from typing import Literal
 
@@ -828,7 +828,7 @@ def test_run_comparison_does_not_treat_zero_recorded_cost_as_free() -> None:
     assert comparison.cost_adjusted_question_score is None
 
 
-def test_efficiency_rank_and_pareto_frontier_are_independent_of_question_rank() -> None:
+def test_efficiency_rank_and_pareto_efficiency_are_independent_of_question_rank() -> None:
     rows = (
         LeaderboardRow(
             rank=1,
@@ -865,9 +865,125 @@ def test_efficiency_rank_and_pareto_frontier_are_independent_of_question_rank() 
     assert by_id["M-0002"].efficiency_rank == 1
     assert by_id["M-0001"].efficiency_rank == 2
     assert by_id["M-0003"].efficiency_rank == 3
+    assert by_id["M-0001"].ideal_distance_rank == 1
+    assert by_id["M-0002"].ideal_distance_rank == 2
+    assert by_id["M-0003"].ideal_distance_rank == 3
+    assert by_id["M-0002"].product_efficiency_rank == 1
+    assert by_id["M-0001"].product_efficiency_rank == 2
+    assert by_id["M-0003"].product_efficiency_rank == 3
+    assert by_id["M-0001"].ideal_distance_score is not None
+    assert abs(by_id["M-0001"].ideal_distance_score - Decimal(1) / Decimal(3)) < Decimal(
+        "1e-28"
+    )
+    assert by_id["M-0001"].normalized_question_score == 0
+    assert by_id["M-0001"].normalized_guesser_cost is not None
+    assert abs(by_id["M-0001"].normalized_guesser_cost - Decimal(1) / Decimal(3)) < Decimal(
+        "1e-28"
+    )
     assert by_id["M-0001"].pareto_efficient
     assert by_id["M-0002"].pareto_efficient
     assert not by_id["M-0003"].pareto_efficient
+
+
+def test_efficiency_distance_handles_a_single_model_without_artifact_changes() -> None:
+    row = LeaderboardRow(
+        rank=1,
+        model=_model("M-0001", "Only"),
+        status="evaluated",
+        question_score=Decimal(12),
+        guesser_cost_per_episode_usd=Decimal("0.05"),
+        cost_adjusted_question_score=Decimal("0.6"),
+        efficiency_status="ranked",
+    )
+
+    (ranked,) = _rank_efficiency((row,))
+
+    assert ranked.efficiency_rank == 1
+    assert ranked.ideal_distance_rank == 1
+    assert ranked.product_efficiency_rank == 1
+    assert ranked.ideal_distance_score == 0
+    assert ranked.normalized_question_score == 0
+    assert ranked.normalized_guesser_cost == 0
+    assert ranked.pareto_efficient
+
+
+def test_efficiency_distance_zeroes_a_degenerate_equal_cost_dimension() -> None:
+    rows = (
+        LeaderboardRow(
+            rank=1,
+            model=_model("M-0001", "Lower questions"),
+            status="evaluated",
+            question_score=Decimal(10),
+            guesser_cost_per_episode_usd=Decimal("0.1"),
+            cost_adjusted_question_score=Decimal(1),
+            efficiency_status="ranked",
+        ),
+        LeaderboardRow(
+            rank=2,
+            model=_model("M-0002", "Higher questions"),
+            status="evaluated",
+            question_score=Decimal(20),
+            guesser_cost_per_episode_usd=Decimal("0.1"),
+            cost_adjusted_question_score=Decimal(2),
+            efficiency_status="ranked",
+        ),
+    )
+
+    by_id = {row.model.model_id: row for row in _rank_efficiency(rows)}
+
+    assert by_id["M-0001"].normalized_guesser_cost == 0
+    assert by_id["M-0002"].normalized_guesser_cost == 0
+    assert by_id["M-0001"].ideal_distance_score == 0
+    assert by_id["M-0002"].ideal_distance_score == 1
+    assert by_id["M-0001"].ideal_distance_rank == 1
+    assert by_id["M-0002"].ideal_distance_rank == 2
+
+
+def test_efficiency_distance_preserves_exact_joint_ties() -> None:
+    rows = (
+        LeaderboardRow(
+            rank=1,
+            model=_model("M-0001", "Low questions"),
+            status="evaluated",
+            question_score=Decimal(10),
+            guesser_cost_per_episode_usd=Decimal("0.3"),
+            cost_adjusted_question_score=Decimal(3),
+            efficiency_status="ranked",
+        ),
+        LeaderboardRow(
+            rank=2,
+            model=_model("M-0002", "Middle"),
+            status="evaluated",
+            question_score=Decimal(15),
+            guesser_cost_per_episode_usd=Decimal("0.2"),
+            cost_adjusted_question_score=Decimal(3),
+            efficiency_status="ranked",
+        ),
+        LeaderboardRow(
+            rank=3,
+            model=_model("M-0003", "Low cost"),
+            status="evaluated",
+            question_score=Decimal(20),
+            guesser_cost_per_episode_usd=Decimal("0.1"),
+            cost_adjusted_question_score=Decimal(2),
+            efficiency_status="ranked",
+        ),
+    )
+
+    by_id = {row.model.model_id: row for row in _rank_efficiency(rows)}
+
+    assert by_id["M-0001"].ideal_distance_rank == 2
+    assert by_id["M-0002"].ideal_distance_rank == 1
+    assert by_id["M-0003"].ideal_distance_rank == 2
+    assert by_id["M-0002"].normalized_question_score == Decimal("0.5")
+    assert by_id["M-0002"].normalized_guesser_cost == Decimal("0.5")
+    with localcontext() as context:
+        context.prec = 50
+        expected_middle_distance = Decimal("0.5").sqrt()
+    assert by_id["M-0002"].ideal_distance_score == expected_middle_distance
+    assert by_id["M-0003"].efficiency_rank == 1
+    assert by_id["M-0001"].efficiency_rank == 2
+    assert by_id["M-0002"].efficiency_rank == 2
 
 
 def test_latest_qualified_run_wins_without_score_selection() -> None:
@@ -1237,6 +1353,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
     assert "question_score_confidence_interval" not in execution_source
     assert "stratified-welch-t-v1" not in execution_source
     assert "confidenceIntervalWidth" not in execution_source
+    assert "classifyConfidenceWidths" not in execution_source
 
     report_source = "\n".join(
         path.read_text(encoding="utf-8")
@@ -1264,7 +1381,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
     assert "Earlier official runs" not in report_source
     assert "manifest.json" in static_home_source
     assert "leaderboard.json" in static_home_source
-    assert "deep20bench-v7.json" in static_home_source
+    assert "deep20bench-v8.json" in static_home_source
     for private_source in (
         "guesser_conversation",
         "subject_snapshot",
@@ -1326,7 +1443,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
 
 
 def test_published_contract_violations_include_only_sanitized_guesser_text() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v7.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v8.json"
     dataset = PublishedDataset.model_validate_json(dataset_path.read_text(encoding="utf-8"))
     violations = tuple(
         turn
@@ -1376,7 +1493,8 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     assert "Exact Guesser provider text" in episode_source
     assert "1 · Guesser asks" in episode_source
     assert (
-        '2 · {{ turn.adjudicator === "oracle" ? "Oracle" : "Validator" }} answers' in episode_source
+        '2 · {{ turn.adjudicator === "oracle" ? "Adjudication" : "Validator" }} returns'
+        in episode_source
     )
     assert episode_source.index("Recorded Guesser output") < episode_source.rindex(
         "Oracle evidence"
@@ -1396,11 +1514,11 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     assert "Primary Oracle" in run_source
     assert "run.totals.total_tokens" in run_source
     assert "current.totals.guesser_think_time_ms" in run_source
-    assert "{ label: 'Cost', value: money(row.total_cost_usd) }" in leaderboard_source
+    assert "{ label: 'Run cost', value: money(row.total_cost_usd) }" in leaderboard_source
 
 
 def test_generated_homepage_matches_the_official_result_state() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v7.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v8.json"
     dataset = json.loads(dataset_path.read_text(encoding="utf-8"))
     evaluated = [row for row in dataset["leaderboard"] if row["status"] == "evaluated"]
     homepage = (
@@ -1427,31 +1545,68 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     methodology = (
         REPOSITORY / "source" / "publication" / "site" / "src" / "views" / "MethodologyView.vue"
     ).read_text(encoding="utf-8")
+    illustrative_round = (
+        REPOSITORY
+        / "source"
+        / "publication"
+        / "site"
+        / "src"
+        / "components"
+        / "IllustrativeRoundExample.vue"
+    ).read_text(encoding="utf-8")
 
     assert "Deep20Bench: can an LLM ask its way to the answer?" in homepage
-    assert "Simple rules. Several abilities." in homepage
-    assert "Three checks. One final answer." in homepage
-    assert "An independent Reviewer checks every YES or" in homepage
-    assert "If they disagree, a blind Judge decides." in homepage
-    assert "See the full answer-checking method" in homepage
+    assert "Why this game works as an LLM benchmark" in homepage
+    assert "The task requires several core competencies." in homepage
+    assert "Use all prior questions and answers to plan the next question." in homepage
+    assert "The Guesser asks. Three roles determine the answer." in homepage
+    assert "The Guesser is the LLM under test" in homepage
+    assert "the Oracle must search the live web and cite evidence" in homepage
+    assert "independent second decision on every YES or NO" in homepage
+    assert "If the decisions disagree, a blind" in homepage
+    assert "The Guesser is isolated from this process" in homepage
+    assert "Read the full game and answer-checking method" in homepage
     assert "hash: '#answer-checks'" in homepage
     assert "Early runs exposed rare but basic Oracle errors" not in homepage
-    assert "Three checks produce one answer." in methodology
-    assert "The Oracle must not answer from its own knowledge" in methodology
-    assert "It must search the live web, cite evidence" in methodology
-    assert "without seeing the Oracle’s answer" in methodology
+    assert "From one round to a comparable score." in methodology
+    assert '<IllustrativeRoundExample />' in homepage
+    assert '<IllustrativeRoundExample />' in methodology
+    assert "Question score (single round)" in illustrative_round
+    assert "The correct guess is excluded." in illustrative_round
+    assert "Questions and guesses follow separate paths." in methodology
+    assert "The Oracle must search the live web instead of relying on memory" in methodology
+    assert "without seeing the Oracle answer" in methodology
     assert "without seeing either answer" in methodology
     assert "Oracle UNKNOWN" in methodology
-    assert "Disagreement" in methodology
+    assert "Guess Validator" in methodology
+    assert "The Guesser is fully isolated from adjudication." in methodology
+    assert "contains only the broad category, its own prior actions, final YES, NO, or UNKNOWN" in methodology
+    assert "searches, evidence, citations, adjudicator" in methodology
+    assert "provider traces, or private artifacts" in methodology
     assert "Early runs exposed rare but basic Oracle errors" in methodology
-    assert "The model score is the average number of questions." in methodology
+    assert "One round becomes {{ totalTrials }} isolated trials." in methodology
+    assert "subject-independent" in methodology
+    assert "Twenty Questions names the game, not the scoring limit" in methodology
+    assert "Every additional" in methodology
+    assert "question increases the trial value" in methodology
+    assert "Subject design and contamination" in methodology
+    assert "Seven subjects is too small for broad conclusions" in methodology
+    assert "does not claim that this public cohort is resistant" in methodology
+    assert "Future cohorts will aim to include more subjects" in methodology
+    assert "not a general ranking of model intelligence" in methodology
+    assert "Question score is the average counted questions." in methodology
     assert "questions used · failed trial = {{ penalty }}" in methodology
-    assert "(trial 1 + … + trial" in methodology
-    assert "(subject average 1 + … + subject average" in methodology
-    assert "A score built from repeated trials." in homepage
-    assert "Each model completes the full subject set several times." in homepage
-    assert "Shorter lines" in homepage
-    assert "more consistent performance" in homepage
+    assert "One divided by T, times the sum of trial scores" in methodology
+    assert "One divided by S, times the sum of subject averages" in methodology
+    assert "number of trials for the subject" in methodology
+    assert "number of subjects" in methodology
+    assert "A score built from repeated trials." not in homepage
+    assert "Each model completes the full subject set several times." not in homepage
+    assert "Only complete, comparable runs enter the leaderboard." in methodology
+    assert "Publication happens after play is finished." in methodology
+    assert "Published data never returns to the Guesser." in methodology
+    assert "companion plot shows each exact" in homepage
+    assert "three bands divide the displayed width scale" in homepage
     assert 'class="protocol-flow"' not in homepage
     assert "Homepage built" not in homepage
     assert "home-build-note" not in homepage
@@ -1467,7 +1622,7 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "font-family: inherit" in data_page
     assert "font-family: var(--font-mono)" not in data_page
     assert "opacity: 0.68" not in data_page
-    assert data_page.index('<footer class="data-build-note"') > data_page.index(
+    assert data_page.index('class="data-build-note site-boundary-shell"') > data_page.index(
         '<section class="data-contract"'
     )
     if evaluated:
@@ -1546,7 +1701,7 @@ def test_drilldown_navigation_is_sticky_and_scroll_safe() -> None:
 
 
 def test_generated_question_scores_use_subject_averages_then_average() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v7.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v8.json"
     dataset = json.loads(dataset_path.read_text(encoding="utf-8"))
 
     assert dataset["score_policy"]["version"] == "average-then-average-v1"
@@ -1579,6 +1734,86 @@ def test_generated_question_scores_use_subject_averages_then_average() -> None:
     assert fable["rank"] == 1
     assert opus["rank"] == 2
     assert kimi["rank"] == 3
+
+
+def test_generated_efficiency_distance_is_reproducible_from_public_decimals() -> None:
+    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v8.json"
+    dataset = PublishedDataset.model_validate_json(dataset_path.read_text(encoding="utf-8"))
+    rows = tuple(row for row in dataset.leaderboard if row.ideal_distance_rank is not None)
+
+    question_minimum = min(row.question_score for row in rows if row.question_score is not None)
+    question_maximum = max(row.question_score for row in rows if row.question_score is not None)
+    cost_minimum = min(
+        row.guesser_cost_per_episode_usd
+        for row in rows
+        if row.guesser_cost_per_episode_usd is not None
+    )
+    cost_maximum = max(
+        row.guesser_cost_per_episode_usd
+        for row in rows
+        if row.guesser_cost_per_episode_usd is not None
+    )
+    for row in rows:
+        assert row.question_score is not None
+        assert row.guesser_cost_per_episode_usd is not None
+        assert row.normalized_question_score is not None
+        assert row.normalized_guesser_cost is not None
+        assert row.ideal_distance_score is not None
+        with localcontext() as context:
+            context.prec = 50
+            normalized_question = (row.question_score - question_minimum) / (
+                question_maximum - question_minimum
+            )
+            normalized_cost = (row.guesser_cost_per_episode_usd - cost_minimum) / (
+                cost_maximum - cost_minimum
+            )
+            distance = (
+                normalized_question * normalized_question + normalized_cost * normalized_cost
+            ).sqrt()
+        assert row.normalized_question_score == normalized_question
+        assert row.normalized_guesser_cost == normalized_cost
+        assert row.ideal_distance_score == distance
+
+    ordered = sorted(rows, key=lambda row: row.ideal_distance_rank or 0)
+    assert tuple(row.model.display_name for row in ordered) == (
+        "gpt-oss-120B (high)",
+        "Claude Opus 5 (high)",
+        "Grok 4.5 (high)",
+        "Claude Sonnet 5 (high)",
+        "GPT-5 Nano (medium)",
+        "GPT-5.6 Luna (high)",
+        "Claude Fable 5 (high)",
+        "GPT-5.6 Sol (high)",
+        "Gemini 3.6 Flash (high)",
+        "Kimi K3 (high)",
+        "Llama 4 Maverick (non-thinking)",
+        "Mistral Medium 3.5 (high)",
+    )
+    assert tuple(format(row.ideal_distance_score, ".3f") for row in ordered) == (
+        "0.100",
+        "0.142",
+        "0.161",
+        "0.162",
+        "0.170",
+        "0.283",
+        "0.386",
+        "0.389",
+        "0.441",
+        "0.446",
+        "1.000",
+        "1.076",
+    )
+    assert {
+        row.model.display_name for row in ordered if row.pareto_efficient
+    } == {
+        "Llama 4 Maverick (non-thinking)",
+        "GPT-5 Nano (medium)",
+        "Grok 4.5 (high)",
+        "gpt-oss-120B (high)",
+        "Claude Opus 5 (high)",
+        "Claude Fable 5 (high)",
+    }
+    assert all(row.efficiency_rank == row.product_efficiency_rank for row in ordered)
 
 
 def test_pre_question_score_run_compiles_without_migration() -> None:
@@ -1614,6 +1849,12 @@ def test_pre_question_score_run_compiles_without_migration() -> None:
 
     assert tuple(run.execution_id for run in dataset.official_runs) == (execution_id,)
     assert dataset.official_runs[0].question_score == Decimal("17.74285714285714285714285714")
+    assert dataset.schema_version == 8
+    assert dataset.leaderboard[0].efficiency_rank == 1
+    assert dataset.leaderboard[0].ideal_distance_rank == 1
+    assert dataset.leaderboard[0].ideal_distance_score == 0
+    assert dataset.leaderboard[0].normalized_question_score == 0
+    assert dataset.leaderboard[0].normalized_guesser_cost == 0
     assert all(
         trial.penalized_questions is not None
         for subject in dataset.official_runs[0].subjects
@@ -1636,6 +1877,9 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     efficiency_scatter = (source_root / "components" / "EfficiencyScatter.vue").read_text(
         encoding="utf-8"
     )
+    efficiency_marker_legend = (
+        source_root / "components" / "EfficiencyMarkerLegend.vue"
+    ).read_text(encoding="utf-8")
     score_dot_plot = (source_root / "components" / "ScoreDotPlot.vue").read_text(encoding="utf-8")
     homepage = (source_root / "views" / "HomeView.vue").read_text(encoding="utf-8")
     package = (REPOSITORY / "source" / "publication" / "site" / "package.json").read_text(
@@ -1674,17 +1918,34 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "min: domain.minimum" in stacked_costs
     assert "max: domain.maximum" in stacked_costs
     assert "ScatterChart" in efficiency_scatter
-    assert "LineChart" not in efficiency_scatter
-    assert "Pareto frontier" not in efficiency_scatter
+    assert "LineChart" in efficiency_scatter
+    assert "Pareto-efficient" in efficiency_scatter
+    assert "Diamond" in efficiency_marker_legend
+    assert "Circle" in efficiency_marker_legend
+    assert "no other model is both cheaper and better" in efficiency_marker_legend
+    assert "props.expanded ? 720 : 620" in efficiency_scatter
+    assert "props.expanded ? 80 : 96" in efficiency_scatter
+    assert ".efficiency-scatter--expanded .mobile-model-key" in efficiency_scatter
+    assert "desktopChartHeight" in efficiency_scatter
+    assert "figureResizeObserver" in efficiency_scatter
+    assert "plotSize + (props.expanded ? 48 : 76)" in efficiency_scatter
     assert 'type: "log"' not in efficiency_scatter
     assert 'type: "value"' in efficiency_scatter
     assert 'name: "Models"' in efficiency_scatter
+    assert "clip: false" in efficiency_scatter
     assert "color: theme.results.efficiency" in efficiency_scatter
     assert "show: !mobile" in efficiency_scatter
+    assert "hideOverlap: true" in efficiency_scatter
     assert 'moveOverlap: "shiftY"' in efficiency_scatter
     assert "mobile-model-key" in efficiency_scatter
-    assert "min: costDomain.value.minimum" in efficiency_scatter
-    assert "max: costDomain.value.maximum" in efficiency_scatter
+    assert "distanceGuideData" in efficiency_scatter
+    assert "width: plotSize" in efficiency_scatter
+    assert "height: plotSize" in efficiency_scatter
+    assert "min: 0" in efficiency_scatter
+    assert "max: 1" in efficiency_scatter
+    assert "boundaryGap: [0, 0]" in efficiency_scatter
+    assert 'name: "Distance labels"' in efficiency_scatter
+    assert "distance > 1 ? 0.45 : 0.9" in efficiency_scatter
     assert "ScatterChart" in score_dot_plot
     assert "BarChart" in score_dot_plot
     assert "CustomChart" in score_dot_plot
@@ -1696,7 +1957,8 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "scoreDomain.value.minimum" in score_dot_plot
     assert "lineStyle: { color: theme.gridLine, width: 1 }" in score_dot_plot
     assert "color: theme.ink" in score_dot_plot
-    assert "stroke: theme.roles.guesser" in score_dot_plot
+    assert "confidenceBandColor" in score_dot_plot
+    assert "stroke, lineWidth: 2.6" in score_dot_plot
     for linked_axis_chart in (component, stacked_costs, score_dot_plot):
         assert "triggerEvent: true" in linked_axis_chart
         assert 'parameters.componentType === "yAxis"' in linked_axis_chart
@@ -1719,7 +1981,6 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     for value_axis_chart in (
         component,
         stacked_costs,
-        efficiency_scatter,
         score_dot_plot,
     ):
         assert "chartValueDomain" in value_axis_chart
@@ -1859,14 +2120,14 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
         assert "getLeaderboard()" in table_source
     assert "Model time / episode" in overview
     assert 'label="Question score"' in overview
-    assert 'label="Repeatability range"' in overview
+    assert 'label="CI width"' in overview
     assert 'label="Success and contract"' in overview
     assert ("Number(left.totals.costs_usd.total) - Number(right.totals.costs_usd.total)") in cost
     assert (
         "Number(left.totals.costs_usd.guesser) -\n        Number(right.totals.costs_usd.guesser)"
     ) in cost
     assert "value: Number(run.totals.costs_usd.guesser)" in cost
-    assert 'direction-label="Tested-model cost · lower is better"' in cost
+    assert 'direction-label="Model cost · lower is better"' in cost
     assert 'label="Model and support cost"' in cost
     assert 'label="Per episode"' in cost
     assert 'label="How this page is ordered"' in cost
@@ -1878,18 +2139,18 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert cost.count("result-chart-panel") == 2
     assert "`value-signal value-signal--${costBand(index)}`" in cost
     assert "min-width: 4rem;" in cost
-    assert "Model response time across the run." in time
+    assert "Model time across the run." in time
     assert (
         "left.totals.guesser_think_time_ms -\n          right.totals.guesser_think_time_ms"
     ) in time
     assert ("left.totals.runtime_ms - right.totals.runtime_ms") in time
     assert "value: run.totals.guesser_think_time_ms" in time
     assert "value: run.totals.runtime_ms" in time
-    assert 'direction-label="Model response time · lower is faster"' in time
+    assert 'direction-label="Model time · lower is faster"' in time
     assert 'label="Model time"' in time
     assert 'label="End-to-end time"' in time
-    assert "Total benchmark runtime" in time
-    assert 'direction-label="Total benchmark runtime · lower is faster"' in time
+    assert "End-to-end benchmark time" in time
+    assert 'direction-label="End-to-end time · lower is faster"' in time
     assert 'class="panel result-chart-panel runtime-ledger"' in time
     assert 'class="runtime-ledger panel-frame"' not in time
     assert 'class="result-chart-stack"' in time
@@ -1903,30 +2164,47 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert ".result-chart-panel > .panel-heading" in app_css
     assert "@media (min-width: 761px)" in app_css
     assert "border-bottom: 0;" in app_css
-    assert "Average penalized trial values within each subject" in efficiency
-    assert "12.3 questions × $0.0500 per episode" in efficiency
+    assert "average penalized trial values" in efficiency
+    assert "normalized question score 0.06" in efficiency
     assert "Model cost range" in efficiency
-    assert 'label="Adjusted score"' in efficiency
+    assert 'label="Ideal distance"' in efficiency
     assert 'label="Trade-off map"' in efficiency
-    assert 'class="tradeoff-panel panel-frame result-chart-panel"' in efficiency
-    assert 'class="panel-heading panel-heading--with-help panel-heading--compact"' in efficiency
-    assert '<h3 id="tradeoff-title">Cost and question score.</h3>' in efficiency
-    assert efficiency.count("result-chart-panel") == 2
+    assert 'class="tradeoff-panel panel-frame"' in efficiency
+    assert 'class="tradeoff-copy"' in efficiency
+    assert 'class="tradeoff-visual"' in efficiency
+    assert 'class="expanded-chart-dialog"' in efficiency
+    assert 'class="expanded-chart-legend"' in efficiency
+    assert "openExpandedChart" in efficiency
+    assert "Close expanded graph" in efficiency
+    assert "chart-expand-icon" in efficiency
+    assert "border-bottom-color: currentColor" in efficiency
+    assert '<h3 id="tradeoff-title">Normalized cost and question score.</h3>' in efficiency
+    assert efficiency.count("result-chart-panel") == 1
     assert 'color="efficiency"' in efficiency
-    assert "pareto_efficient" not in efficiency
-    assert "frontier-badge" not in efficiency
+    assert "ideal_distance_rank" in efficiency
+    assert "ideal_distance_score" in efficiency
+    assert "product_efficiency_rank" not in efficiency
+    assert "cost_adjusted_question_score" not in efficiency
+    assert "Legacy product" not in efficiency
+    assert "pareto_efficient" in efficiency
+    assert "pareto-badge" in efficiency
+    assert "efficiency-results-table" in efficiency
+    assert "efficiency-col--pareto" in efficiency
+    assert "table-layout: fixed" in efficiency
+    assert 'label: "Pareto-efficient"' in efficiency
+    assert "Lowest ideal distance" not in efficiency
     assert "confidenceIntervalWidth" in reliability
     assert "left.intervalWidth - right.intervalWidth" in reliability
     assert "reliabilityChartItems" in reliability
-    assert "Repeatable does not mean good" in reliability
+    assert "Stable does not mean good" in reliability
     assert "Every model uses the same 95% confidence level" in reliability
-    assert 'label="Repeatability width"' in reliability
+    assert 'label="CI width"' in reliability
     assert 'label="Score and stability"' in reliability
-    assert "smaller repeatability range" in " ".join(reliability.split())
+    assert "smaller CI width" in " ".join(reliability.split())
     assert "Question score." in overview
-    assert "Shorter lines suggest" in overview
-    assert "longer lines indicate more variation" in overview
-    assert 'name: "95% CI width · smaller is more repeatable"' in reliability_scatter
+    assert "companion plot shows each exact" in overview
+    assert "visual guide, not fixed quality thresholds" in overview
+    assert 'name: "CI width · lower is better"' in reliability_scatter
     assert 'name: "Question score"' in reliability_scatter
     assert "value: [item.intervalWidth, item.score]" in reliability_scatter
     assert "color: theme.results.stability" in reliability_scatter
@@ -1996,14 +2274,19 @@ def test_mobile_drilldowns_keep_all_facts_and_compact_turn_navigation() -> None:
     assert 'exact-active-class="active"' in results_nav
 
 
-def test_homepage_and_story_share_one_typed_illustrative_round() -> None:
+def test_homepage_and_method_share_one_typed_illustrative_round() -> None:
     source_root = REPOSITORY / "source" / "publication" / "site" / "src"
     shared_round = (source_root / "lib" / "illustrative-round.ts").read_text(encoding="utf-8")
     homepage = (source_root / "views" / "HomeView.vue").read_text(encoding="utf-8")
+    method = (source_root / "views" / "MethodologyView.vue").read_text(encoding="utf-8")
     story = (source_root / "views" / "StoryView.vue").read_text(encoding="utf-8")
 
     assert "satisfies IllustrativeRound" in shared_round
-    assert 'from "@/lib/illustrative-round"' in homepage
-    assert 'from "@/lib/illustrative-round"' in story
-    assert ':class="{ featured:' not in story
-    assert ".work-list article.featured" not in story
+    assert "<IllustrativeRoundExample />" in homepage
+    assert "<IllustrativeRoundExample />" in method
+    assert 'from "@/lib/illustrative-round"' not in story
+    assert "5 August 2026" in story
+    assert "Claude Fable 5 (high) added." in story
+    assert 'class="round-section"' not in story
+    assert 'class="scope-section"' not in story
+    assert 'class="apple-spotlight"' not in story

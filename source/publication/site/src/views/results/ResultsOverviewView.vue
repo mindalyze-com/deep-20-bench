@@ -79,13 +79,13 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   },
   {
     key: "spend",
-    label: "Recorded spend",
+    label: "Total model cost",
     value: money(selectedCost.value),
     tone: "accent",
   },
   {
     key: "time",
-    label: "Combined model time",
+    label: "Total model time",
     value: duration(selectedGuesserTime.value),
   },
 ]);
@@ -111,7 +111,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
             row.question_score_confidence_interval.upper,
             2,
           )}`,
-    detail: `Rank ${row.rank ?? "—"} · ${percent(row.success_rate)} success`,
+    detail: `Rank ${row.rank ?? "-"} · ${percent(row.success_rate)} success`,
     link:
       row.execution_id === null ? undefined : `/runs/${row.execution_id}/`,
   })),
@@ -178,9 +178,9 @@ void load();
               <h2 id="overview-chart-title">Question score.</h2>
             </div>
             <p>
-              Lower is better. The blue marker is the average question score. The blue line is
-              its 95% confidence interval across repeated runs. Shorter lines suggest
-              more consistent performance; longer lines indicate more variation between runs.
+              Lower is better. The blue marker is the average question score. The colored line
+              is its 95% confidence interval (CI). The companion plot shows each exact CI
+              width. Its three bands divide the displayed width scale into equal ranges.
             </p>
             <ResultHelp label="Overview metric explanations">
               <InfoPopover label="Question score">
@@ -189,13 +189,20 @@ void load();
                   better. Failed trials receive the benchmark penalty.
                 </p>
               </InfoPopover>
-              <InfoPopover label="Repeatability range">
+              <InfoPopover label="CI width">
                 <p>
-                  The line is a 95% confidence interval around the average score. A shorter
-                  line means the model was more consistent across the repeated runs in this
-                  benchmark.
+                  The line is the 95% CI around the average score. A smaller CI width means the
+                  model was more consistent across repeated trials on the fixed subjects.
                 </p>
-                <p>It is not the range of scores expected in one future run.</p>
+                <p>
+                  The companion plot shows the exact CI width. Its background and dot
+                  colors split the displayed width scale into three equal ranges. They are a
+                  visual guide, not fixed quality thresholds.
+                </p>
+                <p>
+                  It describes uncertainty in the aggregate mean. It is not a prediction
+                  interval for an individual trial.
+                </p>
               </InfoPopover>
               <InfoPopover label="Success and contract">
                 <p>
@@ -230,7 +237,7 @@ void load();
                 }"
                 @click="openRun(row)"
               >
-                <td class="rank-column" data-label="Question rank">{{ row.rank ?? "—" }}</td>
+                <td class="rank-column" data-label="Question rank">{{ row.rank ?? "-" }}</td>
                 <td class="model-column" data-label="Model">
                   <ModelRunLink
                     v-if="row.execution_id !== null"
@@ -247,7 +254,7 @@ void load();
                     :to="runLink(row)"
                     :name="row.model.display_name"
                   />
-                  <span v-else aria-hidden="true">—</span>
+                  <span v-else aria-hidden="true">-</span>
                 </td>
                 <td
                   class="primary-metric-column"
@@ -269,14 +276,14 @@ void load();
                 <td class="cost-column" data-label="Model cost / episode" data-numeric>
                   {{
                     row.guesser_cost_per_episode_usd === null
-                      ? "—"
+                      ? "-"
                       : moneyEpisode(row.guesser_cost_per_episode_usd)
                   }}
                 </td>
                 <td class="time-column" data-label="Model time / episode" data-numeric>
                   {{
                     row.guesser_think_time_per_episode_ms === null
-                      ? "—"
+                      ? "-"
                       : duration(Number(row.guesser_think_time_per_episode_ms))
                   }}
                 </td>
@@ -288,21 +295,21 @@ void load();
           <MobileResultCard
             v-for="row in rows"
             :key="`mobile-${row.model.model_id}`"
-            :rank="row.rank ?? '—'"
+            :rank="row.rank ?? '-'"
             :name="row.model.display_name"
             :provider="row.model.provider"
             :to="row.execution_id === null ? null : runLink(row)"
             :metrics="[
               {
-                label: 'Score',
+                label: 'Question score',
                 value: number(row.question_score),
                 tone: 'primary',
               },
               {
-                label: 'Repeatability',
+                label: '95% CI',
                 value:
                   row.question_score_confidence_interval === null
-                    ? '—'
+                    ? '-'
                     : `${number(row.question_score_confidence_interval.lower, 2)}–${number(
                         row.question_score_confidence_interval.upper,
                         2,
@@ -310,10 +317,10 @@ void load();
               },
               { label: 'Success', value: percent(row.success_rate) },
               {
-                label: 'Cost',
+                label: 'Model cost / episode',
                 value:
                   row.guesser_cost_per_episode_usd === null
-                    ? '—'
+                    ? '-'
                     : moneyEpisode(row.guesser_cost_per_episode_usd),
               },
             ]"
@@ -321,8 +328,10 @@ void load();
         </div>
 
         <p class="results-note">
-          The range uses repeated seeded runs on the seven fixed subjects. It does not cover
-          different subjects, model versions, or providers.
+          The 95% CI uses repeated seeded trials on the seven fixed subjects. The three CI width
+          bands divide the displayed scale into equal ranges. They are not fixed quality
+          thresholds. The 95% CI does not cover different subjects, model versions, or
+          providers.
         </p>
       </div>
     </section>
@@ -348,5 +357,11 @@ void load();
 
 .empty-state {
   min-height: 50vh;
+}
+
+@media (max-width: 620px) {
+  .comparison-panel :deep(.score-dot-plot) {
+    padding-inline: 0.35rem;
+  }
 }
 </style>

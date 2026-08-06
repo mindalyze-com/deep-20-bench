@@ -3,7 +3,8 @@ from __future__ import annotations
 import json
 from collections import defaultdict
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, localcontext
+from fractions import Fraction
 from typing import Literal
 
 from .models import (
@@ -72,6 +73,10 @@ def _average(values: tuple[Decimal, ...]) -> Decimal:
     if not values:
         raise ValueError("average requires at least one value")
     return sum(values, start=Decimal(0)) / Decimal(len(values))
+
+
+def _fraction_decimal(value: Fraction) -> Decimal:
+    return Decimal(value.numerator) / Decimal(value.denominator)
 
 
 def _reason_codes(
@@ -676,7 +681,9 @@ def _rank_efficiency(
         and row.guesser_cost_per_episode_usd is not None
         and row.question_score is not None
     )
-    sorted_by_efficiency = sorted(
+    if not eligible:
+        return rows
+    sorted_by_product = sorted(
         eligible,
         key=lambda row: (
             row.cost_adjusted_question_score,
@@ -684,14 +691,75 @@ def _rank_efficiency(
             row.model.model_id,
         ),
     )
-    efficiency_rank_by_id: dict[str, int] = {}
+    product_rank_by_id: dict[str, int] = {}
     prior_score: Decimal | None = None
     prior_rank = 0
-    for index, row in enumerate(sorted_by_efficiency, start=1):
+    for index, row in enumerate(sorted_by_product, start=1):
         rank = prior_rank if prior_score == row.cost_adjusted_question_score else index
-        efficiency_rank_by_id[row.model.model_id] = rank
+        product_rank_by_id[row.model.model_id] = rank
         prior_rank = rank
         prior_score = row.cost_adjusted_question_score
+
+    question_minimum = min(row.question_score for row in eligible if row.question_score is not None)
+    question_maximum = max(row.question_score for row in eligible if row.question_score is not None)
+    cost_minimum = min(
+        row.guesser_cost_per_episode_usd
+        for row in eligible
+        if row.guesser_cost_per_episode_usd is not None
+    )
+    cost_maximum = max(
+        row.guesser_cost_per_episode_usd
+        for row in eligible
+        if row.guesser_cost_per_episode_usd is not None
+    )
+    question_span = Fraction(question_maximum) - Fraction(question_minimum)
+    cost_span = Fraction(cost_maximum) - Fraction(cost_minimum)
+    question_denominator = question_span if question_span > 0 else Fraction(1)
+    cost_denominator = cost_span if cost_span > 0 else Fraction(1)
+    distance_by_id: dict[str, tuple[Fraction, Decimal, Decimal, Decimal]] = {}
+    for row in eligible:
+        assert row.question_score is not None
+        assert row.guesser_cost_per_episode_usd is not None
+        question_delta = Fraction(row.question_score) - Fraction(question_minimum)
+        cost_delta = Fraction(row.guesser_cost_per_episode_usd) - Fraction(cost_minimum)
+        exact_squared_distance = (
+            question_delta * question_delta / (question_denominator * question_denominator)
+            + cost_delta * cost_delta / (cost_denominator * cost_denominator)
+        )
+        with localcontext() as context:
+            context.prec = 50
+            normalized_question_score = _fraction_decimal(
+                question_delta / question_denominator
+            )
+            normalized_guesser_cost = _fraction_decimal(cost_delta / cost_denominator)
+            ideal_distance_score = (
+                normalized_question_score * normalized_question_score
+                + normalized_guesser_cost * normalized_guesser_cost
+            ).sqrt()
+        distance_by_id[row.model.model_id] = (
+            exact_squared_distance,
+            ideal_distance_score,
+            normalized_question_score,
+            normalized_guesser_cost,
+        )
+
+    sorted_by_distance = sorted(
+        eligible,
+        key=lambda row: (
+            distance_by_id[row.model.model_id][0],
+            row.model.display_name.casefold(),
+            row.model.model_id,
+        ),
+    )
+    ideal_distance_rank_by_id: dict[str, int] = {}
+    prior_distance: Fraction | None = None
+    prior_rank = 0
+    for index, row in enumerate(sorted_by_distance, start=1):
+        squared_distance = distance_by_id[row.model.model_id][0]
+        rank = prior_rank if prior_distance == squared_distance else index
+        ideal_distance_rank_by_id[row.model.model_id] = rank
+        prior_rank = rank
+        prior_distance = squared_distance
 
     pareto_ids: set[str] = set()
     for row in eligible:
@@ -719,8 +787,25 @@ def _rank_efficiency(
     return tuple(
         row.model_copy(
             update={
-                "efficiency_rank": efficiency_rank_by_id.get(row.model.model_id),
+                "efficiency_rank": product_rank_by_id.get(row.model.model_id),
+                "ideal_distance_rank": ideal_distance_rank_by_id.get(row.model.model_id),
+                "product_efficiency_rank": product_rank_by_id.get(row.model.model_id),
                 "pareto_efficient": row.model.model_id in pareto_ids,
+                "ideal_distance_score": (
+                    distance_by_id[row.model.model_id][1]
+                    if row.model.model_id in distance_by_id
+                    else None
+                ),
+                "normalized_question_score": (
+                    distance_by_id[row.model.model_id][2]
+                    if row.model.model_id in distance_by_id
+                    else None
+                ),
+                "normalized_guesser_cost": (
+                    distance_by_id[row.model.model_id][3]
+                    if row.model.model_id in distance_by_id
+                    else None
+                ),
             }
         )
         for row in rows

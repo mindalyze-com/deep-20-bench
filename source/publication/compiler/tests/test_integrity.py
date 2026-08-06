@@ -50,7 +50,7 @@ def test_publication_contract_accepts_only_current_artifact_versions() -> None:
     assert BenchmarkManifestArtifact.model_fields["schema_version"].default == 3
     assert BenchmarkSummaryArtifact.model_fields["schema_version"].default == 3
     assert EpisodeResultArtifact.model_fields["schema_version"].default == 9
-    assert PublishedDataset.model_fields["schema_version"].default == 7
+    assert PublishedDataset.model_fields["schema_version"].default == 8
     assert "working_tree_dirty_before_run" not in BenchmarkManifestArtifact.model_fields
     assert "clean_worktree" not in PublicRun.model_fields
 

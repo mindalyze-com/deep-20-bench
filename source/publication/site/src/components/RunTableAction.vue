@@ -25,7 +25,7 @@ defineProps<{
   padding: 0.7rem 0.25rem;
   color: var(--blue-ink);
   font-size: var(--text-micro);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   line-height: 1.2;
   text-decoration: none;
   white-space: nowrap;

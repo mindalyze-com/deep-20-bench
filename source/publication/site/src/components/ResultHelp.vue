@@ -29,7 +29,7 @@ withDefaults(
   min-height: 44px;
   padding: 0.25rem 0;
   font-size: var(--text-caption);
-  font-weight: 660;
+  font-weight: var(--font-weight-semibold);
   opacity: 0.78;
 }
 

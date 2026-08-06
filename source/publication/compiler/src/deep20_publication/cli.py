@@ -94,14 +94,17 @@ _EDITORIAL_PAGES = (
     _EditorialPage(
         route="methodology",
         browser_title="Method · Deep20Bench",
-        heading="Deep20Bench method.",
-        description="Read the protocol, scoring method, eligibility rules, and isolation boundary.",
+        heading="From one round to a comparable score.",
+        description=(
+            "Follow one Twenty Questions round through answer checks, repeated trials, "
+            "scoring, official comparison, and publication."
+        ),
     ),
     _EditorialPage(
         route="story",
         browser_title="Story · Deep20Bench",
-        heading="Deep20Bench story.",
-        description="Read about the benchmark's origin, scope, creators, and related work.",
+        heading="A shared idea, built into a benchmark.",
+        description="Read how Deep20Bench began, see project news, and review related research.",
     ),
     _EditorialPage(
         route="data",
@@ -415,7 +418,7 @@ def _write_public_data(
     staged_directory = Path(tempfile.mkdtemp(prefix=".deep20-data-", dir=public_directory))
     backup_directory = public_directory / ".deep20-data-previous"
     try:
-        (staged_directory / "deep20bench-v7.json").write_text(
+        (staged_directory / "deep20bench-v8.json").write_text(
             dataset_json(dataset),
             encoding="utf-8",
         )

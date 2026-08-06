@@ -21,6 +21,8 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
         (
             "rank",
             "efficiency_rank",
+            "ideal_distance_rank",
+            "product_efficiency_rank",
             "pareto_efficient",
             "model_id",
             "model_name",
@@ -44,6 +46,9 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
             "runtime_per_episode_ms",
             "guesser_think_time_per_episode_ms",
             "guesser_latency_per_call_ms",
+            "ideal_distance_score",
+            "normalized_question_score",
+            "normalized_guesser_cost",
             "cost_adjusted_question_score",
             "efficiency_status",
         )
@@ -53,6 +58,8 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
             (
                 row.rank or "",
                 row.efficiency_rank or "",
+                row.ideal_distance_rank or "",
+                row.product_efficiency_rank or "",
                 row.pareto_efficient,
                 row.model.model_id,
                 row.model.display_name,
@@ -106,6 +113,17 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
                 (
                     row.guesser_latency_per_call_ms
                     if row.guesser_latency_per_call_ms is not None
+                    else ""
+                ),
+                row.ideal_distance_score if row.ideal_distance_score is not None else "",
+                (
+                    row.normalized_question_score
+                    if row.normalized_question_score is not None
+                    else ""
+                ),
+                (
+                    row.normalized_guesser_cost
+                    if row.normalized_guesser_cost is not None
                     else ""
                 ),
                 (

@@ -61,7 +61,7 @@ uv run deep20 game play T-0001 \
   --guesser-config config/guesser-candidate-b.yaml
 ```
 
-Keep `config/oracle.yaml`—including its Reviewer and Judge routes—together with
+Keep `config/oracle.yaml` - including its Reviewer and Judge routes - together with
 `config/guess-validator.yaml`, `config/game.yaml`, and the subject catalog unchanged across
 comparable runs. None of the adjudication roles inherits the Guesser configuration;
 `--validator-config` selects the Guess Validator's separate pinned configuration when an
@@ -93,8 +93,8 @@ and the two identity fields to be JSON null, while `GUESS` requires `question` t
 and both identity fields to be strings. This prevents strict-output providers from filling
 inactive nullable fields with empty strings that the domain protocol would correctly reject.
 Active empty strings and every other schema violation create a scored contract-violation turn.
-A Guesser provider call that ends without a completed structured action — a `length` finish,
-an empty completed response, or another non-`stop` finish — is classified and scored the same
+A Guesser provider call that ends without a completed structured action - a `length` finish,
+an empty completed response, or another non-`stop` finish - is classified and scored the same
 way, attributed to the model under test rather than to infrastructure.
 Before the limit the turn is counted, no Oracle, Reviewer, Judge, or Guess Validator call is
 made, and the engine appends one fixed `FORMAT_ERROR` event showing the required formats. The
@@ -210,8 +210,8 @@ The Python boundary is fully typed: `EpisodeResult` and every nested run, outcom
 model-version, turn, adjudication, evidence, component-configuration, and metric object is a
 Pydantic model. Dictionaries are introduced only by explicit JSON/YAML serialization.
 
-The final result includes the trusted subject snapshot, complete resolved transcript, and—by
-default—the Guesser's rendered system prompt and visible chat. Oracle, Reviewer, Judge, and
+The final result includes the trusted subject snapshot, complete resolved transcript, and - by
+default - the Guesser's rendered system prompt and visible chat. Oracle, Reviewer, Judge, and
 Validator prompts, raw provider responses, and per-call provider traces remain
 component-audit-only.
 

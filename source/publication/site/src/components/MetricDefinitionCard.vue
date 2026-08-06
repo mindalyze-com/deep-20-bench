@@ -73,8 +73,8 @@ const titleId = `metric-definition-title-${useId()}`;
   max-width: 18ch;
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--result-card-title-size);
-  font-weight: 500;
+  font-size: var(--text-card-title);
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.035em;
   line-height: 1;
 }
@@ -98,7 +98,7 @@ const titleId = `metric-definition-title-${useId()}`;
 .metric-definition-formula > span {
   color: var(--result-accent-ink);
   font-size: var(--text-micro);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }

@@ -55,10 +55,10 @@ the small number of disputed questions.
 
 The design uses exactly three roles:
 
-- **Oracle** — researches the question and produces evidence plus an initial answer.
-- **Reviewer** — independently checks the question, using evidence first and a
+- **Oracle** - researches the question and produces evidence plus an initial answer.
+- **Reviewer** - independently checks the question, using evidence first and a
   conservative stable-knowledge fallback when evidence does not settle a closed fact.
-- **Judge** — resolves disagreements using a stronger independent model.
+- **Judge** - resolves disagreements using a stronger independent model.
 
 The Judge is not a third vote in a majority system. When the Oracle and Reviewer
 disagree, the Judge's answer becomes the final answer.

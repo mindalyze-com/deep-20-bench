@@ -20,6 +20,7 @@ import {
   chartAnimationEnabled,
   chartDisplayFont,
   chartFont,
+  chartFontWeightSemibold,
   chartTextSize,
   chartValueDomain,
   escapeHtml,
@@ -72,12 +73,12 @@ const tooltip = (
     .join("");
   return [
     '<div style="min-width:205px;max-width:280px;padding:3px 2px">',
-    `<strong style="display:block;color:${theme.ink};font:700 .82rem/1.35 ${chartFont}">${escapeHtml(row.label)}</strong>`,
+    `<strong style="display:block;color:${theme.ink};font: var(--font-weight-bold) .82rem/1.35 ${chartFont}">${escapeHtml(row.label)}</strong>`,
     `<span style="display:block;margin-top:7px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(row.display)}</span>`,
     detail,
     row.link === undefined
       ? ""
-      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight:700;text-transform:uppercase">View full run →</span>`,
+      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight: var(--font-weight-bold);text-transform:uppercase">View full run →</span>`,
     "</div>",
   ].join("");
 };
@@ -154,7 +155,7 @@ const chartOption = (width: number): EChartsOption => {
         color: theme.inkSoft,
         fontFamily: chartFont,
         fontSize: categoryFontSize,
-        fontWeight: 650,
+        fontWeight: chartFontWeightSemibold,
         width: mobile ? 108 : 180,
         overflow: "truncate",
         ellipsis: "…",
@@ -203,7 +204,7 @@ const chartOption = (width: number): EChartsOption => {
                 color: theme.ink,
                 fontFamily: chartDisplayFont,
                 fontSize: valueFontSize,
-                fontWeight: 600,
+                fontWeight: chartFontWeightSemibold,
                 formatter: (parameters: CallbackDataParams): string =>
                   props.rows[parameters.dataIndex]?.display ?? "",
               }
@@ -317,7 +318,7 @@ figcaption {
   margin-bottom: 0.3rem;
   color: var(--muted);
   font-size: var(--text-micro);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -339,7 +340,7 @@ figcaption li {
   align-items: center;
   gap: 0.35rem;
   font-size: var(--text-micro);
-  font-weight: 650;
+  font-weight: var(--font-weight-semibold);
 }
 
 figcaption i {

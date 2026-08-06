@@ -344,9 +344,9 @@ events, so it does not affect prompt-prefix caching or introduce application res
 Normal protocol states are not treated as exceptions. Oracle `UNKNOWN`, Reviewer `UNKNOWN`,
 Judge `UNKNOWN`, Validator `NO` or `UNKNOWN`, an exhausted question limit, and a valid but
 unsuccessful game remain typed outcomes.
-A Guesser response that violates the structured-action schema — or a Guesser provider call
+A Guesser response that violates the structured-action schema - or a Guesser provider call
 that ends without a completed structured action (`length` finish, empty output, or another
-non-`stop` finish) — becomes a typed contract-violation turn attributed to the model under
+non-`stop` finish) - becomes a typed contract-violation turn attributed to the model under
 test. Before the limit it consumes a counted turn, receives only the fixed
 `FORMAT_ERROR`, and continues; on the final opportunity, or once the policy's consecutive
 contract-violation limit is exhausted, it terminates as a scoring-eligible
@@ -409,7 +409,7 @@ data, and changing it also changes the Guesser prompt-contract version and cache
 
 Each registered reasoning route also freezes an output ceiling and timeout with enough room
 for provider reasoning tokens plus the structured action. A Guesser `length` finish is not
-re-sent — an identical request would deterministically exhaust the same budget — and is
+re-sent - an identical request would deterministically exhaust the same budget - and is
 attributed to the model under test as an `output_limit_exceeded` contract-violation turn
 rather than an infrastructure failure. Empty and otherwise incomplete completed responses are
 attributed the same way once their single transient retry is exhausted. None of these is

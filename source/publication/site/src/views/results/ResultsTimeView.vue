@@ -26,7 +26,7 @@ const applyRouteContext = (): void => {
   setRouteContext({
     title: "Time results",
     description:
-      "Compare tested-model response time and end-to-end runtime across official Deep20Bench runs.",
+      "Compare model time and end-to-end time across official Deep20Bench runs.",
     level: null,
     position: null,
     crumbs: [],
@@ -98,12 +98,12 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   },
   {
     key: "guesser",
-    label: "Combined model time",
+    label: "Total model time",
     value: duration(totalGuesserTime.value),
   },
   {
     key: "benchmark",
-    label: "Combined end-to-end time",
+    label: "Total end-to-end time",
     value: duration(totalBenchmarkTime.value),
   },
 ]);
@@ -196,18 +196,18 @@ void load();
           >
             <header class="panel-heading panel-heading--with-help">
               <div>
-                <p class="eyebrow">Tested-model latency</p>
-                <h2 id="time-chart-title">Model response time across the run.</h2>
+                <p class="eyebrow">Model time</p>
+                <h2 id="time-chart-title">Model time across the run.</h2>
               </div>
               <p>
-                Each bar adds the provider-reported latency of every call to the model under
+                Each bar adds the provider-reported time of every call to the model under
                 test. Shorter is faster. This is not the wall-clock benchmark runtime.
               </p>
               <ResultHelp label="Time metric explanations">
                 <InfoPopover label="Model time">
                   <p>
                     The model under test is called the Guesser in the methodology. Model time
-                    adds the provider-reported latency of all its calls in the run.
+                    adds the provider-reported time of all its calls in the run.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="End-to-end time">
@@ -221,7 +221,7 @@ void load();
             </header>
             <MetricBars
               :items="guesserTimeBars"
-              direction-label="Model response time · lower is faster"
+              direction-label="Model time · lower is faster"
               color="acid"
               value-format="duration"
             />
@@ -233,8 +233,8 @@ void load();
           >
             <header class="panel-heading panel-heading--compact">
               <div>
-                <p class="eyebrow">Total benchmark runtime</p>
-                <h3 id="runtime-ledger-title">End-to-end elapsed time.</h3>
+                <p class="eyebrow">End-to-end time</p>
+                <h3 id="runtime-ledger-title">End-to-end benchmark time.</h3>
               </div>
               <p>
                 Each bar is the wall-clock time from run creation to final status. It includes
@@ -243,7 +243,7 @@ void load();
             </header>
             <MetricBars
               :items="benchmarkTimeBars"
-              direction-label="Total benchmark runtime · lower is faster"
+              direction-label="End-to-end time · lower is faster"
               color="blue"
               value-format="duration"
             />
@@ -274,7 +274,7 @@ void load();
                 </th>
                 <th data-numeric>
                   <span class="table-header-stack">
-                    <span>Model latency</span>
+                    <span>Model time</span>
                     <span>per call</span>
                   </span>
                 </th>
@@ -304,7 +304,7 @@ void load();
                 <td data-numeric>
                   {{
                     run.comparison.guesser_think_time_per_episode_ms === null
-                      ? "—"
+                      ? "-"
                       : duration(
                           Number(run.comparison.guesser_think_time_per_episode_ms),
                         )
@@ -313,7 +313,7 @@ void load();
                 <td data-numeric>
                   {{
                     run.comparison.guesser_latency_per_call_ms === null
-                      ? "—"
+                      ? "-"
                       : duration(Number(run.comparison.guesser_latency_per_call_ms))
                   }}
                 </td>
@@ -333,18 +333,18 @@ void load();
             :to="runLink(run)"
             :metrics="[
               {
-                label: 'Model',
+                label: 'Model time',
                 value: duration(run.totals.guesser_think_time_ms),
               },
               {
-                label: 'End-to-end',
+                label: 'End-to-end time',
                 value: duration(run.totals.runtime_ms),
               },
               {
-                label: 'Per episode',
+                label: 'Model time / episode',
                 value:
                   run.comparison.guesser_think_time_per_episode_ms === null
-                    ? '—'
+                    ? '-'
                     : duration(
                         Number(run.comparison.guesser_think_time_per_episode_ms),
                       ),
@@ -354,7 +354,7 @@ void load();
         </div>
 
         <p class="results-note">
-          The first chart ranks model-call time. The second ranks end-to-end runtime, so the
+          The first chart ranks model time. The second ranks end-to-end time, so the
           order can change.
         </p>
       </div>

@@ -46,7 +46,7 @@ onActivated(applyRouteContext);
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(3.6rem, 9vw, 8rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.065em;
   line-height: 0.9;
 }

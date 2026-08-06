@@ -216,7 +216,7 @@ onActivated(applyRunContext);
   margin-bottom: 1.7rem;
   color: var(--text-inverse-subtle);
   font-size: var(--text-caption);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   text-decoration: none;
 }
 
@@ -234,7 +234,7 @@ onActivated(applyRunContext);
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.85rem, 2.7vw, 2.6rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.045em;
   line-height: 0.95;
 }
@@ -330,7 +330,7 @@ onActivated(applyRunContext);
 .subject-list-heading strong {
   color: var(--text-inverse-subtle);
   font-size: var(--text-caption);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .rail-item-index {
@@ -351,7 +351,7 @@ onActivated(applyRunContext);
 .run-overview-link strong {
   overflow: hidden;
   font-size: var(--text-micro);
-  font-weight: 740;
+  font-weight: var(--font-weight-bold);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -384,7 +384,7 @@ onActivated(applyRunContext);
 .rail-link-arrow {
   color: var(--acid);
   font-size: 0.9rem;
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
 }
 
 .model-rail-footer {
@@ -397,7 +397,7 @@ onActivated(applyRunContext);
 
 .model-rail-footer span {
   font-size: var(--text-caption);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }

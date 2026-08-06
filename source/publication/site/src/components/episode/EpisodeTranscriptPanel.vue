@@ -60,9 +60,7 @@ const jumpToTurn = (turnNumber: number): void => {
   target.focus({ preventScroll: true });
   target.scrollIntoView({
     block: "start",
-    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? "auto"
-      : "smooth",
+    behavior: "auto",
   });
 };
 </script>
@@ -83,7 +81,7 @@ const jumpToTurn = (turnNumber: number): void => {
       </div>
       <p>
         Turns appear in recorded order. Each action shows the Guesser first, followed by
-        the adjudicated Oracle or Validator token.
+        the final adjudicated token.
       </p>
     </header>
 
@@ -236,7 +234,7 @@ const jumpToTurn = (turnNumber: number): void => {
 
           <div class="answer" :class="`answer-${turn.answer.toLowerCase()}`">
             <span>
-              2 · {{ turn.adjudicator === "oracle" ? "Oracle" : "Validator" }} answers
+              2 · {{ turn.adjudicator === "oracle" ? "Adjudication" : "Validator" }} returns
             </span>
             <strong>{{ turn.answer }}</strong>
           </div>
@@ -370,7 +368,7 @@ const jumpToTurn = (turnNumber: number): void => {
   margin-bottom: 0.5rem;
   color: var(--muted);
   font-size: var(--text-caption);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
 }
 
@@ -382,7 +380,7 @@ pre {
   border: var(--rule-inverse);
   background: var(--surface-code);
   color: var(--text-code);
-  font: 0.72rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+  font: 0.72rem/1.55 var(--font-mono);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -416,7 +414,7 @@ pre {
   margin: 0;
   font-family: var(--font-display);
   font-size: 1.45rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.035em;
 }
 
@@ -491,7 +489,7 @@ pre {
   border-top: var(--rule-subtle);
   color: var(--muted);
   font-size: var(--text-caption);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .turn-map > footer span {
@@ -550,7 +548,7 @@ pre {
   border: var(--rule-strong);
   background: var(--acid);
   font-size: var(--text-caption);
-  font-weight: 820;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .turn.guess .turn-marker span {
@@ -578,7 +576,7 @@ pre {
   gap: 1rem;
   color: var(--muted);
   font-size: var(--text-caption);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -587,7 +585,7 @@ pre {
   margin: 1rem 0 0;
   font-family: var(--font-text);
   font-size: clamp(1.7rem, 3.3vw, 3rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.04em;
   line-height: 1.08;
   overflow-wrap: anywhere;
@@ -643,7 +641,7 @@ pre {
 .evidence-list article > span {
   color: var(--muted);
   font-size: var(--text-caption);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
 }
 
@@ -656,7 +654,7 @@ pre {
 .evidence-list a {
   color: var(--blue-ink);
   font-size: 0.75rem;
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
 }
 
 .answer {
@@ -672,7 +670,7 @@ pre {
 .answer span {
   color: var(--muted);
   font-size: var(--text-caption);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
 }
 
@@ -680,7 +678,7 @@ pre {
   margin-top: 0.6rem;
   font-family: var(--font-sans);
   font-size: clamp(0.9rem, 1.6vw, 1.2rem);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.025em;
 }
 
@@ -775,7 +773,7 @@ pre {
 .contract-examples article > span {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
 }
 
@@ -930,7 +928,7 @@ pre {
       margin: 0;
       font-family: var(--font-sans);
       font-size: var(--text-caption);
-      font-weight: 800;
+      font-weight: var(--font-weight-extrabold);
       letter-spacing: 0.025em;
     }
 

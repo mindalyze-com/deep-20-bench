@@ -174,8 +174,8 @@ uv run deep20 oracle ask T-0001 \
 Available per-call overrides are `--model`, `--reasoning-effort`, `--provider`,
 `--allow-fallbacks`/`--no-allow-fallbacks`,
 `--parallel-search`/`--no-parallel-search`, `--max-search-results`,
-`--max-output-tokens`, and `--timeout-seconds`. The effective values—not just the base
-configuration—are frozen in the run manifest. Reusing a run ID with different overrides is
+`--max-output-tokens`, and `--timeout-seconds`. The effective values - not just the base
+configuration - are frozen in the run manifest. Reusing a run ID with different overrides is
 rejected. These flags override the research Oracle only; Reviewer and Judge routes remain the
 independently configured nested sections of the selected YAML file.
 

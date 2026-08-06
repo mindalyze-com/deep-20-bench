@@ -22,7 +22,7 @@ export const number = (
   digits = 2,
 ): string =>
   value === null || value === undefined
-    ? "—"
+    ? "-"
     : new Intl.NumberFormat("en", {
         minimumFractionDigits: digits,
         maximumFractionDigits: digits,
@@ -33,7 +33,7 @@ export const integer = (value: number): string =>
 
 export const percent = (value: string | null | undefined): string =>
   value === null || value === undefined
-    ? "—"
+    ? "-"
     : new Intl.NumberFormat("en", {
         style: "percent",
         maximumFractionDigits: 0,
@@ -41,20 +41,20 @@ export const percent = (value: string | null | undefined): string =>
 
 export const money = (value: string | number | null | undefined): string =>
   value === null || value === undefined
-    ? "—"
+    ? "-"
     : usd.format(Number(value));
 
 export const moneyEpisode = (
   value: string | number | null | undefined,
 ): string => {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined) return "-";
   const amount = Number(value);
   return (Math.abs(amount) >= 1 ? usd : usdEpisode).format(amount);
 };
 
 export const date = (value: string | null): string =>
   value === null
-    ? "—"
+    ? "-"
     : new Intl.DateTimeFormat("en", {
         year: "numeric",
         month: "short",

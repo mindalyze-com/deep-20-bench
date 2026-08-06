@@ -1579,6 +1579,8 @@ class LeaderboardRow(FrozenModel):
     rank: int | None
     model: PublicModel
     efficiency_rank: int | None = None
+    ideal_distance_rank: int | None = None
+    product_efficiency_rank: int | None = None
     pareto_efficient: bool = False
     status: Literal["evaluated", "awaiting_official_run"]
     execution_id: str | None = None
@@ -1592,6 +1594,9 @@ class LeaderboardRow(FrozenModel):
     runtime_per_episode_ms: Decimal | None = None
     guesser_think_time_per_episode_ms: Decimal | None = None
     guesser_latency_per_call_ms: Decimal | None = None
+    ideal_distance_score: Decimal | None = Field(default=None, ge=0)
+    normalized_question_score: Decimal | None = Field(default=None, ge=0, le=1)
+    normalized_guesser_cost: Decimal | None = Field(default=None, ge=0, le=1)
     cost_adjusted_question_score: Decimal | None = None
     efficiency_status: Literal[
         "ranked",
@@ -1636,7 +1641,7 @@ class DatasetProvenance(FrozenModel):
 
 
 class PublishedDataset(FrozenModel):
-    schema_version: Literal[7] = 7
+    schema_version: Literal[8] = 8
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig
@@ -1658,7 +1663,7 @@ class PublicationRunReference(FrozenModel):
 class PublicationManifestDocument(FrozenModel):
     document_type: Literal["manifest"] = "manifest"
     schema_version: Literal[1] = 1
-    dataset_schema_version: Literal[7] = 7
+    dataset_schema_version: Literal[8] = 8
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig
@@ -1684,7 +1689,7 @@ class PublicationAppBuildDocument(FrozenModel):
 
 class PublicationLeaderboardDocument(FrozenModel):
     document_type: Literal["leaderboard"] = "leaderboard"
-    schema_version: Literal[2] = 2
+    schema_version: Literal[3] = 3
     leaderboard: tuple[LeaderboardRow, ...]
 
 

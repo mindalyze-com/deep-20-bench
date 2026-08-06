@@ -382,7 +382,7 @@ const supportRows = computed<SupportRow[]>(() => [
 .provenance-details dt {
   color: var(--text-secondary);
   font-size: var(--text-caption);
-  font-weight: 780;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -405,7 +405,7 @@ const supportRows = computed<SupportRow[]>(() => [
 .technical-context a {
   color: var(--blue-ink);
   font-size: var(--text-micro);
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
 }
 
 .model-grid {
@@ -420,7 +420,7 @@ const supportRows = computed<SupportRow[]>(() => [
   margin: 0.7rem 0 0;
   font-family: var(--font-display);
   font-size: 1.75rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.035em;
 }
 
@@ -453,7 +453,7 @@ const supportRows = computed<SupportRow[]>(() => [
   margin: 0 0 1rem;
   font-family: var(--font-display);
   font-size: 2rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .provider-routing-details {
@@ -466,7 +466,7 @@ const supportRows = computed<SupportRow[]>(() => [
   cursor: pointer;
   color: var(--blue-ink);
   font-size: var(--text-micro);
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
 }
 
 .provider-routing-details p strong {

@@ -938,12 +938,20 @@ def test_runner_returns_nested_typed_result_and_hierarchy(tmp_path: Path) -> Non
     assert average_cost_line in subject_summary
     benchmark_report_path = tmp_path / "runs/M-0001/BX-test-001/summary.md"
     benchmark_report = benchmark_report_path.read_text(encoding="utf-8")
+    assert "- Model: `M-0001` - First" in benchmark_report
     assert "## Overall metrics" in benchmark_report
     assert "## Subjects" in benchmark_report
     assert average_cost_line in benchmark_report
     assert "- Total execution cost (USD): `0.0800`" in benchmark_report
     assert "| Guesser cost (USD) | 0.0100 | 0.0100 | 0.0100–0.0100 |" in benchmark_report
     assert "Each subject report links to every individual typed trial" in benchmark_report
+    # Post-trial report rendering must not add report copy to Guesser-visible history.
+    assert all(
+        trial.result.guesser_conversation == ()
+        for subject in result.subjects
+        for trial in subject.trials
+        if isinstance(trial, CompletedTrialResult)
+    )
     assert_markdown_links_resolve(benchmark_report_path)
     benchmark_summary_payload = yaml.safe_load(benchmark_summary_path.read_text(encoding="utf-8"))[
         "payload"

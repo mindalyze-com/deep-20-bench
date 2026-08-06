@@ -227,7 +227,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(3.2rem, 6vw, 6rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.058em;
   line-height: 0.92;
 }
@@ -259,7 +259,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
 .provenance-card dt {
   color: var(--muted);
   font-size: var(--text-caption);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
@@ -293,7 +293,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.8rem, 3vw, 2.7rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.045em;
   line-height: 1;
 }
@@ -331,7 +331,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
 .run-totals dd {
   margin: 0.4rem 0 0;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .provenance-card dl {
@@ -438,7 +438,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
     margin: 0;
     font-family: var(--font-display);
     font-size: 2.5rem;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
   }
 
   .mobile-subjects a {
@@ -486,7 +486,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
   .mobile-subjects a > span:last-child {
     color: var(--blue-ink);
     font-size: 0.9rem;
-    font-weight: 760;
+    font-weight: var(--font-weight-bold);
   }
 }
 </style>

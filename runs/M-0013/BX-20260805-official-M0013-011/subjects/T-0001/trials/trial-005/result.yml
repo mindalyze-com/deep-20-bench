@@ -1,0 +1,2173 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260805-official-M0013-011
+    model_id: M-0013
+    target_id: T-0001
+    trial_id: trial-005
+    trial_number: 5
+    episode_run_id: BR-9439ad8c2cfb37e6ffb9af354d7951b550abea1f
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-9439ad8c2cfb37e6ffb9af354d7951b550abea1f
+      episode_id: EP-019fd29bfc1371db96e9bd70c9aef4a4
+      subject:
+        target_id: T-0001
+        canonical_name: Albert Einstein
+        aliases:
+        - Einstein
+        entity_type: person
+        description: Albert Einstein, the German-born theoretical physicist known
+          for relativity, identified by Wikidata entity Q937.
+        reference_url: https://en.wikipedia.org/wiki/Albert_Einstein
+      started_at: '2026-08-05T15:47:45.811147+00:00'
+      completed_at: '2026-08-05T16:29:55.652323+00:00'
+      duration_ms: 2529841
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 41
+      counted_questions: 40
+      guesser_call_count: 41
+      ask_count: 40
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 3
+      oracle_quality:
+        reviewed_questions: 37
+        agreements: 28
+        disagreements: 9
+        judge_invocations: 9
+        oracle_answers_changed: 0
+        final_unknown_answers: 3
+        judge_yes_answers: 0
+        judge_no_answers: 9
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0417926'
+        judge_cost_usd: '0.095175'
+        quality_control_cost_usd: '0.1369676'
+        question_types:
+        - question_type: other
+          reviewed_questions: 31
+          disagreements: 9
+        - question_type: temporal_comparison
+          reviewed_questions: 6
+          disagreements: 0
+      contract:
+        evaluated_outputs: 41
+        valid_outputs: 41
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: noncompliant
+      costs_usd:
+        guesser: '0.534688'
+        oracle: '0.2360269950000000003'
+        validator: '0.0000547'
+        total: '0.7707696950000000003'
+      tokens:
+        guesser: 134760
+        oracle: 318820
+        validator: 397
+        total: 453977
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0013
+        requested_model: qwen/qwen3.8-max
+        requested_provider: alibaba
+        resolved_models:
+        - qwen/qwen3.8-max
+        resolved_providers:
+        - Alibaba
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the person male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd29c7db17037a1aca17a11b9d1e0
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.werelate.org/wiki/Person:Albert_Einstein_(1)
+          excerpt: Name | Albert Einstein ... Gender | Male
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fd29bfc1371db96e9bd720b5906c0
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the person a political figure?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd29cf9db705fa9a0bbe74b7ac47c
+        answer: 'YES'
+        evidence:
+        - source_url: https://press.princeton.edu/books/paperback/9780691160207/einstein-on-politics
+          excerpt: Albert Einstein was also one of the century’s most outspoken political
+            activists.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fd29cc57a775588abf5ce8dd555a9
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is the person currently alive?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd29d527773be95494a634ab7904f
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.biography.com/scientists/albert-einstein
+          excerpt: Albert Einstein (1879–1955).
+          validation: model_reported
+        - source_url: https://www.pbs.org/wnet/americanmasters/albert-einstein-how-i-see-the-world/585
+          excerpt: 'Albert Einstein: Physicist Mar 14, 1879 - Apr 18, 1955.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fd29d1bf97412aaa26e5c1cc1bf92
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Did the person serve as President of the United States?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd29d8e8773388798e37daae04bc2
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.presidency.ucsb.edu/documents/statement-the-president-the-death-albert-einstein
+          excerpt: Dwight D. Eisenhower — 34th President of the United States ...
+            Statement by the President on the Death of Albert Einstein. ... the United
+            States has been ... the home of Albert Einstein.
+          validation: model_reported
+        - source_url: https://www.govinfo.gov/content/pkg/CRECB-1999-pt19/html/CRECB-1999-pt19-Pg27632-2.htm
+          excerpt: Einstein ... was never able to return to Israel ... whose presidency
+            he was offered in 1955, shortly before his death.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fd29d6da670188e34ea7a93e25b8d
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Was the person a head of state or government in Europe during the
+          20th century?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd29df42175ab8c736a94c4185821
+        answer: 'NO'
+        evidence:
+        - source_url: https://time.com/archive/6619783/israel-einstein-declines
+          excerpt: Einstein ... gave his regretful no ... he never undertook functions
+            he could not fill to his satisfaction.
+          validation: model_reported
+        - source_url: https://www.history.com/articles/albert-einstein-presidency-israel
+          excerpt: Einstein ... quickly rejected it. He had no interest in ... serving
+            in a political capacity.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019fd29de265716b91e6e97e440c9da1
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Was the person primarily known as a monarch or royalty?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd29ea59675d781a883b3d05d4b17
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.alberteinstein.com/biography/
+          excerpt: Einstein was a theoretical physicist and the most famous scientist
+            in human history.
+          validation: model_reported
+        - source_url: https://www.pbs.org/wnet/americanmasters/albert-einstein-how-i-see-the-world/585
+          excerpt: Albert Einstein is considered one of the greatest scientific thinkers
+            of all time.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019fd29e647172dabafcaeab5bd2329d
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Was the person primarily known for involvement in war or military
+          affairs?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd29efa327682b54c90e37994b7db
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Albert_Einstein
+          excerpt: Albert Einstein was a German-born theoretical physicist best known
+            for developing the theory of relativity.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Albert-Einstein
+          excerpt: Albert Einstein’s greatest discovery is most likely the general
+            theory of relativity.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019fd29ecd4576209084ae334adc98b3
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Was the person born in the United States?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd29f50a271ac8349c51998393c6a
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical
+          excerpt: Albert Einstein was born at Ulm, in Württemberg, Germany, on March
+            14, 1879.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019fd29f219d7022a9234b4562a15027
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Was the person primarily associated with Asia?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd29fd68f714694609b6a7261041e
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/contributor/Albert-Einstein/9536716
+          excerpt: German-born physicist who developed the special and general theories
+            of relativity and won the Nobel Prize for Physics in 1921.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/
+          excerpt: Albert Einstein was born at Ulm, in Württemberg, Germany... [and]
+            entered the Swiss Federal Polytechnic School in Zurich.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019fd29f660a7320a7bcdf701fe7eaaa
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Was the person primarily associated with Africa or Latin America?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a03982708f915b0f626b52b8c9
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/
+          excerpt: Albert Einstein was born at Ulm, in Württemberg, Germany, and studied
+            in Switzerland at the Swiss Federal Polytechnic School in Zurich.
+          validation: model_reported
+        - source_url: https://paw.princeton.edu/article/einstein-princeton
+          excerpt: He stayed rooted in Princeton until his death in 1955.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019fd2a0189273e9b710657780815e54
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Was the person primarily associated with Canada or Australia/New
+          Zealand?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a07c337776833e584a51ed490c
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.amacad.org/person/albert-einstein
+          excerpt: Albert Einstein was a German-born theoretical physicist, widely
+            acknowledged to be one of the greatest physicists of all time.
+          validation: model_reported
+        - source_url: https://www.loc.gov/item/2021667583
+          excerpt: Einstein renounced his German citizenship and immigrated to the
+            United States ... became a U.S. citizen in 1940.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019fd2a0662e76c797ce9d823f2316ff
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Was the person primarily associated with the Middle East?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a260f6767fa44e6f44c1a949f2
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.amacad.org/person/albert-einstein
+          excerpt: Albert Einstein was a German-born theoretical physicist, widely
+            acknowledged to be one of the greatest physicists of all time. Einstein
+            is known widely for developing the theory of relativity.
+          validation: model_reported
+        - source_url: https://physicstoday.aip.org/news/albert-einstein
+          excerpt: Born on 14 March 1879 in Ulm, Germany, Einstein was the most impactful
+            physicist of the 20th century.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019fd2a0e0a870b78e7804e5ef2018b8
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Was the person primarily associated with a European country?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a2f45177179668d7ba1af8feca
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/contributor/Albert-Einstein/9536716
+          excerpt: German-born physicist who developed the special and general theories
+            of relativity.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/
+          excerpt: Albert Einstein was born at Ulm, in Württemberg, Germany.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-019fd2a2bbc870bf80402ac53d7a2153
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Was the person primarily associated with the United Kingdom?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a37efc71c5a62a738947b6471c
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/contributor/Albert-Einstein/9536716
+          excerpt: German-born physicist who developed the special and general theories
+            of relativity and won the Nobel Prize for Physics in 1921.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/facts
+          excerpt: After the Nazis seized power in Germany, Einstein immigrated to
+            the US, where he worked at the Institute for Advanced Study in Princeton,
+            New Jersey.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-019fd2a357ea76b68c3b8afeaace6c22
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: ASK
+        question: Was the person primarily associated with France?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a3f739717788935a8d57abf333
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical
+          excerpt: He became a German citizen in 1914 and remained in Berlin until
+            1933 when he renounced his citizenship for political reasons and emigrated
+            to America.
+          validation: model_reported
+        - source_url: https://www.britannica.com/contributor/Albert-Einstein/9536716
+          excerpt: German-born physicist who developed the special and general theories
+            of relativity and won the Nobel Prize for Physics in 1921.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-019fd2a3ce3277b4a44cbdd27560f074
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: ASK
+        question: Was the person primarily associated with Germany?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a48b0976cc9cf24e0f72d02856
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 16
+      guesser_call_id: GC-019fd2a4660c7623bf06fdac53410795
+    - turn_type: action
+      turn_number: 17
+      action:
+        action: ASK
+        question: Did the person die after 1900?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a560877038b217f4c5a29827e7
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nps.gov/people/manhattan-project-pioneers-albert-einstein.htm
+          excerpt: 'Date of Death: April 18, 1955'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 17
+      guesser_call_id: GC-019fd2a4c37b70f38eae051405e68e70
+    - turn_type: action
+      turn_number: 18
+      action:
+        action: ASK
+        question: Did the person die before 1970?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a63c1a7393ba0394fa67bac7c4
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.biography.com/scientists/albert-einstein
+          excerpt: 'Albert Einstein ... DIED: April 18, 1955'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 18
+      guesser_call_id: GC-019fd2a579d87388b44a09f423dc78a0
+    - turn_type: action
+      turn_number: 19
+      action:
+        action: ASK
+        question: Was the person primarily associated with Russia or the Soviet Union?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a6890a7062bd27cdca6d89f807
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/facts
+          excerpt: Albert Einstein grew up in Munich, worked at universities in Bern,
+            Zurich, and Prague, and from 1914 in Berlin. After the Nazis seized power
+            in Germany, he immigrated to the US, where he worked at the Institute
+            for Advanced Study in Princeton.
+          validation: model_reported
+        - source_url: https://www.swissinfo.ch/eng/science/albert-einstein-the-road-to-e-mc2-began-in-switzerland/1394516
+          excerpt: Einstein came to Switzerland as a student, assumed Swiss nationality
+            in 1901, and developed his theory of relativity while working in Bern.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 19
+      guesser_call_id: GC-019fd2a654a777db8637266413d9de9e
+    - turn_type: action
+      turn_number: 20
+      action:
+        action: ASK
+        question: Was the person primarily associated with Spain or Portugal?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a6fc60743f9c72407d289cca49
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/contributor/Albert-Einstein/9536716
+          excerpt: German-born physicist who developed the special and general theories
+            of relativity and won the Nobel Prize for Physics in 1921.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/facts
+          excerpt: Einstein was later employed at universities in Bern, Zurich, and
+            Prague, and from 1914, in Berlin. After the Nazis seized power in Germany,
+            Einstein immigrated to the US.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 20
+      guesser_call_id: GC-019fd2a6ddd076a2b0024fe1447d1faf
+    - turn_type: action
+      turn_number: 21
+      action:
+        action: ASK
+        question: Was the person primarily associated with Italy?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a78dcc7638b012f4507ed53f9d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Albert-Einstein/images-videos
+          excerpt: Albert Einstein (German-American physicist).
+          validation: model_reported
+        - source_url: https://physicstoday.aip.org/news/albert-einstein
+          excerpt: Born in Ulm, Germany... Einstein’s career famously began at a patent
+            office in Bern, Switzerland.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 21
+      guesser_call_id: GC-019fd2a750d5763e8bde9b4e45c5bec1
+    - turn_type: action
+      turn_number: 22
+      action:
+        action: ASK
+        question: Was the person primarily associated with Austria, Switzerland, or
+          one of the Benelux countries?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2a86e8b747a8f2778231b8b7160
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 22
+      guesser_call_id: GC-019fd2a7eed972d68888f64032a53d56
+    - turn_type: action
+      turn_number: 23
+      action:
+        action: ASK
+        question: Was the person primarily associated with Scandinavia (Denmark, Norway,
+          Sweden, Finland, or Iceland)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2aafba075fb814bf3387d9467ff
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/
+          excerpt: Albert Einstein was born at Ulm, in Württemberg, Germany... [and]
+            entered the Swiss Federal Polytechnic School in Zurich.
+          validation: model_reported
+        - source_url: https://library.ethz.ch/en/collections-and-archives/short-portraits/einstein-albert-1879-1955.html
+          excerpt: When the Nazis seized power in Germany in 1933... he emigrated
+            to Princeton (New Jersey, USA). At the Institute for Advanced Study, he
+            continued...
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 23
+      guesser_call_id: GC-019fd2a8c7fc756c8df75bc34ad043ee
+    - turn_type: action
+      turn_number: 24
+      action:
+        action: ASK
+        question: Was the person primarily associated with Greece, the Balkans, or
+          Eastern Europe outside Russia?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2abad40774db084e5ecb7d0ded5
+        answer: 'NO'
+        evidence:
+        - source_url: https://physicstoday.aip.org/features/einstein-versus-the-physical-review
+          excerpt: Einstein’s first career was spent through 1933 at German-speaking
+            universities in central Europe, and his second was at the Institute for
+            Advanced Studies in Princeton, New Jersey.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/facts/
+          excerpt: Einstein grew up in Munich, studied at ETH Zurich, worked in Bern,
+            and was later employed in Bern, Zurich, Prague, Berlin, and Princeton.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 24
+      guesser_call_id: GC-019fd2ab59dc75dc9895202a3cbee71c
+    - turn_type: action
+      turn_number: 25
+      action:
+        action: ASK
+        question: Was the person primarily associated with Ireland?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2ad75ec71a885934286d157b65d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/facts/
+          excerpt: Einstein grew up in Munich, studied in Zurich, worked in Bern,
+            and was later employed at universities in Bern, Zurich, Prague, and Berlin;
+            he immigrated to the US and worked in Princeton.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical
+          excerpt: Albert Einstein was born at Ulm, in Württemberg, Germany, on March
+            14, 1879.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 25
+      guesser_call_id: GC-019fd2ac14d477c5ac99c7c8d917f5de
+    - turn_type: action
+      turn_number: 26
+      action:
+        action: ASK
+        question: Did the person die between 1901 and 1945?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b33c7577b5b4bdc7b6e9e3f732
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.ias.edu/scholars/einstein
+          excerpt: Albert Einstein (1879–1955) ... serving from 1933 until his death
+            in 1955.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 26
+      guesser_call_id: GC-019fd2adb54470719ac79b89af7db0b3
+    - turn_type: action
+      turn_number: 27
+      action:
+        action: ASK
+        question: Did the person die between 1946 and 1969?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b423fb7366a4dda0cfbcf8a183
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.pbs.org/wnet/americanmasters/albert-einstein-how-i-see-the-world/585
+          excerpt: Albert Einstein Physicist Mar 14, 1879 - Apr 18, 1955
+          validation: model_reported
+        - source_url: https://www.nps.gov/people/manhattan-project-pioneers-albert-einstein.htm
+          excerpt: 'Date of Death: April 18, 1955'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 27
+      guesser_call_id: GC-019fd2b353fa733db4df9f1acfd0b311
+    - turn_type: action
+      turn_number: 28
+      action:
+        action: ASK
+        question: Was the person primarily known for revolutionary or radical political
+          activism?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b61a92757680b25b51ca83b065
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Albert_Einstein
+          excerpt: Albert Einstein was a German-born theoretical physicist best known
+            for developing the theory of relativity.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 28
+      guesser_call_id: GC-019fd2b4418073ba985f0ca1ff373b4e
+    - turn_type: action
+      turn_number: 29
+      action:
+        action: ASK
+        question: Was the person primarily known as a writer or philosopher?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b66194720db347770f7e5a7d72
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.alberteinstein.com/biography/
+          excerpt: Albert Einstein was a theoretical physicist and the most famous
+            scientist in human history.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Albert-Einstein
+          excerpt: Albert Einstein was a famous physicist.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 29
+      guesser_call_id: GC-019fd2b6395370a59e1e1ebe81e42316
+    - turn_type: action
+      turn_number: 30
+      action:
+        action: ASK
+        question: Did the person hold or seek a major elected or appointed governmental
+          office in a European country?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b7934673ec91ba42b56542e738
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 30
+      guesser_call_id: GC-019fd2b6af2271dcbfbec73f2bc16b61
+    - turn_type: action
+      turn_number: 31
+      action:
+        action: ASK
+        question: Was the person primarily known as a scientist or inventor?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2b9dfa6744dbf851081086a5abd
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Albert_Einstein
+          excerpt: Albert Einstein was a German-born theoretical physicist best known
+            for developing the theory of relativity.
+          validation: model_reported
+        - source_url: https://physicstoday.aip.org/news/albert-einstein
+          excerpt: Einstein was the most impactful physicist of the 20th century.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 31
+      guesser_call_id: GC-019fd2b7d6d371ff825a04673cc4ab7c
+    - turn_type: action
+      turn_number: 32
+      action:
+        action: ASK
+        question: Did the person win a Nobel Prize?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bac461746ba7aaa8a2061f26b6
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/facts
+          excerpt: Albert Einstein — Nobel Prize in Physics 1921.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 32
+      guesser_call_id: GC-019fd2b9ff2a75b087de7b5109ddbc59
+    - turn_type: action
+      turn_number: 33
+      action:
+        action: ASK
+        question: Did the person win a Nobel Prize in Physics?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bb1a6a75b2a8f443aedf075f86
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 33
+      guesser_call_id: GC-019fd2bade5c752e9e7447bc39529ae0
+    - turn_type: action
+      turn_number: 34
+      action:
+        action: ASK
+        question: Did the person receive the Nobel Prize in Physics before 1940?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bcaa7772c797088449cb82cea6
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein...
+            Albert Einstein received his Nobel Prize one year later, in 1922.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 34
+      guesser_call_id: GC-019fd2bb2e2c70c287ac6bd0292c795b
+    - turn_type: action
+      turn_number: 35
+      action:
+        action: ASK
+        question: Did the person receive the Nobel Prize in Physics after 1925?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bd92e27740bedf87491d94723f
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein.
+            Albert Einstein received his Nobel Prize one year later, in 1922.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 35
+      guesser_call_id: GC-019fd2bcc33e73b68a64079348d41e6e
+    - turn_type: action
+      turn_number: 36
+      action:
+        action: ASK
+        question: Did the person receive the Nobel Prize in Physics in the 1920s (1920–1925)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2bf6e2c76e498a6b3ec0ecf8615
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein;
+            Albert Einstein received his Nobel Prize one year later, in 1922.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 36
+      guesser_call_id: GC-019fd2bdb01e73ae8beb1a599eb8b30d
+    - turn_type: action
+      turn_number: 37
+      action:
+        action: ASK
+        question: Did the person receive the Nobel Prize in Physics for contributions
+          primarily related to quantum theory, atomic structure, or radiation?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c03dd07609ab61b250e96e79c4
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein
+            “for his services to Theoretical Physics, and especially for his discovery
+            of the law of the photoelectric effect.”
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 37
+      guesser_call_id: GC-019fd2bf8d2c77798f2adf9e38effe9e
+    - turn_type: action
+      turn_number: 38
+      action:
+        action: ASK
+        question: Did the person receive the Nobel Prize in Physics in 1921 or 1922?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c181da715f90601191d72dbd9d
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein...
+            Albert Einstein received his Nobel Prize one year later, in 1922.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 38
+      guesser_call_id: GC-019fd2c0642772bda9d2a36f1d34028a
+    - turn_type: action
+      turn_number: 39
+      action:
+        action: ASK
+        question: Did the person receive the Nobel Prize in Physics in 1921?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c2045770ffb33a77bef92c9b92
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 39
+      guesser_call_id: GC-019fd2c1a6a674ec898f6c0a7e5a15bf
+    - turn_type: action
+      turn_number: 40
+      action:
+        action: ASK
+        question: Was the person awarded the Nobel Prize in Physics for work primarily
+          related to the photoelectric effect?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fd2c24f397485a2654b74e1c6d23a
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein
+            “for his services to Theoretical Physics, and especially for his discovery
+            of the law of the photoelectric effect.”
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 40
+      guesser_call_id: GC-019fd2c21c2d75bbb6986df41682b18d
+    - turn_type: action
+      turn_number: 41
+      action:
+        action: GUESS
+        question: null
+        name: Albert Einstein
+        description: German-born theoretical physicist who won the 1921 Nobel Prize
+          in Physics for his explanation of the photoelectric effect.
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fd2c291c470e5b39bda60a6410811
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity exactly matches Albert Einstein, the trusted
+          subject.
+        oracle_quality: null
+      counted: false
+      counted_questions: 40
+      guesser_call_id: GC-019fd2c26d4372d9a43259f51b5b066e
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"XSZW5TRZ"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person male?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person a political figure?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person currently alive?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person serve as President of the United States?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person a head of state or government in Europe during the 20th century?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known as a monarch or royalty?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known for involvement in war or military affairs?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person born in the United States?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Asia?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Africa or Latin America?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Canada or Australia/New Zealand?"}}'
+      turn_number: 11
+    - role: user
+      content: 'NO'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with the Middle East?"}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with a European country?"}}'
+      turn_number: 13
+    - role: user
+      content: 'YES'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with the United Kingdom?"}}'
+      turn_number: 14
+    - role: user
+      content: 'NO'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with France?"}}'
+      turn_number: 15
+    - role: user
+      content: 'NO'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Germany?"}}'
+      turn_number: 16
+    - role: user
+      content: UNKNOWN
+      turn_number: 16
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die after 1900?"}}'
+      turn_number: 17
+    - role: user
+      content: 'YES'
+      turn_number: 17
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die before 1970?"}}'
+      turn_number: 18
+    - role: user
+      content: 'YES'
+      turn_number: 18
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Russia or the Soviet Union?"}}'
+      turn_number: 19
+    - role: user
+      content: 'NO'
+      turn_number: 19
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Spain or Portugal?"}}'
+      turn_number: 20
+    - role: user
+      content: 'NO'
+      turn_number: 20
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Italy?"}}'
+      turn_number: 21
+    - role: user
+      content: 'NO'
+      turn_number: 21
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Austria, Switzerland, or one of the Benelux
+        countries?"}}'
+      turn_number: 22
+    - role: user
+      content: UNKNOWN
+      turn_number: 22
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Scandinavia (Denmark, Norway, Sweden,
+        Finland, or Iceland)?"}}'
+      turn_number: 23
+    - role: user
+      content: 'NO'
+      turn_number: 23
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Greece, the Balkans, or Eastern Europe
+        outside Russia?"}}'
+      turn_number: 24
+    - role: user
+      content: 'NO'
+      turn_number: 24
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily associated with Ireland?"}}'
+      turn_number: 25
+    - role: user
+      content: 'NO'
+      turn_number: 25
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die between 1901 and 1945?"}}'
+      turn_number: 26
+    - role: user
+      content: 'NO'
+      turn_number: 26
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person die between 1946 and 1969?"}}'
+      turn_number: 27
+    - role: user
+      content: 'YES'
+      turn_number: 27
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known for revolutionary or radical political activism?"}}'
+      turn_number: 28
+    - role: user
+      content: 'NO'
+      turn_number: 28
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known as a writer or philosopher?"}}'
+      turn_number: 29
+    - role: user
+      content: 'NO'
+      turn_number: 29
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person hold or seek a major elected or appointed governmental office in
+        a European country?"}}'
+      turn_number: 30
+    - role: user
+      content: UNKNOWN
+      turn_number: 30
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person primarily known as a scientist or inventor?"}}'
+      turn_number: 31
+    - role: user
+      content: 'YES'
+      turn_number: 31
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person win a Nobel Prize?"}}'
+      turn_number: 32
+    - role: user
+      content: 'YES'
+      turn_number: 32
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person win a Nobel Prize in Physics?"}}'
+      turn_number: 33
+    - role: user
+      content: 'YES'
+      turn_number: 33
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person receive the Nobel Prize in Physics before 1940?"}}'
+      turn_number: 34
+    - role: user
+      content: 'YES'
+      turn_number: 34
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person receive the Nobel Prize in Physics after 1925?"}}'
+      turn_number: 35
+    - role: user
+      content: 'NO'
+      turn_number: 35
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person receive the Nobel Prize in Physics in the 1920s (1920–1925)?"}}'
+      turn_number: 36
+    - role: user
+      content: 'YES'
+      turn_number: 36
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person receive the Nobel Prize in Physics for contributions primarily
+        related to quantum theory, atomic structure, or radiation?"}}'
+      turn_number: 37
+    - role: user
+      content: 'YES'
+      turn_number: 37
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person receive the Nobel Prize in Physics in 1921 or 1922?"}}'
+      turn_number: 38
+    - role: user
+      content: 'YES'
+      turn_number: 38
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        the person receive the Nobel Prize in Physics in 1921?"}}'
+      turn_number: 39
+    - role: user
+      content: 'YES'
+      turn_number: 39
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        the person awarded the Nobel Prize in Physics for work primarily related to
+        the photoelectric effect?"}}'
+      turn_number: 40
+    - role: user
+      content: 'YES'
+      turn_number: 40
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"German-born theoretical
+        physicist who won the 1921 Nobel Prize in Physics for his explanation of the
+        photoelectric effect.","name":"Albert Einstein","question":null}}'
+      turn_number: 41
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0013
+          gateway: openrouter
+          model: qwen/qwen3.8-max
+          provider: alibaba
+          reasoning_effort: high
+          reasoning_control: generic
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: supported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '2.00'
+            cached_input_usd_per_million: '0.25'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 41
+          cost_usd: '0.534688'
+          latency_ms: 1948693
+          total_tokens: 134760
+          input_tokens: 55924
+          cached_input_tokens: 28672
+          cache_write_tokens: 0
+          output_tokens: 78836
+          reasoning_tokens: 77376
+          estimated_cache_savings_usd: '0.05017600'
+          recovery:
+            request_attempts: 41
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Alibaba
+            calls: 41
+            cost_usd: '0.534688'
+            latency_ms: 1948693
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 40
+          cost_usd: '0.2360269950000000003'
+          latency_ms: 578993
+          total_tokens: 318820
+          input_tokens: 293398
+          cached_input_tokens: 86767
+          cache_write_tokens: 0
+          output_tokens: 25422
+          reasoning_tokens: 17912
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 86
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 40
+              cost_usd: '0.0990593950000000003'
+              latency_ms: 468490
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 37
+              cost_usd: '0.0417926'
+              latency_ms: 65641
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers:
+            - provider: Amazon Bedrock
+              calls: 8
+              cost_usd: '0.084675'
+              latency_ms: 29475
+            - provider: Anthropic
+              calls: 1
+              cost_usd: '0.0105'
+              latency_ms: 15387
+            unreported_calls: 0
+            fallback_calls: 1
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0000547'
+          latency_ms: 1141
+          total_tokens: 397
+          input_tokens: 367
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 30
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.0000547'
+            latency_ms: 1141
+          unreported_calls: 0
+          fallback_calls: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0013/BX-20260805-official-M0013-011/subjects/T-0001/trials/trial-005/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: fb2d827bf59f51b62e41d2514b462c33653b516c23a3e3c22a4b1203ff16efe1

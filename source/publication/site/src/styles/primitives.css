@@ -3,16 +3,21 @@
   background: var(--surface-page);
 }
 
-.page-hero {
-  padding: clamp(3.5rem, 7vw, 6rem) var(--gutter);
-  background: var(--ink);
-  color: var(--text-inverse);
+.site-boundary-shell {
+  padding-inline: var(--gutter);
 }
 
+.site-boundary,
 .page-hero-inner,
 .content-inner {
   width: min(100%, var(--max));
   margin-inline: auto;
+}
+
+.page-hero {
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+  background: var(--ink);
+  color: var(--text-inverse);
 }
 
 .page-hero-inner {
@@ -27,10 +32,10 @@
   max-width: 11ch;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(3rem, 5.7vw, 5.6rem);
-  font-weight: 470;
+  font-size: var(--text-page-title);
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.048em;
-  line-height: 0.94;
+  line-height: var(--text-page-title--line-height);
 }
 
 .page-hero .lede {
@@ -40,8 +45,9 @@
 .eyebrow {
   margin: 0 0 0.8rem;
   font-size: var(--text-micro);
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.17em;
+  line-height: var(--text-micro--line-height);
   text-transform: uppercase;
 }
 
@@ -81,10 +87,10 @@
   max-width: 15ch;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.2rem, 4vw, 4rem);
-  font-weight: 470;
+  font-size: var(--text-section-title);
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.042em;
-  line-height: 0.99;
+  line-height: var(--text-section-title--line-height);
 }
 
 .section-heading > p,
@@ -133,10 +139,10 @@
 .result-chart-panel > .panel-heading h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--result-card-title-size);
-  font-weight: 500;
+  font-size: var(--text-card-title);
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.035em;
-  line-height: 1;
+  line-height: var(--text-card-title--line-height);
 }
 
 .panel-heading--compact > p {
@@ -163,7 +169,7 @@
   background: transparent;
   color: var(--text-primary);
   font-size: var(--text-small);
-  font-weight: 690;
+  font-weight: var(--font-weight-semibold);
   text-decoration: none;
   cursor: pointer;
 }
@@ -247,7 +253,7 @@
 .metric-grid dt {
   color: var(--text-secondary);
   font-size: var(--text-micro);
-  font-weight: 710;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -268,7 +274,7 @@
   color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: var(--text-caption);
-  font-weight: 620;
+  font-weight: var(--font-weight-semibold);
   line-height: 1.35;
 }
 
@@ -320,7 +326,7 @@ a.card:hover {
   margin: 0 0 0.8rem;
   font-family: var(--font-display);
   font-size: clamp(1.45rem, 2.7vw, 2.2rem);
-  font-weight: 470;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.03em;
 }
 
@@ -355,7 +361,7 @@ a.card:hover {
 .data-table th {
   color: var(--text-secondary);
   font-size: var(--text-micro);
-  font-weight: 710;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -371,7 +377,7 @@ a.card:hover {
 
 .data-table td a {
   color: var(--blue-ink);
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
 }
 
 .data-table tbody .result-row--clickable {
@@ -500,7 +506,7 @@ a.card:hover {
   background: var(--surface-raised);
   font-family: var(--font-mono);
   font-size: var(--text-caption);
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
   line-height: 1;
 }
 
@@ -515,7 +521,7 @@ a.card:hover {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.04em;
 }
 
@@ -536,7 +542,7 @@ a.card:hover {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.8rem, 3vw, 2.8rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .warning p {
@@ -552,7 +558,7 @@ a.card:hover {
   border: var(--border-width) solid currentColor;
   border-radius: 999px;
   font-size: var(--text-micro);
-  font-weight: 780;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase;
@@ -575,16 +581,17 @@ a.card:hover {
 
 .editorial-copy {
   display: grid;
-  grid-template-columns: minmax(14rem, 0.4fr) minmax(0, 1fr);
-  gap: clamp(2rem, 7vw, 7rem);
+  grid-template-columns: var(--editorial-rail) minmax(0, 1fr);
+  gap: var(--editorial-column-gap);
 }
 
 .editorial-copy > div:last-child {
-  max-width: 48rem;
+  min-width: 0;
 }
 
 .editorial-copy p,
 .editorial-copy li {
+  max-width: var(--editorial-measure);
   color: var(--ink-soft);
   line-height: 1.75;
 }
@@ -615,7 +622,7 @@ a.card:hover {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.8rem, 3vw, 2.7rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.045em;
   line-height: 1;
 }
@@ -664,7 +671,7 @@ a.card:hover {
   flex: 0 0 auto;
   color: var(--blue-ink);
   font-size: var(--text-caption);
-  font-weight: 780;
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
 }
 
@@ -747,7 +754,7 @@ a.card:hover {
 .loading-state p {
   color: var(--text-secondary);
   font-size: var(--text-small);
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
 }
 
 .error-state {
@@ -760,7 +767,7 @@ a.card:hover {
   margin: 0 0 1rem;
   font-family: var(--font-display);
   font-size: clamp(2.8rem, 7vw, 6rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.05em;
 }
 
@@ -809,6 +816,10 @@ a.card:hover {
     grid-template-columns: 1fr;
   }
 
+  .editorial-copy {
+    gap: var(--space-8);
+  }
+
   .panel-heading--with-help {
     grid-template-areas:
       "title"
@@ -838,6 +849,7 @@ a.card:hover {
 @media (max-width: 760px) {
   .result-chart-panel {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: clamp(1.5rem, 4vw, 2.5rem);
     border: 0;
     background: transparent;
@@ -845,6 +857,7 @@ a.card:hover {
 
   .result-chart-panel > .panel-heading,
   .result-chart-panel > :last-child {
+    min-width: 0;
     border: var(--rule-default);
     background-color: var(--surface-raised);
   }

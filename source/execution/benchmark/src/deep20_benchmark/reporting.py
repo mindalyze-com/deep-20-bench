@@ -253,7 +253,7 @@ def render_benchmark(result: BenchmarkResult) -> str:
         "",
         f"- Execution: `{result.run.execution_id}`",
         f"- Benchmark: `{result.run.definition.benchmark_id}`",
-        f"- Model: `{model.model_id}` — {model.display_name}",
+        f"- Model: `{model.model_id}` - {model.display_name}",
         f"- Exact route: `{model.configuration.model}`",
         f"- Execution commits: {', '.join(f'`{item}`' for item in result.run.git_commits)}",
         f"- Status: {'completed' if result.outcome.complete else 'failed'}",

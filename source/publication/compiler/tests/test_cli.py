@@ -124,7 +124,7 @@ def test_generated_homepage_has_a_static_executive_summary() -> None:
 
 
 def _published_dataset() -> PublishedDataset:
-    source = REPOSITORY / "docs" / "data" / "deep20bench-v7.json"
+    source = REPOSITORY / "docs" / "data" / "deep20bench-v8.json"
     return PublishedDataset.model_validate_json(source.read_text(encoding="utf-8"))
 
 
@@ -192,6 +192,18 @@ def test_route_shells_do_not_duplicate_the_static_homepage(tmp_path: Path) -> No
     assert 'name="description" content="Compare official model scores' in route
     assert 'name="robots" content="index, follow, max-image-preview:large"' in route
     assert 'type="application/ld+json"' not in route
+    method_route = (output / "methodology" / "index.html").read_text(encoding="utf-8")
+    assert "From one round to a comparable score." in method_route
+    assert (
+        "Follow one Twenty Questions round through answer checks, repeated trials, "
+        "scoring, official comparison, and publication."
+    ) in method_route
+    story_route = (output / "story" / "index.html").read_text(encoding="utf-8")
+    assert "A shared idea, built into a benchmark." in story_route
+    assert (
+        "Read how Deep20Bench began, see project news, and review related research."
+        in story_route
+    )
     run_route = _route_shells(bundle)[len(_sitemap_routes()) - 1]
     run_shell = (output / run_route / "index.html").read_text(encoding="utf-8")
     assert "This detailed view uses JavaScript." in run_shell
@@ -216,20 +228,33 @@ def test_split_public_data_is_complete_and_removes_stale_files(
 
     data = public / "data"
     assert not stale.exists()
-    assert (data / "deep20bench-v7.json").is_file()
+    assert (data / "deep20bench-v8.json").is_file()
     assert (data / "leaderboard.csv").is_file()
     manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
     application = json.loads((data / "app-build.json").read_text(encoding="utf-8"))
     leaderboard = json.loads((data / "leaderboard.json").read_text(encoding="utf-8"))
     repeat_averages = json.loads((data / "repeat-averages.json").read_text(encoding="utf-8"))
     assert manifest["document_type"] == "manifest"
-    assert manifest["dataset_schema_version"] == 7
+    assert manifest["dataset_schema_version"] == 8
     assert application == {
         "document_type": "app_build",
         "schema_version": 1,
         "built_at": "2026-08-01T18:00:00Z",
     }
     assert leaderboard["document_type"] == "leaderboard"
+    assert leaderboard["schema_version"] == 3
+    first_row = leaderboard["leaderboard"][0]
+    assert first_row["ideal_distance_rank"] is not None
+    assert first_row["ideal_distance_score"] is not None
+    assert first_row["normalized_question_score"] is not None
+    assert first_row["normalized_guesser_cost"] is not None
+    assert first_row["product_efficiency_rank"] is not None
+    csv_header = (data / "leaderboard.csv").read_text(encoding="utf-8").splitlines()[0]
+    assert "ideal_distance_rank" in csv_header
+    assert "ideal_distance_score" in csv_header
+    assert "normalized_question_score" in csv_header
+    assert "normalized_guesser_cost" in csv_header
+    assert "product_efficiency_rank" in csv_header
     assert repeat_averages["document_type"] == "repeat_averages"
     assert repeat_averages["schema_version"] == 1
     assert len(repeat_averages["averages"]) == sum(
@@ -237,7 +262,7 @@ def test_split_public_data_is_complete_and_removes_stale_files(
     )
     assert (
         leaderboard["leaderboard"]
-        == json.loads((data / "deep20bench-v7.json").read_text(encoding="utf-8"))["leaderboard"]
+        == json.loads((data / "deep20bench-v8.json").read_text(encoding="utf-8"))["leaderboard"]
     )
 
     run = dataset.official_runs[0]

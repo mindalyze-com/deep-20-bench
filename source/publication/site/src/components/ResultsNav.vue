@@ -40,7 +40,7 @@ a {
   padding: 1.05rem clamp(0.75rem, 2vw, 1.5rem);
   color: var(--muted);
   font-size: var(--text-ui);
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
   text-decoration: none;
 }
 

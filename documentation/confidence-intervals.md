@@ -89,6 +89,13 @@ The two-dimensional chart places confidence-interval width on the horizontal axi
 score on the vertical axis. Lower-left means a model has both a lower score and a smaller
 interval width. This chart shows the trade-off but does not create or change a rank.
 
+The main question-score chart includes a companion plot for interval width. Each dot shows the
+exact width on a scale that starts at zero. Three background bands divide that displayed scale
+into equal numeric ranges. The matching line and dot colors make tighter, middle, and wider
+intervals easier to scan. The bands are presentation-only and are not fixed quality thresholds.
+The scale expands when a wider displayed interval requires it. Equal widths always share a band.
+A single valid width or a set of equal widths remains ungrouped.
+
 For gpt-oss-120B, the width is `17.4641 - 9.7931 = 7.6710` questions. For Claude
 Opus 5, it is `13.2729 - 11.4128 = 1.8601` questions. Opus is more repeatable in this result set.
 

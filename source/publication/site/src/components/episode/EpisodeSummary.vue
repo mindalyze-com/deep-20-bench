@@ -120,7 +120,7 @@ const facts = computed<MetricGridItem[]>(() => [
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.7rem, 4vw, 4rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.055em;
   line-height: 0.92;
   white-space: nowrap;
@@ -144,7 +144,7 @@ const facts = computed<MetricGridItem[]>(() => [
   margin-top: 0.75rem;
   color: var(--blue-ink);
   font-size: var(--text-caption);
-  font-weight: 720;
+  font-weight: var(--font-weight-bold);
 }
 
 .episode-summary-metrics {

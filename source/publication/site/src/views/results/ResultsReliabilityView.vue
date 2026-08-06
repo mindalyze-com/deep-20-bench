@@ -13,6 +13,7 @@ import ReliabilityScatter from "@/components/ReliabilityScatter.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
 import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard } from "@/lib/api";
+import { confidenceIntervalWidth } from "@/lib/confidence-width";
 import { number, percent } from "@/lib/format";
 import type { ReliabilityChartItem } from "@/lib/reliability-chart";
 import { setRouteContext } from "@/lib/route-context";
@@ -33,7 +34,7 @@ const applyRouteContext = (): void => {
   setRouteContext({
     title: "Stability results",
     description:
-      "Compare whether model scores remain consistent or vary across repeated runs.",
+      "Compare whether model scores remain consistent or vary across repeated trials on the same fixed subjects.",
     level: null,
     position: null,
     crumbs: [],
@@ -45,16 +46,16 @@ const applyRouteContext = (): void => {
 applyRouteContext();
 onActivated(applyRouteContext);
 
-const confidenceIntervalWidth = (row: LeaderboardRow): number | null => {
+const rowConfidenceIntervalWidth = (row: LeaderboardRow): number | null => {
   const interval = row.question_score_confidence_interval;
   if (interval === null) return null;
-  return Number(interval.upper) - Number(interval.lower);
+  return confidenceIntervalWidth(Number(interval.lower), Number(interval.upper));
 };
 
 const ranked = computed<ReliabilityEntry[]>(() => {
   const entries = leaderboard.value.flatMap(
     (row): Omit<ReliabilityEntry, "reliabilityRank">[] => {
-      const intervalWidth = confidenceIntervalWidth(row);
+      const intervalWidth = rowConfidenceIntervalWidth(row);
       return intervalWidth === null ? [] : [{ row, intervalWidth }];
     },
   );
@@ -89,7 +90,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
     label: "Largest CI width",
     value: number(ranked.value.at(-1)?.intervalWidth, 2),
   },
-  { key: "direction", label: "More repeatable", value: "Smaller width" },
+  { key: "direction", label: "More stable", value: "Smaller CI width" },
 ]);
 
 const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
@@ -142,9 +143,9 @@ void load();
 
     <section v-else-if="ranked.length === 0" class="content-section empty-state">
       <div class="content-inner">
-        <p class="eyebrow">Repeated-trial consistency</p>
+        <p class="eyebrow">Repeated-trial stability</p>
         <h2>No models can be ranked.</h2>
-        <p>Stability ranking requires a published repeated-trial confidence interval.</p>
+        <p>Stability ranking requires a published 95% CI.</p>
       </div>
     </section>
 
@@ -165,27 +166,30 @@ void load();
             <header class="panel-heading panel-heading--with-help">
               <div>
                 <p class="eyebrow">Two-dimensional view</p>
-                <h2 id="reliability-scatter-title">Repeatability.</h2>
+                <h2 id="reliability-scatter-title">Stability.</h2>
               </div>
               <p>
                 Each dot compares two results. Lower means a better average question score.
-                Further left means a smaller repeatability range, so the model produced more
-                consistent results across repeated runs.
+                Further left means a smaller CI width, so the model produced more
+                consistent results across repeated trials on the fixed subjects.
               </p>
               <ResultHelp label="Stability metric explanations">
-                <InfoPopover label="Repeatability width">
+                <InfoPopover label="CI width">
                   <p>
-                    This width is the upper 95% confidence bound minus the lower bound. A
-                    smaller width means the estimated average score varied less across the
-                    current repeated runs.
+                    CI width is the upper 95% CI bound minus the lower bound. A smaller CI
+                    width means the estimated average score varied less across the current
+                    repeated trials.
                   </p>
-                  <p>It is not the range expected for one future run.</p>
+                  <p>
+                    It describes uncertainty in the aggregate mean. It is not a prediction
+                    interval for an individual trial.
+                  </p>
                 </InfoPopover>
                 <InfoPopover label="Score and stability">
                   <p>
                     Score and stability answer different questions. A model can repeat a
                     poor score consistently, or achieve a strong average with more variation
-                    between runs.
+                    between trials.
                   </p>
                 </InfoPopover>
               </ResultHelp>
@@ -203,13 +207,13 @@ void load();
                 <tr>
                   <th class="rank-column">
                     <span aria-hidden="true">#</span>
-                    <span class="visually-hidden">Repeatability rank</span>
+                    <span class="visually-hidden">Stability rank</span>
                   </th>
                   <th class="model-column">Model</th>
                   <th class="run-column">Run</th>
                   <th data-numeric>
                     <span class="table-header-stack">
-                      <span>95% CI</span>
+                      <span>CI</span>
                       <span>width</span>
                     </span>
                   </th>
@@ -245,10 +249,10 @@ void load();
                       :to="runLink(entry.row)"
                       :name="entry.row.model.display_name"
                     />
-                    <span v-else aria-hidden="true">—</span>
+                    <span v-else aria-hidden="true">-</span>
                   </td>
                   <td data-numeric>{{ number(entry.intervalWidth, 2) }}</td>
-                  <td data-numeric>{{ entry.row.rank ?? "—" }}</td>
+                  <td data-numeric>{{ entry.row.rank ?? "-" }}</td>
                   <td data-numeric>{{ number(entry.row.question_score) }}</td>
                   <td data-numeric>
                     <template v-if="entry.row.question_score_confidence_interval">
@@ -256,7 +260,7 @@ void load();
                         number(entry.row.question_score_confidence_interval.upper, 2)
                       }}
                     </template>
-                    <span v-else aria-hidden="true">—</span>
+                    <span v-else aria-hidden="true">-</span>
                   </td>
                   <td data-numeric>{{ percent(entry.row.success_rate) }}</td>
                 </tr>
@@ -274,12 +278,12 @@ void load();
               :to="entry.row.execution_id === null ? null : runLink(entry.row)"
               :metrics="[
                 { label: 'CI width', value: number(entry.intervalWidth, 2) },
-                { label: 'Score', value: number(entry.row.question_score) },
+                { label: 'Question score', value: number(entry.row.question_score) },
                 {
                   label: '95% CI',
                   value:
                     entry.row.question_score_confidence_interval === null
-                      ? '—'
+                      ? '-'
                       : `${number(
                           entry.row.question_score_confidence_interval.lower,
                           2,
@@ -295,17 +299,17 @@ void load();
 
           <p v-if="unranked.length > 0" class="results-note">
             {{ unranked.length }} evaluated model{{ unranked.length === 1 ? " is" : "s are" }}
-            not ranked because a repeated-trial confidence interval is unavailable.
+            not ranked because a 95% CI is unavailable.
           </p>
 
           <MetricDefinitionCard
-            title="Repeatability width."
-            formula="95% CI width = upper confidence bound − lower confidence bound"
-            interpretation="A smaller confidence interval width means the model produced more consistent aggregate results across the current repeated runs."
+            title="CI width."
+            formula="CI width = upper 95% CI bound − lower 95% CI bound"
+            interpretation="A smaller CI width means the model produced more consistent aggregate results across the current repeated trials."
             detail-summary="Steps, example, interpretation, and limits"
           >
             <ol>
-              <li>Calculate the fixed-subject repeated-trial confidence interval.</li>
+              <li>Calculate the fixed-subject repeated-trial 95% CI.</li>
               <li>Subtract its lower bound from its upper bound.</li>
               <li>Sort exact widths from smallest to largest.</li>
             </ol>
@@ -315,17 +319,16 @@ void load();
             </p>
             <p>
               Every model uses the same 95% confidence level, so the level itself cannot
-              define the order. The confidence interval width is the comparison measure.
+              define the order. CI width is the comparison measure.
             </p>
             <p>
-              Repeatable does not mean good. A model can repeat a poor score closely and
-              rank well here. A strong average with a large confidence interval width ranks
-              lower because its repeated results vary more.
+              Stable does not mean good. A model can produce a poor score consistently and
+              rank well here. A strong average with a large CI width ranks lower because its
+              repeated results vary more.
             </p>
             <p>
-              This is an approximate repeatability measure for the current fixed
-              subjects. It is not a prediction interval for individual trials or a
-              pairwise significance test.
+              This is an approximate stability measure for the current fixed subjects. It is
+              not a prediction interval for individual trials or a pairwise significance test.
             </p>
           </MetricDefinitionCard>
         </div>

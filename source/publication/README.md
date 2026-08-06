@@ -48,7 +48,7 @@ The build:
 3. compiles the active cohort and a strict public episode projection from
    `config/publication.yml`;
 4. records separate UTC publication and application build times in typed public metadata;
-5. writes the complete `deep20bench-v7.json` and `leaderboard.csv` downloads, plus typed,
+5. writes the complete `deep20bench-v8.json` and `leaderboard.csv` downloads, plus typed,
    split JSON documents for the SPA;
 6. builds the Vue application and writes static entry shells for every execution, subject, and
    episode route;
@@ -189,7 +189,7 @@ The static Results area has five views:
 /results/reliability/ repeated-trial stability ranking by 95% confidence-interval width
 /results/cost/        full-run component costs and per-episode costs
 /results/time/        tested-model response time and end-to-end benchmark runtime
-/results/efficiency/  cost-adjusted ranking and cost-quality trade-off
+/results/efficiency/  normalized ideal-distance ranking and cost-quality trade-off
 ```
 
 Every model uses the same 95% confidence level. The Stability view therefore ranks by
@@ -212,28 +212,29 @@ chart shows end-to-end runtime, which also includes support-model calls, schedul
 and other benchmark work.
 
 Question score remains the primary benchmark result. Cost efficiency is a separate official
-ranking:
+ranking. It first normalizes the question score and recorded Guesser cost per episode across
+the current eligible cohort:
 
 ```text
-cost-adjusted question score =
-    question score × (recorded Guesser cost / terminal episodes)
+normalized value = (value − cohort minimum) / (cohort maximum − cohort minimum)
+
+ideal distance = √(normalized question score² + normalized Guesser cost²)
 ```
 
-The unit is USD·questions per episode, and lower is better. Ranking uses exact decimals. The
-site displays rounded values. The formula uses only Guesser cost so that Oracle, Reviewer,
-Judge, and Validator pricing does not change the rank of the model under test. A proportional
-reduction in recorded Guesser cost has the same effect as the same proportional reduction in
-question score.
+Lower is better. Both normalized dimensions range from 0 to 1 and have equal weight. A score of
+0 would match the cohort minimum on both dimensions. The theoretical maximum is √2. The
+compiler emits the normalized components and distance as typed Decimals. It ranks with the
+algebraically equivalent exact rational squared distance, so square-root rounding cannot change
+the order. The site rounds values only for display.
 
 The calculation has three steps:
 
 1. Calculate the Question Score by averaging penalized trial values within each subject, then
    averaging those subject averages.
 2. Divide the run's total recorded Guesser cost by its terminal episode count.
-3. Multiply the two exact values.
+3. Min/max-normalize both cohort measures and calculate their Euclidean distance from `(0, 0)`.
 
-For example, `12.3 questions × $0.0500 per episode` gives a cost-adjusted score of
-`0.615 USD·questions per episode`.
+For example, normalized question score `0.06` and normalized cost `0.08` give distance `0.10`.
 
 A run is efficiency-ranked only when it has a question score, at least one terminal episode, at
 least one completed Guesser call, and a positive recorded Guesser cost. Existing signed
@@ -241,8 +242,34 @@ artifacts do not distinguish a genuinely free call from a provider response that
 price. The publisher therefore treats zero aggregate Guesser cost as unavailable instead of
 ranking it as free.
 
-The efficiency trade-off chart shows the original tested-model cost per episode and question
-score on separate axes. It does not create a second weighted score or change the official rank.
+The prior product score remains in schema 8 as `cost_adjusted_question_score`. Its historical
+`efficiency_rank` field keeps the same product-rank meaning for compatibility, and
+`product_efficiency_rank` is an explicit alias:
+
+```text
+legacy product score = question score × recorded Guesser cost per episode
+```
+
+The official distance rank is published separately as `ideal_distance_rank`. Because its bounds
+come from the current cohort, adding or removing a model can change every normalized value and
+distance rank. For example, if Llama 4 Maverick is removed from the current 12-model cohort,
+Claude Opus 5 moves from distance rank 2 to 1, Grok 4.5 moves from 3 to 5, and GPT-5 Nano moves
+from 5 to 6. No underlying benchmark result changes; only the cohort normalization changes.
+
+The compiler also marks Pareto-efficient models. A model is Pareto-efficient when no other
+eligible model has both an equal-or-lower question score and equal-or-lower recorded Guesser
+cost, with at least one strict improvement. This dominance statement does not depend on
+normalization.
+
+The efficiency chart uses the emitted normalized components on fixed 0-to-1 square axes. Labelled
+dashed quarter-circles show equal ideal distance, including a faint 1.25 guide. Diamond markers
+and table badges identify Pareto-efficient models. Tooltips retain the original question score
+and recorded cost. Axis tick labels translate each normalized position back to those raw units
+for display only.
+
+This schema change affects only the post-run public projection. Benchmark manifest, summary,
+state, and episode artifact schemas are unchanged. Existing signed runs remain valid inputs and
+do not need migration or reruns; the compiler derives every new field after loading them.
 
 Each Results page uses short, keyboard- and tap-accessible information popovers to define the
 page-specific metrics and explain when chart or table orders differ. The popovers sit in the

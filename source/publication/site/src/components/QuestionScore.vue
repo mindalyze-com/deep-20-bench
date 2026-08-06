@@ -87,7 +87,7 @@ const accessibleLabel = computed(() => {
 .score-confidence {
   color: var(--muted);
   font-size: var(--text-micro);
-  font-weight: 740;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -100,7 +100,7 @@ const accessibleLabel = computed(() => {
 strong {
   font-family: var(--font-display);
   font-size: clamp(2.4rem, 5vw, 5rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: -0.06em;
   line-height: 0.9;
 }
@@ -138,7 +138,7 @@ strong {
 .question-score--compact strong {
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 770;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0;
 }
 
@@ -159,7 +159,7 @@ strong {
   color: var(--blue-ink);
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: 0;
   line-height: 1.2;
 }
@@ -167,7 +167,7 @@ strong {
 .question-score--table .score-confidence {
   color: var(--text-secondary);
   font-size: var(--text-caption);
-  font-weight: 620;
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0;
   text-transform: none;
 }

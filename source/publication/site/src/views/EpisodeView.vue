@@ -297,7 +297,7 @@ onActivated(applyRouteContext);
 .warning-facts dt {
   color: var(--muted);
   font-size: var(--text-caption);
-  font-weight: 780;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -331,7 +331,7 @@ onActivated(applyRouteContext);
 
 .warning-facts dd {
   margin: 0.35rem 0 0;
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
 }
 
 .episode-view {
@@ -395,7 +395,7 @@ onActivated(applyRouteContext);
 
 .episode-tabs span {
   font-size: 0.72rem;
-  font-weight: 760;
+  font-weight: var(--font-weight-bold);
 }
 
 .episode-tabs small {

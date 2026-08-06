@@ -37,7 +37,7 @@ const level = computed(() => {
   gap: 0.55rem;
   color: var(--muted);
   font-size: var(--text-small);
-  font-weight: 680;
+  font-weight: var(--font-weight-semibold);
 }
 
 .effort-meter {

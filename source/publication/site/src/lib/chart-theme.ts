@@ -13,6 +13,15 @@ export interface ChartTheme {
     stability: string;
     efficiency: string;
   };
+  confidenceWidth: {
+    tight: string;
+    middle: string;
+    wide: string;
+    tightFill: string;
+    middleFill: string;
+    wideFill: string;
+    neutral: string;
+  };
   roles: {
     guesser: string;
     oracle: string;
@@ -45,6 +54,27 @@ export const readChartTheme = (): ChartTheme => {
     results: {
       stability: customProperty(styles, "--result-stability", "#8266d5"),
       efficiency: customProperty(styles, "--result-efficiency", "#168c76"),
+    },
+    confidenceWidth: {
+      tight: customProperty(styles, "--confidence-tight", "#27923c"),
+      middle: customProperty(styles, "--confidence-middle", "#d08a00"),
+      wide: customProperty(styles, "--confidence-wide", "#df3d32"),
+      tightFill: customProperty(
+        styles,
+        "--confidence-tight-fill",
+        "rgb(39 146 60 / 8%)",
+      ),
+      middleFill: customProperty(
+        styles,
+        "--confidence-middle-fill",
+        "rgb(208 138 0 / 8%)",
+      ),
+      wideFill: customProperty(
+        styles,
+        "--confidence-wide-fill",
+        "rgb(223 61 50 / 8%)",
+      ),
+      neutral: customProperty(styles, "--confidence-neutral", "#8b8f99"),
     },
     roles: {
       guesser: customProperty(styles, "--role-guesser", "#4f5dff"),
