@@ -78,6 +78,11 @@
   when reasonable; derive repeated schemas, constants, formats, and behavior from one canonical
   definition instead of copying them.
 
+## Image assets
+
+- Use WebP for raster image assets by default. Use another format only when tooling or a
+  format-specific requirement makes WebP unsuitable.
+
 ## Writing style
 
 - Use short, simple, neutral language. Avoid marketing language, hype, and exaggeration.

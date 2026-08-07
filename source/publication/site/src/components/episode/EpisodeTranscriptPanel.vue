@@ -4,9 +4,15 @@ import { computed } from "vue";
 import { contractViolationDetails as violationDetails } from "@/lib/contract-violation-copy";
 import type { PublicEpisodeDetail } from "@/lib/types";
 
-const props = defineProps<{
-  episode: PublicEpisodeDetail;
-}>();
+const props = withDefaults(
+  defineProps<{
+    episode: PublicEpisodeDetail;
+    expandedViolationTurn?: number | null;
+  }>(),
+  {
+    expandedViolationTurn: null,
+  },
+);
 
 const turnMap = computed(() =>
   props.episode.turns.map((turn) => {
@@ -255,7 +261,10 @@ const jumpToTurn = (turnNumber: number): void => {
                   : "episode ended without another retry"
               }}
             </p>
-            <details class="disclosure turn-disclosure violation-detail">
+            <details
+              class="disclosure turn-disclosure violation-detail"
+              :open="expandedViolationTurn === turn.turn_number"
+            >
               <summary>
                 <span>
                   <strong>Why this output was rejected</strong>
@@ -441,9 +450,10 @@ pre {
 
 .turn-map button {
   display: grid;
-  width: 3.15rem;
+  width: max-content;
+  min-width: 3.15rem;
   min-height: 3.15rem;
-  padding: 0.35rem;
+  padding: 0.35rem 0.55rem;
   place-content: center;
   border: var(--rule-default);
   background: var(--surface-raised);
@@ -463,6 +473,7 @@ pre {
 .turn-map button strong {
   margin-top: 0.18rem;
   font-size: var(--text-caption);
+  white-space: nowrap;
 }
 
 .turn-map button.tone-yes {
@@ -528,7 +539,7 @@ pre {
   display: grid;
   grid-template-columns: 3.5rem minmax(0, 1fr) minmax(8rem, 0.25fr);
   gap: clamp(1rem, 3vw, 2.5rem);
-  padding: clamp(1.4rem, 3vw, 2.5rem) 0;
+  padding: var(--panel-padding) 0;
   scroll-margin-top: 1rem;
   border-bottom: var(--rule-default);
 }
@@ -893,7 +904,7 @@ pre {
     }
 
     .turn-map button {
-      width: 2.75rem;
+      min-width: 2.75rem;
       min-height: 2.75rem;
     }
 

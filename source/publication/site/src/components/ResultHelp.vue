@@ -11,7 +11,9 @@ withDefaults(
 
 <template>
   <aside class="result-help" :aria-label="label">
-    <slot />
+    <div class="result-help-items">
+      <slot />
+    </div>
   </aside>
 </template>
 
@@ -19,18 +21,22 @@ withDefaults(
 .result-help {
   display: grid;
   align-content: end;
-  gap: 0;
+  gap: 0.35rem;
   min-width: 0;
   margin: 0;
   color: var(--result-accent-ink, var(--blue-ink));
 }
 
+.result-help-items {
+  display: grid;
+  gap: 0;
+}
+
 .result-help :deep(.info-popover-trigger) {
   min-height: 44px;
   padding: 0.25rem 0;
-  font-size: var(--text-caption);
+  font-size: var(--text-small);
   font-weight: var(--font-weight-semibold);
-  opacity: 0.78;
 }
 
 .result-help :deep(.info-popover-trigger:hover),
@@ -39,9 +45,9 @@ withDefaults(
 }
 
 .result-help :deep(.info-popover-indicator) {
-  width: 0.9rem;
-  height: 0.9rem;
-  font-size: 0.56rem;
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.62rem;
 }
 
 .result-help :deep(p) {
@@ -54,10 +60,13 @@ withDefaults(
 
 @media (max-width: 1320px) {
   .result-help {
+    display: grid;
+  }
+
+  .result-help-items {
     display: flex;
     flex-wrap: wrap;
     column-gap: clamp(0.8rem, 2vw, 1.2rem);
-    row-gap: 0;
   }
 }
 </style>

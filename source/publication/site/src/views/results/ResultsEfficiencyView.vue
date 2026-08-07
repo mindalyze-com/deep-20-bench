@@ -15,7 +15,6 @@ import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
-import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard } from "@/lib/api";
 import { moneyEpisode, number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
@@ -94,7 +93,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   { key: "models", label: "Models", value: ranked.value.length },
   {
     key: "range",
-    label: "Model cost range",
+    label: "Guesser cost range",
     value: costRange.value === null ? "-" : `${number(costRange.value, 0)}×`,
   },
   {
@@ -173,7 +172,7 @@ void load();
         <h2>No models can be ranked.</h2>
         <p>
           Efficiency is available when a model has a question score and a positive
-          recorded model cost for completed episodes.
+          recorded Guesser cost for completed episodes.
         </p>
       </div>
     </section>
@@ -198,7 +197,7 @@ void load();
                 <h2 id="efficiency-title">Distance from the lower-left ideal.</h2>
               </div>
               <p>
-                Question score and model cost are each normalized from 0 to 1 across
+                Question score and Guesser cost are each normalized from 0 to 1 across
                 this cohort. The ranking measures equal-weight distance from their
                 combined minimum. Lower is better.
               </p>
@@ -206,7 +205,7 @@ void load();
                 <InfoPopover label="Ideal distance">
                   <p>
                     A score of 0 would match the cohort's lowest question score and lowest
-                    model cost. The theoretical maximum is 1.414. The score changes when
+                    Guesser cost. The theoretical maximum is 1.414. The score changes when
                     the compared cohort changes.
                   </p>
                 </InfoPopover>
@@ -235,7 +234,7 @@ void load();
                   <InfoPopover label="Trade-off map">
                     <p>
                       The map uses the normalized values emitted by the compiler. Axis tick
-                      labels and tooltips show the original question score and model cost per
+                      labels and tooltips show the original question score and Guesser cost per
                       episode.
                     </p>
                   </InfoPopover>
@@ -298,16 +297,15 @@ void load();
 
           <div
             class="table-wrap ranking-table-wrap results-table-wrap"
-            tabindex="0"
-            aria-label="Scrollable efficiency ranking"
+            aria-label="Efficiency ranking"
           >
             <table
               class="data-table ranking-table results-table efficiency-results-table"
             >
+              <caption class="visually-hidden">Efficiency ranking</caption>
               <colgroup>
                 <col class="efficiency-col--rank" />
                 <col class="efficiency-col--model" />
-                <col class="efficiency-col--run" />
                 <col class="efficiency-col--distance" />
                 <col class="efficiency-col--pareto" />
                 <col class="efficiency-col--question-rank" />
@@ -322,7 +320,6 @@ void load();
                     <span class="visually-hidden">Ideal-distance rank</span>
                   </th>
                   <th class="model-column">Model</th>
-                  <th class="run-column">Run</th>
                   <th data-numeric>
                     <span class="table-header-stack">
                       <span>Ideal</span>
@@ -349,7 +346,7 @@ void load();
                   </th>
                   <th data-numeric>
                     <span class="table-header-stack">
-                      <span>Model cost</span>
+                      <span>Guesser cost</span>
                       <span>per episode</span>
                     </span>
                   </th>
@@ -375,14 +372,6 @@ void load();
                       :meta="row.model.provider"
                     />
                     <strong v-else>{{ row.model.display_name }}</strong>
-                  </td>
-                  <td class="run-column">
-                    <RunTableAction
-                      v-if="row.execution_id !== null"
-                      :to="runLink(row)"
-                      :name="row.model.display_name"
-                    />
-                    <span v-else aria-hidden="true">-</span>
                   </td>
                   <td data-numeric>
                     {{ number(row.ideal_distance_score, 3) }}
@@ -420,7 +409,7 @@ void load();
                 { label: 'Pareto-efficient', value: row.pareto_efficient ? 'Yes' : 'No' },
                 { label: 'Question score', value: number(row.question_score) },
                 {
-                  label: 'Model cost / episode',
+                  label: 'Guesser cost / episode',
                   value: moneyEpisode(row.guesser_cost_per_episode_usd),
                 },
               ]"
@@ -429,13 +418,13 @@ void load();
 
           <p v-if="unranked.length > 0" class="results-note">
             {{ unranked.length }} model{{ unranked.length === 1 ? " is" : "s are" }}
-            not ranked because a question score or positive recorded model cost per
+            not ranked because a question score or positive recorded Guesser cost per
             completed episode is unavailable.
           </p>
 
           <MetricDefinitionCard
             title="Normalized ideal distance."
-            formula="√(normalized question score² + normalized model cost²)"
+            formula="√(normalized question score² + normalized Guesser cost²)"
             interpretation="Both measures have equal weight after cohort min/max normalization. Lower is better."
             detail-summary="Steps and limits"
           >
@@ -444,7 +433,7 @@ void load();
                 Normalize question score as (value − cohort minimum) ÷ cohort range.
               </li>
               <li>
-                Normalize model cost per episode with the same calculation.
+                Normalize Guesser cost per episode with the same calculation.
               </li>
               <li>Measure Euclidean distance from (0, 0). Lower is better.</li>
             </ol>
@@ -472,7 +461,7 @@ void load();
 .results-summary,
 .efficiency-panel,
 .tradeoff-panel {
-  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: var(--results-section-gap);
 }
 
 .tradeoff-panel {
@@ -707,13 +696,12 @@ void load();
 }
 
 .efficiency-results-table {
-  min-width: 72rem;
+  min-width: 64rem;
   table-layout: fixed;
 }
 
 .efficiency-results-table .rank-column,
-.efficiency-results-table .model-column,
-.efficiency-results-table .run-column {
+.efficiency-results-table .model-column {
   width: auto;
   min-width: 0;
 }
@@ -723,11 +711,7 @@ void load();
 }
 
 .efficiency-results-table .efficiency-col--model {
-  width: 20%;
-}
-
-.efficiency-results-table .efficiency-col--run {
-  width: 8%;
+  width: 25%;
 }
 
 .efficiency-results-table .efficiency-col--distance {
@@ -747,7 +731,7 @@ void load();
 }
 
 .efficiency-results-table .efficiency-col--cost {
-  width: 15%;
+  width: 18%;
 }
 
 .efficiency-results-table .efficiency-col--success {

@@ -12,8 +12,10 @@ This includes:
 - Tests, workflows, build scripts, package manifests, and lock files.
 - Benchmark, model, subject, game, Oracle, and publication configuration.
 
-Commercial use requires separate permission from the applicable copyright holders. This makes
-the software source-available, not open source as defined by the Open Source Initiative.
+The software is source-available under a dual-license model. The PolyForm Noncommercial license
+covers noncommercial use. Commercial use requires a separate commercial license from the
+applicable copyright holders. The software is not open source as defined by the Open Source
+Initiative.
 
 Required Notice: Deep20Bench was created by Patrick Heusser and Markus Tuor. Patrick Heusser
 designed and implemented the benchmark.

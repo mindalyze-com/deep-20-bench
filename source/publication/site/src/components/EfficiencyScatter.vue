@@ -211,7 +211,7 @@ const chartOption = (width: number): EChartsOption => {
       max: 1,
       boundaryGap: [0, 0],
       interval: 0.25,
-      name: "Model cost per episode · normalized position",
+      name: "Guesser cost per episode · normalized position",
       nameLocation: "middle",
       nameGap: mobile ? 43 : 48,
       nameTextStyle: {

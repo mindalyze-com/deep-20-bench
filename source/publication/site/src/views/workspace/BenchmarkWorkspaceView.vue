@@ -10,13 +10,15 @@ import { useRoute } from "vue-router";
 
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
+import ModelName from "@/components/ModelName.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
 import { getRun, getSubject } from "@/lib/api";
 import { number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
-import type { RunDocument } from "@/lib/types";
+import type { ContractReliability, RunDocument } from "@/lib/types";
 import { runWorkspaceKey } from "@/lib/workspace-context";
+import { subjectWorkspaceView } from "@/router";
 
 import RunOverviewPane from "./RunOverviewPane.vue";
 
@@ -76,12 +78,20 @@ const load = async (): Promise<void> => {
 };
 
 const warmSubject = (targetId: string): void => {
+  subjectWorkspaceView.preload();
   void getSubject(executionId.value, targetId);
+};
+
+const contractStatusLabel = (status: ContractReliability["status"]): string => {
+  if (status === "clean") return "clean";
+  if (status === "breached") return "breached";
+  return "not evaluable";
 };
 
 watch(executionId, () => void load(), { immediate: true });
 watch(() => route.name, applyRunContext);
 onActivated(applyRunContext);
+subjectWorkspaceView.preload();
 </script>
 
 <template>
@@ -102,8 +112,8 @@ onActivated(applyRunContext);
             Official results
           </RouterLink>
           <p class="eyebrow">Model under test</p>
-          <h2>{{ run.model_name }}</h2>
-          <div class="rail-score">
+          <h2><ModelName :name="run.model_name" compact dark /></h2>
+          <div v-if="!isRunOverview" class="rail-score">
             <QuestionScore
               :score="run.question_score"
               :max-questions="run.max_questions"
@@ -127,8 +137,11 @@ onActivated(applyRunContext);
         </RouterLink>
 
         <div class="subject-list-heading">
-          <p class="eyebrow">Subjects</p>
-          <strong>{{ subjects.length }} · choose one</strong>
+          <p class="eyebrow">Subjects · {{ subjects.length }}</p>
+          <span class="status-legend" aria-label="Subject output contract status">
+            <span><i class="clean" aria-hidden="true"></i> Clean</span>
+            <span><i class="breached" aria-hidden="true"></i> Breach</span>
+          </span>
         </div>
 
         <nav class="subject-rail-list" aria-label="Subjects in this run">
@@ -164,14 +177,12 @@ onActivated(applyRunContext);
               }"
               aria-hidden="true"
             ></span>
+            <span class="visually-hidden">
+              Contract status: {{ contractStatusLabel(subject.contract.status) }}.
+            </span>
             <span class="rail-link-arrow" aria-hidden="true">→</span>
           </RouterLink>
         </nav>
-
-        <footer class="model-rail-footer">
-          <span>Run</span>
-          <code>{{ run.execution_id }}</code>
-        </footer>
       </aside>
 
       <section class="workspace-stage" :aria-busy="loading">
@@ -195,7 +206,7 @@ onActivated(applyRunContext);
 
 .model-rail {
   display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
   min-width: 0;
   min-height: 0;
   overflow: hidden;
@@ -233,10 +244,14 @@ onActivated(applyRunContext);
 .model-rail-heading h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.85rem, 2.7vw, 2.6rem);
+  font-size: clamp(1.7rem, 2vw, 2.1rem);
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.045em;
   line-height: 0.95;
+}
+
+.model-rail-heading h2 :deep(.model-name) {
+  row-gap: 0.3rem;
 }
 
 .rail-score {
@@ -274,7 +289,7 @@ onActivated(applyRunContext);
 
 .run-overview-link:hover,
 .subject-rail-list a:hover {
-  background: rgb(255 255 255 / 8%);
+  background: rgb(255 255 255 / 15%);
   color: var(--text-inverse);
 }
 
@@ -333,6 +348,35 @@ onActivated(applyRunContext);
   font-weight: var(--font-weight-bold);
 }
 
+.status-legend {
+  display: flex;
+  gap: 0.6rem;
+  color: var(--text-inverse-subtle);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-bold);
+}
+
+.status-legend > span {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.status-legend i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.status-legend i.clean {
+  background: var(--state-clean);
+}
+
+.status-legend i.breached {
+  background: var(--coral);
+}
+
 .rail-item-index {
   color: currentColor;
   font-family: var(--font-mono);
@@ -383,29 +427,46 @@ onActivated(applyRunContext);
 
 .rail-link-arrow {
   color: var(--acid);
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   font-weight: var(--font-weight-bold);
+  transition: transform 140ms ease;
 }
 
-.model-rail-footer {
-  display: grid;
-  gap: 0.3rem;
-  padding: 0.9rem 1rem 1rem;
-  border-top: var(--rule-inverse-subtle);
-  color: var(--text-inverse-subtle);
+.subject-rail-list a:hover .rail-link-arrow,
+.subject-rail-list a:focus-visible .rail-link-arrow {
+  transform: translateX(3px);
 }
 
-.model-rail-footer span {
-  font-size: var(--text-caption);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.benchmark-workspace.is-run-overview .model-rail-heading {
+  padding: 0.8rem 1rem 0.7rem;
 }
 
-.model-rail-footer code {
-  overflow: hidden;
-  font-size: var(--text-caption);
-  text-overflow: ellipsis;
+.benchmark-workspace.is-run-overview .rail-back {
+  margin-bottom: 0.7rem;
+}
+
+.benchmark-workspace.is-run-overview .model-rail-heading .eyebrow {
+  margin-bottom: 0.3rem;
+}
+
+.benchmark-workspace.is-run-overview .run-overview-link {
+  min-height: 50px;
+  padding-block: 0.45rem;
+}
+
+.benchmark-workspace.is-run-overview .subject-list-heading {
+  min-height: 36px;
+  padding-block: 0.45rem;
+}
+
+.benchmark-workspace.is-run-overview .subject-rail-list {
+  overflow-y: visible;
+}
+
+.benchmark-workspace.is-run-overview .subject-rail-list a {
+  height: 57px;
+  min-height: 57px;
+  padding-block: 0.45rem;
 }
 
 .workspace-stage {

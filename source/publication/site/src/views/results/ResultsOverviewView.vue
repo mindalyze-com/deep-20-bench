@@ -11,10 +11,16 @@ import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
-import RunTableAction from "@/components/RunTableAction.vue";
 import ScoreDotPlot, { type ScoreDot } from "@/components/ScoreDotPlot.vue";
 import { getLeaderboard, getManifest } from "@/lib/api";
-import { duration, money, moneyEpisode, number, percent } from "@/lib/format";
+import {
+  contractPercent,
+  duration,
+  money,
+  moneyEpisode,
+  number,
+  percent,
+} from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import type { LeaderboardRow, ManifestDocument } from "@/lib/types";
 import { useRepeatAverages } from "@/lib/use-repeat-averages";
@@ -57,7 +63,7 @@ const rows = computed(() =>
     ),
 );
 
-const selectedCost = computed(() =>
+const selectedBenchmarkCost = computed(() =>
   rows.value.reduce((total, row) => total + Number(row.total_cost_usd ?? 0), 0),
 );
 
@@ -79,8 +85,8 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   },
   {
     key: "spend",
-    label: "Total model cost",
-    value: money(selectedCost.value),
+    label: "Total benchmark cost",
+    value: money(selectedBenchmarkCost.value),
     tone: "accent",
   },
   {
@@ -182,7 +188,7 @@ void load();
               is its 95% confidence interval (CI). The companion plot shows each exact CI
               width. Its three bands divide the displayed width scale into equal ranges.
             </p>
-            <ResultHelp label="Overview metric explanations">
+            <ResultHelp label="Score metric explanations">
               <InfoPopover label="Question score">
                 <p>
                   The score is the average number of questions used per subject. Lower is
@@ -225,7 +231,7 @@ void load();
         <ComparisonRankingTable
           class="results-table-wrap"
           variant="results-overview"
-          label="Scrollable result comparison"
+          label="Result comparison"
         >
             <tbody>
               <tr
@@ -248,14 +254,6 @@ void load();
                   <strong v-else>{{ row.model.display_name }}</strong>
                   <small v-if="row.execution_id === null">{{ row.model.provider }}</small>
                 </td>
-                <td class="run-column" data-label="Run">
-                  <RunTableAction
-                    v-if="row.execution_id !== null"
-                    :to="runLink(row)"
-                    :name="row.model.display_name"
-                  />
-                  <span v-else aria-hidden="true">-</span>
-                </td>
                 <td
                   class="primary-metric-column"
                   data-label="Question score"
@@ -271,9 +269,14 @@ void load();
                   {{ percent(row.success_rate) }}
                 </td>
                 <td class="contract-column" data-label="Contract" data-numeric>
-                  {{ percent(row.contract?.compliance_rate ?? null) }}
+                  {{
+                    contractPercent(
+                      row.contract?.compliance_rate ?? null,
+                      row.contract?.violations ?? 0,
+                    )
+                  }}
                 </td>
-                <td class="cost-column" data-label="Model cost / episode" data-numeric>
+                <td class="cost-column" data-label="Guesser cost / episode" data-numeric>
                   {{
                     row.guesser_cost_per_episode_usd === null
                       ? "-"
@@ -303,7 +306,6 @@ void load();
               {
                 label: 'Question score',
                 value: number(row.question_score),
-                tone: 'primary',
               },
               {
                 label: '95% CI',
@@ -317,7 +319,7 @@ void load();
               },
               { label: 'Success', value: percent(row.success_rate) },
               {
-                label: 'Model cost / episode',
+                label: 'Guesser cost / episode',
                 value:
                   row.guesser_cost_per_episode_usd === null
                     ? '-'
@@ -340,11 +342,11 @@ void load();
 
 <style scoped>
 .results-summary {
-  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: var(--results-section-gap);
 }
 
 .comparison-panel {
-  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: var(--results-section-gap);
 }
 
 .comparison-panel :deep(.score-dot-plot) {
@@ -352,7 +354,7 @@ void load();
 }
 
 .results-table-wrap {
-  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  margin-top: var(--results-section-gap);
 }
 
 .empty-state {

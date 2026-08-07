@@ -1,15 +1,39 @@
 <script setup lang="ts">
+import { nextTick, onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
+
 const links = [
-  { label: "Overview", name: "results" },
+  { label: "Score", name: "results" },
   { label: "Stability", name: "results-reliability" },
   { label: "Cost", name: "results-cost" },
   { label: "Time", name: "results-time" },
   { label: "Efficiency", name: "results-efficiency" },
 ] as const;
+
+const route = useRoute();
+const navigation = ref<HTMLElement | null>(null);
+
+const revealActiveLink = async (): Promise<void> => {
+  await nextTick();
+  navigation.value
+    ?.querySelector<HTMLElement>("a.active")
+    ?.scrollIntoView({ block: "nearest", inline: "nearest" });
+};
+
+onMounted(() => {
+  void revealActiveLink();
+});
+watch(
+  () => route.name,
+  () => {
+    void revealActiveLink();
+  },
+  { flush: "post" },
+);
 </script>
 
 <template>
-  <nav class="results-nav" aria-label="Result views">
+  <nav ref="navigation" class="results-nav" aria-label="Result views">
     <RouterLink
       v-for="link in links"
       :key="link.name"
@@ -30,7 +54,11 @@ const links = [
   padding-inline: var(--gutter);
   border-bottom: var(--rule-default);
   background: var(--paper-bright);
-  scrollbar-width: thin;
+  scrollbar-width: none;
+}
+
+.results-nav::-webkit-scrollbar {
+  display: none;
 }
 
 a {

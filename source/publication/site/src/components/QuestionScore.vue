@@ -10,7 +10,7 @@ const props = withDefaults(
     score: string | null;
     maxQuestions?: number;
     label?: string;
-    variant?: "default" | "compact" | "metric" | "hero" | "table";
+    variant?: "default" | "compact" | "metric" | "hero" | "table" | "wide";
     theme?: "light" | "dark";
     explain?: boolean;
     confidenceInterval?: QuestionScoreConfidenceInterval | null;
@@ -174,6 +174,47 @@ strong {
 
 .question-score--metric strong {
   font-size: clamp(1.65rem, 3vw, 2.6rem);
+}
+
+.question-score--wide {
+  grid-template:
+    "label value" auto
+    "unit value" auto
+    "confidence value" auto
+    "scale scale" auto
+    "help help" auto
+    / minmax(0, 1fr) auto;
+  column-gap: clamp(1rem, 2.25vw, 2rem);
+  row-gap: 0.28rem;
+  align-items: center;
+}
+
+.question-score--wide .score-label {
+  grid-area: label;
+}
+
+.question-score--wide strong {
+  grid-area: value;
+  justify-self: end;
+  font-size: clamp(3rem, 3.75vw, 4.25rem);
+}
+
+.question-score--wide .score-unit {
+  grid-area: unit;
+}
+
+.question-score--wide .score-confidence {
+  grid-area: confidence;
+}
+
+.question-score--wide .score-scale {
+  grid-area: scale;
+  margin-top: 0.35rem;
+}
+
+.question-score--wide .score-help {
+  grid-area: help;
+  margin-top: 0.5rem;
 }
 
 .question-score--hero strong {

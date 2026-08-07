@@ -29,6 +29,7 @@ import {
   type ConfidenceWidthBand,
 } from "@/lib/confidence-width";
 import { number } from "@/lib/format";
+import { splitModelName } from "@/lib/model-name";
 import type { PublicRepeatAverage } from "@/lib/types";
 import {
   chartAnimationEnabled,
@@ -120,23 +121,24 @@ const confidenceBandLongLabel = (
         ? "middle band"
         : "wider band";
 
-const splitModelAxisLabel = (label: string): ModelAxisLabel => {
-  const match = /^(.*)\s+\((high|medium|low|non-thinking)\)$/i.exec(label);
-  return match === null
-    ? { name: label, effort: null }
-    : { name: match[1] ?? label, effort: match[2]?.toLowerCase() ?? null };
-};
-
-const formatModelAxisLabel = (label: string, stacked: boolean): string => {
-  if (!stacked) return `{model|${label}}`;
-  const parts = splitModelAxisLabel(label);
+const formatModelAxisLabel = (
+  label: string,
+  display: string,
+  stacked: boolean,
+): string => {
+  if (!stacked) return `{model|${label}}{score|${display}}`;
+  const modelName = splitModelName(label);
+  const parts: ModelAxisLabel = {
+    name: modelName.displayName,
+    effort: modelName.reasoningEffort,
+  };
   const name =
     parts.name.length <= 19
       ? parts.name
       : `${parts.name.slice(0, 18).trimEnd()}…`;
   return parts.effort === null
-    ? `{model|${name}}`
-    : `{model|${name}}\n{effort|${parts.effort}}`;
+    ? `{model|${name}}{score|${display}}`
+    : `{model|${name}}{score|${display}}\n{effort|${parts.effort}}`;
 };
 
 const props = withDefaults(
@@ -145,12 +147,21 @@ const props = withDefaults(
     repeatAverages?: PublicRepeatAverage[] | null;
     repeatAveragesLoading?: boolean;
     repeatAveragesError?: string | null;
+    context?: "publication" | "pilot";
   }>(),
   {
     repeatAverages: null,
     repeatAveragesLoading: false,
     repeatAveragesError: null,
+    context: "publication",
   },
+);
+
+const scoreCollectionLabel = computed(() =>
+  props.context === "pilot" ? "Pilot question scores" : "Official question scores",
+);
+const bestScoreLabel = computed(() =>
+  props.context === "pilot" ? "Lowest score in this pilot" : "Best score",
 );
 
 const emit = defineEmits<{
@@ -391,7 +402,6 @@ const scoreChartOption = (width: number): EChartsOption => {
   const theme = readChartTheme();
   const axisFontSize = chartTextSize(width, 10, 11);
   const categoryFontSize = chartTextSize(width, 10, 12);
-  const valueFontSize = chartTextSize(width, 11, 14);
   const renderConfidenceInterval: CustomSeriesRenderItem = (_parameters, api) => {
     const categoryIndex = Number(api.value(2));
     const lower = api.coord([Number(api.value(0)), categoryIndex]);
@@ -431,7 +441,7 @@ const scoreChartOption = (width: number): EChartsOption => {
     animationEasing: "cubicOut",
     aria: {
       enabled: true,
-      description: `Official question scores. Each solid blue marker is the average question score, where lower is better. Each colored line is the 95 percent confidence interval of that average. Its color matches the three-band CI width companion plot.${showRepeatAverages.value ? " Grey diamonds show averages for each trial number across the fixed subject cohort; darker diamonds indicate equal repeat averages." : ""} The horizontal axis runs from ${scoreDomain.value.minimum} to ${scoreDomain.value.maximum}. ${props.items
+      description: `${scoreCollectionLabel.value}. Each solid blue marker is the average question score, where lower is better. Each colored line is the 95 percent confidence interval of that average. Its color matches the three-band CI width companion plot.${showRepeatAverages.value ? " Grey diamonds show averages for each trial number across the fixed subject cohort; darker diamonds indicate equal repeat averages." : ""} The horizontal axis runs from ${scoreDomain.value.minimum} to ${scoreDomain.value.maximum}. ${props.items
         .map(
           (item, index) => {
             const detail = confidenceDetailFor(item);
@@ -443,7 +453,7 @@ const scoreChartOption = (width: number): EChartsOption => {
               detail === undefined
                 ? ""
                 : `, width ${detail.display}, ${confidenceBandLongLabel(detail.band)}`
-            }${bestScoreModelIds.value.has(item.modelId) ? ", best score" : ""}${
+            }${bestScoreModelIds.value.has(item.modelId) ? `, ${bestScoreLabel.value.toLowerCase()}` : ""}${
               tightestConfidenceModelIds.value.has(item.modelId)
                 ? ", smallest CI width"
                 : ""
@@ -456,7 +466,7 @@ const scoreChartOption = (width: number): EChartsOption => {
       top: 18,
       right: mobile ? 32 : 76,
       bottom: 48,
-      left: mobile ? 130 : 238,
+      left: mobile ? 154 : 278,
     },
     tooltip: {
       ...chartTooltipStyle(theme, 11),
@@ -509,11 +519,14 @@ const scoreChartOption = (width: number): EChartsOption => {
         align: "right",
         fontFamily: chartFont,
         fontSize: categoryFontSize,
-        width: mobile ? 110 : 212,
+        width: mobile ? 138 : 246,
         overflow: "truncate",
         ellipsis: "…",
         margin: mobile ? 10 : 18,
-        formatter: (value: string): string => formatModelAxisLabel(value, mobile),
+        formatter: (value: string): string => {
+          const item = props.items.find((candidate) => candidate.label === value);
+          return formatModelAxisLabel(value, item?.display ?? "", mobile);
+        },
         rich: {
           model: {
             color: theme.ink,
@@ -521,7 +534,17 @@ const scoreChartOption = (width: number): EChartsOption => {
             fontSize: categoryFontSize,
             fontWeight: chartFontWeightBold,
             lineHeight: mobile ? 13 : 16,
-            width: mobile ? 110 : 212,
+            width: mobile ? 94 : 192,
+            align: "right",
+          },
+          score: {
+            color: theme.inkSoft,
+            fontFamily: chartDisplayFont,
+            fontSize: chartTextSize(width, 10, 12),
+            fontWeight: chartFontWeightSemibold,
+            lineHeight: mobile ? 13 : 16,
+            width: mobile ? 40 : 46,
+            padding: [0, 0, 0, mobile ? 4 : 8],
             align: "right",
           },
           effort: {
@@ -530,7 +553,7 @@ const scoreChartOption = (width: number): EChartsOption => {
             fontSize: Math.max(8, categoryFontSize - 2),
             fontWeight: chartFontWeightSemibold,
             lineHeight: 11,
-            width: 110,
+            width: mobile ? 94 : 192,
             align: "right",
           },
         },
@@ -620,15 +643,7 @@ const scoreChartOption = (width: number): EChartsOption => {
           borderWidth: 3,
         },
         label: {
-          show: true,
-          position: "top",
-          distance: mobile ? 5 : 6,
-          color: theme.ink,
-          fontFamily: chartDisplayFont,
-          fontSize: valueFontSize,
-          fontWeight: chartFontWeightSemibold,
-          formatter: (parameters: CallbackDataParams): string =>
-            props.items[parameters.dataIndex]?.display ?? "",
+          show: false,
         },
         emphasis: {
           scale: 1.25,
@@ -652,7 +667,7 @@ const scoreChartOption = (width: number): EChartsOption => {
           show: true,
           position: "right",
           distance: 10,
-          formatter: "Best score",
+          formatter: bestScoreLabel.value,
           color: theme.inkSoft,
           backgroundColor: theme.surface,
           borderColor: theme.borderStrong,
@@ -695,7 +710,7 @@ const widthChartOption = (width: number): EChartsOption => {
     animationEasing: "cubicOut",
     aria: {
       enabled: true,
-      description: `CI widths for the official question scores. This is the score-stability measure, and lower is better. The horizontal scale runs from zero to ${maximum} questions and is split into three equal visual bands. The bands are a guide, not fixed quality thresholds. ${props.items
+      description: `CI widths for the ${scoreCollectionLabel.value.toLowerCase()}. This is the score-stability measure, and lower is better. Rows follow question-score order so the two plots can be compared directly. The horizontal scale runs from zero to ${maximum} questions and is split into three equal visual bands. The bands are a guide, not fixed quality thresholds. ${props.items
         .map((item, index) => {
           const detail = confidenceDetailFor(item);
           return `${index + 1}. ${item.label}, ${
@@ -768,7 +783,7 @@ const widthChartOption = (width: number): EChartsOption => {
         overflow: "truncate",
         ellipsis: "…",
         margin: 10,
-        formatter: (value: string): string => formatModelAxisLabel(value, stacked),
+        formatter: (value: string): string => formatModelAxisLabel(value, "", stacked),
         rich: {
           model: {
             color: theme.ink,
@@ -994,11 +1009,14 @@ watch(
 
 <template>
   <figure class="score-dot-plot">
+    <figcaption class="visually-hidden">
+      Question score and confidence interval width comparison.
+    </figcaption>
     <p v-if="repeatAveragesError !== null" class="repeat-average-error" role="alert">
       {{ repeatAveragesError }}
     </p>
     <div class="score-dot-plot-grid">
-      <figcaption class="score-dot-plot-caption">
+      <div class="score-dot-plot-caption" aria-label="Chart legend">
         <span class="score-dot-plot-legend">
           <span class="score-dot-plot-legend-item score-dot-plot-legend-item--primary">
             <i class="score-dot-plot-legend-marker" aria-hidden="true"></i>
@@ -1042,25 +1060,23 @@ watch(
             <span></span>
           </span>
         </label>
-      </figcaption>
+      </div>
       <div class="confidence-width-caption">
         <strong>CI width <span aria-hidden="true">·</span> stability</strong>
-        <small>lower is better</small>
+        <small>Rows follow question-score order · lower is better</small>
       </div>
       <div
         ref="scoreChartElement"
         class="score-dot-plot-canvas score-dot-plot-canvas--score"
-        tabindex="0"
         :style="{ height: `${chartHeight}px` }"
       ></div>
       <div
         ref="widthChartElement"
         class="score-dot-plot-canvas score-dot-plot-canvas--width"
-        tabindex="0"
         :style="{ height: `${chartHeight}px` }"
       ></div>
     </div>
-    <ol class="visually-hidden" aria-label="Official question scores">
+    <ol class="visually-hidden" :aria-label="scoreCollectionLabel">
       <li
         v-for="(item, index) in items"
         :key="item.label"
@@ -1068,7 +1084,7 @@ watch(
         :data-confidence-band="confidenceDetailFor(item)?.band ?? 'neutral'"
       >
         {{ index + 1 }}. {{ item.label }}: {{ item.display }} questions.
-        <span v-if="bestScoreModelIds.has(item.modelId)">Best score.</span>
+        <span v-if="bestScoreModelIds.has(item.modelId)">{{ bestScoreLabel }}.</span>
         <span v-if="item.confidenceDisplay">
           95% confidence interval of the average: {{ item.confidenceDisplay }} questions.
         </span>

@@ -3,7 +3,9 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import DrilldownBar from "@/components/DrilldownBar.vue";
+import SiteFooter from "@/components/SiteFooter.vue";
 import SiteHeader from "@/components/SiteHeader.vue";
+import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
 import {
   clearRouteContext,
   routeContext,
@@ -14,12 +16,27 @@ import {
 const route = useRoute();
 const router = useRouter();
 const viewport = ref<HTMLElement | null>(null);
+const navigating = ref(false);
 const scrollPositions = new Map<string, number>();
 const contextCache = new Map<string, Omit<RouteContext, "version">>();
 let scrollRestoreVersion = 0;
+let navigationFeedbackTimer = 0;
+
+// A route component still being fetched delays the whole navigation, so acknowledge the click.
+const startNavigationFeedback = (): void => {
+  window.clearTimeout(navigationFeedbackTimer);
+  navigationFeedbackTimer = window.setTimeout(() => {
+    navigating.value = true;
+  }, 150);
+};
+
+const stopNavigationFeedback = (): void => {
+  window.clearTimeout(navigationFeedbackTimer);
+  navigating.value = false;
+};
 
 const usesDocumentScroll = (): boolean =>
-  window.matchMedia("(max-width: 760px)").matches;
+  route.meta.workspace !== true || window.matchMedia("(max-width: 760px)").matches;
 
 const readScrollTop = (element: HTMLElement): number =>
   usesDocumentScroll() ? window.scrollY : element.scrollTop;
@@ -71,6 +88,7 @@ const restoreScroll = async (): Promise<void> => {
 };
 
 router.beforeEach((to, from) => {
+  startNavigationFeedback();
   const element = viewport.value;
   if (element !== null && from.meta.workspace !== true) {
     scrollPositions.set(from.path, readScrollTop(element));
@@ -96,11 +114,14 @@ router.beforeEach((to, from) => {
 });
 
 router.afterEach((to, from) => {
+  stopNavigationFeedback();
   if (from.name !== undefined && to.path !== from.path) {
     void focusRouteContent();
   }
   void restoreScroll();
 });
+
+router.onError(stopNavigationFeedback);
 
 const canonicalUrl = computed(
   () => new URL(route.path.replace(/^\//, ""), __DEEP20_CANONICAL_URL__).href,
@@ -133,21 +154,22 @@ onMounted(() => {
 <template>
   <div
     class="app-shell"
-    :class="{ 'app-shell--drilldown': Number(route.meta.depth ?? 0) >= 2 }"
+    :class="{
+      'app-shell--workspace': route.meta.workspace === true,
+      'app-shell--drilldown': Number(route.meta.depth ?? 0) >= 2,
+    }"
   >
     <a class="skip-link" href="#main">
       Skip to content
     </a>
+    <WorkspaceProgress class="route-progress" :active="navigating" />
     <SiteHeader />
     <DrilldownBar v-if="Number(route.meta.depth ?? 0) >= 2" />
     <main
       id="main"
       ref="viewport"
       class="app-viewport"
-      :class="{
-        'app-viewport--workspace': route.meta.workspace === true,
-        'app-viewport--results': route.meta.resultsWorkspace === true,
-      }"
+      :class="{ 'app-viewport--workspace': route.meta.workspace === true }"
       tabindex="-1"
     >
       <RouterView v-slot="{ Component }">
@@ -156,5 +178,13 @@ onMounted(() => {
         </KeepAlive>
       </RouterView>
     </main>
+    <SiteFooter v-if="route.meta.workspace !== true" />
   </div>
 </template>
+
+<style scoped>
+.route-progress {
+  position: fixed;
+  z-index: 60;
+}
+</style>

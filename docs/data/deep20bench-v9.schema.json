@@ -1,0 +1,2065 @@
+{
+  "$defs": {
+    "CohortConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "active": {
+          "default": false,
+          "title": "Active",
+          "type": "boolean"
+        },
+        "base_seed": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Base Seed",
+          "type": "integer"
+        },
+        "benchmark_id": {
+          "pattern": "^B-[0-9]{4}$",
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "benchmark_version": {
+          "const": 9,
+          "default": 9,
+          "title": "Benchmark Version",
+          "type": "integer"
+        },
+        "cohort_id": {
+          "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+          "title": "Cohort Id",
+          "type": "string"
+        },
+        "display_name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Display Name",
+          "type": "string"
+        },
+        "iterations": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Iterations",
+          "type": "integer"
+        },
+        "max_questions": {
+          "minimum": 1,
+          "title": "Max Questions",
+          "type": "integer"
+        },
+        "model_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Model Ids",
+          "type": "array"
+        },
+        "target_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Target Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "cohort_id",
+        "display_name",
+        "benchmark_id",
+        "target_ids",
+        "iterations",
+        "base_seed",
+        "max_questions",
+        "model_ids"
+      ],
+      "title": "CohortConfig",
+      "type": "object"
+    },
+    "ContractReliabilitySnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "affected_trials": {
+          "minimum": 0,
+          "title": "Affected Trials",
+          "type": "integer"
+        },
+        "compliance_rate": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Compliance Rate"
+        },
+        "counted_penalties": {
+          "minimum": 0,
+          "title": "Counted Penalties",
+          "type": "integer"
+        },
+        "evaluated_outputs": {
+          "minimum": 0,
+          "title": "Evaluated Outputs",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "clean",
+            "breached",
+            "not_evaluable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "valid_outputs": {
+          "minimum": 0,
+          "title": "Valid Outputs",
+          "type": "integer"
+        },
+        "violations": {
+          "minimum": 0,
+          "title": "Violations",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "evaluated_outputs",
+        "valid_outputs",
+        "violations",
+        "counted_penalties",
+        "affected_trials",
+        "status"
+      ],
+      "title": "ContractReliabilitySnapshot",
+      "type": "object"
+    },
+    "DatasetProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "built_at": {
+          "format": "date-time",
+          "title": "Built At",
+          "type": "string"
+        },
+        "lab_run_count": {
+          "minimum": 0,
+          "title": "Lab Run Count",
+          "type": "integer"
+        },
+        "latest_completed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Latest Completed At"
+        },
+        "official_run_count": {
+          "minimum": 0,
+          "title": "Official Run Count",
+          "type": "integer"
+        },
+        "source_run_count": {
+          "minimum": 0,
+          "title": "Source Run Count",
+          "type": "integer"
+        },
+        "subject_catalog_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Catalog Hash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "built_at",
+        "source_run_count",
+        "official_run_count",
+        "lab_run_count",
+        "subject_catalog_hash"
+      ],
+      "title": "DatasetProvenance",
+      "type": "object"
+    },
+    "LeaderboardRow": {
+      "additionalProperties": false,
+      "properties": {
+        "completed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Completed At"
+        },
+        "contract": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContractReliabilitySnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cost_adjusted_question_score": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Adjusted Question Score"
+        },
+        "efficiency_rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Efficiency Rank"
+        },
+        "efficiency_status": {
+          "default": "question_score_unavailable",
+          "enum": [
+            "ranked",
+            "question_score_unavailable",
+            "recorded_guesser_cost_unavailable",
+            "no_terminal_episodes",
+            "no_guesser_calls"
+          ],
+          "title": "Efficiency Status",
+          "type": "string"
+        },
+        "execution_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Execution Id"
+        },
+        "full_cost_per_episode_usd": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Full Cost Per Episode Usd"
+        },
+        "guesser_cost_per_episode_usd": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Guesser Cost Per Episode Usd"
+        },
+        "guesser_latency_per_call_ms": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Guesser Latency Per Call Ms"
+        },
+        "guesser_think_time_per_episode_ms": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Guesser Think Time Per Episode Ms"
+        },
+        "ideal_distance_rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ideal Distance Rank"
+        },
+        "ideal_distance_score": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ideal Distance Score"
+        },
+        "model": {
+          "$ref": "#/$defs/PublicModel"
+        },
+        "normalized_guesser_cost": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Normalized Guesser Cost"
+        },
+        "normalized_question_score": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Normalized Question Score"
+        },
+        "pareto_efficient": {
+          "default": false,
+          "title": "Pareto Efficient",
+          "type": "boolean"
+        },
+        "product_efficiency_rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Product Efficiency Rank"
+        },
+        "question_score": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Question Score"
+        },
+        "question_score_confidence_interval": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QuestionScoreConfidenceInterval"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rank"
+        },
+        "runtime_per_episode_ms": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Runtime Per Episode Ms"
+        },
+        "status": {
+          "enum": [
+            "evaluated",
+            "awaiting_official_run"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "success_rate": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Success Rate"
+        },
+        "successful": {
+          "default": 0,
+          "title": "Successful",
+          "type": "integer"
+        },
+        "terminal_trials": {
+          "default": 0,
+          "title": "Terminal Trials",
+          "type": "integer"
+        },
+        "total_cost_usd": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Total Cost Usd"
+        }
+      },
+      "required": [
+        "rank",
+        "model",
+        "status"
+      ],
+      "title": "LeaderboardRow",
+      "type": "object"
+    },
+    "PublicActionTurn": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "ASK",
+            "GUESS"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "adjudicator": {
+          "enum": [
+            "oracle",
+            "guess_validator"
+          ],
+          "title": "Adjudicator",
+          "type": "string"
+        },
+        "answer": {
+          "enum": [
+            "YES",
+            "NO",
+            "UNKNOWN"
+          ],
+          "title": "Answer",
+          "type": "string"
+        },
+        "counted": {
+          "title": "Counted",
+          "type": "boolean"
+        },
+        "counted_questions": {
+          "title": "Counted Questions",
+          "type": "integer"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/PublicEvidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "guess_description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Guess Description"
+        },
+        "guess_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Guess Name"
+        },
+        "question": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Question"
+        },
+        "recorded_output": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Recorded Output"
+        },
+        "turn_number": {
+          "title": "Turn Number",
+          "type": "integer"
+        },
+        "turn_type": {
+          "const": "action",
+          "default": "action",
+          "title": "Turn Type",
+          "type": "string"
+        },
+        "validator_explanation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Validator Explanation"
+        }
+      },
+      "required": [
+        "turn_number",
+        "action",
+        "question",
+        "guess_name",
+        "guess_description",
+        "adjudicator",
+        "answer",
+        "validator_explanation",
+        "counted",
+        "counted_questions",
+        "evidence",
+        "recorded_output"
+      ],
+      "title": "PublicActionTurn",
+      "type": "object"
+    },
+    "PublicComponentTelemetry": {
+      "additionalProperties": false,
+      "properties": {
+        "cache_write_tokens": {
+          "title": "Cache Write Tokens",
+          "type": "integer"
+        },
+        "cached_input_tokens": {
+          "title": "Cached Input Tokens",
+          "type": "integer"
+        },
+        "calls": {
+          "title": "Calls",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Cost Usd",
+          "type": "string"
+        },
+        "estimated_cache_savings_usd": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Estimated Cache Savings Usd",
+          "type": "string"
+        },
+        "input_tokens": {
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "reasoning_tokens": {
+          "title": "Reasoning Tokens",
+          "type": "integer"
+        },
+        "total_tokens": {
+          "title": "Total Tokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "calls",
+        "cost_usd",
+        "latency_ms",
+        "total_tokens",
+        "input_tokens",
+        "cached_input_tokens",
+        "cache_write_tokens",
+        "output_tokens",
+        "reasoning_tokens",
+        "estimated_cache_savings_usd"
+      ],
+      "title": "PublicComponentTelemetry",
+      "type": "object"
+    },
+    "PublicContractViolationTurn": {
+      "additionalProperties": false,
+      "properties": {
+        "counted": {
+          "title": "Counted",
+          "type": "boolean"
+        },
+        "counted_questions": {
+          "title": "Counted Questions",
+          "type": "integer"
+        },
+        "feedback_event": {
+          "anyOf": [
+            {
+              "const": "FORMAT_ERROR",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Feedback Event"
+        },
+        "rejected_outputs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/PublicRejectedOutput"
+          },
+          "title": "Rejected Outputs",
+          "type": "array"
+        },
+        "turn_number": {
+          "title": "Turn Number",
+          "type": "integer"
+        },
+        "turn_type": {
+          "const": "contract_violation",
+          "default": "contract_violation",
+          "title": "Turn Type",
+          "type": "string"
+        },
+        "violation_code": {
+          "const": "invalid_guesser_output",
+          "title": "Violation Code",
+          "type": "string"
+        },
+        "violation_kind": {
+          "enum": [
+            "invalid_json",
+            "invalid_action",
+            "output_limit_exceeded",
+            "empty_output",
+            "incomplete_output"
+          ],
+          "title": "Violation Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "turn_number",
+        "violation_code",
+        "violation_kind",
+        "feedback_event",
+        "counted",
+        "counted_questions"
+      ],
+      "title": "PublicContractViolationTurn",
+      "type": "object"
+    },
+    "PublicEpisodeDetail": {
+      "additionalProperties": false,
+      "properties": {
+        "ask_count": {
+          "title": "Ask Count",
+          "type": "integer"
+        },
+        "cache_status": {
+          "title": "Cache Status",
+          "type": "string"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "contract": {
+          "$ref": "#/$defs/ContractReliabilitySnapshot"
+        },
+        "counted_questions": {
+          "title": "Counted Questions",
+          "type": "integer"
+        },
+        "duration_ms": {
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "episode_id": {
+          "title": "Episode Id",
+          "type": "string"
+        },
+        "episode_run_id": {
+          "title": "Episode Run Id",
+          "type": "string"
+        },
+        "guess_count": {
+          "title": "Guess Count",
+          "type": "integer"
+        },
+        "guesser_disclosure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PublicGuesserDisclosure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "oracle_unknown_count": {
+          "title": "Oracle Unknown Count",
+          "type": "integer"
+        },
+        "publication_eligible": {
+          "title": "Publication Eligible",
+          "type": "boolean"
+        },
+        "rejected_guess_count": {
+          "title": "Rejected Guess Count",
+          "type": "integer"
+        },
+        "scoring_eligible": {
+          "title": "Scoring Eligible",
+          "type": "boolean"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "subject_description": {
+          "title": "Subject Description",
+          "type": "string"
+        },
+        "subject_name": {
+          "title": "Subject Name",
+          "type": "string"
+        },
+        "subject_reference_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Subject Reference Url"
+        },
+        "success": {
+          "title": "Success",
+          "type": "boolean"
+        },
+        "telemetry": {
+          "$ref": "#/$defs/PublicEpisodeTelemetry"
+        },
+        "terminal_reason": {
+          "title": "Terminal Reason",
+          "type": "string"
+        },
+        "total_cost_usd": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Total Cost Usd",
+          "type": "string"
+        },
+        "total_tokens": {
+          "title": "Total Tokens",
+          "type": "integer"
+        },
+        "total_turns": {
+          "title": "Total Turns",
+          "type": "integer"
+        },
+        "turns": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "action": "#/$defs/PublicActionTurn",
+                "contract_violation": "#/$defs/PublicContractViolationTurn"
+              },
+              "propertyName": "turn_type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/PublicActionTurn"
+              },
+              {
+                "$ref": "#/$defs/PublicContractViolationTurn"
+              }
+            ]
+          },
+          "title": "Turns",
+          "type": "array"
+        }
+      },
+      "required": [
+        "episode_run_id",
+        "episode_id",
+        "subject_name",
+        "subject_description",
+        "subject_reference_url",
+        "started_at",
+        "completed_at",
+        "duration_ms",
+        "success",
+        "terminal_reason",
+        "scoring_eligible",
+        "publication_eligible",
+        "total_turns",
+        "counted_questions",
+        "ask_count",
+        "guess_count",
+        "rejected_guess_count",
+        "oracle_unknown_count",
+        "cache_status",
+        "total_cost_usd",
+        "total_tokens",
+        "contract",
+        "guesser_disclosure",
+        "telemetry",
+        "turns"
+      ],
+      "title": "PublicEpisodeDetail",
+      "type": "object"
+    },
+    "PublicEpisodeTelemetry": {
+      "additionalProperties": false,
+      "properties": {
+        "guesser": {
+          "$ref": "#/$defs/PublicComponentTelemetry"
+        },
+        "oracle": {
+          "$ref": "#/$defs/PublicComponentTelemetry"
+        },
+        "validator": {
+          "$ref": "#/$defs/PublicComponentTelemetry"
+        }
+      },
+      "required": [
+        "guesser",
+        "oracle",
+        "validator"
+      ],
+      "title": "PublicEpisodeTelemetry",
+      "type": "object"
+    },
+    "PublicEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "excerpt": {
+          "title": "Excerpt",
+          "type": "string"
+        },
+        "source_url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "validation": {
+          "const": "model_reported",
+          "title": "Validation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_url",
+        "excerpt",
+        "validation"
+      ],
+      "title": "PublicEvidence",
+      "type": "object"
+    },
+    "PublicGuesserDisclosure": {
+      "additionalProperties": false,
+      "properties": {
+        "begin_message": {
+          "title": "Begin Message",
+          "type": "string"
+        },
+        "output_storage": {
+          "const": "canonical_structured_action",
+          "default": "canonical_structured_action",
+          "title": "Output Storage",
+          "type": "string"
+        },
+        "required_formats": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PublicGuesserRequiredFormats"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "system_message": {
+          "title": "System Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "system_message",
+        "begin_message"
+      ],
+      "title": "PublicGuesserDisclosure",
+      "type": "object"
+    },
+    "PublicGuesserRequiredFormats": {
+      "additionalProperties": false,
+      "properties": {
+        "ask": {
+          "minLength": 1,
+          "title": "Ask",
+          "type": "string"
+        },
+        "guess": {
+          "minLength": 1,
+          "title": "Guess",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ask",
+        "guess"
+      ],
+      "title": "PublicGuesserRequiredFormats",
+      "type": "object"
+    },
+    "PublicModel": {
+      "additionalProperties": false,
+      "properties": {
+        "configuration_hash": {
+          "title": "Configuration Hash",
+          "type": "string"
+        },
+        "display_name": {
+          "title": "Display Name",
+          "type": "string"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "reasoning_effort": {
+          "title": "Reasoning Effort",
+          "type": "string"
+        },
+        "route": {
+          "title": "Route",
+          "type": "string"
+        },
+        "seed_capability": {
+          "title": "Seed Capability",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model_id",
+        "display_name",
+        "route",
+        "provider",
+        "reasoning_effort",
+        "seed_capability",
+        "configuration_hash"
+      ],
+      "title": "PublicModel",
+      "type": "object"
+    },
+    "PublicRejectedOutput": {
+      "additionalProperties": false,
+      "description": "Exact Guesser-visible provider text with private provider IDs removed.",
+      "properties": {
+        "attempt_number": {
+          "minimum": 1,
+          "title": "Attempt Number",
+          "type": "integer"
+        },
+        "finish_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finish Reason"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "attempt_number",
+        "text"
+      ],
+      "title": "PublicRejectedOutput",
+      "type": "object"
+    },
+    "PublicRun": {
+      "additionalProperties": false,
+      "properties": {
+        "base_seed": {
+          "title": "Base Seed",
+          "type": "integer"
+        },
+        "benchmark_id": {
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "benchmark_mode": {
+          "title": "Benchmark Mode",
+          "type": "string"
+        },
+        "benchmark_name": {
+          "title": "Benchmark Name",
+          "type": "string"
+        },
+        "classification": {
+          "enum": [
+            "official",
+            "lab"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "comparison": {
+          "$ref": "#/$defs/PublicRunComparison"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "contract": {
+          "$ref": "#/$defs/ContractReliabilitySnapshot"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "execution_id": {
+          "title": "Execution Id",
+          "type": "string"
+        },
+        "git_commit": {
+          "title": "Git Commit",
+          "type": "string"
+        },
+        "infrastructure_failed": {
+          "title": "Infrastructure Failed",
+          "type": "integer"
+        },
+        "iterations": {
+          "title": "Iterations",
+          "type": "integer"
+        },
+        "max_questions": {
+          "title": "Max Questions",
+          "type": "integer"
+        },
+        "model_failed": {
+          "title": "Model Failed",
+          "type": "integer"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "model_name": {
+          "title": "Model Name",
+          "type": "string"
+        },
+        "models": {
+          "items": {
+            "$ref": "#/$defs/PublicRunModel"
+          },
+          "title": "Models",
+          "type": "array"
+        },
+        "question_score": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Question Score"
+        },
+        "question_score_confidence_interval": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/QuestionScoreConfidenceInterval"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reason_codes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reason Codes",
+          "type": "array"
+        },
+        "subjects": {
+          "items": {
+            "$ref": "#/$defs/PublicSubject"
+          },
+          "title": "Subjects",
+          "type": "array"
+        },
+        "success_rate": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Success Rate"
+        },
+        "successful": {
+          "title": "Successful",
+          "type": "integer"
+        },
+        "target_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Target Ids",
+          "type": "array"
+        },
+        "terminal_trials": {
+          "title": "Terminal Trials",
+          "type": "integer"
+        },
+        "total_cost_usd": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Total Cost Usd",
+          "type": "string"
+        },
+        "totals": {
+          "$ref": "#/$defs/PublicRunTotals"
+        }
+      },
+      "required": [
+        "execution_id",
+        "model_id",
+        "model_name",
+        "benchmark_id",
+        "benchmark_name",
+        "classification",
+        "reason_codes",
+        "completed_at",
+        "created_at",
+        "git_commit",
+        "benchmark_mode",
+        "target_ids",
+        "iterations",
+        "base_seed",
+        "max_questions",
+        "success_rate",
+        "question_score",
+        "total_cost_usd",
+        "successful",
+        "model_failed",
+        "infrastructure_failed",
+        "terminal_trials",
+        "contract",
+        "totals",
+        "comparison",
+        "models",
+        "subjects"
+      ],
+      "title": "PublicRun",
+      "type": "object"
+    },
+    "PublicRunComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "cost_adjusted_question_score": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Adjusted Question Score"
+        },
+        "efficiency_status": {
+          "enum": [
+            "ranked",
+            "question_score_unavailable",
+            "recorded_guesser_cost_unavailable",
+            "no_terminal_episodes",
+            "no_guesser_calls"
+          ],
+          "title": "Efficiency Status",
+          "type": "string"
+        },
+        "full_cost_per_episode_usd": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Full Cost Per Episode Usd"
+        },
+        "guesser_cost_per_episode_usd": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Guesser Cost Per Episode Usd"
+        },
+        "guesser_latency_per_call_ms": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Guesser Latency Per Call Ms"
+        },
+        "guesser_think_time_per_episode_ms": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Guesser Think Time Per Episode Ms"
+        },
+        "runtime_per_episode_ms": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Runtime Per Episode Ms"
+        },
+        "support_cost_per_episode_usd": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Support Cost Per Episode Usd"
+        },
+        "support_cost_share": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Support Cost Share"
+        }
+      },
+      "required": [
+        "efficiency_status"
+      ],
+      "title": "PublicRunComparison",
+      "type": "object"
+    },
+    "PublicRunCostTotals": {
+      "additionalProperties": false,
+      "properties": {
+        "guesser": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Guesser",
+          "type": "string"
+        },
+        "judge": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Judge",
+          "type": "string"
+        },
+        "primary_oracle": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Primary Oracle",
+          "type": "string"
+        },
+        "reviewer": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "total": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Total",
+          "type": "string"
+        },
+        "validator": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Validator",
+          "type": "string"
+        }
+      },
+      "required": [
+        "guesser",
+        "primary_oracle",
+        "reviewer",
+        "judge",
+        "validator",
+        "total"
+      ],
+      "title": "PublicRunCostTotals",
+      "type": "object"
+    },
+    "PublicRunModel": {
+      "additionalProperties": false,
+      "properties": {
+        "calls": {
+          "minimum": 0,
+          "title": "Calls",
+          "type": "integer"
+        },
+        "configuration_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Configuration Id"
+        },
+        "cost_usd": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Cost Usd",
+          "type": "string"
+        },
+        "fallback_calls": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Fallback Calls",
+          "type": "integer"
+        },
+        "prompt_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Prompt Version"
+        },
+        "provider_routing": {
+          "default": "exact",
+          "enum": [
+            "exact",
+            "automatic"
+          ],
+          "title": "Provider Routing",
+          "type": "string"
+        },
+        "providers": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ResolvedProviderUsageSnapshot"
+          },
+          "title": "Providers",
+          "type": "array"
+        },
+        "reasoning_effort": {
+          "title": "Reasoning Effort",
+          "type": "string"
+        },
+        "requested_model": {
+          "title": "Requested Model",
+          "type": "string"
+        },
+        "requested_provider": {
+          "title": "Requested Provider",
+          "type": "string"
+        },
+        "resolved_models": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Resolved Models",
+          "type": "array"
+        },
+        "resolved_providers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Resolved Providers",
+          "type": "array"
+        },
+        "role": {
+          "enum": [
+            "guesser",
+            "oracle",
+            "reviewer",
+            "judge",
+            "validator"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "unreported_calls": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Unreported Calls",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "role",
+        "configuration_id",
+        "requested_model",
+        "requested_provider",
+        "resolved_models",
+        "resolved_providers",
+        "reasoning_effort",
+        "prompt_version",
+        "calls",
+        "cost_usd"
+      ],
+      "title": "PublicRunModel",
+      "type": "object"
+    },
+    "PublicRunTotals": {
+      "additionalProperties": false,
+      "properties": {
+        "costs_usd": {
+          "$ref": "#/$defs/PublicRunCostTotals"
+        },
+        "guesser_calls": {
+          "minimum": 0,
+          "title": "Guesser Calls",
+          "type": "integer"
+        },
+        "guesser_think_time_ms": {
+          "minimum": 0,
+          "title": "Guesser Think Time Ms",
+          "type": "integer"
+        },
+        "runtime_ms": {
+          "minimum": 0,
+          "title": "Runtime Ms",
+          "type": "integer"
+        },
+        "total_tokens": {
+          "minimum": 0,
+          "title": "Total Tokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "costs_usd",
+        "total_tokens",
+        "runtime_ms",
+        "guesser_think_time_ms",
+        "guesser_calls"
+      ],
+      "title": "PublicRunTotals",
+      "type": "object"
+    },
+    "PublicSubject": {
+      "additionalProperties": false,
+      "properties": {
+        "average_questions": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Average Questions"
+        },
+        "contract": {
+          "$ref": "#/$defs/ContractReliabilitySnapshot"
+        },
+        "display_name": {
+          "title": "Display Name",
+          "type": "string"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "infrastructure_failed": {
+          "title": "Infrastructure Failed",
+          "type": "integer"
+        },
+        "model_failed": {
+          "title": "Model Failed",
+          "type": "integer"
+        },
+        "success_rate": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Success Rate"
+        },
+        "successful": {
+          "title": "Successful",
+          "type": "integer"
+        },
+        "target_id": {
+          "title": "Target Id",
+          "type": "string"
+        },
+        "trials": {
+          "items": {
+            "$ref": "#/$defs/PublicTrial"
+          },
+          "title": "Trials",
+          "type": "array"
+        }
+      },
+      "required": [
+        "target_id",
+        "display_name",
+        "entity_type",
+        "success_rate",
+        "average_questions",
+        "successful",
+        "model_failed",
+        "infrastructure_failed",
+        "contract",
+        "trials"
+      ],
+      "title": "PublicSubject",
+      "type": "object"
+    },
+    "PublicTrial": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContractReliabilitySnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cost_usd": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Cost Usd",
+          "type": "string"
+        },
+        "counted_questions": {
+          "title": "Counted Questions",
+          "type": "integer"
+        },
+        "duration_ms": {
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "episode": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PublicEpisodeDetail"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "failure_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Code"
+        },
+        "penalized_questions": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Penalized Questions"
+        },
+        "status": {
+          "enum": [
+            "success",
+            "model_failure",
+            "infrastructure_failure"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "trial_id": {
+          "title": "Trial Id",
+          "type": "string"
+        },
+        "trial_number": {
+          "title": "Trial Number",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "trial_id",
+        "trial_number",
+        "status",
+        "counted_questions",
+        "penalized_questions",
+        "cost_usd",
+        "duration_ms",
+        "contract"
+      ],
+      "title": "PublicTrial",
+      "type": "object"
+    },
+    "QuestionScoreConfidenceInterval": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence_level": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Confidence Level",
+          "type": "string"
+        },
+        "degrees_of_freedom": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Degrees Of Freedom"
+        },
+        "estimate": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Estimate",
+          "type": "string"
+        },
+        "lower": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Lower",
+          "type": "string"
+        },
+        "method": {
+          "const": "stratified-welch-t-v1",
+          "title": "Method",
+          "type": "string"
+        },
+        "standard_error": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Standard Error",
+          "type": "string"
+        },
+        "subject_count": {
+          "minimum": 1,
+          "title": "Subject Count",
+          "type": "integer"
+        },
+        "trial_count": {
+          "minimum": 2,
+          "title": "Trial Count",
+          "type": "integer"
+        },
+        "upper": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Upper",
+          "type": "string"
+        }
+      },
+      "required": [
+        "confidence_level",
+        "method",
+        "estimate",
+        "lower",
+        "upper",
+        "standard_error",
+        "subject_count",
+        "trial_count"
+      ],
+      "title": "QuestionScoreConfidenceInterval",
+      "type": "object"
+    },
+    "ResolvedProviderUsageSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "calls": {
+          "minimum": 1,
+          "title": "Calls",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Cost Usd",
+          "type": "string"
+        },
+        "latency_ms": {
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "provider": {
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "calls",
+        "cost_usd",
+        "latency_ms"
+      ],
+      "title": "ResolvedProviderUsageSnapshot",
+      "type": "object"
+    },
+    "ScorePolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "failure_penalty_offset": {
+          "default": 1,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Failure Penalty Offset",
+          "type": "integer"
+        },
+        "version": {
+          "const": "average-then-average-v1",
+          "default": "average-then-average-v1",
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "title": "ScorePolicy",
+      "type": "object"
+    },
+    "SiteMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "base_path": {
+          "pattern": "^/[A-Za-z0-9._/-]*/$",
+          "title": "Base Path",
+          "type": "string"
+        },
+        "citation_label": {
+          "maxLength": 240,
+          "minLength": 1,
+          "title": "Citation Label",
+          "type": "string"
+        },
+        "creator_name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Creator Name",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "short_title": {
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Short Title",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "short_title",
+        "description",
+        "base_path",
+        "creator_name",
+        "citation_label"
+      ],
+      "title": "SiteMetadata",
+      "type": "object"
+    },
+    "Winner": {
+      "additionalProperties": false,
+      "properties": {
+        "display_names": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Display Names",
+          "type": "array"
+        },
+        "joint": {
+          "title": "Joint",
+          "type": "boolean"
+        },
+        "model_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Model Ids",
+          "type": "array"
+        },
+        "question_score": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Question Score",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model_ids",
+        "display_names",
+        "question_score",
+        "joint"
+      ],
+      "title": "Winner",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "active_cohort": {
+      "$ref": "#/$defs/CohortConfig"
+    },
+    "lab_runs": {
+      "items": {
+        "$ref": "#/$defs/PublicRun"
+      },
+      "title": "Lab Runs",
+      "type": "array"
+    },
+    "leaderboard": {
+      "items": {
+        "$ref": "#/$defs/LeaderboardRow"
+      },
+      "title": "Leaderboard",
+      "type": "array"
+    },
+    "models": {
+      "items": {
+        "$ref": "#/$defs/PublicModel"
+      },
+      "title": "Models",
+      "type": "array"
+    },
+    "official_runs": {
+      "items": {
+        "$ref": "#/$defs/PublicRun"
+      },
+      "title": "Official Runs",
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/DatasetProvenance"
+    },
+    "schema_version": {
+      "const": 9,
+      "default": 9,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "score_policy": {
+      "$ref": "#/$defs/ScorePolicy"
+    },
+    "site": {
+      "$ref": "#/$defs/SiteMetadata"
+    },
+    "winner": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Winner"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "site",
+    "score_policy",
+    "active_cohort",
+    "provenance",
+    "winner",
+    "leaderboard",
+    "models",
+    "official_runs",
+    "lab_runs"
+  ],
+  "title": "PublishedDataset",
+  "type": "object"
+}

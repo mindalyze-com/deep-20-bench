@@ -10,7 +10,6 @@ import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
-import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard, getOfficialRuns } from "@/lib/api";
 import { duration, integer } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
@@ -252,10 +251,10 @@ void load();
 
         <div
           class="table-wrap ranking-table-wrap results-table-wrap"
-          tabindex="0"
-          aria-label="Scrollable time comparison"
+          aria-label="Time comparison"
         >
           <table class="data-table ranking-table results-table">
+            <caption class="visually-hidden">Time comparison</caption>
             <thead>
               <tr>
                 <th class="rank-column">
@@ -263,7 +262,6 @@ void load();
                   <span class="visually-hidden">Model-time rank</span>
                 </th>
                 <th class="model-column">Model</th>
-                <th class="run-column">Run</th>
                 <th data-numeric>Model time</th>
                 <th data-numeric>End-to-end time</th>
                 <th data-numeric>
@@ -295,9 +293,6 @@ void load();
                     :name="run.model_name"
                     :meta="run.model_id"
                   />
-                </td>
-                <td class="run-column">
-                  <RunTableAction :to="runLink(run)" :name="run.model_name" />
                 </td>
                 <td data-numeric>{{ duration(run.totals.guesser_think_time_ms) }}</td>
                 <td data-numeric>{{ duration(run.totals.runtime_ms) }}</td>
@@ -364,7 +359,7 @@ void load();
 
 <style scoped>
 .results-summary {
-  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: var(--results-section-gap);
 }
 
 .results-table {

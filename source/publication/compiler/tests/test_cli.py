@@ -106,10 +106,20 @@ def test_file_scheme_entry_explains_how_to_start_the_preview() -> None:
 
 def test_generated_homepage_has_a_static_executive_summary() -> None:
     entry = (REPOSITORY / "docs" / "index.html").read_text(encoding="utf-8")
+    entry_copy = " ".join(entry.split())
 
     assert '<main class="static-home" id="static-home">' in entry
-    assert "Deep20Bench: can an LLM ask its way to the answer?" in entry
-    assert "Executive summary" in entry
+    assert 'content="https://mindalyze-com.github.io/deep-20-bench/og.webp"' in entry
+    assert "og.png" not in entry
+    assert "How well can AI models play Twenty Questions?" in entry
+    assert "What this pilot tests" in entry
+    assert "more than the traditional twenty" in entry_copy
+    assert "The concept works and the first step is complete." in entry_copy
+    assert "cost is the main constraint." in entry_copy
+    assert "small first step" not in entry
+    assert "not a definitive ranking" not in entry
+    assert "https://github.com/mindalyze-com/deep-20-bench/discussions" in entry
+    assert "Join discussion" in entry
     assert "What it does not claim" in entry
     assert "The model under test sees only the game." in entry
     assert "Deep20Bench needs JavaScript" not in entry
@@ -124,7 +134,7 @@ def test_generated_homepage_has_a_static_executive_summary() -> None:
 
 
 def _published_dataset() -> PublishedDataset:
-    source = REPOSITORY / "docs" / "data" / "deep20bench-v8.json"
+    source = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
     return PublishedDataset.model_validate_json(source.read_text(encoding="utf-8"))
 
 
@@ -142,7 +152,8 @@ def test_route_shells_cover_every_known_static_route(tmp_path: Path) -> None:
     assert "results/reliability" in routes
     assert "results/efficiency" in routes
     assert "methodology" in routes
-    assert len(routes) == (8 + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes))
+    assert "story" in routes
+    assert len(routes) == (9 + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes))
     assert set(_sitemap_routes()[1:]).issubset(routes)
     for route in routes:
         assert (output / route / "index.html").read_text(encoding="utf-8") == entry
@@ -198,13 +209,17 @@ def test_route_shells_do_not_duplicate_the_static_homepage(tmp_path: Path) -> No
         "Follow one Twenty Questions round through answer checks, repeated trials, "
         "scoring, official comparison, and publication."
     ) in method_route
-    story_route = (output / "story" / "index.html").read_text(encoding="utf-8")
-    assert "A shared idea, built into a benchmark." in story_route
+    about_route = (output / "about" / "index.html").read_text(encoding="utf-8")
+    assert "A shared idea, built into a benchmark." in about_route
     assert (
         "Read how Deep20Bench began, see project news, and review related research."
-        in story_route
+        in about_route
     )
-    run_route = _route_shells(bundle)[len(_sitemap_routes()) - 1]
+    story_route = (output / "story" / "index.html").read_text(encoding="utf-8")
+    assert "A shared idea, built into a benchmark." in story_route
+    assert f'rel="canonical" href="{CANONICAL_URL}about/"' in story_route
+    assert 'name="robots" content="noindex, follow"' in story_route
+    run_route = next(route for route in _route_shells(bundle) if route.startswith("runs/"))
     run_shell = (output / run_route / "index.html").read_text(encoding="utf-8")
     assert "This detailed view uses JavaScript." in run_shell
     assert f'rel="canonical" href="{CANONICAL_URL}{run_route}/"' in run_shell
@@ -228,14 +243,40 @@ def test_split_public_data_is_complete_and_removes_stale_files(
 
     data = public / "data"
     assert not stale.exists()
-    assert (data / "deep20bench-v8.json").is_file()
+    assert (data / "deep20bench-v9.json").is_file()
+    assert (data / "deep20bench-v9.schema.json").is_file()
     assert (data / "leaderboard.csv").is_file()
+    public_schema = json.loads(
+        (data / "deep20bench-v9.schema.json").read_text(encoding="utf-8")
+    )
+    assert public_schema.pop("$schema") == "https://json-schema.org/draft/2020-12/schema"
+    assert public_schema == PublishedDataset.model_json_schema(mode="serialization")
+    serialized_schema = json.dumps(public_schema, sort_keys=True)
+    for forbidden_field in (
+        "call_id",
+        "guesser_conversation",
+        "subject_snapshot",
+        "system_instructions",
+        "variation_token",
+        "raw_response",
+        "oracle_raw_response",
+        "oracle_search_results",
+        "reviewer_answer",
+        "judge_answer",
+        "provider_trace",
+        "response_id",
+        "session_id",
+        "cache_key",
+        "error_output_preview",
+        "error_outputs",
+    ):
+        assert forbidden_field not in serialized_schema
     manifest = json.loads((data / "manifest.json").read_text(encoding="utf-8"))
     application = json.loads((data / "app-build.json").read_text(encoding="utf-8"))
     leaderboard = json.loads((data / "leaderboard.json").read_text(encoding="utf-8"))
     repeat_averages = json.loads((data / "repeat-averages.json").read_text(encoding="utf-8"))
     assert manifest["document_type"] == "manifest"
-    assert manifest["dataset_schema_version"] == 8
+    assert manifest["dataset_schema_version"] == 9
     assert application == {
         "document_type": "app_build",
         "schema_version": 1,
@@ -262,7 +303,7 @@ def test_split_public_data_is_complete_and_removes_stale_files(
     )
     assert (
         leaderboard["leaderboard"]
-        == json.loads((data / "deep20bench-v8.json").read_text(encoding="utf-8"))["leaderboard"]
+        == json.loads((data / "deep20bench-v9.json").read_text(encoding="utf-8"))["leaderboard"]
     )
 
     run = dataset.official_runs[0]

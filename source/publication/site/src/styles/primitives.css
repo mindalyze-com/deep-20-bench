@@ -14,6 +14,12 @@
   margin-inline: auto;
 }
 
+.workspace-detail-boundary {
+  width: min(100%, var(--workspace-content));
+  margin-left: 0;
+  margin-right: auto;
+}
+
 .page-hero {
   padding-block: clamp(3.5rem, 7vw, 6rem);
   background: var(--ink);
@@ -197,8 +203,8 @@
 
 .result-chart-stack {
   display: grid;
-  gap: clamp(1.5rem, 4vw, 2.5rem);
-  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  gap: var(--results-section-gap);
+  margin-bottom: var(--results-section-gap);
 }
 
 .result-chart-panel > .panel-heading {
@@ -408,7 +414,11 @@ a.card:hover {
 }
 
 .ranking-table th {
+  position: sticky;
+  z-index: 10;
+  top: 0;
   vertical-align: bottom;
+  background: var(--surface-raised);
 }
 
 .ranking-table td {
@@ -422,7 +432,6 @@ a.card:hover {
 
 .comparison-ranking-table .rank-column,
 .comparison-ranking-table .model-column,
-.comparison-ranking-table .run-column,
 .comparison-ranking-table .primary-metric-column {
   min-width: 0;
 }
@@ -480,13 +489,6 @@ a.card:hover {
   width: 14rem;
   min-width: 14rem;
   padding-inline: 0.72rem;
-}
-
-.ranking-table .run-column {
-  width: 4.75rem;
-  min-width: 4.75rem;
-  padding-inline: 0.55rem;
-  text-align: left;
 }
 
 .table-header-stack {
@@ -603,7 +605,8 @@ a.card:hover {
 }
 
 .contract-status-card {
-  padding: clamp(1.25rem, 2.5vw, 2rem);
+  padding: var(--workspace-panel-padding);
+  border: var(--rule-default);
   border-top: var(--border-emphasis-width) solid var(--state-clean);
   background: var(--surface-raised);
 }
@@ -621,7 +624,7 @@ a.card:hover {
 .contract-status-card h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  font-size: var(--text-card-title);
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.045em;
   line-height: 1;
@@ -685,18 +688,65 @@ a.card:hover {
   scrollbar-gutter: stable;
 }
 
+@media (min-width: 761px) {
+  .app-viewport--workspace :is(
+      .episode-list,
+      .pane-scroll,
+      .subject-overview-pane,
+      .episode-panel
+    ) {
+    --scroll-mask-size: 1rem;
+
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--scroll-mask-size),
+      black calc(100% - var(--scroll-mask-size)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--scroll-mask-size),
+      black calc(100% - var(--scroll-mask-size)),
+      transparent 100%
+    );
+  }
+
+  .app-viewport--workspace .subject-rail-list {
+    --scroll-mask-size: 1rem;
+
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black 0,
+      black calc(100% - var(--scroll-mask-size)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      black 0,
+      black calc(100% - var(--scroll-mask-size)),
+      transparent 100%
+    );
+  }
+}
+
 .episode-panel > .content-inner {
-  width: min(100%, 64rem);
+  width: min(100%, var(--workspace-content));
+  margin-left: 0;
+  margin-right: auto;
 }
 
 .episode-panel .section-heading {
   grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.55fr);
   gap: 1.5rem;
-  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  margin-bottom: clamp(1rem, 2vw, 1.35rem);
 }
 
 .episode-panel .section-heading h2 {
-  font-size: clamp(2.4rem, 4.5vw, 4rem);
+  max-width: none;
+  font-size: var(--text-workspace-panel-title);
+  line-height: var(--text-workspace-panel-title--line-height);
 }
 
 .episode-panel .section-heading > p {
@@ -796,7 +846,7 @@ a.card:hover {
     grid-template-areas:
       "title text"
       "title help";
-    grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.6fr);
+    grid-template-columns: minmax(18rem, 0.75fr) minmax(0, 1.25fr);
     row-gap: 0.35rem;
   }
 
@@ -850,7 +900,7 @@ a.card:hover {
   .result-chart-panel {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: clamp(1.5rem, 4vw, 2.5rem);
+    gap: var(--results-section-gap);
     border: 0;
     background: transparent;
   }
@@ -903,9 +953,9 @@ a.card:hover {
   }
 
   .episode-panel .section-heading h2 {
-    max-width: 11ch;
-    font-size: 2.15rem;
-    line-height: 0.98;
+    max-width: none;
+    font-size: var(--text-workspace-panel-title);
+    line-height: var(--text-workspace-panel-title--line-height);
   }
 
   .episode-panel .section-heading > p {
@@ -914,7 +964,8 @@ a.card:hover {
   }
 }
 
-@media (max-width: 620px) {
+/* 64rem tables plus the compact page gutters fit from 1130px upward. */
+@media (max-width: 1129px) {
   .ranking-table-wrap {
     display: none;
   }
@@ -924,7 +975,22 @@ a.card:hover {
     gap: 0.7rem;
     margin-top: 1rem;
   }
+}
 
+@media (min-width: 1130px) {
+  html:has(.ranking-table-wrap),
+  html:has(.ranking-table-wrap) body,
+  html:has(.ranking-table-wrap) #app,
+  .app-viewport:not(.app-viewport--workspace):has(.ranking-table-wrap) {
+    overflow: visible;
+  }
+
+  .ranking-table-wrap {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 620px) {
   .stats-grid {
     grid-template-columns: 1fr;
   }

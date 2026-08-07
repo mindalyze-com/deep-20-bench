@@ -21,16 +21,25 @@ const request = <Document>(
   const pending = fetch(url, { credentials: "same-origin" })
     .then(async (response) => {
       if (!response.ok) {
-        throw new Error(`Publication data request failed (${response.status}).`);
+        throw new Error(
+          response.status === 404
+            ? "No publication data exists for this page."
+            : "Publication data could not be loaded. Try again.",
+        );
       }
-      const value: unknown = await response.json();
+      let value: unknown;
+      try {
+        value = await response.json();
+      } catch {
+        throw new Error("Publication data is unavailable for this page.");
+      }
       if (
         typeof value !== "object" ||
         value === null ||
         !("document_type" in value) ||
         value.document_type !== expectedType
       ) {
-        throw new Error("Publication data has an unexpected document type.");
+        throw new Error("Publication data could not be read. Try again.");
       }
       return value as Document;
     })
@@ -58,7 +67,7 @@ export const getRun = (executionId: string): Promise<RunDocument> =>
   request<RunDocument>(`runs/${encodeURIComponent(executionId)}.json`, "run").then(
     (document) => {
       if (document.run.execution_id !== executionId) {
-        throw new Error("Run data does not match the requested execution.");
+        throw new Error("Publication data could not be read. Try again.");
       }
       return document;
     },
@@ -73,7 +82,7 @@ export const getSubject = (
     "subject",
   ).then((document) => {
     if (document.execution_id !== executionId || document.target_id !== targetId) {
-      throw new Error("Subject data does not match the requested route.");
+      throw new Error("Publication data could not be read. Try again.");
     }
     return document;
   });
@@ -92,7 +101,7 @@ export const getEpisode = (
       document.target_id !== targetId ||
       document.trial_id !== trialId
     ) {
-      throw new Error("Episode data does not match the requested route.");
+      throw new Error("Publication data could not be read. Try again.");
     }
     return document;
   });

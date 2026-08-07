@@ -1,7 +1,8 @@
 # Contributing
 
-Deep20Bench is source-available under the licenses in [LICENSE.md](LICENSE.md). Contributions
-must be compatible with the applicable project license.
+Deep20Bench software is source-available under a dual-license model. See
+[LICENSE.md](LICENSE.md) for the terms. Contributions must be compatible with the applicable
+project license.
 
 ## Local checks
 

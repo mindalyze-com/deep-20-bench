@@ -147,7 +147,13 @@ onBeforeUnmount(() => {
   border: var(--border-width) solid currentColor;
   border-radius: 50%;
   font: var(--font-weight-bold) 0.62rem/1 var(--font-sans);
-  opacity: 0.72;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  opacity: 1;
+}
+
+.info-popover-trigger:hover .info-popover-indicator,
+.info-popover-trigger:focus-visible .info-popover-indicator {
+  background: color-mix(in srgb, currentColor 16%, transparent);
 }
 
 .info-popover-panel {
@@ -219,6 +225,18 @@ onBeforeUnmount(() => {
 .info-popover-panel-leave-to {
   opacity: 0;
   transform: translateY(-0.25rem);
+}
+
+@media (min-width: 621px) and (max-width: 1024px) {
+  .info-popover-panel {
+    position: fixed;
+    right: 1rem !important;
+    bottom: calc(env(safe-area-inset-bottom) + 1rem);
+    left: auto !important;
+    top: auto;
+    max-height: min(22rem, calc(100dvh - 2rem));
+    overflow-y: auto;
+  }
 }
 
 @media (max-width: 620px) {

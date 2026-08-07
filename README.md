@@ -1,44 +1,40 @@
-# Deep20Bench
+<p align="center">
+  <a href="https://mindalyze-com.github.io/deep-20-bench/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/og.webp">
+      <source media="(prefers-color-scheme: light)" srcset="docs/og-light.webp">
+      <img
+        src="docs/og-light.webp"
+        width="1200"
+        alt="Deep20Bench - Can an LLM ask its way to the answer?"
+      >
+    </picture>
+  </a>
+</p>
 
-Deep20Bench evaluates how well an LLM identifies a hidden subject through adaptive yes/no
-questions.
+<h1 align="center">Deep20Bench</h1>
 
-## Browse the results
+<p align="center">A public prototype for testing how AI models play Twenty Questions.</p>
 
-Official model comparisons, run details, subject results, episode transcripts, and public data
-are available in the static publication:
+<h2 align="center">
+  <a href="https://mindalyze-com.github.io/deep-20-bench/">Open the homepage and pilot results →</a>
+</h2>
 
-**[Browse Deep20Bench results →](https://mindalyze-com.github.io/deep-20-bench/)**
+<p align="center">
+  <a href="https://mindalyze-com.github.io/deep-20-bench/results/">Results</a> ·
+  <a href="https://mindalyze-com.github.io/deep-20-bench/methodology/">Method</a> ·
+  <a href="https://mindalyze-com.github.io/deep-20-bench/data/">Data</a> ·
+  <a href="https://github.com/mindalyze-com/deep-20-bench/discussions">Discussions</a>
+</p>
 
-## Motivation
+Deep20Bench tests how well AI models identify a hidden person or character with yes-or-no
+questions. It uses the Twenty Questions format with a 50-question ceiling, giving models more
+room to finish a round.
 
-Fixed-question benchmarks measure responses to prompts chosen in advance. Deep20Bench instead
-measures world knowledge, question planning, and state tracking while the model decides what to
-ask next.
+The current pilot compares 12 model versions and settings across seven subjects, with five rounds
+per subject. Lower scores are better. Results, transcripts, and scoring data are public.
 
-The benchmark grew from applying Twenty Questions to broad, real-world subjects. Its
-[story and relation to prior work](documentation/homepage-creation.md) are documented
-separately.
-
-## Method
-
-The Guesser is the model under test. A live-web Oracle researches each factual question, a
-blind no-web Reviewer checks every initial `YES` or `NO`, and a blind no-web Judge resolves
-disagreements. A separate Guess Validator evaluates proposed identities.
-
-The Guesser receives only the broad category, its own valid actions, adjudicated `YES`, `NO`,
-or `UNKNOWN` tokens, and the fixed format-recovery event after its own invalid output. It never
-receives subject details, evidence, adjudicator state, provider traces, or private artifacts.
-See the [architecture](documentation/architecture.md) and
-[output-contract specification](documentation/guesser-output-contract.md).
-
-The Question Score uses averages. Lower is better. A successful trial contributes its
-counted questions. A model failure contributes 51, one above the 50-question limit. For each
-subject, the publication averages its five trial values. It then averages the seven subject
-averages. Because every subject has five trials, this is also the average of all 35 penalized
-trial values. Every model failure therefore affects the score.
-
-## Quick start
+## Run a local trial
 
 Python 3.14.6 and [uv](https://docs.astral.sh/uv/) are required.
 
@@ -67,28 +63,23 @@ uv run deep20 benchmark run B-0001 \
 Benchmark runs make paid provider calls. `OPENROUTER_API_KEY` can be used as a temporary
 credential override.
 
-## Documentation
-
-The [static publication](https://mindalyze-com.github.io/deep-20-bench/) is the main interface
-for browsing results and transcripts. Its source lives in this
-[repository](https://github.com/mindalyze-com/deep-20-bench), and the publication package
-generates the committed site into [`docs/`](docs/).
+## Project documentation
 
 - [Source layout](source/README.md)
-- [Benchmark control plane](source/execution/benchmark/README.md)
 - [Architecture](documentation/architecture.md)
+- [Benchmark control plane](source/execution/benchmark/README.md)
 - [Game engine](source/execution/game/README.md)
 - [Oracle, Reviewer, and Judge](source/execution/oracle/Usage.md)
 - [Publication package](source/publication/README.md)
 - [Documentation index](documentation/README.md)
 
-## Authors, citation, and license
+## Citation and license
 
-Deep20Bench was created by Patrick Heusser and Markus Tuor. Patrick designed and implemented
-the benchmark. See [CITATION.cff](CITATION.cff) for citation metadata.
+Deep20Bench was created by Patrick Heusser and Markus Tuor. See [CITATION.cff](CITATION.cff) for
+citation metadata.
 
-Project code is source-available under the
-[PolyForm Noncommercial License 1.0.0](LICENSES/PolyForm-Noncommercial-1.0.0.txt).
-Project-authored documentation and result data use
-[Creative Commons Attribution 4.0](LICENSES/CC-BY-4.0.txt). See [LICENSE.md](LICENSE.md) for
-the exact scope and third-party exclusions.
+The software is source-available under a dual-license model:
+[PolyForm Noncommercial 1.0.0](LICENSES/PolyForm-Noncommercial-1.0.0.txt) for noncommercial use,
+with separate commercial licenses available. Project-authored documentation and result data use
+[Creative Commons Attribution 4.0](LICENSES/CC-BY-4.0.txt). See [LICENSE.md](LICENSE.md) for the
+exact scope and third-party exclusions.

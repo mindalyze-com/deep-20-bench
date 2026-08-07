@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
+import type { RouteLocationRaw } from "vue-router";
 
 import ContractStatusCard from "@/components/ContractStatusCard.vue";
 import CostDonut, { type CostDonutItem } from "@/components/CostDonut.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
+import ModelName from "@/components/ModelName.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
+import RunModelsSection from "@/components/run/RunModelsSection.vue";
+import { getSubject } from "@/lib/api";
 import { readChartTheme } from "@/lib/chart-theme";
 import {
+  contractExampleRoute,
+  firstBreachedTrial,
+} from "@/lib/contract-example";
+import {
+  contractPercent,
   dateTime,
   duration,
   integer,
@@ -14,9 +23,39 @@ import {
   number,
   percent,
 } from "@/lib/format";
+import { runRoleCopy, runRoleOrder } from "@/lib/run-roles";
 import { useRunWorkspace } from "@/lib/workspace-context";
 
 const { run, subjects } = useRunWorkspace();
+const exampleTo = ref<RouteLocationRaw | null>(null);
+let exampleRequest = 0;
+
+watch(
+  [run, subjects],
+  ([currentRun, currentSubjects]) => {
+    const request = ++exampleRequest;
+    exampleTo.value = null;
+    const breachedSubject = currentSubjects.find(
+      (subject) => subject.contract.status === "breached",
+    );
+    if (currentRun === null || breachedSubject === undefined) return;
+    void getSubject(currentRun.execution_id, breachedSubject.target_id)
+      .then((document) => {
+        if (request !== exampleRequest) return;
+        const example = firstBreachedTrial(document.trials);
+        if (example === null) return;
+        exampleTo.value = contractExampleRoute(
+          currentRun.execution_id,
+          breachedSubject.target_id,
+          example.trial_id,
+        );
+      })
+      .catch(() => {
+        if (request === exampleRequest) exampleTo.value = null;
+      });
+  },
+  { immediate: true },
+);
 
 const costLedger = computed<CostDonutItem[]>(() => {
   const current = run.value;
@@ -24,32 +63,32 @@ const costLedger = computed<CostDonutItem[]>(() => {
   const colors = readChartTheme().roles;
   return [
     {
-      label: "Guesser",
+      label: runRoleCopy.guesser.costLabel,
       value: Number(current.totals.costs_usd.guesser),
       display: money(current.totals.costs_usd.guesser),
       color: colors.guesser,
       primary: true,
     },
     {
-      label: "Primary Oracle",
+      label: runRoleCopy.oracle.costLabel,
       value: Number(current.totals.costs_usd.primary_oracle),
       display: money(current.totals.costs_usd.primary_oracle),
       color: colors.oracle,
     },
     {
-      label: "Reviewer",
+      label: runRoleCopy.reviewer.costLabel,
       value: Number(current.totals.costs_usd.reviewer),
       display: money(current.totals.costs_usd.reviewer),
       color: colors.reviewer,
     },
     {
-      label: "Judge",
+      label: runRoleCopy.judge.costLabel,
       value: Number(current.totals.costs_usd.judge),
       display: money(current.totals.costs_usd.judge),
       color: colors.judge,
     },
     {
-      label: "Validator",
+      label: runRoleCopy.validator.costLabel,
       value: Number(current.totals.costs_usd.validator),
       display: money(current.totals.costs_usd.validator),
       color: colors.validator,
@@ -69,8 +108,13 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
     {
       key: "contract",
       label: "Contract compliance",
-      value: percent(current.contract.compliance_rate),
+      value: contractPercent(
+        current.contract.compliance_rate,
+        current.contract.violations,
+      ),
       tone: current.contract.status === "breached" ? "danger" : "default",
+      linkLabel: exampleTo.value === null ? undefined : "View one example",
+      to: exampleTo.value ?? undefined,
     },
     {
       key: "cost",
@@ -85,17 +129,22 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
     },
   ];
 });
+
+const roleGuide = runRoleOrder.map((role) => ({
+  role,
+  ...runRoleCopy[role],
+}));
 </script>
 
 <template>
   <article v-if="run" class="run-overview-pane pane-scroll">
-    <header class="run-workspace-hero">
+    <header class="run-workspace-hero workspace-detail-boundary">
       <div>
-        <p class="eyebrow">Certified official run</p>
-        <h1>{{ run.model_name }}</h1>
+        <p class="eyebrow">Official run</p>
+        <h1><ModelName :name="run.model_name" /></h1>
         <p class="run-deck">
-          One model, {{ subjects.length }} subjects, and {{ run.terminal_trials }} scored
-          episodes. Choose a subject to inspect its attempts.
+          {{ run.terminal_trials }} scored episodes = {{ subjects.length }} subjects ×
+          {{ run.iterations }} trials. Choose a subject to inspect its attempts.
         </p>
       </div>
       <QuestionScore
@@ -103,13 +152,14 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
         :score="run.question_score"
         :max-questions="run.max_questions"
         label="Question score"
+        variant="wide"
         explain
         :confidence-interval="run.question_score_confidence_interval"
       />
     </header>
 
     <MetricGrid
-      class="workspace-metrics"
+      class="workspace-metrics workspace-detail-boundary"
       :items="summaryMetrics"
       label="Run summary"
       :max-columns="4"
@@ -138,34 +188,53 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
       </RouterLink>
     </section>
 
-    <div class="run-overview-grid">
-      <section class="workspace-card run-totals" aria-labelledby="run-totals-title">
-        <header class="workspace-card-heading">
-          <div>
-            <p class="eyebrow">Complete benchmark</p>
-            <h2 id="run-totals-title">Run ledger.</h2>
-          </div>
-          <p>All Guesser and benchmark-support activity.</p>
-        </header>
-        <dl>
-          <div>
-            <dt>Total tokens</dt>
-            <dd>{{ integer(run.totals.total_tokens) }}</dd>
-          </div>
-          <div>
-            <dt>Wall-clock runtime</dt>
-            <dd>{{ duration(run.totals.runtime_ms) }}</dd>
-          </div>
-          <div>
-            <dt>Guesser calls</dt>
-            <dd>{{ integer(run.totals.guesser_calls) }}</dd>
-          </div>
-          <div>
-            <dt>Completed</dt>
-            <dd>{{ dateTime(run.completed_at) }}</dd>
-          </div>
-        </dl>
-      </section>
+    <div class="run-overview-grid workspace-detail-boundary">
+      <div class="run-overview-stack">
+        <section class="workspace-card run-totals" aria-labelledby="run-totals-title">
+          <header class="workspace-card-heading">
+            <div>
+              <p class="eyebrow">Complete benchmark</p>
+              <h2 id="run-totals-title">Run ledger.</h2>
+            </div>
+            <p>All Guesser and benchmark-support activity.</p>
+          </header>
+          <dl>
+            <div>
+              <dt>Total tokens</dt>
+              <dd>{{ integer(run.totals.total_tokens) }}</dd>
+            </div>
+            <div>
+              <dt>Wall-clock runtime</dt>
+              <dd>{{ duration(run.totals.runtime_ms) }}</dd>
+            </div>
+            <div>
+              <dt>Guesser calls</dt>
+              <dd>{{ integer(run.totals.guesser_calls) }}</dd>
+            </div>
+            <div>
+              <dt>Completed</dt>
+              <dd>{{ dateTime(run.completed_at) }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <ContractStatusCard
+          :contract="run.contract"
+          affected-unit="episodes"
+          :example-to="exampleTo"
+        />
+
+        <section class="workspace-card provenance-card">
+          <p class="eyebrow">Provenance</p>
+          <dl>
+            <div><dt>Execution</dt><dd><code>{{ run.execution_id }}</code></dd></div>
+            <div><dt>Model ID</dt><dd><code>{{ run.model_id }}</code></dd></div>
+            <div><dt>Benchmark</dt><dd><code>{{ run.benchmark_id }}</code></dd></div>
+            <div><dt>Base seed</dt><dd><code>{{ run.base_seed }}</code></dd></div>
+            <div><dt>Git commit</dt><dd><code>{{ run.git_commit.slice(0, 12) }}</code></dd></div>
+          </dl>
+        </section>
+      </div>
 
       <section class="workspace-card role-ledger" aria-labelledby="role-ledger-title">
         <header class="workspace-card-heading">
@@ -178,24 +247,26 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
           :items="costLedger"
           :total-display="money(run.totals.costs_usd.total)"
         />
-      </section>
-
-      <ContractStatusCard
-        :contract="run.contract"
-        affected-unit="episodes"
-      />
-
-      <section class="workspace-card provenance-card">
-        <p class="eyebrow">Provenance</p>
-        <dl>
-          <div><dt>Execution</dt><dd><code>{{ run.execution_id }}</code></dd></div>
-          <div><dt>Model ID</dt><dd><code>{{ run.model_id }}</code></dd></div>
-          <div><dt>Benchmark</dt><dd><code>{{ run.benchmark_id }}</code></dd></div>
-          <div><dt>Base seed</dt><dd><code>{{ run.base_seed }}</code></dd></div>
-          <div><dt>Git commit</dt><dd><code>{{ run.git_commit.slice(0, 12) }}</code></dd></div>
-        </dl>
+        <div class="role-guide">
+          <p>Roles in this cost:</p>
+          <dl>
+            <div v-for="role in roleGuide" :key="role.role">
+              <dt>{{ role.costLabel }}</dt>
+              <dd>{{ role.description }}</dd>
+            </div>
+          </dl>
+          <RouterLink :to="{ name: 'methodology', hash: '#answer-checks' }">
+            Read the role and answer-checking method →
+          </RouterLink>
+        </div>
       </section>
     </div>
+
+    <RunModelsSection
+      v-if="run.models.length > 0"
+      class="workspace-detail-boundary"
+      :models="run.models"
+    />
 
   </article>
 </template>
@@ -209,27 +280,35 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
 }
 
 .run-overview-pane {
-  padding: clamp(1.5rem, 3.5vw, 3.5rem);
+  --run-overview-column: minmax(0, 1fr);
+
+  padding: var(--workspace-gutter);
 }
 
 .run-workspace-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(17rem, 0.55fr);
-  gap: clamp(2rem, 6vw, 6rem);
-  align-items: end;
-  max-width: var(--workspace-content);
-  margin: 0 auto;
-  padding: clamp(1.2rem, 3vw, 3rem) 0 clamp(2rem, 4vw, 3.5rem);
+  grid-template-columns: minmax(0, 1.35fr) minmax(19rem, 0.65fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+  padding: clamp(0.5rem, 1vw, 1rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.run-workspace-hero > div:first-child {
+  margin-top: 0;
 }
 
 .run-workspace-hero h1 {
-  max-width: 10ch;
+  max-width: 14ch;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(3.2rem, 6vw, 6rem);
+  font-size: var(--text-workspace-title);
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.058em;
-  line-height: 0.92;
+  line-height: var(--text-workspace-title--line-height);
+}
+
+.run-workspace-hero h1 :deep(.model-name) {
+  row-gap: 0.35rem;
 }
 
 .run-deck {
@@ -241,18 +320,14 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
 }
 
 .run-primary-score {
-  padding: 1.35rem;
+  padding: clamp(0.95rem, 1.25vw, 1.15rem);
   border-top: var(--border-emphasis-width) solid var(--blue);
   background: var(--paper-bright);
 }
 
-.run-primary-score :deep(strong) {
-  font-size: clamp(3.5rem, 7vw, 6rem);
-}
-
 .workspace-metrics {
-  max-width: var(--workspace-content);
-  margin: 0 auto 1px;
+  grid-template-columns: repeat(4, var(--run-overview-column));
+  margin-bottom: 0;
 }
 
 .run-totals dt,
@@ -266,18 +341,31 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
 
 .run-overview-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
-  max-width: var(--workspace-content);
-  margin: 0 auto;
-  border: solid var(--line);
-  border-width: 0 1px 1px;
-  background: var(--line);
-  gap: 1px;
+  grid-template-columns: repeat(2, var(--run-overview-column));
+  align-items: stretch;
+  margin-top: -1px;
+  background: transparent;
+  gap: 0;
+}
+
+.run-overview-stack {
+  display: grid;
+  min-width: 0;
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.run-overview-stack > * + * {
+  margin-top: -1px;
+}
+
+.role-ledger {
+  margin-left: -1px;
 }
 
 .workspace-card {
   min-width: 0;
-  padding: clamp(1.25rem, 2.5vw, 2rem);
+  padding: var(--workspace-panel-padding);
+  border: var(--rule-default);
   background: var(--paper-bright);
 }
 
@@ -292,7 +380,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
 .workspace-card-heading h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  font-size: var(--text-card-title);
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.045em;
   line-height: 1;
@@ -353,6 +441,48 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
   font-size: 0.72rem;
 }
 
+.role-guide {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: var(--rule-subtle);
+}
+
+.role-guide > p {
+  margin: 0 0 0.75rem;
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.role-guide dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.role-guide dl > div {
+  min-width: 0;
+}
+
+.role-guide dt {
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-bold);
+}
+
+.role-guide dd {
+  margin: 0.18rem 0 0;
+  color: var(--muted);
+  font-size: var(--text-caption);
+  line-height: 1.45;
+}
+
+.role-guide a {
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-semibold);
+}
+
 .mobile-subjects {
   display: none;
 }
@@ -363,6 +493,10 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
     grid-template-columns: 1fr;
   }
 
+  .role-ledger {
+    margin-top: -1px;
+    margin-left: 0;
+  }
 }
 
 @media (max-width: 760px) {
@@ -384,7 +518,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
 
   .run-workspace-hero h1 {
     max-width: 12ch;
-    font-size: clamp(2.8rem, 12vw, 3.8rem);
+    font-size: clamp(2.6rem, 11vw, 3.6rem);
     line-height: 0.94;
   }
 
@@ -398,19 +532,15 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
     padding: 1rem 1.15rem;
   }
 
-  .run-primary-score :deep(strong) {
-    font-size: 3.6rem;
-  }
-
   .workspace-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .run-overview-grid {
-    border-top-width: 0;
+  .run-totals dl {
+    grid-template-columns: 1fr;
   }
 
-  .run-totals dl {
+  .role-guide dl {
     grid-template-columns: 1fr;
   }
 

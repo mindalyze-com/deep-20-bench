@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
 const mobileNavigation = ref<HTMLDetailsElement | null>(null);
+const mobileNavigationSummary = ref<HTMLElement | null>(null);
 const links = [
   { label: "Overview", name: "home", glyph: "◉" },
   { label: "Results", name: "results", glyph: "▥" },
   { label: "Method", name: "methodology", glyph: "⌁" },
-  { label: "Story", name: "story", glyph: "✦" },
+  { label: "About", name: "about", glyph: "✦" },
   { label: "Data", name: "data", glyph: "↓" },
 ] as const;
 
@@ -18,6 +19,13 @@ const active = computed(() =>
 
 const closeMobileNavigation = (): void => {
   if (mobileNavigation.value !== null) mobileNavigation.value.open = false;
+};
+
+const handleMobileNavigationEscape = (event: KeyboardEvent): void => {
+  if (mobileNavigation.value?.open !== true) return;
+  event.preventDefault();
+  closeMobileNavigation();
+  void nextTick(() => mobileNavigationSummary.value?.focus());
 };
 
 watch(() => route.fullPath, closeMobileNavigation);
@@ -64,9 +72,9 @@ watch(() => route.fullPath, closeMobileNavigation);
     <details
       ref="mobileNavigation"
       class="mobile-navigation"
-      @keydown.esc="closeMobileNavigation"
+      @keydown.esc="handleMobileNavigationEscape"
     >
-      <summary>
+      <summary ref="mobileNavigationSummary">
         <svg
           class="mobile-navigation-glyph"
           aria-hidden="true"

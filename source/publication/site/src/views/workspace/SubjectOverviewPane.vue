@@ -4,7 +4,11 @@ import { computed } from "vue";
 import ContractStatusCard from "@/components/ContractStatusCard.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
-import { number, percent } from "@/lib/format";
+import {
+  contractExampleRoute,
+  firstBreachedTrial,
+} from "@/lib/contract-example";
+import { contractPercent, number } from "@/lib/format";
 import {
   useRunWorkspace,
   useSubjectWorkspace,
@@ -12,6 +16,23 @@ import {
 
 const { run } = useRunWorkspace();
 const { document, subject } = useSubjectWorkspace();
+
+const exampleTo = computed(() => {
+  const currentRun = run.value;
+  const currentSubject = subject.value;
+  const currentDocument = document.value;
+  if (currentRun === null || currentSubject === null || currentDocument === null) {
+    return null;
+  }
+  const example = firstBreachedTrial(currentDocument.trials);
+  return example === null
+    ? null
+    : contractExampleRoute(
+        currentRun.execution_id,
+        currentSubject.target_id,
+        example.trial_id,
+      );
+});
 
 const facts = computed<MetricGridItem[]>(() => {
   const currentSubject = subject.value;
@@ -36,8 +57,13 @@ const facts = computed<MetricGridItem[]>(() => {
     {
       key: "contract",
       label: "Contract",
-      value: percent(currentSubject.contract.compliance_rate),
+      value: contractPercent(
+        currentSubject.contract.compliance_rate,
+        currentSubject.contract.violations,
+      ),
       tone: currentSubject.contract.status === "breached" ? "danger" : "default",
+      linkLabel: exampleTo.value === null ? undefined : "View one example",
+      to: exampleTo.value ?? undefined,
     },
   ];
 });
@@ -45,7 +71,7 @@ const facts = computed<MetricGridItem[]>(() => {
 
 <template>
   <article v-if="run && subject && document" class="subject-overview-pane">
-    <div class="subject-overview-inner">
+    <div class="subject-overview-inner workspace-detail-boundary">
       <header>
         <p class="eyebrow">Subject overview</p>
         <h2>{{ subject.display_name }}</h2>
@@ -86,6 +112,7 @@ const facts = computed<MetricGridItem[]>(() => {
         :contract="subject.contract"
         affected-unit="attempts"
         heading-level="h3"
+        :example-to="exampleTo"
       />
 
       <aside class="episode-prompt">
@@ -103,38 +130,44 @@ const facts = computed<MetricGridItem[]>(() => {
 .subject-overview-pane {
   height: 100%;
   overflow-y: auto;
-  padding: clamp(2rem, 5vw, 5rem);
+  padding: var(--workspace-gutter);
   scrollbar-gutter: stable;
 }
 
 .subject-overview-inner {
+  --subject-overview-display-size: var(--text-workspace-title);
+  --subject-overview-display-line-height: 0.92;
+
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.85fr);
-  max-width: 58rem;
-  margin: 0 auto;
-  border: var(--rule-default);
-  background: var(--line);
-  gap: 1px;
+  background: transparent;
+  gap: var(--workspace-panel-gap);
 }
 
 .subject-overview-inner > * {
   min-width: 0;
   background: var(--paper-bright);
-  padding: clamp(1.4rem, 3vw, 2.5rem);
+  padding: var(--workspace-panel-padding);
+}
+
+.subject-overview-inner > header,
+.subject-score-card,
+.episode-prompt {
+  border: var(--rule-default);
 }
 
 .subject-overview-inner > header {
-  min-height: 20rem;
+  min-height: clamp(15rem, 27vw, 18rem);
 }
 
 .subject-overview-inner h2 {
   max-width: 11ch;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(3rem, 6vw, 5.6rem);
+  font-size: var(--subject-overview-display-size);
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.06em;
-  line-height: 0.92;
+  line-height: var(--subject-overview-display-line-height);
 }
 
 .subject-overview-inner header > p:not(.eyebrow) {
@@ -157,7 +190,8 @@ const facts = computed<MetricGridItem[]>(() => {
 }
 
 .subject-score-card :deep(.question-score strong) {
-  font-size: clamp(4rem, 8vw, 7rem);
+  font-size: var(--subject-overview-display-size);
+  line-height: var(--subject-overview-display-line-height);
 }
 
 .subject-score-card > p {
@@ -209,8 +243,12 @@ const facts = computed<MetricGridItem[]>(() => {
   .subject-overview-pane {
     height: auto;
     overflow: visible;
-    padding: 1rem;
+    padding: var(--workspace-gutter);
     scrollbar-gutter: auto;
+  }
+
+  .subject-overview-inner > header {
+    min-height: 0;
   }
 }
 </style>

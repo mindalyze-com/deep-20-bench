@@ -9,7 +9,7 @@ import EpisodeTranscriptPanel from "@/components/episode/EpisodeTranscriptPanel.
 import EpisodeUsagePanel from "@/components/episode/EpisodeUsagePanel.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { getEpisode } from "@/lib/api";
-import { moneyEpisode, percent } from "@/lib/format";
+import { contractPercent, formatCount, moneyEpisode } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import type {
   EpisodeDocument,
@@ -21,7 +21,7 @@ import {
 } from "@/lib/workspace-context";
 
 const route = useRoute();
-const { document: runDocument, run } = useRunWorkspace();
+const { document: runDocument, run, subjects } = useRunWorkspace();
 const { document: subjectDocument, subject } = useSubjectWorkspace();
 const episodeDocument = ref<EpisodeDocument | null>(null);
 const loading = ref(true);
@@ -50,6 +50,31 @@ const episodeIndex = computed(() =>
     (candidate) => candidate.trial_id === trialId.value,
   ),
 );
+const subjectIndex = computed(() =>
+  subjects.value.findIndex(
+    (candidate) => candidate.target_id === targetId.value,
+  ),
+);
+const linkedViolationTurn = computed(() => {
+  if (route.query.violation !== "first") return null;
+  return (
+    episode.value?.turns.find(
+      (turn) => turn.turn_type === "contract_violation",
+    )?.turn_number ?? null
+  );
+});
+
+const revealLinkedViolation = async (): Promise<void> => {
+  const turnNumber = linkedViolationTurn.value;
+  if (turnNumber === null) return;
+  activeTab.value = "transcript";
+  await nextTick();
+  const target = document.getElementById(`turn-${turnNumber}`);
+  target?.querySelector<HTMLElement>(".violation-detail > summary")?.focus({
+    preventScroll: true,
+  });
+  target?.scrollIntoView({ block: "start", behavior: "auto" });
+};
 
 const selectEpisodeTab = (tab: EpisodeTab, focus = false): void => {
   activeTab.value = tab;
@@ -82,21 +107,33 @@ const episodeTo = (candidate: PublicTrialSummary) => ({
   },
 });
 
+const subjectTo = (subjectTargetId: string) => ({
+  name: "subject" as const,
+  params: {
+    executionId: executionId.value,
+    targetId: subjectTargetId,
+  },
+});
+
 const applyRouteContext = (): void => {
   const currentRun = run.value;
   const currentSubject = subject.value;
   const currentTrial = trial.value;
   const index = episodeIndex.value;
+  const currentSubjectIndex = subjectIndex.value;
   if (
     currentRun === null ||
     currentSubject === null ||
     currentTrial === null ||
-    index < 0
+    index < 0 ||
+    currentSubjectIndex < 0
   ) {
     return;
   }
   const previousTrial = episodeTrials.value[index - 1];
   const nextTrial = episodeTrials.value[index + 1];
+  const previousSubject = subjects.value[currentSubjectIndex - 1];
+  const nextSubject = subjects.value[currentSubjectIndex + 1];
   setRouteContext({
     title: `Episode ${currentTrial.trial_number} · ${currentSubject.display_name}`,
     description: `Questions, answers, and Oracle evidence for finding ${currentSubject.display_name}.`,
@@ -125,10 +162,14 @@ const applyRouteContext = (): void => {
     ],
     previous: previousTrial
       ? { label: `Episode ${previousTrial.trial_number}`, to: episodeTo(previousTrial) }
-      : null,
+      : previousSubject
+        ? { label: "Previous subject", to: subjectTo(previousSubject.target_id) }
+        : null,
     next: nextTrial
       ? { label: `Episode ${nextTrial.trial_number}`, to: episodeTo(nextTrial) }
-      : null,
+      : nextSubject
+        ? { label: "Next subject", to: subjectTo(nextSubject.target_id) }
+        : null,
   });
 };
 
@@ -182,12 +223,20 @@ const load = async (): Promise<void> => {
       trialId.value === requestedTrial
     ) {
       loading.value = false;
+      void revealLinkedViolation();
     }
   }
 };
 
 watch([executionId, targetId, trialId], () => void load(), { immediate: true });
-onActivated(applyRouteContext);
+watch(
+  () => route.query.violation,
+  () => void revealLinkedViolation(),
+);
+onActivated(() => {
+  applyRouteContext();
+  void revealLinkedViolation();
+});
 </script>
 
 <template>
@@ -228,7 +277,7 @@ onActivated(applyRouteContext);
           @keydown="onEpisodeTabKeydown($event, 'reliability')"
         >
           <span>Reliability</span>
-          <small>{{ episode.contract.violations }} violations</small>
+          <small>{{ formatCount(episode.contract.violations, "violation") }}</small>
         </button>
         <button
           id="episode-tab-usage"
@@ -240,7 +289,7 @@ onActivated(applyRouteContext);
           @click="selectEpisodeTab('usage')"
           @keydown="onEpisodeTabKeydown($event, 'usage')"
         >
-          <span>Models & usage</span>
+          <span>Usage</span>
           <small>{{ moneyEpisode(episode.total_cost_usd) }}</small>
         </button>
       </nav>
@@ -250,20 +299,31 @@ onActivated(applyRouteContext);
         class="contract-warning"
         aria-labelledby="episode-contract-heading"
       >
-        <div class="content-inner warning">
+        <div class="content-inner workspace-detail-boundary warning">
           <div>
             <p class="eyebrow">Reliability warning</p>
             <h2 id="episode-contract-heading">Model broke the output contract.</h2>
           </div>
           <div>
             <p>
-              The Guesser produced {{ episode.contract.violations }} invalid structured
-              responses. Violations before the limit consumed counted turns. The fixed feedback
+              The Guesser produced
+              {{ formatCount(episode.contract.violations, "invalid structured response") }}.
+              Violations before the limit consumed counted turns. The fixed feedback
               disclosed only the public action format, never whether an attempted answer was
               correct.
             </p>
             <dl class="warning-facts">
-              <div><dt>Compliance</dt><dd>{{ percent(episode.contract.compliance_rate) }}</dd></div>
+              <div>
+                <dt>Compliance</dt>
+                <dd>
+                  {{
+                    contractPercent(
+                      episode.contract.compliance_rate,
+                      episode.contract.violations,
+                    )
+                  }}
+                </dd>
+              </div>
               <div><dt>Violations</dt><dd>{{ episode.contract.violations }}</dd></div>
               <div><dt>Turn penalties</dt><dd>{{ episode.contract.counted_penalties }}</dd></div>
             </dl>
@@ -275,6 +335,7 @@ onActivated(applyRouteContext);
         <EpisodeTranscriptPanel
           v-show="activeTab === 'transcript'"
           :episode="episode"
+          :expanded-violation-turn="linkedViolationTurn"
         />
 
         <EpisodeReliabilityPanel
@@ -456,6 +517,13 @@ onActivated(applyRouteContext);
 
   .episode-tabs button {
     padding-block: 0.55rem;
+  }
+}
+
+@media (min-width: 1025px) and (max-height: 800px) {
+  .episode-tabs button {
+    gap: 0.1rem;
+    padding-block: 0.55rem 0.5rem;
   }
 }
 </style>

@@ -11,23 +11,36 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run check && vite build",
-    "check": "vue-tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
-    "test:ui": "playwright test",
-    "test:ui:update": "playwright test --update-snapshots"
+    "check": "vue-tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && vue-tsc --noEmit -p tsconfig.vitest.json",
+    "test:unit": "vitest run --config vitest.config.ts",
+    "test:unit:watch": "vitest --config vitest.config.ts",
+    "test:fixture:update": "uv run --project ../compiler python scripts/build_ui_fixture.py",
+    "test:ui": "npm run test:ui:functional",
+    "test:ui:smoke": "playwright test --grep @smoke --project desktop-chromium --project mobile-chromium",
+    "test:ui:functional": "playwright test --grep-invert @visual --project desktop-chromium --project mobile-chromium",
+    "test:ui:visual": "playwright test --grep @visual --project desktop-chromium --project mobile-chromium",
+    "test:ui:visual:update": "npm run test:ui:visual -- --update-snapshots",
+    "test:ui:cross-browser": "playwright test --project firefox-smoke --project webkit-smoke",
+    "test:site:quick": "npm run check && npm run test:unit && npm run test:ui:smoke",
+    "test:site": "npm run check && npm run test:unit && npm run test:ui:functional"
   },
   "dependencies": {
     "@fontsource-variable/inter-tight": "^5.3.0",
     "@fontsource-variable/newsreader": "^5.3.0",
     "echarts": "6.1.0",
-    "vue": "3.5.40",
+    "vue": "3.5.41",
     "vue-router": "5.2.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1",
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "1.62.1",
     "@types/node": "26.1.2",
     "@vitejs/plugin-vue": "6.0.8",
+    "@vue/test-utils": "^2.4.11",
+    "jsdom": "^29.1.1",
     "typescript": "6.0.3",
     "vite": "8.1.5",
+    "vitest": "^4.1.10",
     "vue-tsc": "3.3.8"
   }
 }

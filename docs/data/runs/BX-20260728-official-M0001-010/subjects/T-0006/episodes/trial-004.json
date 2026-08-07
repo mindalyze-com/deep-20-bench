@@ -1,6 +1,6 @@
 {
   "document_type": "episode",
-  "schema_version": 1,
+  "schema_version": 2,
   "execution_id": "BX-20260728-official-M0001-010",
   "target_id": "T-0006",
   "trial_id": "trial-004",
@@ -34,97 +34,6 @@
       "affected_trials": 0,
       "compliance_rate": "1",
       "status": "clean"
-    },
-    "models": [
-      {
-        "role": "guesser",
-        "configuration_id": "M-0001",
-        "requested_model": "openai/gpt-5.6-luna",
-        "requested_provider": "openai",
-        "provider_routing": "exact",
-        "resolved_models": [
-          "openai/gpt-5.6-luna"
-        ],
-        "resolved_providers": [
-          "OpenAI"
-        ],
-        "reasoning_effort": "high",
-        "prompt_version": "stateful-category-guesser-v10-unknown-evidence-guidance",
-        "providers": [],
-        "unreported_calls": 0,
-        "fallback_calls": 0
-      },
-      {
-        "role": "oracle",
-        "configuration_id": null,
-        "requested_model": "openai/gpt-5.6-luna",
-        "requested_provider": "openai",
-        "provider_routing": "exact",
-        "resolved_models": [
-          "openai/gpt-5.6-luna"
-        ],
-        "resolved_providers": [
-          "OpenAI"
-        ],
-        "reasoning_effort": "medium",
-        "prompt_version": "live-web-oracle-v7-direct-negative-evidence",
-        "providers": [],
-        "unreported_calls": 0,
-        "fallback_calls": 0
-      },
-      {
-        "role": "validator",
-        "configuration_id": "gpt-5.6-luna-validator",
-        "requested_model": "openai/gpt-5.6-luna",
-        "requested_provider": "openai",
-        "provider_routing": "exact",
-        "resolved_models": [
-          "openai/gpt-5.6-luna"
-        ],
-        "resolved_providers": [
-          "OpenAI"
-        ],
-        "reasoning_effort": "medium",
-        "prompt_version": "strict-guess-validator-v1",
-        "providers": [],
-        "unreported_calls": 0,
-        "fallback_calls": 0
-      }
-    ],
-    "oracle_support": {
-      "oracle": {
-        "requested_model": "openai/gpt-5.6-luna",
-        "requested_provider": "openai",
-        "provider_routing": "exact",
-        "reasoning_effort": "medium",
-        "calls": 21,
-        "cost_usd": "0.1389793499999999959",
-        "providers": [],
-        "unreported_calls": 0,
-        "fallback_calls": 0
-      },
-      "reviewer": {
-        "requested_model": "google/gemini-3.5-flash-lite",
-        "requested_provider": "google-ai-studio",
-        "provider_routing": "exact",
-        "reasoning_effort": "medium",
-        "calls": 20,
-        "cost_usd": "0.0256071",
-        "providers": [],
-        "unreported_calls": 0,
-        "fallback_calls": 0
-      },
-      "judge": {
-        "requested_model": "anthropic/claude-opus-5",
-        "requested_provider": "anthropic",
-        "provider_routing": "exact",
-        "reasoning_effort": "medium",
-        "calls": 2,
-        "cost_usd": "0.030045",
-        "providers": [],
-        "unreported_calls": 0,
-        "fallback_calls": 0
-      }
     },
     "guesser_disclosure": {
       "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",

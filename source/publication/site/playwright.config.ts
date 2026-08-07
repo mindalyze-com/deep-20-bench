@@ -4,20 +4,27 @@ const baseURL = "http://127.0.0.1:4173/deep-20-bench/";
 
 export default defineConfig({
   testDir: "./tests/ui",
-  fullyParallel: false,
+  fullyParallel: true,
+  workers: process.env.CI ? 2 : "75%",
   timeout: 30_000,
+  retries: 0,
   expect: {
     timeout: 8_000,
     toHaveScreenshot: {
       animations: "disabled",
       caret: "hide",
-      maxDiffPixelRatio: 0.005,
+      maxDiffPixels: 0,
     },
   },
-  reporter: [["line"]],
+  reporter: process.env.CI
+    ? [["github"], ["html", { open: "never" }]]
+    : [["line"]],
   use: {
     baseURL,
     colorScheme: "light",
+    deviceScaleFactor: 1,
+    locale: "en-US",
+    timezoneId: "UTC",
     contextOptions: {
       reducedMotion: "reduce",
     },
@@ -27,6 +34,7 @@ export default defineConfig({
   projects: [
     {
       name: "desktop-chromium",
+      grep: /@(desktop|both)/,
       use: {
         browserName: "chromium",
         viewport: { width: 1280, height: 720 },
@@ -34,11 +42,28 @@ export default defineConfig({
     },
     {
       name: "mobile-chromium",
+      grep: /@(mobile|both)/,
       use: {
         browserName: "chromium",
         hasTouch: true,
         isMobile: true,
         viewport: { width: 390, height: 844 },
+      },
+    },
+    {
+      name: "firefox-smoke",
+      grep: /(?=.*@smoke)(?=.*@(desktop|both))/,
+      use: {
+        browserName: "firefox",
+        viewport: { width: 1280, height: 720 },
+      },
+    },
+    {
+      name: "webkit-smoke",
+      grep: /(?=.*@smoke)(?=.*@(desktop|both))/,
+      use: {
+        browserName: "webkit",
+        viewport: { width: 1280, height: 720 },
       },
     },
   ],

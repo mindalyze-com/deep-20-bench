@@ -1,12 +1,16 @@
 .app-shell {
+  min-height: 100dvh;
+  background: var(--surface-page);
+}
+
+.app-shell--workspace {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   height: 100dvh;
   overflow: hidden;
-  background: var(--surface-page);
 }
 
-.app-shell--drilldown {
+.app-shell--workspace.app-shell--drilldown {
   grid-template-rows: auto auto minmax(0, 1fr);
 }
 
@@ -225,18 +229,17 @@
   min-width: 0;
   min-height: 0;
   overflow-x: clip;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
-  scrollbar-gutter: stable;
+  overflow-y: visible;
   background: var(--surface-page);
 }
 
 .app-viewport--workspace {
   overflow: hidden;
+  overscroll-behavior-y: contain;
 }
 
 @media (max-width: 760px) {
-  .app-shell,
+  .app-shell--workspace,
   .app-shell--drilldown {
     display: block;
     height: auto;
@@ -356,11 +359,9 @@
     min-height: 0;
     overflow: visible;
     padding-bottom: env(safe-area-inset-bottom);
-    scrollbar-gutter: auto;
   }
 
-  .app-viewport--workspace,
-  .app-viewport--results {
+  .app-viewport--workspace {
     overflow: visible;
     overflow-anchor: none;
     overscroll-behavior-y: auto;
@@ -414,6 +415,12 @@
   }
 
   .sibling-controls a span:not([aria-hidden="true"]) {
+    display: none;
+  }
+}
+
+@media (max-width: 340px) {
+  .wordmark > span:last-child {
     display: none;
   }
 }

@@ -14,11 +14,11 @@ import QuestionScore from "@/components/QuestionScore.vue";
 import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
 import { getEpisode, getSubject } from "@/lib/api";
 import {
+  contractPercent,
   duration,
   money,
   moneyEpisode,
   number,
-  percent,
   statusLabel,
 } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
@@ -27,6 +27,7 @@ import {
   subjectWorkspaceKey,
   useRunWorkspace,
 } from "@/lib/workspace-context";
+import { episodeView } from "@/router";
 
 import SubjectOverviewPane from "./SubjectOverviewPane.vue";
 
@@ -171,12 +172,14 @@ const load = async (): Promise<void> => {
 
 const warmEpisode = (trial: PublicTrialSummary): void => {
   if (!hasEpisode(trial)) return;
+  episodeView.preload();
   void getEpisode(executionId.value, targetId.value, trial.trial_id);
 };
 
 watch([executionId, targetId], () => void load(), { immediate: true });
 watch(() => route.name, applySubjectContext);
 onActivated(applySubjectContext);
+episodeView.preload();
 </script>
 
 <template>
@@ -214,7 +217,17 @@ onActivated(applySubjectContext);
             />
             <dl>
               <div><dt>Solved</dt><dd>{{ subject.successful }}/{{ run.iterations }}</dd></div>
-              <div><dt>Contract</dt><dd>{{ percent(subject.contract.compliance_rate) }}</dd></div>
+              <div>
+                <dt>Contract</dt>
+                <dd>
+                  {{
+                    contractPercent(
+                      subject.contract.compliance_rate,
+                      subject.contract.violations,
+                    )
+                  }}
+                </dd>
+              </div>
             </dl>
           </div>
         </header>
@@ -313,7 +326,7 @@ onActivated(applySubjectContext);
 }
 
 .episode-rail-heading {
-  padding: clamp(1.25rem, 2.5vw, 2rem);
+  padding: var(--workspace-panel-padding);
   border-bottom: var(--rule-default);
 }
 
@@ -341,10 +354,10 @@ onActivated(applySubjectContext);
 .episode-rail-heading h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.1rem, 3.5vw, 3.3rem);
+  font-size: var(--text-workspace-section-title);
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.052em;
-  line-height: 0.95;
+  line-height: var(--text-workspace-section-title--line-height);
 }
 
 .episode-rail-heading > p:not(.eyebrow) {
@@ -578,6 +591,15 @@ onActivated(applySubjectContext);
   }
 }
 
+@media (min-width: 761px) and (max-width: 900px) {
+  .episode-copy small {
+    overflow: visible;
+    line-height: 1.35;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}
+
 @media (max-width: 1280px) {
   .mobile-run-back {
     display: inline-flex;
@@ -591,7 +613,13 @@ onActivated(applySubjectContext);
   }
 }
 
-@media (max-height: 520px) and (min-width: 761px) {
+@media (max-width: 900px) {
+  .mobile-run-back {
+    min-height: 44px;
+  }
+}
+
+@media (max-height: 800px) and (min-width: 761px) {
   .episode-rail-heading {
     padding: 0.75rem 1rem;
   }

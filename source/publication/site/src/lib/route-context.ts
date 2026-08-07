@@ -23,7 +23,7 @@ export interface RouteContext {
 }
 
 const defaultDescription =
-  "Deep20Bench is a Twenty Questions benchmark for large language models (LLMs), testing world knowledge, question strategy, state tracking, and decision discipline.";
+  "Deep20Bench is a small, public Twenty Questions prototype for comparing how AI models ask questions, track answers, and identify a hidden subject.";
 
 const state = reactive<RouteContext>({
   title: "Deep20Bench",

@@ -2,7 +2,7 @@
 import { computed } from "vue";
 
 import { contractViolationDetails } from "@/lib/contract-violation-copy";
-import { percent, statusLabel } from "@/lib/format";
+import { contractPercent, statusLabel } from "@/lib/format";
 import type {
   PublicContractViolationTurn,
   PublicEpisodeDetail,
@@ -43,7 +43,17 @@ const violationTurns = computed(() =>
         <div><dt>Status</dt><dd>{{ statusLabel(episode.contract.status) }}</dd></div>
         <div><dt>Valid outputs</dt><dd>{{ episode.contract.valid_outputs }}</dd></div>
         <div><dt>Evaluated outputs</dt><dd>{{ episode.contract.evaluated_outputs }}</dd></div>
-        <div><dt>Compliance</dt><dd>{{ percent(episode.contract.compliance_rate) }}</dd></div>
+        <div>
+          <dt>Compliance</dt>
+          <dd>
+            {{
+              contractPercent(
+                episode.contract.compliance_rate,
+                episode.contract.violations,
+              )
+            }}
+          </dd>
+        </div>
         <div><dt>Violations</dt><dd>{{ episode.contract.violations }}</dd></div>
         <div>
           <dt>Counted-turn penalties</dt>
