@@ -699,7 +699,7 @@ const totalTrials = computed(() => {
 }
 
 .answer-roles h3 {
-  margin: 2.5rem 0 0.65rem;
+  margin: var(--space-3) 0 0.65rem;
   font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: var(--font-weight-medium);
@@ -757,7 +757,7 @@ const totalTrials = computed(() => {
 }
 
 .isolation-callout h3 {
-  margin-top: 0;
+  margin: 0 0 var(--space-4);
   color: var(--acid);
   font-family: var(--font-display);
   font-size: clamp(1.6rem, 3vw, 2.4rem);
@@ -765,7 +765,7 @@ const totalTrials = computed(() => {
 }
 
 .isolation-callout p {
-  margin-bottom: 0;
+  margin: 0;
   color: rgb(255 255 255 / 72%);
   line-height: 1.65;
 }

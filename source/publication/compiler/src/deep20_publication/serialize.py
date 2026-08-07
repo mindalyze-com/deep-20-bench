@@ -2,12 +2,28 @@ from __future__ import annotations
 
 import csv
 import io
+import json
 
 from .models import PublicationDocument, PublishedDataset
 
 
 def dataset_json(dataset: PublishedDataset) -> str:
     return dataset.model_dump_json(indent=2) + "\n"
+
+
+def dataset_schema_json() -> str:
+    schema = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        **PublishedDataset.model_json_schema(mode="serialization"),
+    }
+    return (
+        json.dumps(
+            schema,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
 
 
 def publication_document_json(document: PublicationDocument) -> str:

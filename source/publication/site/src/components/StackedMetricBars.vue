@@ -22,7 +22,6 @@ import {
   chartFont,
   chartFontWeightSemibold,
   chartTextSize,
-  chartValueDomain,
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
@@ -40,11 +39,17 @@ export interface StackedBarSegment {
   color: string;
 }
 
+export interface StackedBarBreakdown {
+  label: string;
+  display: string;
+}
+
 export interface StackedBarRow {
   label: string;
   display: string;
   values: number[];
   details: string[];
+  breakdown?: StackedBarBreakdown[];
   link?: string;
 }
 
@@ -56,6 +61,14 @@ const props = defineProps<{
 
 const router = useRouter();
 const chartHeight = computed(() => Math.max(380, props.rows.length * 48 + 84));
+const breakdownLabels = computed(() =>
+  props.rows.find((row) => (row.breakdown?.length ?? 0) > 0)?.breakdown?.map(
+    (entry) => entry.label,
+  ) ?? [],
+);
+
+const breakdownDisplay = (row: StackedBarRow, label: string): string =>
+  row.breakdown?.find((entry) => entry.label === label)?.display ?? "-";
 
 const tooltip = (
   parameters: CallbackDataParams | CallbackDataParams[],
@@ -71,11 +84,22 @@ const tooltip = (
       return `<span style="display:grid;grid-template-columns:8px 1fr auto;gap:7px;align-items:center;margin-top:5px;color:${theme.muted};font-size:.75rem"><i style="width:8px;height:8px;border-radius:50%;background:${segment.color}"></i><span>${escapeHtml(segment.label)}</span><strong style="color:${theme.inkSoft}">${escapeHtml(display)}</strong></span>`;
     })
     .join("");
+  const breakdown =
+    row.breakdown === undefined || row.breakdown.length === 0
+      ? ""
+      : [
+          `<span style="display:block;margin-top:9px;padding-top:7px;border-top:1px solid ${theme.border};color:${theme.inkSoft};font-size:.72rem;font-weight: var(--font-weight-bold);text-transform:uppercase">Adjudication breakdown</span>`,
+          ...row.breakdown.map(
+            (entry) =>
+              `<span style="display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:4px;color:${theme.muted};font-size:.75rem"><span>${escapeHtml(entry.label)}</span><strong style="color:${theme.inkSoft}">${escapeHtml(entry.display)}</strong></span>`,
+          ),
+        ].join("");
   return [
     '<div style="min-width:205px;max-width:280px;padding:3px 2px">',
     `<strong style="display:block;color:${theme.ink};font: var(--font-weight-bold) .82rem/1.35 ${chartFont}">${escapeHtml(row.label)}</strong>`,
     `<span style="display:block;margin-top:7px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(row.display)}</span>`,
     detail,
+    breakdown,
     row.link === undefined
       ? ""
       : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight: var(--font-weight-bold);text-transform:uppercase">View full run →</span>`,
@@ -92,22 +116,17 @@ const chartOption = (width: number): EChartsOption => {
   const totals = props.rows.map((row) =>
     row.values.reduce((sum, value) => sum + value, 0),
   );
-  const domain = chartValueDomain(totals);
+  const maximum = Math.max(
+    1,
+    ...totals.filter((value) => Number.isFinite(value) && value >= 0),
+  );
   const lastSeries = props.segments.length - 1;
-  const visibleValue = (row: StackedBarRow, segmentIndex: number): number => {
-    const total = row.values.reduce((sum, value) => sum + value, 0);
-    if (total <= 0) return 0;
-    return (
-      (row.values[segmentIndex] ?? 0) *
-      ((total - domain.minimum) / total)
-    );
-  };
   return {
     animation: chartAnimationEnabled(),
     animationDuration: 420,
     aria: {
       enabled: true,
-      description: `${props.directionLabel}. ${props.rows
+      description: `${props.directionLabel}. The value axis starts at zero. ${props.rows
         .map((row) => `${row.label}, ${row.display}`)
         .join(". ")}.`,
     },
@@ -126,9 +145,7 @@ const chartOption = (width: number): EChartsOption => {
     },
     xAxis: {
       type: "value",
-      scale: true,
-      min: domain.minimum,
-      max: domain.maximum,
+      min: 0,
       splitNumber: mobile ? 3 : 5,
       axisLine: { show: true, lineStyle: { color: theme.border } },
       axisTick: { show: false },
@@ -163,20 +180,6 @@ const chartOption = (width: number): EChartsOption => {
       },
     },
     series: [
-      {
-        name: "Adaptive axis offset",
-        type: "bar",
-        stack: "full-cost",
-        barWidth: mobile ? 15 : 18,
-        silent: true,
-        data: props.rows.map(() => domain.minimum),
-        itemStyle: {
-          color: "transparent",
-        },
-        emphasis: {
-          disabled: true,
-        },
-      },
       ...props.segments.map((segment, segmentIndex) => ({
         name: segment.label,
         type: "bar" as const,
@@ -194,7 +197,7 @@ const chartOption = (width: number): EChartsOption => {
                 ? [0, 3, 3, 0]
                 : 0,
         },
-        data: props.rows.map((row) => visibleValue(row, segmentIndex)),
+        data: props.rows.map((row) => row.values[segmentIndex] ?? 0),
         label:
           segmentIndex === lastSeries
             ? {
@@ -221,7 +224,7 @@ const chartOption = (width: number): EChartsOption => {
         cursor: props.rows.some((row) => row.link !== undefined)
           ? "pointer"
           : "default",
-        data: props.rows.map(() => domain.maximum),
+        data: props.rows.map(() => maximum),
         itemStyle: {
           color: "rgb(12 17 27 / 0.1%)",
         },
@@ -284,6 +287,41 @@ watch(
       </ul>
     </figcaption>
     <p class="chart-run-cue">Select a model row to view its full run.</p>
+    <details v-if="breakdownLabels.length > 0" class="stacked-chart-breakdown">
+      <summary>Exact adjudication breakdown</summary>
+      <div
+        class="stacked-chart-breakdown-table-wrap"
+        tabindex="0"
+        aria-label="Scrollable exact adjudication cost breakdown"
+      >
+        <table>
+          <caption class="visually-hidden">
+            Exact adjudication costs by model
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Model</th>
+              <th
+                v-for="label in breakdownLabels"
+                :key="label"
+                scope="col"
+                data-numeric
+              >
+                {{ label }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in rows" :key="`breakdown-${row.label}`">
+              <th scope="row">{{ row.label }}</th>
+              <td v-for="label in breakdownLabels" :key="label" data-numeric>
+                {{ breakdownDisplay(row, label) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
     <div
       ref="chartElement"
       class="stacked-chart-canvas"
@@ -294,6 +332,9 @@ watch(
         {{ row.label }}: {{ row.display }}.
         <span v-for="(detail, index) in row.details" :key="index">
           {{ segments[index]?.label }} {{ detail }}.
+        </span>
+        <span v-for="entry in row.breakdown ?? []" :key="entry.label">
+          {{ entry.label }} {{ entry.display }}.
         </span>
         <RouterLink v-if="row.link" :to="row.link" tabindex="-1">
           View full run for {{ row.label }}
@@ -355,6 +396,49 @@ figcaption i {
   font-size: var(--text-micro);
   line-height: 1.4;
   text-align: right;
+}
+
+.stacked-chart-breakdown {
+  margin: 0.75rem 0 0.25rem;
+  border-top: var(--rule-subtle);
+  border-bottom: var(--rule-subtle);
+}
+
+.stacked-chart-breakdown summary {
+  min-height: var(--control-min-size);
+  padding: 0.75rem 0;
+  color: var(--text-primary);
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.stacked-chart-breakdown-table-wrap {
+  padding-bottom: 0.75rem;
+  overflow-x: auto;
+}
+
+.stacked-chart-breakdown table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  font-size: var(--text-small);
+}
+
+.stacked-chart-breakdown th,
+.stacked-chart-breakdown td {
+  padding: 0.45rem 0.6rem;
+  border-top: var(--rule-subtle);
+  text-align: left;
+}
+
+.stacked-chart-breakdown [data-numeric] {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.stacked-chart-breakdown tbody th {
+  font-weight: var(--font-weight-semibold);
 }
 
 .stacked-chart-canvas {

@@ -46,7 +46,12 @@ from .models import (
     PublicRejectedOutput,
     PublishedDataset,
 )
-from .serialize import dataset_json, leaderboard_csv, publication_document_json
+from .serialize import (
+    dataset_json,
+    dataset_schema_json,
+    leaderboard_csv,
+    publication_document_json,
+)
 from .split import split_publication
 
 app = typer.Typer(help="Compile and render the independent Deep20Bench publication site.")
@@ -101,8 +106,8 @@ _EDITORIAL_PAGES = (
         ),
     ),
     _EditorialPage(
-        route="story",
-        browser_title="Story · Deep20Bench",
+        route="about",
+        browser_title="About · Deep20Bench",
         heading="A shared idea, built into a benchmark.",
         description="Read how Deep20Bench began, see project news, and review related research.",
     ),
@@ -114,6 +119,7 @@ _EDITORIAL_PAGES = (
     ),
 )
 _EDITORIAL_ROUTES = tuple(page.route for page in _EDITORIAL_PAGES)
+_EDITORIAL_ALIASES: dict[str, str] = {"story": "about"}
 _CANONICAL_LINK_PATTERN = re.compile(r'<link rel="canonical" href="[^"]*" />')
 _OPEN_GRAPH_URL_PATTERN = re.compile(r'<meta property="og:url" content="[^"]*" />')
 _ROBOTS_META_PATTERN = re.compile(r'<meta name="robots" content="[^"]*" />')
@@ -418,8 +424,12 @@ def _write_public_data(
     staged_directory = Path(tempfile.mkdtemp(prefix=".deep20-data-", dir=public_directory))
     backup_directory = public_directory / ".deep20-data-previous"
     try:
-        (staged_directory / "deep20bench-v8.json").write_text(
+        (staged_directory / "deep20bench-v9.json").write_text(
             dataset_json(dataset),
+            encoding="utf-8",
+        )
+        (staged_directory / "deep20bench-v9.schema.json").write_text(
+            dataset_schema_json(),
             encoding="utf-8",
         )
         (staged_directory / "leaderboard.csv").write_text(
@@ -505,7 +515,7 @@ def _route_shells(bundle: PublicationDataBundle) -> tuple[str, ...]:
         (f"runs/{document.execution_id}/subjects/{document.target_id}/episodes/{document.trial_id}")
         for document in bundle.episodes
     )
-    return (*_EDITORIAL_ROUTES, *runs, *subjects, *episodes)
+    return (*_EDITORIAL_ROUTES, *_EDITORIAL_ALIASES, *runs, *subjects, *episodes)
 
 
 def _canonical_route_url(canonical_url: str, route: str) -> str:
@@ -517,7 +527,8 @@ def _sitemap_routes() -> tuple[str, ...]:
 
 
 def _editorial_page(route: str) -> _EditorialPage | None:
-    return next((page for page in _EDITORIAL_PAGES if page.route == route), None)
+    canonical_route = _EDITORIAL_ALIASES.get(route, route)
+    return next((page for page in _EDITORIAL_PAGES if page.route == canonical_route), None)
 
 
 def _decimal_text(value: Decimal) -> str:
@@ -587,6 +598,7 @@ def _editorial_fallback_html(
             <a href="{safe_base}">Overview</a>
             <a href="{safe_base}results/">Results</a>
             <a href="{safe_base}methodology/">Method</a>
+            <a href="{safe_base}about/">About</a>
             <a href="{safe_base}data/">Data</a>
           </nav>
         </div>
@@ -721,13 +733,14 @@ def _write_route_shells(
         shell = output_root / route / "index.html"
         shell.parent.mkdir(parents=True, exist_ok=True)
         editorial_page = _editorial_page(route)
+        canonical_route = _EDITORIAL_ALIASES.get(route, route)
         route_html = _route_shell_html(
             entry_html,
             bundle.manifest.site.base_path,
             route=route,
             bundle=bundle,
-            canonical_url=_canonical_route_url(canonical_url, route),
-            indexable=editorial_page is not None,
+            canonical_url=_canonical_route_url(canonical_url, canonical_route),
+            indexable=editorial_page is not None and route not in _EDITORIAL_ALIASES,
         )
         shell.write_text(route_html, encoding="utf-8")
     not_found_html = _route_shell_html(

@@ -5,28 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Deep20Bench is a Twenty Questions benchmark for large language models (LLMs), testing world knowledge, question strategy, state tracking, and decision discipline."
+      content="Deep20Bench is a small, public Twenty Questions prototype for comparing how AI models ask questions, track answers, and identify a hidden subject."
     />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="theme-color" content="#0c111b" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Deep20Bench · Twenty Questions for LLMs" />
+    <meta property="og:title" content="Deep20Bench · Twenty Questions AI Pilot" />
     <meta
       property="og:description"
-      content="Deep20Bench tests how well language models ask questions, track answers, and identify a hidden subject."
+      content="A small public pilot comparing 12 model versions and settings across seven subjects."
     />
     <meta property="og:url" content="https://mindalyze-com.github.io/deep-20-bench/" />
-    <meta property="og:image" content="https://mindalyze-com.github.io/deep-20-bench/og.png" />
+    <meta property="og:image" content="https://mindalyze-com.github.io/deep-20-bench/og.webp" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Deep20Bench · Twenty Questions for LLMs" />
+    <meta name="twitter:title" content="Deep20Bench · Twenty Questions AI Pilot" />
     <meta
       name="twitter:description"
-      content="Deep20Bench tests how well language models ask questions, track answers, and identify a hidden subject."
+      content="A small public pilot comparing 12 model versions and settings across seven subjects."
     />
     <link rel="canonical" href="https://mindalyze-com.github.io/deep-20-bench/" />
     <link rel="icon" href="/deep-20-bench/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/deep-20-bench/static.css" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Deep20Bench","alternateName":["Deep20 Bench","D20B"],"description":"Deep20Bench is a Twenty Questions benchmark for large language models (LLMs), testing world knowledge, question strategy, state tracking, and decision discipline.","url":"https://mindalyze-com.github.io/deep-20-bench/","creator":{"@type":"Person","name":"Patrick Heusser"},"dateModified":"2026-08-06T21:20:36.178368Z","isAccessibleForFree":true,"keywords":["Deep20Bench","Deep20 Bench","large language models","large language model benchmark","LLM benchmark","Twenty Questions","question strategy","state tracking"],"variableMeasured":["question score","success rate","contract compliance","cost","runtime"],"measurementTechnique":"7 subjects, 5 repeated trials per subject, 12 evaluated models","distribution":[{"@type":"DataDownload","encodingFormat":"text/csv","contentUrl":"https://mindalyze-com.github.io/deep-20-bench/data/leaderboard.csv"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://mindalyze-com.github.io/deep-20-bench/data/deep20bench-v8.json"}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Deep20Bench","alternateName":["Deep20 Bench","D20B"],"description":"Deep20Bench is a small, public Twenty Questions prototype for comparing how AI models ask questions, track answers, and identify a hidden subject.","url":"https://mindalyze-com.github.io/deep-20-bench/","creator":{"@type":"Person","name":"Patrick Heusser"},"dateModified":"2026-08-07T17:09:18.076596Z","isAccessibleForFree":true,"keywords":["Deep20Bench","Deep20 Bench","large language models","large language model benchmark","LLM benchmark","Twenty Questions","question strategy","state tracking"],"variableMeasured":["question score","success rate","contract compliance","cost","runtime"],"measurementTechnique":"7 subjects, 5 repeated trials per subject, 12 evaluated models","distribution":[{"@type":"DataDownload","encodingFormat":"text/csv","contentUrl":"https://mindalyze-com.github.io/deep-20-bench/data/leaderboard.csv"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://mindalyze-com.github.io/deep-20-bench/data/deep20bench-v9.json"}]}</script>
     <script>
       const documentRoot = document.documentElement;
       if (window.location.protocol === "file:") {
@@ -118,10 +118,10 @@
         display: none;
       }
     </style>
-    <title>Deep20Bench · Twenty Questions Benchmark for LLMs</title>
-    <script type="module" crossorigin src="/deep-20-bench/_assets/index-C8V5gpRL.js"></script>
-    <link rel="modulepreload" crossorigin href="/deep-20-bench/_assets/runtime-core.esm-bundler-9Jv_OLm3.js">
-    <link rel="stylesheet" crossorigin href="/deep-20-bench/_assets/index-BkcJShL1.css">
+    <title>Deep20Bench · Twenty Questions AI Pilot</title>
+    <script type="module" crossorigin src="/deep-20-bench/_assets/index-YyP0hjSu.js"></script>
+    <link rel="modulepreload" crossorigin href="/deep-20-bench/_assets/_plugin-vue_export-helper-D43SKh7K.js">
+    <link rel="stylesheet" crossorigin href="/deep-20-bench/_assets/index-F_1O5e_z.css">
   </head>
   <body>
     <div id="app">
@@ -141,36 +141,66 @@
 
         <section class="static-hero">
           <div class="static-hero-copy">
-            <p class="static-eyebrow">Independent benchmark · Twenty Questions for LLMs</p>
-            <h1>Deep20Bench: can an LLM ask its way to the answer?</h1>
+            <p class="static-eyebrow">Prototype · Twenty Questions for AI models</p>
+            <h1>How well can AI models play Twenty Questions?</h1>
             <p class="static-lead">
-              A model identifies a hidden person, place, or thing by asking yes-or-no
-              questions. Deep20Bench repeats this game across multiple subjects and rounds. The
-              average number of questions becomes the Deep20Bench score - lower is better. The
-              benchmark measures knowledge, question strategy, state tracking, and decision
-              discipline.
+              Deep20Bench tests how well AI models play the guessing game where one player thinks
+              of a person or character and the other has to narrow it down with yes-or-no
+              questions.
             </p>
+            <div class="static-hero-details">
+              <article>
+                <p class="static-hero-detail-label">How scoring works</p>
+                <p>
+                  The model is told nothing but the broad category (for example, "video game
+                  character") and gets up to 50 questions - more than the
+                  traditional twenty, giving models more room to finish a round. Each question,
+                  wrong guess, or reply that does not follow the required format adds one point. If
+                  the model never finds the answer, the round scores 51. Scores are
+                  averaged across all rounds, and lower is better.
+                </p>
+              </article>
+              <article class="static-pilot-note">
+                <p class="static-hero-detail-label">Current pilot</p>
+                <p>
+                  All results, game transcripts, and scoring data are public. The current pilot
+                  compares 12 model versions and settings across
+                  seven subjects, with
+                  five rounds per subject. The concept works and
+                  the first step is complete. Expanding the pilot is straightforward; cost is the
+                  main constraint.
+                </p>
+                <div class="static-discussions">
+                  <p>Use GitHub Discussions to suggest what we should test next.</p>
+                  <a
+                    href="https://github.com/mindalyze-com/deep-20-bench/discussions"
+                    target="_blank"
+                    rel="noreferrer"
+                  >Join discussion <span aria-hidden="true">↗</span><span class="static-visually-hidden"> (opens in a new tab)</span></a>
+                </div>
+              </article>
+            </div>
             <div class="static-actions">
               <a class="static-button static-button--primary" href="/deep-20-bench/results/">
-                See the benchmark <span aria-hidden="true">→</span>
+                Explore pilot results <span aria-hidden="true">→</span>
               </a>
               <a class="static-button static-button--quiet" href="#executive-summary">
-                Read the summary
+                See what it tests
               </a>
             </div>
           </div>
           <dl class="static-facts" aria-label="Benchmark size">
-            <div><dt>Models tested</dt><dd>12</dd></div>
+            <div><dt>Model versions and settings</dt><dd>12</dd></div>
             <div><dt>Subjects</dt><dd>7</dd></div>
-            <div><dt>Trials per model</dt><dd>35</dd></div>
-            <div><dt>Official trials</dt><dd>420</dd></div>
+            <div><dt>Rounds per model</dt><dd>35</dd></div>
+            <div><dt>Pilot rounds</dt><dd>420</dd></div>
           </dl>
         </section>
 
         <section class="static-section static-summary" id="executive-summary">
           <div class="static-section-heading">
-            <p class="static-eyebrow">Executive summary</p>
-            <h2>A focused test of adaptive reasoning.</h2>
+            <p class="static-eyebrow">What this pilot tests</p>
+            <h2>A focused test of adaptive questioning.</h2>
             <p>
               Deep20Bench tests whether a model can turn broad knowledge into a useful sequence
               of questions, retain the answers, and commit to an exact guess.
@@ -198,19 +228,19 @@
         <section class="static-section static-results">
           <div class="static-section-heading static-section-heading--split">
             <div>
-              <p class="static-eyebrow">Current official results</p>
-              <h2>Which models ask best?</h2>
+              <p class="static-eyebrow">Current pilot results</p>
+              <h2>How the current runs compare.</h2>
             </div>
-            <p>Published August 6, 2026. Every model completes 35 trials.</p>
+            <p>Published August 7, 2026. Every model completes 35 trials.</p>
           </div>
 
           <div class="static-result-card">
             <div class="static-winner-copy">
-              <p class="static-eyebrow">Official leader</p>
+              <p class="static-eyebrow">Lowest average score in this pilot</p>
               <h3>Claude Fable 5 (high)</h3>
               <p>
-                The current leader averages <strong>12.06</strong>
-                questions. The 12-model cohort spans 12.06–32.23. Lower is better.
+                The lowest current average is <strong>12.06</strong>
+                questions. The 12-model pilot spans 12.06–32.23. Lower is better.
               </p>
             </div>
             <div class="static-score" aria-label="Question score 12.06">
@@ -218,7 +248,7 @@
               <span>question score</span>
             </div>
           </div>
-          <ol class="static-leaders" aria-label="Top three official results">
+          <ol class="static-leaders" aria-label="Top three pilot results">
 
               <li>
                 <span class="static-rank">1</span>
@@ -305,7 +335,7 @@
             </p>
             <div class="static-actions">
               <a class="static-button static-button--primary" href="/deep-20-bench/data/leaderboard.csv">Download CSV</a>
-              <a class="static-button static-button--quiet" href="/deep-20-bench/data/deep20bench-v8.json">Download JSON</a>
+              <a class="static-button static-button--quiet" href="/deep-20-bench/data/deep20bench-v9.json">Download JSON</a>
             </div>
           </div>
         </section>
@@ -313,9 +343,13 @@
         <footer class="static-footer">
           <p><strong>Deep20Bench</strong> · Created by Patrick Heusser</p>
           <nav aria-label="Publication resources">
-            <a href="/deep-20-bench/story/">Origin and prior work</a>
-            <a href="/deep-20-bench/data/">Data and citation</a>
-            <a href="https://github.com/mindalyze-com/deep-20-bench">Source code</a>
+            <a href="/deep-20-bench/about/">Origin and prior work</a>
+            <a href="https://github.com/mindalyze-com/deep-20-bench/blob/main/CITATION.cff" rel="noreferrer">How to cite</a>
+            <a href="https://github.com/mindalyze-com/deep-20-bench/blob/main/LICENSES/CC-BY-4.0.txt" rel="noreferrer">Result data licence - CC BY 4.0</a>
+            <a href="https://github.com/mindalyze-com/deep-20-bench/blob/main/LICENSE.md" rel="noreferrer">Software licensing - source-available</a>
+            <a href="https://github.com/mindalyze-com/deep-20-bench/discussions" rel="noreferrer">Suggest a model or contact us</a>
+            <a href="https://github.com/mindalyze-com/deep-20-bench/issues/new/choose" rel="noreferrer">Report an error</a>
+            <a href="https://github.com/mindalyze-com/deep-20-bench" rel="noreferrer">Source repository</a>
           </nav>
         </footer>
       </main>

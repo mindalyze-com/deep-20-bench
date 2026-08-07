@@ -411,10 +411,10 @@ Published result data and documentation use CC BY 4.0 so they may be reused, inc
 commercially, with attribution. The repository provides a precise attribution statement and
 `CITATION.cff`.
 
-Project-owned Python and TypeScript code use PolyForm Noncommercial 1.0.0. The project is
-described as **source-available**, not OSI open source. Commercial use of the code requires
-separate permission. The exact scope and notices should receive legal review before the first
-public release.
+Project-owned Python and TypeScript code are source-available under a dual-license model:
+PolyForm Noncommercial 1.0.0 for noncommercial use, with separate commercial licenses available.
+The project is not described as OSI open source. The exact scope and notices should receive legal
+review before the first public release.
 
 The first website release covers the transparent public-core cohort. Future private or rotating
 holdout subjects remain outside the public repository, publication inputs, and generated site

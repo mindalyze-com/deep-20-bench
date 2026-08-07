@@ -22,7 +22,6 @@ import {
   chartFont,
   chartFontWeightSemibold,
   chartTextSize,
-  chartValueDomain,
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
@@ -113,14 +112,19 @@ const chartOption = (width: number): EChartsOption => {
   const axisFontSize = chartTextSize(width, 10, 11);
   const categoryFontSize = chartTextSize(width, 10, 12);
   const valueFontSize = chartTextSize(width, 11, 14);
-  const domain = chartValueDomain(props.items.map((item) => item.value));
+  const maximum = Math.max(
+    1,
+    ...props.items
+      .map((item) => item.value)
+      .filter((value) => Number.isFinite(value) && value >= 0),
+  );
   return {
     animation: chartAnimationEnabled(),
     animationDuration: 420,
     animationEasing: "cubicOut",
     aria: {
       enabled: true,
-      description: `${props.directionLabel}. ${props.items
+      description: `${props.directionLabel}. The value axis starts at zero. ${props.items
         .map((item, index) => `${index + 1}. ${item.label}, ${item.display}`)
         .join(". ")}.`,
     },
@@ -138,9 +142,7 @@ const chartOption = (width: number): EChartsOption => {
     },
     xAxis: {
       type: "value",
-      scale: true,
-      min: domain.minimum,
-      max: domain.maximum,
+      min: 0,
       splitNumber: mobile ? 3 : 5,
       axisLine: {
         show: true,
@@ -222,7 +224,7 @@ const chartOption = (width: number): EChartsOption => {
         cursor: props.items.some((item) => item.link !== undefined)
           ? "pointer"
           : "default",
-        data: props.items.map(() => domain.maximum),
+        data: props.items.map(() => maximum),
         itemStyle: {
           color: "rgb(12 17 27 / 0.1%)",
         },

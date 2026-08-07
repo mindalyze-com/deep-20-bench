@@ -11,7 +11,6 @@ import pytest
 from deep20_publication.cli import _load_run, _read_json, _read_yaml
 from deep20_publication.compiler import (
     _average,
-    _public_oracle_support_role,
     _public_run_comparison,
     _public_run_totals,
     _rank,
@@ -36,22 +35,18 @@ from deep20_publication.models import (
     CompletedTrialSummary,
     ContractReliabilitySnapshot,
     EpisodeResultArtifact,
-    EvidenceReviewConfigurationSnapshot,
     LeaderboardRow,
     LoadedEpisode,
     LoadedRun,
     PartialTrialMetrics,
-    PublicEpisodeModelVersion,
     PublicModel,
     PublicRun,
     PublicRunComparison,
     PublicRunCostTotals,
+    PublicRunModel,
     PublicRunTotals,
     PublishedDataset,
-    RecoveryPolicySnapshot,
     RepairAggregateSnapshot,
-    ResolvedProviderUsageSnapshot,
-    RoleProviderUsageSnapshot,
     SupersededInfrastructureAttemptSnapshot,
     TrialArtifactReferences,
     TrialIdentity,
@@ -71,6 +66,14 @@ def _episode_source() -> str:
     paths = (
         SITE_SOURCE / "views" / "EpisodeView.vue",
         *sorted((SITE_SOURCE / "components" / "episode").glob("*.vue")),
+    )
+    return "\n".join(path.read_text(encoding="utf-8") for path in paths)
+
+
+def _run_source() -> str:
+    paths = (
+        SITE_SOURCE / "views" / "workspace" / "RunOverviewPane.vue",
+        *sorted((SITE_SOURCE / "components" / "run").glob("*.vue")),
     )
     return "\n".join(path.read_text(encoding="utf-8") for path in paths)
 
@@ -189,6 +192,7 @@ def _public_run(
                 else "question_score_unavailable"
             ),
         ),
+        models=(),
         subjects=(),
     )
 
@@ -1197,19 +1201,32 @@ def test_compiler_uses_run_model_metadata_and_requires_all_trials() -> None:
     assert dataset.provenance.lab_run_count == 0
     assert dataset.provenance.built_at == datetime(2026, 7, 30, 12, 34, 56, tzinfo=UTC)
     assert dataset.models[0].configuration_hash == (loaded.manifest.model.configuration_hash)
-    episode = dataset.official_runs[0].subjects[0].trials[0].episode
-    assert episode is not None
-    assert episode.oracle_support.reviewer.requested_model == ("test-provider/current-model")
-    assert episode.oracle_support.judge.requested_model == "test-provider/current-model"
-    assert episode.oracle_support.reviewer.calls == 0
-    assert episode.oracle_support.judge.calls == 0
-    guesser_model = next(model for model in episode.models if model.role == "guesser")
-    validator_model = next(model for model in episode.models if model.role == "validator")
+    run_models = dataset.official_runs[0].models
+    assert tuple(model.role for model in run_models) == (
+        "guesser",
+        "oracle",
+        "reviewer",
+        "judge",
+        "validator",
+    )
+    guesser_model = run_models[0]
+    reviewer_model = run_models[2]
+    judge_model = run_models[3]
+    validator_model = run_models[4]
+    assert reviewer_model.requested_model == "test-provider/current-model"
+    assert judge_model.requested_model == "test-provider/current-model"
+    assert reviewer_model.calls == 0
+    assert judge_model.calls == 0
     assert guesser_model.provider_routing == "exact"
     assert guesser_model.providers[0].provider == "test-provider"
     assert guesser_model.providers[0].calls == 1
     assert validator_model.providers[0].cost_usd == Decimal("0.02")
     assert validator_model.fallback_calls == 1
+    episode = dataset.official_runs[0].subjects[0].trials[0].episode
+    assert episode is not None
+    episode_json = episode.model_dump_json()
+    assert '"models"' not in episode_json
+    assert '"oracle_support"' not in episode_json
     assert episode.guesser_disclosure is not None
     assert episode.guesser_disclosure.system_message == "SYNTHETIC_GUESSER_SYSTEM"
     assert episode.guesser_disclosure.begin_message.startswith(
@@ -1229,54 +1246,17 @@ def test_subject_catalog_hash_matches_benchmark_producer_contract() -> None:
     assert subject_hash == "2cb28dee2ab7639a755940e30525b011f5683d3971fcc0d70bcb7cdd29baea0a"
 
 
-def test_public_judge_support_exposes_safe_resolved_provider_totals() -> None:
-    configuration = EvidenceReviewConfigurationSnapshot(
-        gateway="openrouter",
-        model="anthropic/claude-opus-5",
-        provider="openrouter-auto",
-        provider_routing="automatic",
-        reasoning_effort="medium",
-        allow_fallbacks=True,
-        max_output_tokens=4_096,
-        timeout_seconds=120,
-        recovery=RecoveryPolicySnapshot.model_validate(_recovery_policy()),
-    )
-    usage = RoleProviderUsageSnapshot(
-        providers=(
-            ResolvedProviderUsageSnapshot(
-                provider="Amazon Bedrock",
-                calls=2,
-                cost_usd=Decimal("0.02"),
-                latency_ms=3_000,
-            ),
-        ),
-        fallback_calls=1,
-    )
-
-    published = _public_oracle_support_role(
-        configuration,
-        calls=2,
-        cost_usd=Decimal("0.02"),
-        provider_usage=usage,
-    )
-
-    assert published.provider_routing == "automatic"
-    assert published.requested_provider == "openrouter-auto"
-    assert published.providers == usage.providers
-    assert published.fallback_calls == 1
-    serialized = published.model_dump_json()
-    assert "provider_trace" not in serialized
-    assert "response_id" not in serialized
-
-
-def test_legacy_public_support_role_defaults_to_exact_without_route_totals() -> None:
-    from deep20_publication.models import PublicOracleSupportRole
-
-    legacy = PublicOracleSupportRole.model_validate(
+def test_public_run_model_defaults_to_exact_without_route_totals() -> None:
+    legacy = PublicRunModel.model_validate(
         {
-            "requested_model": "anthropic/claude-opus-5",
-            "requested_provider": "anthropic",
+            "role": "guesser",
+            "configuration_id": "M-legacy",
+            "requested_model": "test/legacy",
+            "requested_provider": "test-provider",
+            "resolved_models": ["test/legacy"],
+            "resolved_providers": ["Test Provider"],
             "reasoning_effort": "medium",
+            "prompt_version": "legacy-v1",
             "calls": 3,
             "cost_usd": "0.03",
         }
@@ -1287,31 +1267,11 @@ def test_legacy_public_support_role_defaults_to_exact_without_route_totals() -> 
     assert legacy.unreported_calls == 0
 
 
-def test_legacy_public_episode_model_defaults_to_exact_without_route_totals() -> None:
-    legacy = PublicEpisodeModelVersion.model_validate(
-        {
-            "role": "guesser",
-            "configuration_id": "M-legacy",
-            "requested_model": "test/legacy",
-            "requested_provider": "test-provider",
-            "resolved_models": ["test/legacy"],
-            "resolved_providers": ["Test Provider"],
-            "reasoning_effort": "medium",
-            "prompt_version": "legacy-v1",
-        }
-    )
-
-    assert legacy.provider_routing == "exact"
-    assert legacy.providers == ()
-    assert legacy.unreported_calls == 0
-
-
-def test_episode_drilldown_discloses_provider_routing_and_legacy_state() -> None:
-    source = _episode_source()
+def test_run_overview_discloses_provider_routing_and_legacy_state() -> None:
+    source = _run_source()
 
     assert "Resolved provider details" in source
     assert "OpenRouter automatic routing" in source
-    assert "row.values.providers" in source
     assert "model.providers" in source
     assert "model.resolved_providers" in source
     assert "Fallback calls" in source
@@ -1381,7 +1341,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
     assert "Earlier official runs" not in report_source
     assert "manifest.json" in static_home_source
     assert "leaderboard.json" in static_home_source
-    assert "deep20bench-v8.json" in static_home_source
+    assert "deep20bench-v9.json" in static_home_source
     for private_source in (
         "guesser_conversation",
         "subject_snapshot",
@@ -1443,7 +1403,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
 
 
 def test_published_contract_violations_include_only_sanitized_guesser_text() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v8.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
     dataset = PublishedDataset.model_validate_json(dataset_path.read_text(encoding="utf-8"))
     violations = tuple(
         turn
@@ -1476,17 +1436,17 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     episode_source = _episode_source()
     workspace = views / "workspace"
     subject_source = (workspace / "SubjectWorkspaceView.vue").read_text(encoding="utf-8")
-    run_source = "\n".join(
-        (workspace / filename).read_text(encoding="utf-8")
-        for filename in ("BenchmarkWorkspaceView.vue", "RunOverviewPane.vue")
+    run_source = (
+        (workspace / "BenchmarkWorkspaceView.vue").read_text(encoding="utf-8")
+        + _run_source()
+        + (views.parent / "lib" / "run-roles.ts").read_text(encoding="utf-8")
     )
     leaderboard_source = (views / "HomeView.vue").read_text(encoding="utf-8")
 
     assert "Episode cost" in episode_source
     assert "detail: `All ${props.episode.total_turns} turns`" in episode_source
     assert "Full run {{ money(run.total_cost_usd) }}" in episode_source
-    assert 'role: "Judge"' in episode_source
-    assert "Blind review roles." in episode_source
+    assert "Judge" in run_source
     assert "Exact Guesser setup" in episode_source
     assert "Recorded Guesser output" in episode_source
     assert "Why this output was rejected" in episode_source
@@ -1508,24 +1468,44 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     assert "Complete benchmark" in run_source
     assert "Model under test" in run_source
     assert 'label="Question score"' in run_source
-    assert 'class="workspace-metrics"' in run_source
+    assert 'class="workspace-metrics workspace-detail-boundary"' in run_source
     assert "Run ledger." in run_source
     assert "Guesser time" in run_source
     assert "Primary Oracle" in run_source
+    assert "Game support" in run_source
     assert "run.totals.total_tokens" in run_source
     assert "current.totals.guesser_think_time_ms" in run_source
-    assert "{ label: 'Run cost', value: money(row.total_cost_usd) }" in leaderboard_source
+    assert "{ label: 'Benchmark run cost', value: money(row.total_cost_usd) }" in leaderboard_source
 
 
 def test_generated_homepage_matches_the_official_result_state() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v8.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
     dataset = json.loads(dataset_path.read_text(encoding="utf-8"))
     evaluated = [row for row in dataset["leaderboard"] if row["status"] == "evaluated"]
     homepage = (
         REPOSITORY / "source" / "publication" / "site" / "src" / "views" / "HomeView.vue"
     ).read_text(encoding="utf-8")
+    homepage_copy = " ".join(homepage.split())
     data_page = (
         REPOSITORY / "source" / "publication" / "site" / "src" / "views" / "DataView.vue"
+    ).read_text(encoding="utf-8")
+    site_footer = (
+        REPOSITORY
+        / "source"
+        / "publication"
+        / "site"
+        / "src"
+        / "components"
+        / "SiteFooter.vue"
+    ).read_text(encoding="utf-8")
+    site_resources = (
+        REPOSITORY
+        / "source"
+        / "publication"
+        / "site"
+        / "src"
+        / "lib"
+        / "site-resources.ts"
     ).read_text(encoding="utf-8")
     model_run_link = (
         REPOSITORY / "source" / "publication" / "site" / "src" / "components" / "ModelRunLink.vue"
@@ -1538,9 +1518,6 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
         / "src"
         / "components"
         / "MobileResultCard.vue"
-    ).read_text(encoding="utf-8")
-    run_table_action = (
-        REPOSITORY / "source" / "publication" / "site" / "src" / "components" / "RunTableAction.vue"
     ).read_text(encoding="utf-8")
     methodology = (
         REPOSITORY / "source" / "publication" / "site" / "src" / "views" / "MethodologyView.vue"
@@ -1555,9 +1532,16 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
         / "IllustrativeRoundExample.vue"
     ).read_text(encoding="utf-8")
 
-    assert "Deep20Bench: can an LLM ask its way to the answer?" in homepage
-    assert "Why this game works as an LLM benchmark" in homepage
-    assert "The task requires several core competencies." in homepage
+    assert "How well can AI models play Twenty Questions?" in homepage
+    assert "Prototype · Twenty Questions for AI models" in homepage
+    assert "more than the traditional twenty" in homepage
+    assert "The game combines several abilities." in homepage
+    assert "The concept works and the first step is complete." in homepage_copy
+    assert "cost is the main constraint." in homepage_copy
+    assert "small first step" not in homepage
+    assert "not a definitive ranking" not in homepage
+    assert "Use GitHub Discussions to suggest what we should test next." in homepage
+    assert "https://github.com/mindalyze-com/deep-20-bench/discussions" in homepage
     assert "Use all prior questions and answers to plan the next question." in homepage
     assert "The Guesser asks. Three roles determine the answer." in homepage
     assert "The Guesser is the LLM under test" in homepage
@@ -1610,40 +1594,39 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert 'class="protocol-flow"' not in homepage
     assert "Homepage built" not in homepage
     assert "home-build-note" not in homepage
-    assert "Publication built" in data_page
-    assert "App built" in data_page
-    assert "getAppBuild" in data_page
-    assert '<time :datetime="manifest.provenance.built_at">' in data_page
-    assert "isoDateTime(manifest.provenance.built_at)" in data_page
-    assert '<time :datetime="appBuild.built_at">' in data_page
-    assert "isoDateTime(appBuild.built_at)" in data_page
-    assert "font-size: 0.92em" not in data_page
-    assert ".data-build-note p > span" in data_page
-    assert "font-family: inherit" in data_page
-    assert "font-family: var(--font-mono)" not in data_page
-    assert "opacity: 0.68" not in data_page
-    assert data_page.index('class="data-build-note site-boundary-shell"') > data_page.index(
-        '<section class="data-contract"'
-    )
+    assert "Publication updated" in site_footer
+    assert "App built" not in site_footer
+    assert "getAppBuild" not in site_footer
+    assert ':datetime="publicationUpdatedAt"' in site_footer
+    assert "dateTime(publicationUpdatedAt)" in site_footer
+    assert "site-resources" in site_footer
+    assert "How to cite" in site_resources
+    assert "Report an error" in site_resources
+    assert "source-available under a dual-license model" in site_footer
+    assert "Software licensing - source-available" in site_resources
+    assert "data-build-note" not in data_page
+    assert "deep20bench-v9.schema.json" in data_page
+    assert "Verify and reuse" in data_page
+    assert "CC BY 4.0" in data_page
+    assert ".model.display_name" in data_page
+    assert "Read the publication method" in data_page
     if evaluated:
         assert '<template v-if="evaluated.length > 0">' in homepage
         assert "<ComparisonRankingTable" in homepage
         assert 'variant="home"' in homepage
         assert '@click="openRun(row)"' in homepage
         assert "<ModelRunLink" in homepage
-        assert "<RunTableAction" in homepage
+        assert "<RunTableAction" not in homepage
         assert "<MobileResultCard" in homepage
         assert 'variant="table"' in homepage
-        assert "tone: 'primary'" in homepage
+        assert "tone: 'primary'" not in homepage
         assert "@click.stop" in model_run_link
-        assert "model-run-link-cue" not in model_run_link
-        assert "View <span" in run_table_action
-        assert "View full run for ${name}" in run_table_action
+        assert "model-run-link-chevron" in model_run_link
         assert "Explore full run · questions, answers & evidence" in mobile_result_card
         assert "result-row--navigable" in homepage
     else:
         assert '<article v-else class="empty-results">' in homepage
-    assert "Official comparison in progress." in homepage
+    assert "Pilot comparison in progress." in homepage
 
 
 def test_generated_drilldown_pages_keep_current_location_visible() -> None:
@@ -1688,7 +1671,7 @@ def test_drilldown_navigation_is_sticky_and_scroll_safe() -> None:
     assert "prefers-reduced-motion: reduce" in global_css
     assert "scrollPositions" in app_source
     assert "app-viewport--workspace" in app_source
-    assert "SiteFooter" not in app_source
+    assert '<SiteFooter v-if="route.meta.workspace !== true" />' in app_source
     assert ".site-footer" not in global_css
     assert "<Transition" not in app_source
     assert "panel-deeper" not in global_css
@@ -1701,7 +1684,7 @@ def test_drilldown_navigation_is_sticky_and_scroll_safe() -> None:
 
 
 def test_generated_question_scores_use_subject_averages_then_average() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v8.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
     dataset = json.loads(dataset_path.read_text(encoding="utf-8"))
 
     assert dataset["score_policy"]["version"] == "average-then-average-v1"
@@ -1737,7 +1720,7 @@ def test_generated_question_scores_use_subject_averages_then_average() -> None:
 
 
 def test_generated_efficiency_distance_is_reproducible_from_public_decimals() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v8.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
     dataset = PublishedDataset.model_validate_json(dataset_path.read_text(encoding="utf-8"))
     rows = tuple(row for row in dataset.leaderboard if row.ideal_distance_rank is not None)
 
@@ -1849,7 +1832,7 @@ def test_pre_question_score_run_compiles_without_migration() -> None:
 
     assert tuple(run.execution_id for run in dataset.official_runs) == (execution_id,)
     assert dataset.official_runs[0].question_score == Decimal("17.74285714285714285714285714")
-    assert dataset.schema_version == 8
+    assert dataset.schema_version == 9
     assert dataset.leaderboard[0].efficiency_rank == 1
     assert dataset.leaderboard[0].ideal_distance_rank == 1
     assert dataset.leaderboard[0].ideal_distance_score == 0
@@ -1893,9 +1876,10 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert 'renderer: "svg"' in component
     assert "xAxis:" in component
     assert "chartValueDomain" in responsive_runtime
-    assert "min: domain.minimum" in component
-    assert "max: domain.maximum" in component
-    assert "scale: true" in component
+    assert "chartValueDomain" not in component
+    assert "min: 0" in component
+    assert "scale: true" not in component
+    assert "The value axis starts at zero" in component
     assert "aria:" in component
     assert "tooltip:" in component
     assert "useResponsiveEChart" in component
@@ -1913,10 +1897,15 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert 'radius: ["58%", "83%"]' in cost_donut
     assert "BarChart" in stacked_costs
     assert 'stack: "full-cost"' in stacked_costs
-    assert 'name: "Adaptive axis offset"' in stacked_costs
-    assert "visibleValue" in stacked_costs
-    assert "min: domain.minimum" in stacked_costs
-    assert "max: domain.maximum" in stacked_costs
+    assert 'name: "Adaptive axis offset"' not in stacked_costs
+    assert "visibleValue" not in stacked_costs
+    assert "chartValueDomain" not in stacked_costs
+    assert "min: 0" in stacked_costs
+    assert "scale: true" not in stacked_costs
+    assert "row.values[segmentIndex] ?? 0" in stacked_costs
+    assert "Exact adjudication breakdown" in stacked_costs
+    assert "Exact adjudication costs by model" in stacked_costs
+    assert 'scope="row"' in stacked_costs
     assert "ScatterChart" in efficiency_scatter
     assert "LineChart" in efficiency_scatter
     assert "Pareto-efficient" in efficiency_scatter
@@ -1978,19 +1967,14 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     ):
         assert "aria:" in chart_source
         assert 'renderer: "svg"' in chart_source
-    for value_axis_chart in (
-        component,
-        stacked_costs,
-        score_dot_plot,
-    ):
-        assert "chartValueDomain" in value_axis_chart
-        assert "scale: true" in value_axis_chart
+    assert "chartValueDomain" in score_dot_plot
+    assert "scale: true" in score_dot_plot
     assert "Question score · lower is better" in score_dot_plot
     assert "<ScoreDotPlot" in homepage
     assert "@media (max-width: 620px)" in component
 
 
-def test_mobile_results_use_one_scroller_and_coalesce_chart_work() -> None:
+def test_results_use_document_scroll_and_coalesce_chart_work() -> None:
     source_root = REPOSITORY / "source" / "publication" / "site" / "src"
     router = (source_root / "router.ts").read_text(encoding="utf-8")
     app = (source_root / "App.vue").read_text(encoding="utf-8")
@@ -2000,22 +1984,21 @@ def test_mobile_results_use_one_scroller_and_coalesce_chart_work() -> None:
     )
     chart_runtime = (source_root / "lib" / "use-responsive-echart.ts").read_text(encoding="utf-8")
 
-    assert "resultsWorkspace: true" in router
-    assert "'app-viewport--results': route.meta.resultsWorkspace === true" in app
+    assert "resultsWorkspace" not in router
+    assert "app-viewport--results" not in app
+    assert "route.meta.workspace !== true" in app
     assert "to.meta.workspace === true" in app
     assert "scrollRestoreVersion" in app
-    assert ".app-viewport--results" in app_css
+    assert ".app-viewport--results" not in app_css
     assert "overflow-anchor: none;" in app_css
     assert "pointer-events: none;" in app_css
     assert "touch-action: pan-y;" in app_css
     assert "scroll-behavior: smooth" not in app_css
-    assert 'ref="resultsBody"' in workspace
+    assert 'ref="resultsBody"' not in workspace
     assert "resetResultsScroll" in workspace
-    assert 'closest<HTMLElement>(".app-viewport")' in workspace
-    assert "viewport.scrollTop = 0" in workspace
-    assert "scroller.scrollTop = 0" in workspace
-    assert "height: auto;" in workspace
-    assert "overflow: visible;" in workspace
+    assert "window.scrollTo({ top: 0, left: 0 })" in workspace
+    assert "min-height: 60vh" in workspace
+    assert "overflow-y: auto" not in workspace
     assert "results-workspace--stability" in workspace
     assert "results-workspace--efficiency" in workspace
     assert "--result-accent" in workspace
@@ -2045,14 +2028,11 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     mobile_result_card = (source_root / "components" / "MobileResultCard.vue").read_text(
         encoding="utf-8"
     )
-    run_table_action = (source_root / "components" / "RunTableAction.vue").read_text(
-        encoding="utf-8"
-    )
     comparison_ranking_table = (
         source_root / "components" / "ComparisonRankingTable.vue"
     ).read_text(encoding="utf-8")
 
-    assert '{ label: "Overview", name: "results" }' in results_nav
+    assert '{ label: "Score", name: "results" }' in results_nav
     assert '{ label: "Stability", name: "results-reliability" }' in results_nav
     assert '{ label: "Cost", name: "results-cost" }' in results_nav
     assert '{ label: "Time", name: "results-time" }' in results_nav
@@ -2077,22 +2057,23 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert '"comparison-ranking-table"' in comparison_ranking_table
     assert 'variant="table"' in overview
     assert "primary-metric-column" in overview
-    assert "tone: 'primary'" in overview
+    assert "tone: 'primary'" not in overview
     assert '@click="openRun(row)"' in overview
     assert "result-row--navigable" in overview
     assert "@click.stop" in model_run_link
     assert "View full run" in model_run_link
     assert ":focus-visible" in model_run_link
-    assert "model-run-link-cue" not in model_run_link
-    assert "@click.stop" in run_table_action
-    assert "View <span" in run_table_action
-    assert ":focus-visible" in run_table_action
+    assert "model-run-link-chevron" in model_run_link
     assert ".ranking-table .rank-column" in app_css
-    assert ".ranking-table .run-column" in app_css
+    assert ".ranking-table .run-column" not in app_css
+    assert "position: sticky;" in app_css
+    assert "overflow: visible;" in app_css
     assert ".table-header-stack" in app_css
     assert ".ranking-table-wrap" in app_css
     assert ".mobile-result-list" in app_css
     assert "grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));" in mobile_result_card
+    assert "data-tone" not in mobile_result_card
+    assert "background: inherit;" in mobile_result_card
     assert "min-height: 2.75rem;" in mobile_result_card
     assert "Explore full run · questions, answers & evidence" in mobile_result_card
     assert "translateX(0.2rem)" in mobile_result_card
@@ -2100,7 +2081,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
         assert "result-row--clickable" in table_source
         assert "result-row--navigable" in table_source
         assert "<ModelRunLink" in table_source
-        assert "<RunTableAction" in table_source
+        assert "<RunTableAction" not in table_source
         assert "<MobileResultCard" in table_source
         assert "mobile-result-list" in table_source
         assert "panel-heading--with-help" in table_source
@@ -2127,12 +2108,19 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
         "Number(left.totals.costs_usd.guesser) -\n        Number(right.totals.costs_usd.guesser)"
     ) in cost
     assert "value: Number(run.totals.costs_usd.guesser)" in cost
-    assert 'direction-label="Model cost · lower is better"' in cost
-    assert 'label="Model and support cost"' in cost
+    assert 'direction-label="Guesser cost · lower is better"' in cost
+    assert 'label="Guesser and support cost"' in cost
     assert 'label="Per episode"' in cost
     assert 'label="How this page is ordered"' in cost
     assert "Total benchmark cost" in cost
     assert 'direction-label="Total benchmark cost by component"' in cost
+    assert 'key: "adjudication"' in cost
+    assert 'label: "Adjudication"' in cost
+    assert 'label: "Reviewer"' in cost
+    assert 'label: "Judge"' in cost
+    assert 'label: "Validator"' in cost
+    assert "adjudicationRows.reduce" in cost
+    assert "breakdown: adjudicationRows.map" in cost
     assert 'class="panel result-chart-panel component-ledger"' in cost
     assert 'class="component-ledger panel-frame"' not in cost
     assert 'class="result-chart-stack"' in cost
@@ -2166,7 +2154,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "border-bottom: 0;" in app_css
     assert "average penalized trial values" in efficiency
     assert "normalized question score 0.06" in efficiency
-    assert "Model cost range" in efficiency
+    assert "Guesser cost range" in efficiency
     assert 'label="Ideal distance"' in efficiency
     assert 'label="Trade-off map"' in efficiency
     assert 'class="tradeoff-panel panel-frame"' in efficiency
@@ -2212,16 +2200,16 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert 'class="result-help"' in result_help
     assert "<slot />" in result_help
     assert "padding: 0;" not in result_help
-    assert "font-size: var(--text-caption);" in result_help
-    assert "opacity: 0.78;" in result_help
+    assert "Definitions" not in result_help
+    assert "font-size: var(--text-small);" in result_help
+    assert "opacity: 0.78;" not in result_help
     assert '.panel-heading--with-help' in app_css
     assert 'grid-template-areas: "title text help";' in app_css
     assert ".panel-heading--with-help > .result-help" in app_css
     assert "padding-left: 1rem;" in app_css
     assert 'class="metric-definition-card"' in metric_definition_card
-    assert "font-size: var(--result-card-title-size);" in metric_definition_card
+    assert "font-size: var(--text-card-title);" in metric_definition_card
     assert "align-content: start;" in metric_definition_card
-    assert "--result-card-title-size: clamp(1.5rem, 2.5vw, 2.1rem);" in app_css
     assert '<details class="disclosure metric-definition-details">' in metric_definition_card
     assert "<MetricDefinitionCard" in efficiency
     assert "<MetricDefinitionCard" in reliability
@@ -2270,7 +2258,7 @@ def test_mobile_drilldowns_keep_all_facts_and_compact_turn_navigation() -> None:
     assert 'class="eyebrow rail-section-label"' in subject_workspace
     assert 'aria-label="Episodes for this subject"' in subject_workspace
     assert "{{ trials.length }} · choose one" in subject_workspace
-    assert "@media (max-height: 520px) and (min-width: 761px)" in subject_workspace
+    assert "@media (max-height: 800px) and (min-width: 761px)" in subject_workspace
     assert 'exact-active-class="active"' in results_nav
 
 

@@ -53,7 +53,7 @@ const priorWork = [
 
 const applyRouteContext = (): void => {
   setRouteContext({
-    title: "Story",
+    title: "About",
     description: "The origin of Deep20Bench, project news, and related work.",
     level: null,
     position: null,
@@ -220,7 +220,7 @@ onActivated(applyRouteContext);
 
 .hero-number {
   position: absolute;
-  right: -0.05em;
+  right: max(var(--gutter), calc((100vw - var(--max)) / 2));
   bottom: -0.32em;
   color: rgb(255 255 255 / 4%);
   font-size: clamp(15rem, 42vw, 42rem);

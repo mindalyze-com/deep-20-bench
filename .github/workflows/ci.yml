@@ -43,7 +43,7 @@ jobs:
 
       - name: Check publication package
         run: |
-          uv run --project source/publication/compiler ruff check source/publication/compiler
+          uv run --project source/publication/compiler ruff check source/publication/compiler source/publication/site/scripts/build_ui_fixture.py
           uv run --project source/publication/compiler mypy source/publication/compiler/src source/publication/compiler/tests
           uv run --project source/publication/compiler pytest -q source/publication/compiler/tests
 
@@ -57,3 +57,79 @@ jobs:
 
       - name: Check local Markdown links
         run: uv run python scripts/check-markdown-links.py
+
+  site-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      options: --ipc=host
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: source/publication/site/package-lock.json
+
+      - name: Install site dependencies
+        run: npm ci --prefix source/publication/site
+
+      - name: Run deterministic site tests
+        run: npm run --prefix source/publication/site test:site
+
+      - name: Upload browser failure artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-browser-report
+          path: |
+            source/publication/site/playwright-report
+            source/publication/site/test-results
+          if-no-files-found: ignore
+          retention-days: 7
+
+  site-visual-cross-browser:
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      options: --ipc=host
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: source/publication/site/package-lock.json
+
+      - name: Install site dependencies
+        run: npm ci --prefix source/publication/site
+
+      - name: Prepare cross-browser runtime
+        run: chown "$(id -u):$(id -g)" /github/home
+
+      - name: Run pinned visual comparisons
+        run: npm run --prefix source/publication/site test:ui:visual
+
+      - name: Run Firefox and WebKit smoke tests
+        run: npm run --prefix source/publication/site test:ui:cross-browser
+
+      - name: Upload visual and cross-browser artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-visual-cross-browser-report
+          path: |
+            source/publication/site/playwright-report
+            source/publication/site/test-results
+          if-no-files-found: ignore
+          retention-days: 7

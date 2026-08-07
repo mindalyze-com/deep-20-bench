@@ -48,8 +48,8 @@ The build:
 3. compiles the active cohort and a strict public episode projection from
    `config/publication.yml`;
 4. records separate UTC publication and application build times in typed public metadata;
-5. writes the complete `deep20bench-v8.json` and `leaderboard.csv` downloads, plus typed,
-   split JSON documents for the SPA;
+5. writes the complete `deep20bench-v9.json`, its generated JSON Schema, and
+   `leaderboard.csv`, plus typed, split JSON documents for the SPA;
 6. builds the Vue application and writes static entry shells for every execution, subject, and
    episode route;
 7. uses the configured base path for clean direct URLs on GitHub Pages and normal static HTTP
@@ -92,7 +92,7 @@ No credential or network access is needed once the locked Python and Node depend
 installed.
 
 The SPA loads `manifest.json` and `leaderboard.json` first. It fetches one small run, subject,
-or episode document only when that route needs it. The complete version 7 JSON remains a
+or episode document only when that route needs it. The complete version 9 JSON remains a
 download and is not imported into the application bundle. Browser promise caching applies only
 to these immutable public reporting files. It is application caching, not provider prompt
 caching, and it cannot affect model requests, benchmark execution, or Guesser-visible state.
@@ -337,7 +337,7 @@ version-neutral; signed wire `schema_version` fields are the artifact-version au
 The public episode projection publishes the final quality-controlled answer and Oracle research
 evidence without exposing blind Reviewer or Judge decisions.
 
-The static site also includes `/story/`, a handwritten origin-and-lineage page. It says Patrick
+The static site also includes `/about/`, a handwritten origin-and-lineage page. It says Patrick
 Heusser and Markus Tuor developed the idea together, and Patrick later designed and built the
 benchmark. It then situates Deep20Bench alongside directly linked prior work. The Apple
 Entity-Deduction Arena paper is acknowledged prominently as the closest published predecessor

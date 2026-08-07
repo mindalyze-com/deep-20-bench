@@ -10,7 +10,6 @@ import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
-import RunTableAction from "@/components/RunTableAction.vue";
 import StackedMetricBars, {
   type StackedBarRow,
   type StackedBarSegment,
@@ -84,7 +83,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   },
   {
     key: "guesser",
-    label: "Total model cost",
+    label: "Total Guesser cost",
     value: money(guesserSpend.value),
     tone: "accent",
   },
@@ -104,13 +103,21 @@ const guesserCostBars = computed(() =>
   })),
 );
 
-const roleColors = readChartTheme().roles;
+const chartTheme = readChartTheme();
+const roleColors = chartTheme.roles;
+const adjudicationRows = [
+  { key: "reviewer", label: "Reviewer" },
+  { key: "judge", label: "Judge" },
+  { key: "validator", label: "Validator" },
+] as const;
 const componentRows = [
   { key: "guesser", label: "Guesser", color: roleColors.guesser },
   { key: "primary_oracle", label: "Primary Oracle", color: roleColors.oracle },
-  { key: "reviewer", label: "Reviewer", color: roleColors.reviewer },
-  { key: "judge", label: "Judge", color: roleColors.judge },
-  { key: "validator", label: "Validator", color: roleColors.validator },
+  {
+    key: "adjudication",
+    label: "Adjudication",
+    color: chartTheme.results.stability,
+  },
 ] as const;
 
 const stackedSegments: StackedBarSegment[] = componentRows.map((component) => ({
@@ -121,7 +128,13 @@ const stackedSegments: StackedBarSegment[] = componentRows.map((component) => ({
 const componentValue = (
   run: PublicRunSummary,
   key: (typeof componentRows)[number]["key"],
-): number => Number(run.totals.costs_usd[key]);
+): number =>
+  key === "adjudication"
+    ? adjudicationRows.reduce(
+        (sum, component) => sum + Number(run.totals.costs_usd[component.key]),
+        0,
+      )
+    : Number(run.totals.costs_usd[key]);
 
 const stackedRows = computed<StackedBarRow[]>(() =>
   runs.value.map((run) => ({
@@ -133,6 +146,10 @@ const stackedRows = computed<StackedBarRow[]>(() =>
     details: componentRows.map((component) =>
       money(componentValue(run, component.key)),
     ),
+    breakdown: adjudicationRows.map((component) => ({
+      label: component.label,
+      display: money(run.totals.costs_usd[component.key]),
+    })),
     link: `/runs/${run.execution_id}/`,
   })),
 );
@@ -206,19 +223,18 @@ void load();
           >
             <header class="panel-heading panel-heading--with-help">
               <div>
-                <p class="eyebrow">Model cost</p>
-                <h2 id="cost-chart-title">Model cost across the run.</h2>
+                <p class="eyebrow">Guesser cost</p>
+                <h2 id="cost-chart-title">Guesser cost across the run.</h2>
               </div>
               <p>
-                Each bar adds the recorded provider cost of every call to the model under
-                test. Support-model costs are excluded here and shown in the breakdown below.
+                Each bar adds the recorded provider cost of every call to the Guesser, the
+                model under test. Support costs are excluded here and shown in the breakdown below.
               </p>
               <ResultHelp label="Cost metric explanations">
-                <InfoPopover label="Model and support cost">
+                <InfoPopover label="Guesser and support cost">
                   <p>
-                    Model cost covers calls to the model under test, called the Guesser in
-                    the methodology. Support cost covers the Oracle, Reviewer, Judge, and
-                    Validator. Benchmark cost combines both.
+                    Guesser cost covers calls to the model under test. Support cost covers the
+                    Oracle, Reviewer, Judge, and Validator. Benchmark cost combines both.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="Per episode">
@@ -229,7 +245,7 @@ void load();
                 </InfoPopover>
                 <InfoPopover label="How this page is ordered">
                   <p>
-                    The first chart is ordered by model cost. The breakdown and table are
+                    The first chart is ordered by Guesser cost. The breakdown and table are
                     ordered by benchmark cost, so their order can differ.
                   </p>
                 </InfoPopover>
@@ -237,7 +253,7 @@ void load();
             </header>
             <MetricBars
               :items="guesserCostBars"
-              direction-label="Model cost · lower is better"
+              direction-label="Guesser cost · lower is better"
               color="coral"
               value-format="currency"
             />
@@ -254,7 +270,8 @@ void load();
               </div>
               <p>
                 Bar length shows the total cost of each benchmark run. Color separates
-                the tested model (Guesser), Primary Oracle, Reviewer, Judge, and Validator.
+                the Guesser, Primary Oracle, and Adjudication. Expand the exact breakdown
+                to compare Reviewer, Judge, and Validator cost.
               </p>
             </header>
             <StackedMetricBars
@@ -267,10 +284,10 @@ void load();
 
         <div
           class="table-wrap ranking-table-wrap results-table-wrap"
-          tabindex="0"
-          aria-label="Scrollable cost comparison"
+          aria-label="Cost comparison"
         >
           <table class="data-table ranking-table results-table">
+            <caption class="visually-hidden">Cost comparison</caption>
             <thead>
               <tr>
                 <th class="rank-column">
@@ -278,10 +295,9 @@ void load();
                   <span class="visually-hidden">Benchmark cost rank</span>
                 </th>
                 <th class="model-column">Model</th>
-                <th class="run-column">Run</th>
                 <th data-numeric>
                   <span class="table-header-stack">
-                    <span>Model cost</span>
+                    <span>Guesser cost</span>
                     <span>per episode</span>
                   </span>
                 </th>
@@ -316,9 +332,6 @@ void load();
                     :meta="run.model_id"
                   />
                 </td>
-                <td class="run-column">
-                  <RunTableAction :to="runLink(run)" :name="run.model_name" />
-                </td>
                 <td data-numeric>
                   {{ moneyEpisode(run.comparison.guesser_cost_per_episode_usd) }}
                 </td>
@@ -349,7 +362,7 @@ void load();
             :to="runLink(run)"
             :metrics="[
               {
-                label: 'Model cost / episode',
+                label: 'Guesser cost / episode',
                 value: moneyEpisode(run.comparison.guesser_cost_per_episode_usd),
               },
               {
@@ -372,7 +385,7 @@ void load();
 
 <style scoped>
 .results-summary {
-  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: var(--results-section-gap);
 }
 
 .results-table {

@@ -13,8 +13,17 @@ const usd = new Intl.NumberFormat("en", {
 const usdEpisode = new Intl.NumberFormat("en", {
   style: "currency",
   currency: "USD",
-  minimumFractionDigits: 2,
+  minimumFractionDigits: 4,
   maximumFractionDigits: 4,
+});
+
+const userDate = new Intl.DateTimeFormat(undefined, {
+  dateStyle: "medium",
+});
+
+const userDateTime = new Intl.DateTimeFormat(undefined, {
+  dateStyle: "medium",
+  timeStyle: "medium",
 });
 
 export const number = (
@@ -39,6 +48,26 @@ export const percent = (value: string | null | undefined): string =>
         maximumFractionDigits: 0,
       }).format(Number(value));
 
+export const contractPercent = (
+  value: string | null | undefined,
+  violations: number,
+): string => {
+  const formatted = percent(value);
+  return violations > 0 && formatted === "100%" ? ">99%" : formatted;
+};
+
+export const plural = (
+  count: number,
+  singular: string,
+  pluralForm = `${singular}s`,
+): string => (count === 1 ? singular : pluralForm);
+
+export const formatCount = (
+  count: number,
+  singular: string,
+  pluralForm = `${singular}s`,
+): string => `${integer(count)} ${plural(count, singular, pluralForm)}`;
+
 export const money = (value: string | number | null | undefined): string =>
   value === null || value === undefined
     ? "-"
@@ -46,33 +75,16 @@ export const money = (value: string | number | null | undefined): string =>
 
 export const moneyEpisode = (
   value: string | number | null | undefined,
-): string => {
-  if (value === null || value === undefined) return "-";
-  const amount = Number(value);
-  return (Math.abs(amount) >= 1 ? usd : usdEpisode).format(amount);
-};
+): string =>
+  value === null || value === undefined
+    ? "-"
+    : usdEpisode.format(Number(value));
 
 export const date = (value: string | null): string =>
-  value === null
-    ? "-"
-    : new Intl.DateTimeFormat("en", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        timeZone: "UTC",
-      }).format(new Date(value));
+  value === null ? "-" : userDate.format(new Date(value));
 
 export const dateTime = (value: string): string =>
-  new Intl.DateTimeFormat("en", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZone: "UTC",
-    timeZoneName: "short",
-  }).format(new Date(value));
+  userDateTime.format(new Date(value));
 
 export const isoDateTime = (value: string): string =>
   new Date(value).toISOString().replace(/\.\d{3}Z$/, "Z");

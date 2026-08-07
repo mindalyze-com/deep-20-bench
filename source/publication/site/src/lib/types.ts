@@ -138,6 +138,23 @@ export interface PublicRunComparison {
   efficiency_status: EfficiencyStatus;
 }
 
+export interface PublicRunModel {
+  role: "guesser" | "oracle" | "reviewer" | "judge" | "validator";
+  configuration_id: string | null;
+  requested_model: string;
+  requested_provider: string;
+  provider_routing: "exact" | "automatic";
+  resolved_models: string[];
+  resolved_providers: string[];
+  reasoning_effort: string;
+  prompt_version: string | null;
+  calls: number;
+  cost_usd: string;
+  providers: ResolvedProviderUsage[];
+  unreported_calls: number;
+  fallback_calls: number;
+}
+
 export interface PublicRunSummary {
   execution_id: string;
   model_id: string;
@@ -165,6 +182,7 @@ export interface PublicRunSummary {
   contract: ContractReliability;
   totals: PublicRunTotals;
   comparison: PublicRunComparison;
+  models: PublicRunModel[];
 }
 
 export interface PublicSubjectSummary {
@@ -237,21 +255,6 @@ export interface PublicRejectedOutput {
 
 export type PublicTurn = PublicActionTurn | PublicContractViolationTurn;
 
-export interface PublicEpisodeModelVersion {
-  role: "guesser" | "oracle" | "validator";
-  configuration_id: string | null;
-  requested_model: string;
-  requested_provider: string;
-  provider_routing: "exact" | "automatic";
-  resolved_models: string[];
-  resolved_providers: string[];
-  reasoning_effort: string;
-  prompt_version: string;
-  providers: ResolvedProviderUsage[];
-  unreported_calls: number;
-  fallback_calls: number;
-}
-
 export interface PublicComponentTelemetry {
   calls: number;
   cost_usd: string;
@@ -265,29 +268,11 @@ export interface PublicComponentTelemetry {
   estimated_cache_savings_usd: string;
 }
 
-export interface PublicOracleSupportRole {
-  requested_model: string;
-  requested_provider: string;
-  provider_routing: "exact" | "automatic";
-  reasoning_effort: string;
-  calls: number;
-  cost_usd: string;
-  providers: ResolvedProviderUsage[];
-  unreported_calls: number;
-  fallback_calls: number;
-}
-
 export interface ResolvedProviderUsage {
   provider: string;
   calls: number;
   cost_usd: string;
   latency_ms: number;
-}
-
-export interface PublicOracleSupportUsage {
-  oracle: PublicOracleSupportRole;
-  reviewer: PublicOracleSupportRole;
-  judge: PublicOracleSupportRole;
 }
 
 export interface PublicGuesserDisclosure {
@@ -323,8 +308,6 @@ export interface PublicEpisodeDetail {
   total_cost_usd: string;
   total_tokens: number;
   contract: ContractReliability;
-  models: PublicEpisodeModelVersion[];
-  oracle_support: PublicOracleSupportUsage;
   guesser_disclosure: PublicGuesserDisclosure | null;
   telemetry: {
     guesser: PublicComponentTelemetry;
@@ -344,7 +327,7 @@ export interface PublicationRunReference {
 export interface ManifestDocument {
   document_type: "manifest";
   schema_version: 1;
-  dataset_schema_version: 8;
+  dataset_schema_version: 9;
   site: SiteMetadata;
   score_policy: ScorePolicy;
   active_cohort: CohortConfig;
@@ -385,7 +368,7 @@ export interface RepeatAveragesDocument {
 
 export interface RunDocument {
   document_type: "run";
-  schema_version: 2;
+  schema_version: 3;
   run: PublicRunSummary;
   subjects: PublicSubjectSummary[];
 }
@@ -405,7 +388,7 @@ export interface SubjectDocument {
 
 export interface EpisodeDocument {
   document_type: "episode";
-  schema_version: 1;
+  schema_version: 2;
   execution_id: string;
   target_id: string;
   trial_id: string;

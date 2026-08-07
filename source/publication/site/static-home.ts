@@ -3,6 +3,8 @@ import { resolve } from "node:path";
 
 import type { IndexHtmlTransformResult, Plugin } from "vite";
 
+import { siteResourceLinks } from "./src/lib/site-resources";
+
 const HOME_MARKER = "<!-- deep20-static-home -->";
 const STRUCTURED_DATA_MARKER = "<!-- deep20-structured-data -->";
 
@@ -206,6 +208,9 @@ const formatPercent = (value: string): string => {
   return `${percentage.toFixed(1).replace(/\.0$/, "")}%`;
 };
 
+const countWords: Readonly<Record<number, string>> = { 5: "five", 7: "seven" };
+const formatCountWord = (value: number): string => countWords[value] ?? String(value);
+
 const formatDate = (value: string): string => {
   const date = new Date(value);
   if (Number.isNaN(date.valueOf())) throw new Error(`Cannot format date ${value}.`);
@@ -250,7 +255,7 @@ const renderResults = (publication: StaticPublication, base: string): string => 
   if (winner === null || leaderboard.length === 0) {
     return `
           <article class="static-result-card static-result-card--pending">
-            <p class="static-eyebrow">Official comparison</p>
+            <p class="static-eyebrow">Pilot comparison</p>
             <h3>Results are in progress.</h3>
             <p>Scores appear after a complete, integrity-checked run covers every subject.</p>
           </article>`;
@@ -260,7 +265,9 @@ const renderResults = (publication: StaticPublication, base: string): string => 
   if (lowest === undefined || highest === undefined) {
     throw new Error("Evaluated leaderboard is unexpectedly empty.");
   }
-  const winnerLabel = winner.joint ? "Joint official leaders" : "Official leader";
+  const winnerLabel = winner.joint
+    ? "Joint lowest average scores in this pilot"
+    : "Lowest average score in this pilot";
   const scoreRange = `${formatDecimal(lowest.questionScore)}–${formatDecimal(highest.questionScore)}`;
   const modelCount = leaderboard.length;
 
@@ -270,8 +277,8 @@ const renderResults = (publication: StaticPublication, base: string): string => 
               <p class="static-eyebrow">${winnerLabel}</p>
               <h3>${escapeHtml(winner.displayNames.join(" · "))}</h3>
               <p>
-                The current leader averages <strong>${formatDecimal(winner.questionScore)}</strong>
-                questions. The ${modelCount}-model cohort spans ${scoreRange}. Lower is better.
+                The lowest current average is <strong>${formatDecimal(winner.questionScore)}</strong>
+                questions. The ${modelCount}-model pilot spans ${scoreRange}. Lower is better.
               </p>
             </div>
             <div class="static-score" aria-label="Question score ${formatDecimal(winner.questionScore)}">
@@ -279,7 +286,7 @@ const renderResults = (publication: StaticPublication, base: string): string => 
               <span>question score</span>
             </div>
           </div>
-          <ol class="static-leaders" aria-label="Top three official results">
+          <ol class="static-leaders" aria-label="Top three pilot results">
             ${renderResultRows(leaderboard, base)}
           </ol>`;
 };
@@ -307,36 +314,66 @@ const renderHome = (publication: StaticPublication, base: string): string => {
 
         <section class="static-hero">
           <div class="static-hero-copy">
-            <p class="static-eyebrow">Independent benchmark · Twenty Questions for LLMs</p>
-            <h1>Deep20Bench: can an LLM ask its way to the answer?</h1>
+            <p class="static-eyebrow">Prototype · Twenty Questions for AI models</p>
+            <h1>How well can AI models play Twenty Questions?</h1>
             <p class="static-lead">
-              A model identifies a hidden person, place, or thing by asking yes-or-no
-              questions. Deep20Bench repeats this game across multiple subjects and rounds. The
-              average number of questions becomes the Deep20Bench score - lower is better. The
-              benchmark measures knowledge, question strategy, state tracking, and decision
-              discipline.
+              Deep20Bench tests how well AI models play the guessing game where one player thinks
+              of a person or character and the other has to narrow it down with yes-or-no
+              questions.
             </p>
+            <div class="static-hero-details">
+              <article>
+                <p class="static-hero-detail-label">How scoring works</p>
+                <p>
+                  The model is told nothing but the broad category (for example, "video game
+                  character") and gets up to ${cohort.maxQuestions} questions - more than the
+                  traditional twenty, giving models more room to finish a round. Each question,
+                  wrong guess, or reply that does not follow the required format adds one point. If
+                  the model never finds the answer, the round scores ${failurePenalty}. Scores are
+                  averaged across all rounds, and lower is better.
+                </p>
+              </article>
+              <article class="static-pilot-note">
+                <p class="static-hero-detail-label">Current pilot</p>
+                <p>
+                  All results, game transcripts, and scoring data are public. The current pilot
+                  compares ${leaderboard.length} model versions and settings across
+                  ${formatCountWord(cohort.subjectCount)} subjects, with
+                  ${formatCountWord(cohort.iterations)} rounds per subject. The concept works and
+                  the first step is complete. Expanding the pilot is straightforward; cost is the
+                  main constraint.
+                </p>
+                <div class="static-discussions">
+                  <p>Use GitHub Discussions to suggest what we should test next.</p>
+                  <a
+                    href="https://github.com/mindalyze-com/deep-20-bench/discussions"
+                    target="_blank"
+                    rel="noreferrer"
+                  >Join discussion <span aria-hidden="true">↗</span><span class="static-visually-hidden"> (opens in a new tab)</span></a>
+                </div>
+              </article>
+            </div>
             <div class="static-actions">
               <a class="static-button static-button--primary" href="${pathUrl(base, "results/")}">
-                See the benchmark <span aria-hidden="true">→</span>
+                Explore pilot results <span aria-hidden="true">→</span>
               </a>
               <a class="static-button static-button--quiet" href="#executive-summary">
-                Read the summary
+                See what it tests
               </a>
             </div>
           </div>
           <dl class="static-facts" aria-label="Benchmark size">
-            <div><dt>Models tested</dt><dd>${leaderboard.length}</dd></div>
+            <div><dt>Model versions and settings</dt><dd>${leaderboard.length}</dd></div>
             <div><dt>Subjects</dt><dd>${cohort.subjectCount}</dd></div>
-            <div><dt>Trials per model</dt><dd>${trialsPerModel}</dd></div>
-            <div><dt>Official trials</dt><dd>${totalTrials}</dd></div>
+            <div><dt>Rounds per model</dt><dd>${trialsPerModel}</dd></div>
+            <div><dt>Pilot rounds</dt><dd>${totalTrials}</dd></div>
           </dl>
         </section>
 
         <section class="static-section static-summary" id="executive-summary">
           <div class="static-section-heading">
-            <p class="static-eyebrow">Executive summary</p>
-            <h2>A focused test of adaptive reasoning.</h2>
+            <p class="static-eyebrow">What this pilot tests</p>
+            <h2>A focused test of adaptive questioning.</h2>
             <p>
               Deep20Bench tests whether a model can turn broad knowledge into a useful sequence
               of questions, retain the answers, and commit to an exact guess.
@@ -364,8 +401,8 @@ const renderHome = (publication: StaticPublication, base: string): string => {
         <section class="static-section static-results">
           <div class="static-section-heading static-section-heading--split">
             <div>
-              <p class="static-eyebrow">Current official results</p>
-              <h2>Which models ask best?</h2>
+              <p class="static-eyebrow">Current pilot results</p>
+              <h2>How the current runs compare.</h2>
             </div>
             <p>Published ${formatDate(manifest.builtAt)}. Every model completes ${trialsPerModel} trials.</p>
           </div>
@@ -424,7 +461,7 @@ const renderHome = (publication: StaticPublication, base: string): string => {
             </p>
             <div class="static-actions">
               <a class="static-button static-button--primary" href="${pathUrl(base, "data/leaderboard.csv")}">Download CSV</a>
-              <a class="static-button static-button--quiet" href="${pathUrl(base, "data/deep20bench-v8.json")}">Download JSON</a>
+              <a class="static-button static-button--quiet" href="${pathUrl(base, "data/deep20bench-v9.json")}">Download JSON</a>
             </div>
           </div>
         </section>
@@ -432,9 +469,13 @@ const renderHome = (publication: StaticPublication, base: string): string => {
         <footer class="static-footer">
           <p><strong>${escapeHtml(site.title)}</strong> · Created by ${escapeHtml(site.creatorName)}</p>
           <nav aria-label="Publication resources">
-            <a href="${pathUrl(base, "story/")}">Origin and prior work</a>
-            <a href="${pathUrl(base, "data/")}">Data and citation</a>
-            <a href="https://github.com/mindalyze-com/deep-20-bench">Source code</a>
+            <a href="${pathUrl(base, "about/")}">Origin and prior work</a>
+            ${siteResourceLinks
+              .map(
+                (link) =>
+                  `<a href="${escapeHtml(link.href)}" rel="noreferrer">${escapeHtml(link.label)}</a>`,
+              )
+              .join("\n            ")}
           </nav>
         </footer>
       </main>`;
@@ -485,7 +526,7 @@ const renderStructuredData = (
       {
         "@type": "DataDownload",
         encodingFormat: "application/json",
-        contentUrl: new URL("data/deep20bench-v8.json", canonicalUrl).href,
+        contentUrl: new URL("data/deep20bench-v9.json", canonicalUrl).href,
       },
     ],
   };
@@ -517,7 +558,7 @@ const replaceUniqueTag = (
 
 const renderCanonicalMetadata = (html: string, canonicalUrl: string): string => {
   const escapedUrl = escapeHtml(canonicalUrl);
-  const escapedImageUrl = escapeHtml(new URL("og.png", canonicalUrl).href);
+  const escapedImageUrl = escapeHtml(new URL("og.webp", canonicalUrl).href);
   const withOpenGraphUrl = replaceUniqueTag(
     html,
     /<meta property="og:url" content="[^"]*" \/>/g,

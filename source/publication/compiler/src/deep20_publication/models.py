@@ -1329,8 +1329,8 @@ PublicTurn = Annotated[
 ]
 
 
-class PublicEpisodeModelVersion(FrozenModel):
-    role: Literal["guesser", "oracle", "validator"]
+class PublicRunModel(FrozenModel):
+    role: Literal["guesser", "oracle", "reviewer", "judge", "validator"]
     configuration_id: str | None
     requested_model: str
     requested_provider: str
@@ -1338,7 +1338,9 @@ class PublicEpisodeModelVersion(FrozenModel):
     resolved_models: tuple[str, ...]
     resolved_providers: tuple[str, ...]
     reasoning_effort: str
-    prompt_version: str
+    prompt_version: str | None
+    calls: int = Field(ge=0)
+    cost_usd: Decimal = Field(ge=0)
     providers: tuple[ResolvedProviderUsageSnapshot, ...] = ()
     unreported_calls: int = Field(default=0, ge=0)
     fallback_calls: int = Field(default=0, ge=0)
@@ -1361,24 +1363,6 @@ class PublicEpisodeTelemetry(FrozenModel):
     guesser: PublicComponentTelemetry
     oracle: PublicComponentTelemetry
     validator: PublicComponentTelemetry
-
-
-class PublicOracleSupportRole(FrozenModel):
-    requested_model: str
-    requested_provider: str
-    provider_routing: Literal["exact", "automatic"] = "exact"
-    reasoning_effort: str
-    calls: int = Field(ge=0)
-    cost_usd: Decimal = Field(ge=0)
-    providers: tuple[ResolvedProviderUsageSnapshot, ...] = ()
-    unreported_calls: int = Field(default=0, ge=0)
-    fallback_calls: int = Field(default=0, ge=0)
-
-
-class PublicOracleSupportUsage(FrozenModel):
-    oracle: PublicOracleSupportRole
-    reviewer: PublicOracleSupportRole
-    judge: PublicOracleSupportRole
 
 
 class PublicGuesserDisclosure(FrozenModel):
@@ -1416,8 +1400,6 @@ class PublicEpisodeDetail(FrozenModel):
     total_cost_usd: Decimal
     total_tokens: int
     contract: ContractReliabilitySnapshot
-    models: tuple[PublicEpisodeModelVersion, ...]
-    oracle_support: PublicOracleSupportUsage
     guesser_disclosure: PublicGuesserDisclosure | None
     telemetry: PublicEpisodeTelemetry
     turns: tuple[PublicTurn, ...]
@@ -1550,6 +1532,7 @@ class PublicRunSummary(FrozenModel):
     contract: ContractReliabilitySnapshot
     totals: PublicRunTotals
     comparison: PublicRunComparison
+    models: tuple[PublicRunModel, ...]
 
     @model_validator(mode="after")
     def repeated_total_cost_matches(self) -> PublicRunSummary:
@@ -1558,6 +1541,20 @@ class PublicRunSummary(FrozenModel):
         interval = self.question_score_confidence_interval
         if interval is not None and interval.estimate != self.question_score:
             raise ValueError("public run score and confidence interval disagree")
+        if self.models:
+            expected_roles = ("guesser", "oracle", "reviewer", "judge", "validator")
+            if tuple(model.role for model in self.models) != expected_roles:
+                raise ValueError("public run models must use the canonical role order")
+            costs = self.totals.costs_usd
+            expected_costs = {
+                "guesser": costs.guesser,
+                "oracle": costs.primary_oracle,
+                "reviewer": costs.reviewer,
+                "judge": costs.judge,
+                "validator": costs.validator,
+            }
+            if any(model.cost_usd != expected_costs[model.role] for model in self.models):
+                raise ValueError("public run model costs differ from the run ledger")
         return self
 
 
@@ -1641,7 +1638,7 @@ class DatasetProvenance(FrozenModel):
 
 
 class PublishedDataset(FrozenModel):
-    schema_version: Literal[8] = 8
+    schema_version: Literal[9] = 9
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig
@@ -1663,7 +1660,7 @@ class PublicationRunReference(FrozenModel):
 class PublicationManifestDocument(FrozenModel):
     document_type: Literal["manifest"] = "manifest"
     schema_version: Literal[1] = 1
-    dataset_schema_version: Literal[8] = 8
+    dataset_schema_version: Literal[9] = 9
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig
@@ -1726,7 +1723,7 @@ class PublicationRepeatAveragesDocument(FrozenModel):
 
 class PublicationRunDocument(FrozenModel):
     document_type: Literal["run"] = "run"
-    schema_version: Literal[2] = 2
+    schema_version: Literal[3] = 3
     run: PublicRunSummary
     subjects: tuple[PublicSubjectSummary, ...]
 
@@ -1762,7 +1759,7 @@ class PublicationSubjectDocument(FrozenModel):
 
 class PublicationEpisodeDocument(FrozenModel):
     document_type: Literal["episode"] = "episode"
-    schema_version: Literal[1] = 1
+    schema_version: Literal[2] = 2
     execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
     target_id: str = Field(pattern=TARGET_ID_PATTERN)
     trial_id: str = Field(pattern=TRIAL_ID_PATTERN)

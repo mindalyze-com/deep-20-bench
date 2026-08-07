@@ -11,7 +11,6 @@ import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
 import ReliabilityScatter from "@/components/ReliabilityScatter.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
-import RunTableAction from "@/components/RunTableAction.vue";
 import { getLeaderboard } from "@/lib/api";
 import { confidenceIntervalWidth } from "@/lib/confidence-width";
 import { number, percent } from "@/lib/format";
@@ -199,10 +198,10 @@ void load();
 
           <div
             class="table-wrap ranking-table-wrap results-table-wrap"
-            tabindex="0"
-            aria-label="Scrollable stability ranking"
+            aria-label="Stability ranking"
           >
             <table class="data-table ranking-table results-table">
+              <caption class="visually-hidden">Stability ranking</caption>
               <thead>
                 <tr>
                   <th class="rank-column">
@@ -210,7 +209,6 @@ void load();
                     <span class="visually-hidden">Stability rank</span>
                   </th>
                   <th class="model-column">Model</th>
-                  <th class="run-column">Run</th>
                   <th data-numeric>
                     <span class="table-header-stack">
                       <span>CI</span>
@@ -242,14 +240,6 @@ void load();
                       :meta="entry.row.model.provider"
                     />
                     <strong v-else>{{ entry.row.model.display_name }}</strong>
-                  </td>
-                  <td class="run-column">
-                    <RunTableAction
-                      v-if="entry.row.execution_id !== null"
-                      :to="runLink(entry.row)"
-                      :name="entry.row.model.display_name"
-                    />
-                    <span v-else aria-hidden="true">-</span>
                   </td>
                   <td data-numeric>{{ number(entry.intervalWidth, 2) }}</td>
                   <td data-numeric>{{ entry.row.rank ?? "-" }}</td>
@@ -340,7 +330,7 @@ void load();
 <style scoped>
 .results-summary,
 .reliability-scatter-panel {
-  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: var(--results-section-gap);
 }
 
 .results-table {

@@ -10,10 +10,15 @@ import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import ReasoningEffort from "@/components/ReasoningEffort.vue";
-import RunTableAction from "@/components/RunTableAction.vue";
 import ScoreDotPlot, { type ScoreDot } from "@/components/ScoreDotPlot.vue";
 import { getLeaderboard, getManifest } from "@/lib/api";
-import { money, number, percent } from "@/lib/format";
+import {
+  contractPercent,
+  formatCount,
+  money,
+  number,
+  percent,
+} from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import { useRepeatAverages } from "@/lib/use-repeat-averages";
 import type {
@@ -39,7 +44,7 @@ const applyRouteContext = (): void => {
     title: "Deep20Bench",
     description:
       manifest.value?.site.description ??
-      "Deep20Bench is a Twenty Questions benchmark for large language models (LLMs), testing world knowledge, question strategy, state tracking, and decision discipline.",
+      "Deep20Bench is a small, public Twenty Questions prototype for comparing how AI models ask questions, track answers, and identify a hidden subject.",
     level: null,
     position: null,
     crumbs: [],
@@ -78,6 +83,8 @@ const totalTrials = computed(() => {
   const cohort = manifest.value?.active_cohort;
   return cohort === undefined ? 0 : cohort.target_ids.length * cohort.iterations;
 });
+const countWords: Readonly<Record<number, string>> = { 5: "five", 7: "seven" };
+const countWord = (value: number): string => countWords[value] ?? String(value);
 const failurePenalty = computed(() => {
   const value = manifest.value;
   return value === null
@@ -134,21 +141,55 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="hero-grid" aria-hidden="true"></div>
         <div class="home-hero-inner site-boundary">
           <div class="hero-copy">
-            <p class="eyebrow">Deep20Bench · Twenty Questions for LLMs</p>
-            <h1>Deep20Bench: can an LLM ask its way to the answer?</h1>
-            <p>
-              A model identifies a hidden person, place, or thing by asking yes-or-no questions.
-              Deep20Bench repeats this game across multiple subjects and rounds. The average
-              number of questions becomes the Deep20Bench score - lower is better. The benchmark
-              measures knowledge, question strategy, and state tracking.
+            <p class="eyebrow">Prototype · Twenty Questions for AI models</p>
+            <h1>How well can AI models play Twenty Questions?</h1>
+            <p class="hero-lead">
+              Deep20Bench tests how well AI models play the guessing game where one player thinks
+              of a person or character and the other has to narrow it down with yes-or-no
+              questions.
             </p>
             <div class="hero-actions">
               <RouterLink class="button button-primary" :to="{ name: 'results' }">
-                See the benchmark ↓
+                Explore pilot results ↓
               </RouterLink>
             </div>
           </div>
           <IllustrativeRoundExample />
+          <div class="hero-details">
+            <article>
+              <p class="hero-detail-label">How scoring works</p>
+              <p>
+                The model is told nothing but the broad category (for example, "video game
+                character") and gets up to {{ manifest.active_cohort.max_questions }} questions -
+                more than the traditional twenty, giving models more room to finish a round. Each
+                question, wrong guess, or reply that does not follow the required format adds one
+                point. If the model never finds the answer, the round scores
+                {{ failurePenalty }}. Scores are averaged across all rounds, and lower is better.
+              </p>
+            </article>
+            <article class="hero-pilot-note">
+              <p class="hero-detail-label">Current pilot</p>
+              <p>
+                All results, game transcripts, and scoring data are public. The current pilot
+                compares {{ evaluated.length }} model versions and settings across
+                {{ countWord(manifest.active_cohort.target_ids.length) }} subjects, with
+                {{ countWord(manifest.active_cohort.iterations) }} rounds per subject. The concept
+                works and the first step is complete. Expanding the pilot is straightforward;
+                cost is the main constraint.
+              </p>
+              <div class="hero-discussions">
+                <p>Use GitHub Discussions to suggest what we should test next.</p>
+                <a
+                  href="https://github.com/mindalyze-com/deep-20-bench/discussions"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Join discussion <span aria-hidden="true">↗</span>
+                  <span class="visually-hidden">(opens in a new tab)</span>
+                </a>
+              </div>
+            </article>
+          </div>
         </div>
       </section>
 
@@ -156,8 +197,8 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="content-inner">
           <header class="section-heading">
             <div>
-              <p class="eyebrow">Why this game works as an LLM benchmark</p>
-              <h2>The task requires several core competencies.</h2>
+              <p class="eyebrow">What this pilot tests</p>
+              <h2>The game combines several abilities.</h2>
             </div>
             <p>Each answer should improve the model’s next question.</p>
           </header>
@@ -212,8 +253,8 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="content-inner">
           <header class="section-heading">
             <div>
-              <p class="eyebrow">Official results</p>
-              <h2>Which models ask best?</h2>
+              <p class="eyebrow">Current pilot results</p>
+              <h2>How the current runs compare.</h2>
             </div>
             <p>
               Lower is better. A failed trial contributes {{ failurePenalty }} questions.
@@ -224,7 +265,11 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <article v-if="manifest.winner" class="winner-card">
               <div>
                 <p class="eyebrow">
-                  {{ manifest.winner.joint ? "Joint official leader" : "Official leader" }}
+                  {{
+                    manifest.winner.joint
+                      ? "Joint lowest average scores in this pilot"
+                      : "Lowest average score in this pilot"
+                  }}
                 </p>
                 <h3>{{ manifest.winner.display_names.join(" · ") }}</h3>
                 <div class="winner-efforts">
@@ -269,6 +314,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 </p>
                 <ScoreDotPlot
                   :items="scoreDots"
+                  context="pilot"
                   :repeat-averages="repeatAverages"
                   :repeat-averages-loading="repeatAveragesLoading"
                   :repeat-averages-error="repeatAveragesError"
@@ -279,7 +325,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
             <ComparisonRankingTable
               variant="home"
-              label="Scrollable official leaderboard"
+              label="Pilot result table"
             >
                 <tbody>
                   <tr
@@ -304,14 +350,6 @@ const scoreDots = computed<ScoreDot[]>(() =>
                         {{ row.model.model_id }} · {{ row.model.provider }}
                       </small>
                     </td>
-                    <td class="run-column">
-                      <RunTableAction
-                        v-if="row.execution_id"
-                        :to="runLink(row)"
-                        :name="row.model.display_name"
-                      />
-                      <span v-else aria-hidden="true">-</span>
-                    </td>
                     <td class="primary-metric-column" data-numeric>
                       <QuestionScore
                         :score="row.question_score"
@@ -324,9 +362,14 @@ const scoreDots = computed<ScoreDot[]>(() =>
                     </td>
                     <td class="success-column" data-numeric>{{ percent(row.success_rate) }}</td>
                     <td class="contract-column" data-numeric>
-                      {{ percent(row.contract?.compliance_rate) }}
+                      {{
+                        contractPercent(
+                          row.contract?.compliance_rate,
+                          row.contract?.violations ?? 0,
+                        )
+                      }}
                       <small v-if="row.contract?.status === 'breached'">
-                        {{ row.contract.violations }} violations
+                        {{ formatCount(row.contract.violations, "violation") }}
                       </small>
                     </td>
                     <td class="cost-column" data-numeric>{{ money(row.total_cost_usd) }}</td>
@@ -334,7 +377,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 </tbody>
             </ComparisonRankingTable>
 
-            <div class="mobile-result-list" aria-label="Official leaderboard">
+            <div class="mobile-result-list" aria-label="Pilot results">
               <MobileResultCard
                 v-for="row in evaluated"
                 :key="`mobile-${row.model.model_id}`"
@@ -346,7 +389,6 @@ const scoreDots = computed<ScoreDot[]>(() =>
                   {
                     label: 'Question score',
                     value: number(row.question_score),
-                    tone: 'primary',
                   },
                   {
                     label: '95% CI',
@@ -359,7 +401,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                           )}`,
                   },
                   { label: 'Success', value: percent(row.success_rate) },
-                  { label: 'Run cost', value: money(row.total_cost_usd) },
+                  { label: 'Benchmark run cost', value: money(row.total_cost_usd) },
                 ]"
               />
             </div>
@@ -367,7 +409,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
           <article v-else class="empty-results">
             <p class="eyebrow">Current status</p>
-            <h3>Official comparison in progress.</h3>
+            <h3>Pilot comparison in progress.</h3>
             <p>Results appear after a complete, integrity-checked run covers every subject.</p>
             <dl>
               <div><dt>Active cohort</dt><dd>{{ manifest.active_cohort.display_name }}</dd></div>
@@ -382,15 +424,15 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="content-inner">
           <header class="section-heading">
             <div>
-              <p class="eyebrow">Why trust the comparison</p>
-              <h2>Comparable runs. Inspectable results.</h2>
+              <p class="eyebrow">How to read the pilot</p>
+              <h2>Comparable runs, limited conclusions.</h2>
             </div>
-            <p>The comparison keeps test conditions, failures, and evidence visible.</p>
+            <p>The cohort is small. Shared conditions and public records keep it inspectable.</p>
           </header>
           <div class="trust-grid">
             <article>
               <span>01</span>
-              <h3>The same test</h3>
+              <h3>Consistent setup</h3>
               <p>The same subjects, trial count, question limit, and scoring policy apply.</p>
             </article>
             <article>
@@ -400,7 +442,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
             </article>
             <article>
               <span>03</span>
-              <h3>Results can be audited</h3>
+              <h3>Public records</h3>
               <p>Runs link to subjects, episodes, transcripts, evidence, usage, cost, and timing.</p>
             </article>
           </div>
@@ -411,15 +453,15 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="origin-strip-inner site-boundary">
           <div>
             <p class="eyebrow">Origin</p>
-            <h2>From a holiday game to a benchmark.</h2>
+            <h2>From a holiday game to a prototype.</h2>
           </div>
           <div>
             <p>
               Patrick Heusser and Markus Tuor came up with the idea while playing Twenty Questions
-              with the kids. Patrick then designed and built the benchmark.
+              with the kids. Patrick then designed and built the project.
             </p>
             <div class="button-row">
-              <RouterLink class="button button-secondary" :to="{ name: 'story' }">
+              <RouterLink class="button button-secondary" :to="{ name: 'about' }">
                 Origin and prior work
               </RouterLink>
               <RouterLink class="button button-primary" :to="{ name: 'data' }">
@@ -436,7 +478,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 <style scoped>
 .home-hero {
   position: relative;
-  padding-block: clamp(3.6rem, 6.5vw, 6.2rem);
+  padding-block: clamp(1.75rem, 2vw, 2.25rem);
   overflow: hidden;
   background: var(--ink);
   color: white;
@@ -449,9 +491,14 @@ const scoreDots = computed<ScoreDot[]>(() =>
 .home-hero-inner {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(21rem, 0.76fr);
-  gap: clamp(3rem, 7vw, 7rem);
-  align-items: center;
+  width: min(100%, var(--max));
+  grid-template-areas:
+    "copy round"
+    "details details";
+  grid-template-columns: minmax(0, 1fr) minmax(26rem, 0.95fr);
+  row-gap: clamp(2rem, 2.4vw, 2.5rem);
+  column-gap: clamp(2rem, 3vw, 3rem);
+  align-items: start;
 }
 
 .hero-grid {
@@ -467,28 +514,28 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
 .hero-copy {
   position: relative;
-}
-
-.hero-copy {
-  width: min(100%, 48rem);
+  grid-area: copy;
+  width: min(100%, 52rem);
+  padding-top: 1rem;
 }
 
 .hero-copy h1,
 .origin-strip h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(3.35rem, 5.35vw, 5.15rem);
+  font-size: clamp(3.2rem, 4.4vw, 4.3rem);
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.048em;
-  line-height: 0.94;
+  line-height: 0.96;
 }
 
-.hero-copy > p:last-of-type {
-  max-width: 38rem;
-  margin: 1.4rem 0 0;
-  color: rgb(255 255 255 / 68%);
-  font-size: 0.88rem;
-  line-height: 1.65;
+.hero-lead {
+  max-width: 42rem;
+  margin: 1.55rem 0 0;
+  color: rgb(255 255 255 / 78%);
+  font-family: var(--font-display);
+  font-size: clamp(1.12rem, 1.6vw, 1.35rem);
+  line-height: 1.5;
 }
 
 .hero-actions {
@@ -497,6 +544,96 @@ const scoreDots = computed<ScoreDot[]>(() =>
   gap: clamp(1.2rem, 3vw, 2.5rem);
   align-items: center;
   margin-top: 2rem;
+}
+
+.home-hero-inner > :deep(.round-example) {
+  grid-area: round;
+  justify-self: end;
+  margin-top: 0;
+}
+
+.home-hero-inner :deep(.round-head),
+.home-hero-inner :deep(.round-columns),
+.home-hero-inner :deep(.round-card li) {
+  padding: 0.7rem 0.9rem;
+}
+
+.home-hero-inner :deep(.round-card li) {
+  min-height: 3.5rem;
+}
+
+.home-hero-inner :deep(.round-card li.round-guess) {
+  min-height: 4.1rem;
+}
+
+.home-hero-inner :deep(.round-score-connector) {
+  height: 1.5rem;
+}
+
+.hero-details {
+  display: grid;
+  grid-area: details;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  background: rgb(255 255 255 / 16%);
+}
+
+.hero-details article {
+  min-width: 0;
+  padding: clamp(1.4rem, 2.5vw, 2rem);
+  background: rgb(12 17 27 / 88%);
+}
+
+.hero-details article > p:last-of-type {
+  margin: 0;
+  color: rgb(255 255 255 / 69%);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.hero-discussions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(255 255 255 / 16%);
+}
+
+.hero-discussions p {
+  margin: 0;
+  color: rgb(255 255 255 / 69%);
+  font-size: var(--text-small);
+  line-height: 1.5;
+}
+
+.hero-discussions a {
+  flex: 0 0 auto;
+  color: var(--acid);
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+}
+
+.hero-discussions a:hover,
+.hero-discussions a:focus-visible {
+  text-decoration: underline;
+}
+
+.hero-details strong {
+  color: white;
+  font-weight: var(--font-weight-semibold);
+}
+
+.hero-detail-label {
+  margin: 0 0 0.75rem;
+  color: var(--acid);
+  font-size: var(--text-micro);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .ability-grid,
@@ -623,10 +760,6 @@ dd {
   color: white;
 }
 
-.leaderboard-section {
-  --overview-result-gap: clamp(1.5rem, 4vw, 2.5rem);
-}
-
 .winner-card h3 {
   margin: 0;
   font-family: var(--font-display);
@@ -651,7 +784,7 @@ dd {
 }
 
 .leaderboard-layout {
-  margin-top: var(--overview-result-gap);
+  margin-top: var(--results-section-gap);
   border: var(--rule-default);
   background: var(--paper-bright);
 }
@@ -685,7 +818,7 @@ dd {
 }
 
 .table-wrap {
-  margin-top: var(--overview-result-gap);
+  margin-top: var(--results-section-gap);
 }
 
 .empty-results {
@@ -762,6 +895,18 @@ dd {
     grid-template-columns: 1fr;
   }
 
+  .home-hero-inner {
+    grid-template-areas:
+      "copy"
+      "details"
+      "round";
+  }
+
+  .home-hero-inner > :deep(.round-example) {
+    justify-self: stretch;
+    margin-top: 0;
+  }
+
   .ability-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -774,15 +919,15 @@ dd {
 
 @media (max-width: 620px) {
   .home-hero {
-    padding-block: 3rem;
+    padding-block: 2.25rem;
   }
 
   .home-hero-inner {
-    gap: 3rem;
+    gap: 2.25rem;
   }
 
   .hero-copy h1 {
-    font-size: clamp(3rem, 14vw, 4.1rem);
+    font-size: clamp(2.85rem, 13vw, 3.8rem);
   }
 
   .hero-actions {
@@ -790,14 +935,20 @@ dd {
     flex-direction: column;
   }
 
+  .hero-discussions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .ability-grid,
   .trust-grid,
-  .adjudication {
+  .adjudication,
+  .hero-details {
     grid-template-columns: 1fr;
   }
 
   .mobile-result-list {
-    margin-top: var(--overview-result-gap);
+    margin-top: var(--results-section-gap);
   }
 
   .empty-results dl {

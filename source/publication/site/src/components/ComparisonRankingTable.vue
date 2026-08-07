@@ -17,9 +17,8 @@ const props = defineProps<{
 }>();
 
 const compactWidth = 4;
-const modelWidth = 21;
-const runWidth = 8;
-const metricWidth = (100 - compactWidth - modelWidth - runWidth) / 5;
+const modelWidth = 24;
+const metricWidth = (100 - compactWidth - modelWidth) / 5;
 
 const sharedColumns = [
   {
@@ -35,13 +34,6 @@ const sharedColumns = [
     className: "model-column",
     numeric: false,
     width: modelWidth,
-  },
-  {
-    key: "run",
-    labels: ["Run"],
-    className: "run-column",
-    numeric: false,
-    width: runWidth,
   },
   {
     key: "score",
@@ -77,7 +69,7 @@ const variantColumns: Record<ComparisonRankingTableVariant, readonly ComparisonC
     },
     {
       key: "cost",
-      labels: ["Run cost"],
+      labels: ["Benchmark", "run cost"],
       className: "cost-column",
       numeric: true,
       width: metricWidth,
@@ -100,7 +92,7 @@ const variantColumns: Record<ComparisonRankingTableVariant, readonly ComparisonC
     },
     {
       key: "cost",
-      labels: ["Model cost", "per episode"],
+      labels: ["Guesser cost", "per episode"],
       className: "cost-column",
       numeric: true,
       width: metricWidth,
@@ -132,10 +124,10 @@ const tableClasses = computed(() => [
 <template>
   <div
     class="table-wrap ranking-table-wrap comparison-ranking-table-wrap"
-    tabindex="0"
     :aria-label="label"
   >
     <table :class="tableClasses">
+      <caption class="visually-hidden">{{ label }}</caption>
       <colgroup>
         <col
           v-for="column in columns"

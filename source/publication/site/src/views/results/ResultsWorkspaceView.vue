@@ -1,23 +1,13 @@
 <script setup lang="ts">
-import { computed, nextTick, onActivated, ref, watch } from "vue";
+import { computed, nextTick, onActivated, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import ResultsNav from "@/components/ResultsNav.vue";
 
 const route = useRoute();
-const resultsBody = ref<HTMLElement | null>(null);
-
 const resetResultsScroll = async (): Promise<void> => {
   await nextTick();
-  const viewport = resultsBody.value?.closest<HTMLElement>(".app-viewport");
-  if (viewport !== undefined && viewport !== null) {
-    viewport.scrollTop = 0;
-    viewport.scrollLeft = 0;
-  }
-  const scroller = resultsBody.value?.querySelector<HTMLElement>(".results-view");
-  if (scroller === undefined || scroller === null) return;
-  scroller.scrollTop = 0;
-  scroller.scrollLeft = 0;
+  window.scrollTo({ top: 0, left: 0 });
 };
 
 onActivated(() => {
@@ -95,7 +85,7 @@ const copy = computed(() => {
       </div>
     </header>
 
-    <div ref="resultsBody" class="results-workspace-body">
+    <div class="results-workspace-body">
       <RouterView v-slot="{ Component }">
         <KeepAlive>
           <component :is="Component" />
@@ -111,11 +101,7 @@ const copy = computed(() => {
   --result-accent-ink: var(--blue-ink);
   --result-accent-soft: var(--surface-accent-soft);
 
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 60vh;
   background: var(--paper);
 }
 
@@ -198,22 +184,18 @@ const copy = computed(() => {
 }
 
 .results-workspace-body {
-  min-height: 0;
-  overflow: hidden;
+  min-height: 1px;
 }
 
 .results-workspace-body :deep(.results-view) {
-  height: 100%;
-  min-height: 0;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
+  min-height: 1px;
 }
 
 .results-workspace-body :deep(.results-view > .content-section) {
   padding-block: clamp(1.4rem, 3vw, 3rem);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
   .results-workspace-header {
     min-height: 0;
   }
@@ -236,10 +218,7 @@ const copy = computed(() => {
 
 @media (max-width: 760px) {
   .results-workspace {
-    display: block;
-    height: auto;
     min-height: 100%;
-    overflow: visible;
   }
 
   .results-workspace-header {
@@ -269,14 +248,5 @@ const copy = computed(() => {
     justify-content: center;
   }
 
-  .results-workspace-body {
-    overflow: visible;
-  }
-
-  .results-workspace-body :deep(.results-view) {
-    height: auto;
-    overflow: visible;
-    scrollbar-gutter: auto;
-  }
 }
 </style>

@@ -1,4 +1,31 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  type RouteComponent,
+  type RouteRecordRaw,
+} from "vue-router";
+
+interface LazyView {
+  (): Promise<{ default: RouteComponent }>;
+  preload: () => void;
+}
+
+// Vue Router resolves a lazy route component before it commits the navigation, so the click
+// stays silent until the module arrives. `preload` lets a parent view fetch it beforehand.
+const lazyView = (loader: () => Promise<{ default: RouteComponent }>): LazyView =>
+  Object.assign(loader, {
+    preload: (): void => {
+      void loader().catch(() => undefined);
+    },
+  });
+
+export const benchmarkWorkspaceView = lazyView(
+  () => import("@/views/workspace/BenchmarkWorkspaceView.vue"),
+);
+export const subjectWorkspaceView = lazyView(
+  () => import("@/views/workspace/SubjectWorkspaceView.vue"),
+);
+export const episodeView = lazyView(() => import("@/views/EpisodeView.vue"));
 
 const routes: RouteRecordRaw[] = [
   {
@@ -14,8 +41,6 @@ const routes: RouteRecordRaw[] = [
       depth: 1,
       nav: "Results",
       title: "Results",
-      workspace: true,
-      resultsWorkspace: true,
       context: "Official results",
     },
     children: [
@@ -23,13 +48,13 @@ const routes: RouteRecordRaw[] = [
         path: "",
         name: "results",
         component: () => import("@/views/results/ResultsOverviewView.vue"),
-        meta: { depth: 1, nav: "Results", title: "Results", workspace: true },
+        meta: { depth: 1, nav: "Results", title: "Results" },
       },
       {
         path: "cost/",
         name: "results-cost",
         component: () => import("@/views/results/ResultsCostView.vue"),
-        meta: { depth: 1, nav: "Results", title: "Cost results", workspace: true },
+        meta: { depth: 1, nav: "Results", title: "Cost results" },
       },
       {
         path: "reliability/",
@@ -39,14 +64,13 @@ const routes: RouteRecordRaw[] = [
           depth: 1,
           nav: "Results",
           title: "Stability results",
-          workspace: true,
         },
       },
       {
         path: "time/",
         name: "results-time",
         component: () => import("@/views/results/ResultsTimeView.vue"),
-        meta: { depth: 1, nav: "Results", title: "Time results", workspace: true },
+        meta: { depth: 1, nav: "Results", title: "Time results" },
       },
       {
         path: "efficiency/",
@@ -56,7 +80,6 @@ const routes: RouteRecordRaw[] = [
           depth: 1,
           nav: "Results",
           title: "Efficiency results",
-          workspace: true,
         },
       },
     ],
@@ -68,10 +91,11 @@ const routes: RouteRecordRaw[] = [
     meta: { depth: 1, nav: "Method", title: "Method" },
   },
   {
-    path: "/story/",
-    name: "story",
+    path: "/about/",
+    alias: "/story/",
+    name: "about",
     component: () => import("@/views/StoryView.vue"),
-    meta: { depth: 1, nav: "Story", title: "Story" },
+    meta: { depth: 1, nav: "About", title: "About" },
   },
   {
     path: "/data/",
@@ -82,7 +106,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/runs/:executionId/",
     name: "run",
-    component: () => import("@/views/workspace/BenchmarkWorkspaceView.vue"),
+    component: benchmarkWorkspaceView,
     meta: {
       depth: 2,
       nav: "Results",
@@ -94,7 +118,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: "subjects/:targetId/",
         name: "subject",
-        component: () => import("@/views/workspace/SubjectWorkspaceView.vue"),
+        component: subjectWorkspaceView,
         meta: {
           depth: 3,
           nav: "Results",
@@ -106,7 +130,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: "episodes/:trialId/",
             name: "episode",
-            component: () => import("@/views/EpisodeView.vue"),
+            component: episodeView,
             meta: {
               depth: 4,
               nav: "Results",

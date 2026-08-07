@@ -27,21 +27,20 @@ from .models import (
     PublicComponentTelemetry,
     PublicContractViolationTurn,
     PublicEpisodeDetail,
-    PublicEpisodeModelVersion,
     PublicEpisodeTelemetry,
     PublicEvidence,
     PublicGuesserDisclosure,
     PublicGuesserRequiredFormats,
     PublicModel,
-    PublicOracleSupportRole,
-    PublicOracleSupportUsage,
     PublicRun,
     PublicRunComparison,
     PublicRunCostTotals,
+    PublicRunModel,
     PublicRunTotals,
     PublicSubject,
     PublicTrial,
     PublishedDataset,
+    ResolvedProviderUsageSnapshot,
     RoleProviderUsageSnapshot,
     SubjectCatalog,
     SubjectSummary,
@@ -157,45 +156,109 @@ def _public_component_telemetry(
     )
 
 
-def _public_model_version(
-    version: EpisodeModelVersion,
-    *,
-    provider_routing: Literal["exact", "automatic"],
-    provider_usage: RoleProviderUsageSnapshot,
-) -> PublicEpisodeModelVersion:
-    return PublicEpisodeModelVersion(
-        role=version.role,
-        configuration_id=version.configuration_id,
-        requested_model=version.requested_model,
-        requested_provider=version.requested_provider,
-        provider_routing=provider_routing,
-        resolved_models=version.resolved_models,
-        resolved_providers=version.resolved_providers,
-        reasoning_effort=version.reasoning_effort,
-        prompt_version=version.prompt_version,
-        providers=provider_usage.providers,
-        unreported_calls=provider_usage.unreported_calls,
-        fallback_calls=provider_usage.fallback_calls,
+def _merged_provider_usage(
+    usages: tuple[RoleProviderUsageSnapshot, ...],
+) -> RoleProviderUsageSnapshot:
+    totals: dict[str, tuple[int, Decimal, int]] = {}
+    for usage in usages:
+        for provider in usage.providers:
+            calls, cost_usd, latency_ms = totals.get(
+                provider.provider,
+                (0, Decimal(0), 0),
+            )
+            totals[provider.provider] = (
+                calls + provider.calls,
+                cost_usd + provider.cost_usd,
+                latency_ms + provider.latency_ms,
+            )
+    return RoleProviderUsageSnapshot(
+        providers=tuple(
+            ResolvedProviderUsageSnapshot(
+                provider=provider,
+                calls=values[0],
+                cost_usd=values[1],
+                latency_ms=values[2],
+            )
+            for provider, values in totals.items()
+        ),
+        unreported_calls=sum(usage.unreported_calls for usage in usages),
+        fallback_calls=sum(usage.fallback_calls for usage in usages),
     )
 
 
-def _public_oracle_support_role(
-    configuration: EvidenceReviewConfigurationSnapshot,
+def _public_versioned_run_model(
     *,
+    role: Literal["guesser", "oracle", "validator"],
+    versions: tuple[EpisodeModelVersion, ...],
+    provider_routing: Literal["exact", "automatic"],
+    provider_usages: tuple[RoleProviderUsageSnapshot, ...],
     calls: int,
     cost_usd: Decimal,
-    provider_usage: RoleProviderUsageSnapshot,
-) -> PublicOracleSupportRole:
-    return PublicOracleSupportRole(
-        requested_model=configuration.model,
-        requested_provider=configuration.provider,
-        provider_routing=configuration.provider_routing,
-        reasoning_effort=configuration.reasoning_effort,
+) -> PublicRunModel:
+    if not versions:
+        raise ValueError(f"public run has no {role} model version")
+    stable_versions = tuple(
+        version.model_copy(update={"resolved_models": (), "resolved_providers": ()})
+        for version in versions
+    )
+    if any(version != stable_versions[0] for version in stable_versions[1:]):
+        raise ValueError(f"public run has inconsistent {role} model configuration")
+    first = versions[0]
+    usage = _merged_provider_usage(provider_usages)
+    return PublicRunModel(
+        role=role,
+        configuration_id=first.configuration_id,
+        requested_model=first.requested_model,
+        requested_provider=first.requested_provider,
+        provider_routing=provider_routing,
+        resolved_models=tuple(
+            dict.fromkeys(model for version in versions for model in version.resolved_models)
+        ),
+        resolved_providers=tuple(
+            dict.fromkeys(
+                provider for version in versions for provider in version.resolved_providers
+            )
+        ),
+        reasoning_effort=first.reasoning_effort,
+        prompt_version=first.prompt_version,
         calls=calls,
         cost_usd=cost_usd,
-        providers=provider_usage.providers,
-        unreported_calls=provider_usage.unreported_calls,
-        fallback_calls=provider_usage.fallback_calls,
+        providers=usage.providers,
+        unreported_calls=usage.unreported_calls,
+        fallback_calls=usage.fallback_calls,
+    )
+
+
+def _public_support_run_model(
+    *,
+    role: Literal["reviewer", "judge"],
+    configurations: tuple[EvidenceReviewConfigurationSnapshot, ...],
+    provider_usages: tuple[RoleProviderUsageSnapshot, ...],
+    calls: int,
+    cost_usd: Decimal,
+) -> PublicRunModel:
+    if not configurations:
+        raise ValueError(f"public run has no {role} model configuration")
+    first = configurations[0]
+    if any(configuration != first for configuration in configurations[1:]):
+        raise ValueError(f"public run has inconsistent {role} model configuration")
+    usage = _merged_provider_usage(provider_usages)
+    resolved_providers = tuple(provider.provider for provider in usage.providers)
+    return PublicRunModel(
+        role=role,
+        configuration_id=None,
+        requested_model=first.model,
+        requested_provider=first.provider,
+        provider_routing=first.provider_routing,
+        resolved_models=(),
+        resolved_providers=resolved_providers,
+        reasoning_effort=first.reasoning_effort,
+        prompt_version=None,
+        calls=calls,
+        cost_usd=cost_usd,
+        providers=usage.providers,
+        unreported_calls=usage.unreported_calls,
+        fallback_calls=usage.fallback_calls,
     )
 
 
@@ -269,8 +332,6 @@ def _public_guesser_disclosure(
 
 def _public_episode(episode: LoadedEpisode) -> PublicEpisodeDetail:
     result = episode.result
-    oracle_configuration = result.llm_details.oracle.configuration
-    oracle_quality = result.summary.oracle_quality
     guesser_disclosure, recorded_outputs = _public_guesser_disclosure(result)
     violation_disclosures = {
         disclosure.turn_number: disclosure for disclosure in episode.violation_disclosures
@@ -339,45 +400,6 @@ def _public_episode(episode: LoadedEpisode) -> PublicEpisodeDetail:
         total_cost_usd=result.summary.costs_usd.total,
         total_tokens=result.summary.tokens.total,
         contract=_contract(result.summary.contract),
-        models=(
-            _public_model_version(
-                result.models.under_test,
-                provider_routing="exact",
-                provider_usage=result.llm_details.guesser.provider_usage,
-            ),
-            _public_model_version(
-                result.models.oracle,
-                provider_routing=oracle_configuration.provider_routing,
-                provider_usage=result.llm_details.oracle.provider_usage.oracle,
-            ),
-            _public_model_version(
-                result.models.validator,
-                provider_routing="exact",
-                provider_usage=result.llm_details.validator.provider_usage,
-            ),
-        ),
-        oracle_support=PublicOracleSupportUsage(
-            oracle=_public_oracle_support_role(
-                oracle_configuration,
-                calls=result.llm_details.oracle.metrics.calls,
-                cost_usd=(
-                    result.summary.costs_usd.oracle - oracle_quality.quality_control_cost_usd
-                ),
-                provider_usage=result.llm_details.oracle.provider_usage.oracle,
-            ),
-            reviewer=_public_oracle_support_role(
-                oracle_configuration.reviewer,
-                calls=oracle_quality.reviewed_questions,
-                cost_usd=oracle_quality.reviewer_cost_usd,
-                provider_usage=result.llm_details.oracle.provider_usage.reviewer,
-            ),
-            judge=_public_oracle_support_role(
-                oracle_configuration.judge,
-                calls=oracle_quality.judge_invocations,
-                cost_usd=oracle_quality.judge_cost_usd,
-                provider_usage=result.llm_details.oracle.provider_usage.judge,
-            ),
-        ),
         guesser_disclosure=guesser_disclosure,
         telemetry=PublicEpisodeTelemetry(
             guesser=_public_component_telemetry(result.llm_details.guesser.metrics),
@@ -496,6 +518,91 @@ def _public_run_totals(run: LoadedRun) -> PublicRunTotals:
         runtime_ms=round((run.state.updated_at - run.manifest.created_at).total_seconds() * 1_000),
         guesser_think_time_ms=guesser_think_time_ms,
         guesser_calls=guesser_calls,
+    )
+
+
+def _public_run_models(
+    run: LoadedRun,
+    *,
+    totals: PublicRunTotals,
+) -> tuple[PublicRunModel, ...]:
+    if not run.episodes:
+        return ()
+    results = tuple(episode.result for episode in run.episodes)
+    oracle_configurations = tuple(
+        result.llm_details.oracle.configuration for result in results
+    )
+    first_oracle_configuration = oracle_configurations[0]
+    if any(
+        configuration != first_oracle_configuration
+        for configuration in oracle_configurations[1:]
+    ):
+        raise ValueError("public run has inconsistent Oracle support configuration")
+
+    guesser_calls = sum(result.llm_details.guesser.metrics.calls for result in results)
+    oracle_calls = sum(result.llm_details.oracle.metrics.calls for result in results)
+    reviewer_calls = sum(
+        result.summary.oracle_quality.reviewed_questions for result in results
+    )
+    judge_calls = sum(
+        result.summary.oracle_quality.judge_invocations for result in results
+    )
+    validator_calls = sum(result.llm_details.validator.metrics.calls for result in results)
+    costs = totals.costs_usd
+
+    return (
+        _public_versioned_run_model(
+            role="guesser",
+            versions=tuple(result.models.under_test for result in results),
+            provider_routing="exact",
+            provider_usages=tuple(
+                result.llm_details.guesser.provider_usage for result in results
+            ),
+            calls=guesser_calls,
+            cost_usd=costs.guesser,
+        ),
+        _public_versioned_run_model(
+            role="oracle",
+            versions=tuple(result.models.oracle for result in results),
+            provider_routing=first_oracle_configuration.provider_routing,
+            provider_usages=tuple(
+                result.llm_details.oracle.provider_usage.oracle for result in results
+            ),
+            calls=oracle_calls,
+            cost_usd=costs.primary_oracle,
+        ),
+        _public_support_run_model(
+            role="reviewer",
+            configurations=tuple(
+                configuration.reviewer for configuration in oracle_configurations
+            ),
+            provider_usages=tuple(
+                result.llm_details.oracle.provider_usage.reviewer for result in results
+            ),
+            calls=reviewer_calls,
+            cost_usd=costs.reviewer,
+        ),
+        _public_support_run_model(
+            role="judge",
+            configurations=tuple(
+                configuration.judge for configuration in oracle_configurations
+            ),
+            provider_usages=tuple(
+                result.llm_details.oracle.provider_usage.judge for result in results
+            ),
+            calls=judge_calls,
+            cost_usd=costs.judge,
+        ),
+        _public_versioned_run_model(
+            role="validator",
+            versions=tuple(result.models.validator for result in results),
+            provider_routing="exact",
+            provider_usages=tuple(
+                result.llm_details.validator.provider_usage for result in results
+            ),
+            calls=validator_calls,
+            cost_usd=costs.validator,
+        ),
     )
 
 
@@ -643,6 +750,7 @@ def _public_run(
             terminal_trials=counts.terminal,
             question_score=published_question_score,
         ),
+        models=_public_run_models(run, totals=totals),
         subjects=subjects,
     )
 

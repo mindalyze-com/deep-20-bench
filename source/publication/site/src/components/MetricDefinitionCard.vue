@@ -50,7 +50,7 @@ const titleId = `metric-definition-title-${useId()}`;
 
 <style scoped>
 .metric-definition-card {
-  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  margin-top: var(--results-section-gap);
   border: var(--rule-default);
   background: var(--surface-raised);
 }

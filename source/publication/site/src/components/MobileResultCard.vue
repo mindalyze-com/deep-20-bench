@@ -4,7 +4,6 @@ import { RouterLink, type RouteLocationRaw } from "vue-router";
 interface ResultMetric {
   label: string;
   value: string;
-  tone?: "default" | "primary";
 }
 
 defineProps<{
@@ -34,11 +33,7 @@ defineProps<{
     </div>
 
     <dl class="mobile-result-metrics">
-      <div
-        v-for="metric in metrics"
-        :key="metric.label"
-        :data-tone="metric.tone ?? 'default'"
-      >
+      <div v-for="metric in metrics" :key="metric.label">
         <dt>{{ metric.label }}</dt>
         <dd>{{ metric.value }}</dd>
       </div>
@@ -162,13 +157,6 @@ defineProps<{
   border-right: 0;
 }
 
-.mobile-result-metrics div[data-tone="primary"] {
-  margin-block: -0.35rem;
-  padding-block: 0.35rem;
-  background: var(--surface-accent-soft);
-  box-shadow: 0 0 0 0.35rem var(--surface-accent-soft);
-}
-
 .mobile-result-metrics dt {
   overflow: hidden;
   color: var(--muted);
@@ -192,26 +180,15 @@ defineProps<{
   white-space: nowrap;
 }
 
-.mobile-result-metrics div[data-tone="primary"] dt {
-  color: var(--blue-ink);
-}
-
-.mobile-result-metrics div[data-tone="primary"] dd {
-  color: var(--blue-ink);
-  font-family: var(--font-display);
-  font-size: 1.18rem;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.025em;
-}
-
 .mobile-result-action {
   display: flex;
   min-height: 2.75rem;
   padding: 0.65rem 0.9rem;
+  border-top: var(--rule-subtle);
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  background: var(--surface-accent-soft);
+  background: inherit;
   color: var(--blue-ink);
   font-size: 0.7rem;
   font-weight: var(--font-weight-bold);
@@ -221,5 +198,30 @@ defineProps<{
 .mobile-result-card--disabled .mobile-result-action {
   background: var(--paper);
   color: var(--muted);
+}
+
+@media (max-width: 480px) {
+  .mobile-result-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mobile-result-metrics div {
+    padding-block: 0.45rem;
+  }
+
+  .mobile-result-metrics dt,
+  .mobile-result-metrics dd {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .mobile-result-metrics dt {
+    line-height: 1.35;
+  }
+
+  .mobile-result-metrics dd {
+    overflow-wrap: anywhere;
+  }
 }
 </style>
