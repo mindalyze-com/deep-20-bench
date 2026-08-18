@@ -1,0 +1,2054 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260814-official-M0015-013
+    model_id: M-0015
+    target_id: T-0002
+    trial_id: trial-004
+    trial_number: 4
+    episode_run_id: BR-06fd4aa9e96835b6b1e872fa0fcc7c0e76bb0a21
+  attempt_number: 2
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-06fd4aa9e96835b6b1e872fa0fcc7c0e76bb0a21
+      episode_id: EP-019fff70cf5f76eb81ba00a65315f290
+      subject:
+        target_id: T-0002
+        canonical_name: Albert Schweitzer
+        aliases:
+        - Schweitzer
+        - Dr. Albert Schweitzer
+        entity_type: person
+        description: Albert Schweitzer, the Alsatian physician, theologian, philosopher,
+          organist, and 1952 Nobel Peace Prize laureate known for founding a hospital
+          at Lambaréné, identified by Wikidata entity Q49325.
+        reference_url: https://en.wikipedia.org/wiki/Albert_Schweitzer
+      started_at: '2026-08-14T08:43:31.039429+00:00'
+      completed_at: '2026-08-14T09:01:17.858249+00:00'
+      duration_ms: 1066819
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 32
+      counted_questions: 31
+      guesser_call_count: 32
+      ask_count: 30
+      guess_count: 2
+      rejected_guess_count: 1
+      oracle_unknown_count: 0
+      oracle_quality:
+        reviewed_questions: 30
+        agreements: 21
+        disagreements: 9
+        judge_invocations: 9
+        oracle_answers_changed: 2
+        final_unknown_answers: 0
+        judge_yes_answers: 2
+        judge_no_answers: 7
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0353945'
+        judge_cost_usd: '0.129555'
+        quality_control_cost_usd: '0.1649495'
+        question_types:
+        - question_type: other
+          reviewed_questions: 26
+          disagreements: 9
+        - question_type: quantitative_comparison
+          reviewed_questions: 1
+          disagreements: 0
+        - question_type: temporal_comparison
+          reviewed_questions: 3
+          disagreements: 0
+      contract:
+        evaluated_outputs: 32
+        valid_outputs: 32
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.230222'
+        oracle: '0.457472945000000002'
+        validator: '0.0001283'
+        total: '0.687823245000000002'
+      tokens:
+        guesser: 80791
+        oracle: 296099
+        validator: 863
+        total: 377753
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0015
+        requested_model: x-ai/grok-4.6
+        requested_provider: xai
+        resolved_models:
+        - x-ai/grok-4.6
+        resolved_providers:
+        - xAI
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v7-direct-negative-evidence
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the person male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff70df1071f5958cd0a993c7421b
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Albert_Schweitzer
+          excerpt: He was a theologian, organist, musicologist, writer, humanitarian,
+            philosopher, and physician.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-019fff70cf5f76eb81ba00a8798dbe8e
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is this person currently alive?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff71037376c29b0851aeab9c60ae
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/
+          excerpt: Albert Schweitzer died on September 4, 1965, and was buried at
+            Lambaréné.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-019fff70f9d973ab93a28ed962d1fea3
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is this person a fictional character?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff713a8a7369b15bc7983c62ba68
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical
+          excerpt: Albert Schweitzer – Biographical. NobelPrize.org.
+          validation: model_reported
+        - source_url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/
+          excerpt: Albert Schweitzer (1875–1965) ... Musician, theologian and physician.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-019fff711f65772e887c89db112d7c6f
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Was this person primarily known for political or governmental activity?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff715b09759c98a0e3cf53443290
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical
+          excerpt: His fame as a theological scholar rests on The Quest of the Historical
+            Jesus; he was also internationally known as a concert organist.
+          validation: model_reported
+        - source_url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958
+          excerpt: Musician, theologian and physician, Albert Schweitzer was above
+            all, a true humanitarian.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-019fff714ee472ad85315bb8a839409c
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Was this person primarily known for work in the arts or entertainment?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff71a02572fc8ed84fb7f6217281
+        answer: 'NO'
+        evidence:
+        - source_url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958
+          excerpt: Musician, theologian and physician, Albert Schweitzer was above
+            all, a true humanitarian.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical
+          excerpt: For his medical and humanitarian works, Schweitzer won many awards,
+            including ... the Nobel Peace Prize.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-019fff71926d74699f925937eca88016
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Was this person primarily known for work in science, mathematics,
+          or invention?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff71d39c7023909b0197fe434c32
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/
+          excerpt: Much of his fame as a theological scholar rests on his 1906 book
+            The Quest of the Historical Jesus; he was also internationally known as
+            a concert organist.
+          validation: model_reported
+        - source_url: https://www.ebsco.com/research-starters/history/schweitzer-awarded-nobel-peace-prize
+          excerpt: The award symbolized the near-universal admiration he attained
+            through his life of devotion as a medical missionary in Africa.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-019fff71ca45774eba8b28ba59842cfa
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Was this person primarily known as an athlete or for achievements
+          in sports?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff72296a706d9c5ae30b04cf16a4
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts/
+          excerpt: 'Role: Missionary surgeon; Founder of Lambaréné. Prize motivation:
+            “for his altruism, reverence for life, and tireless humanitarian work.”'
+          validation: model_reported
+        - source_url: https://peaceprizelaureates.nobelpeacecenter.org/en/laureate/1952-albert-schweitzer
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-019fff720c9176b58bd91bbc50845dbc
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Was this person primarily known for business, entrepreneurship,
+          or industry?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff72769f73c7bb2d86bc510c5aad
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts/
+          excerpt: 'Role: Missionary surgeon; Founder of Lambaréné. Prize motivation:
+            “for his altruism, reverence for life, and tireless humanitarian work.”'
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-019fff7265777142851a4ae2f34351ee
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Was this person primarily known for military leadership or warfare?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff72b3cf75f89b916f62d8b39674
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts
+          excerpt: 'Role: Missionary surgeon; Founder of Lambaréné. Prize motivation:
+            “for his altruism, reverence for life, and tireless humanitarian work.”'
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/
+          excerpt: At Lambaréné, he was doctor and surgeon in the hospital, pastor
+            of a congregation, administrator of a village, and writer of scholarly
+            books.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-019fff72a11977b0b13d3d55e34b17bf
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Was this person primarily known as a religious figure or spiritual
+          leader?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff72ffc77399bbe66ddb1c791986
+        answer: 'NO'
+        evidence:
+        - source_url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958
+          excerpt: Musician, theologian and physician, Albert Schweitzer was above
+            all, a true humanitarian.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical
+          excerpt: He was internationally known as a concert organist, and much of
+            his fame as a theological scholar rested on his 1906 book The Quest of
+            the Historical Jesus.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-019fff72f122754f862d047169abbf10
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Was this person primarily known as a philosopher or for contributions
+          to philosophy?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff73509c70dbb7716684e113f36b
+        answer: 'YES'
+        evidence:
+        - source_url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/
+          excerpt: Musician, theologian and physician, Albert Schweitzer was above
+            all, a true humanitarian.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread
+          excerpt: Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy
+            of “reverence for life” and tireless humanitarian work.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-019fff733fc574dbb181ce9c72ede6c9
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Did this person live in antiquity (before 500 CE)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff73b72e75f5b108753460b1d4b8
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical
+          excerpt: Albert Schweitzer (January 14, 1875-September 4, 1965)
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: quantitative_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-019fff73a51e7690b273450cd3b76a70
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Did this person live during the medieval period (roughly 500-1500
+          CE)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff73d76a7599bb40691e7a8dac20
+        answer: 'NO'
+        evidence:
+        - source_url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/
+          excerpt: Albert Schweitzer, born on January 14, 1875 in Alsace, Germany.
+          validation: model_reported
+        - source_url: https://museeprotestant.org/en/notice/albert-schweitzer-1875-1965-2/
+          excerpt: Albert Schweitzer (1875-1965)
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-019fff73d0447066a709a4b26cfa0352
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Did this person live primarily in the 16th, 17th, or 18th century?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff7403d370e49051a80f56b12c37
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/
+          excerpt: Albert Schweitzer (January 14, 1875-September 4, 1965)
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-019fff73f5807656a7d7b750d409dc74
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: ASK
+        question: Did this person live primarily in the 19th century?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff742b3b74bb874401c0570007bf
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical
+          excerpt: Albert Schweitzer (January 14, 1875-September 4, 1965)
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-019fff7421dd738d9bf928a571c22146
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: ASK
+        question: Was this person European?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff7462b3744d846ea79a45f72d62
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Albert-Schweitzer
+          excerpt: Albert Schweitzer, an Alsatian-German theologian, philosopher,
+            organist, and mission doctor.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/
+          excerpt: Albert Schweitzer was born into an Alsatian family.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 16
+      guesser_call_id: GC-019fff74504475998a3de3337c81c037
+    - turn_type: action
+      turn_number: 17
+      action:
+        action: ASK
+        question: Was this person French?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff74d6657321be49ee5b567bb451
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Albert_Schweitzer
+          excerpt: Born a German citizen, Schweitzer had his parents' former pre-1871
+            French citizenship reinstated, and became a French citizen.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 17
+      guesser_call_id: GC-019fff74a0827239ac5604ecfe792304
+    - turn_type: action
+      turn_number: 18
+      action:
+        action: ASK
+        question: Was this person associated with existentialism?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff751e4974308e61a590898a27fe
+        answer: 'YES'
+        evidence:
+        - source_url: https://daily-philosophy.com/quotes-schweitzer-reverence-for-life/
+          excerpt: The word “existentialist” could be applied to both [Sartre and
+            Schweitzer].
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 18
+      guesser_call_id: GC-019fff74f31f73598b36bfa512cf48b6
+    - turn_type: action
+      turn_number: 19
+      action:
+        action: ASK
+        question: Did this person decline the Nobel Prize in Literature?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff75ad8a76218939c2106d83d6a1
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/lists/all-nobel-prizes/1959-1950/
+          excerpt: 'Nobel Prize in Literature 1952: François Mauriac; Nobel Peace
+            Prize 1952: Albert Schweitzer.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 19
+      guesser_call_id: GC-019fff75857c718e97d4ac8eaacd0d50
+    - turn_type: action
+      turn_number: 20
+      action:
+        action: ASK
+        question: Was this person associated with Christian or theistic existentialism?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff768fb477d8bcda49e9c74458b4
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.jstor.org/stable/40969849
+          excerpt: Albert Schweitzer was an existentialist thinker.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: Albert Schweitzer was a devout Christian.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 20
+      guesser_call_id: GC-019fff760b157042afba7b13f220bef2
+    - turn_type: action
+      turn_number: 21
+      action:
+        action: GUESS
+        question: null
+        name: Gabriel Marcel
+        description: French 20th-century philosopher associated with Christian existentialism
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fff775bc87331bebd476ab7e4fdeb
+        answer: 'NO'
+        evidence: []
+        explanation: The proposed identity is Gabriel Marcel, while the trusted subject
+          is Albert Schweitzer.
+        oracle_quality: null
+      counted: true
+      counted_questions: 21
+      guesser_call_id: GC-019fff77294774c7ba5ba2c767affa32
+    - turn_type: action
+      turn_number: 22
+      action:
+        action: ASK
+        question: Was this person a Catholic?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff77e2fd71e49228ee0d774b5c2d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.uua.org/global/news/remembering-dr.-albert-schweitzer
+          excerpt: A lifelong Lutheran, Schweitzer challenged both the secular and
+            traditional Christian views of Jesus.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 22
+      guesser_call_id: GC-019fff77610c710ab6faa0991c2e00bf
+    - turn_type: action
+      turn_number: 23
+      action:
+        action: ASK
+        question: Was this person a Protestant?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff786771775092d026a17add8a6a
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.uua.org/global/news/remembering-dr.-albert-schweitzer
+          excerpt: “I am a Protestant, but above all I am a scientist...”
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 23
+      guesser_call_id: GC-019fff780fdc74a29d46a76cb97aa02c
+    - turn_type: action
+      turn_number: 24
+      action:
+        action: ASK
+        question: Did this person die in the 21st century?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff7907057268a8de9c03f14caf61
+        answer: 'NO'
+        evidence:
+        - source_url: https://mla.bethelks.edu/mediawiki/index.php/Schweitzer,_Albert_(1875-1965)
+          excerpt: Albert Schweitzer (1875-1965) ... died Saturday, Sept. 4, at Lambarene,
+            Gabon.
+          validation: model_reported
+        - source_url: https://archive.nytimes.com/www.nytimes.com/learning/general/onthisday/bday/0114.html
+          excerpt: September 6, 1965 — Albert Schweitzer, 90, Dies at His Hospital.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 24
+      guesser_call_id: GC-019fff7898f471b999247857ff0b7549
+    - turn_type: action
+      turn_number: 25
+      action:
+        action: ASK
+        question: Was this person born before 1900?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff79d20777118a387609b2f498f9
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical
+          excerpt: Albert Schweitzer (January 14, 1875-September 4, 1965) was born
+            into an Alsatian family.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 25
+      guesser_call_id: GC-019fff791c1c74a78a88af939ba9d268
+    - turn_type: action
+      turn_number: 26
+      action:
+        action: ASK
+        question: Did this person die in 1950 or later?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff7afba776eb83f0649972ecab3c
+        answer: 'YES'
+        evidence:
+        - source_url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/
+          excerpt: Albert Schweitzer (1875–1965)
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 26
+      guesser_call_id: GC-019fff79e82476eba7f8cc2856a0abca
+    - turn_type: action
+      turn_number: 27
+      action:
+        action: ASK
+        question: Did this person die before 1980?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff7c636e7569bcc67cb5890da831
+        answer: 'YES'
+        evidence:
+        - source_url: https://archive.nytimes.com/www.nytimes.com/learning/general/onthisday/bday/0114.html
+          excerpt: September 6, 1965 OBITUARY Albert Schweitzer, 90, Dies at His Hospital.
+          validation: model_reported
+        - source_url: https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/
+          excerpt: Albert Schweitzer (1875–1965)
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 27
+      guesser_call_id: GC-019fff7b14fc72169b82d34d8228d4dc
+    - turn_type: action
+      turn_number: 28
+      action:
+        action: ASK
+        question: Was this person born in France?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff7d940474eb969b96ec8fb871cb
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/
+          excerpt: 'Born: 14 January 1875, Kaysersberg, Germany (now France)'
+          validation: model_reported
+        - source_url: https://www.history.com/videos/this-day-in-history-01141875-albert-schweitzer-born
+          excerpt: Albert Schweitzer is born on this day in 1875 in Upper-Alsace,
+            Germany (now Haut-Rhin, France).
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 28
+      guesser_call_id: GC-019fff7c7db475d8a5bcd166cea5e9f1
+    - turn_type: action
+      turn_number: 29
+      action:
+        action: ASK
+        question: Was this person born in Germany?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff7e7c66776a8c87957fbde94a67
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts/
+          excerpt: Schweitzer was born in Alsace in the then German Empire.
+          validation: model_reported
+        - source_url: https://www.ebsco.com/research-starters/history/albert-schweitzer
+          excerpt: Albert Schweitzer ... was born in Kaysersberg, Upper Alsace, Germany
+            (now a part of France).
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 29
+      guesser_call_id: GC-019fff7ddb7775e8841dc7b81ee10b8a
+    - turn_type: action
+      turn_number: 30
+      action:
+        action: ASK
+        question: Was this person born in Alsace?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff7fab6e725d90e9522600942d33
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.ebsco.com/research-starters/history/albert-schweitzer
+          excerpt: Albert Schweitzer was born in Kaysersberg, Upper Alsace, Germany
+            (now a part of France).
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Albert_Schweitzer
+          excerpt: Albert Schweitzer's birthplace in Kaysersberg, now in Alsace in
+            France.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 30
+      guesser_call_id: GC-019fff7e97cc73de8f475651527bbac5
+    - turn_type: action
+      turn_number: 31
+      action:
+        action: ASK
+        question: Was this person a medical doctor?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-019fff809c5d767190be124fd11fc3b3
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Albert-Schweitzer
+          excerpt: Schweitzer went to Lambaréné in 1913 to work as a mission doctor.
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Albert_Schweitzer
+          excerpt: In 1912, now armed with a medical degree, Schweitzer made a definite
+            proposal to go as a physician.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 31
+      guesser_call_id: GC-019fff7fc2b1768bbab6f42b52382436
+    - turn_type: action
+      turn_number: 32
+      action:
+        action: GUESS
+        question: null
+        name: Albert Schweitzer
+        description: Alsatian-born theologian, philosopher, and physician known for
+          reverence for life
+      adjudication:
+        component: guess_validator
+        call_id: VC-019fff8112d273d9a133437ecdfccaab
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity names Albert Schweitzer and the description
+          matches the trusted subject.
+        oracle_quality: null
+      counted: false
+      counted_questions: 31
+      guesser_call_id: GC-019fff80b4ad70e8921816edaf89442e
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"BYOMPCJW"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person male?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person currently alive?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person a fictional character?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known for political or governmental activity?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known for work in the arts or entertainment?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known for work in science, mathematics, or invention?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known as an athlete or for achievements in sports?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known for business, entrepreneurship, or industry?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known for military leadership or warfare?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known as a religious figure or spiritual leader?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known as a philosopher or for contributions to philosophy?"}}'
+      turn_number: 11
+    - role: user
+      content: 'YES'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live in antiquity (before 500 CE)?"}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live during the medieval period (roughly 500-1500 CE)?"}}'
+      turn_number: 13
+    - role: user
+      content: 'NO'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live primarily in the 16th, 17th, or 18th century?"}}'
+      turn_number: 14
+    - role: user
+      content: 'NO'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live primarily in the 19th century?"}}'
+      turn_number: 15
+    - role: user
+      content: 'NO'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person European?"}}'
+      turn_number: 16
+    - role: user
+      content: 'YES'
+      turn_number: 16
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person French?"}}'
+      turn_number: 17
+    - role: user
+      content: 'YES'
+      turn_number: 17
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person associated with existentialism?"}}'
+      turn_number: 18
+    - role: user
+      content: 'YES'
+      turn_number: 18
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person decline the Nobel Prize in Literature?"}}'
+      turn_number: 19
+    - role: user
+      content: 'NO'
+      turn_number: 19
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person associated with Christian or theistic existentialism?"}}'
+      turn_number: 20
+    - role: user
+      content: 'YES'
+      turn_number: 20
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"French 20th-century philosopher
+        associated with Christian existentialism","name":"Gabriel Marcel","question":null}}'
+      turn_number: 21
+    - role: user
+      content: 'NO'
+      turn_number: 21
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person a Catholic?"}}'
+      turn_number: 22
+    - role: user
+      content: 'NO'
+      turn_number: 22
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person a Protestant?"}}'
+      turn_number: 23
+    - role: user
+      content: 'YES'
+      turn_number: 23
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person die in the 21st century?"}}'
+      turn_number: 24
+    - role: user
+      content: 'NO'
+      turn_number: 24
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born before 1900?"}}'
+      turn_number: 25
+    - role: user
+      content: 'YES'
+      turn_number: 25
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person die in 1950 or later?"}}'
+      turn_number: 26
+    - role: user
+      content: 'YES'
+      turn_number: 26
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person die before 1980?"}}'
+      turn_number: 27
+    - role: user
+      content: 'YES'
+      turn_number: 27
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born in France?"}}'
+      turn_number: 28
+    - role: user
+      content: 'NO'
+      turn_number: 28
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born in Germany?"}}'
+      turn_number: 29
+    - role: user
+      content: 'YES'
+      turn_number: 29
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born in Alsace?"}}'
+      turn_number: 30
+    - role: user
+      content: 'YES'
+      turn_number: 30
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person a medical doctor?"}}'
+      turn_number: 31
+    - role: user
+      content: 'YES'
+      turn_number: 31
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Alsatian-born theologian,
+        philosopher, and physician known for reverence for life","name":"Albert Schweitzer","question":null}}'
+      turn_number: 32
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0015
+          gateway: openrouter
+          model: x-ai/grok-4.6
+          provider: xai
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: supported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '2.00'
+            cached_input_usd_per_million: '0.50'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 32
+          cost_usd: '0.230222'
+          latency_ms: 695611
+          total_tokens: 80791
+          input_tokens: 48511
+          cached_input_tokens: 40320
+          cache_write_tokens: 0
+          output_tokens: 32280
+          reasoning_tokens: 31261
+          estimated_cache_savings_usd: '0.06048000'
+          recovery:
+            request_attempts: 32
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: xAI
+            calls: 32
+            cost_usd: '0.230222'
+            latency_ms: 695611
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 30
+          cost_usd: '0.457472945000000002'
+          latency_ms: 368202
+          total_tokens: 296099
+          input_tokens: 274950
+          cached_input_tokens: 92492
+          cache_write_tokens: 0
+          output_tokens: 21149
+          reasoning_tokens: 15086
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 69
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 30
+              cost_usd: '0.292523445000000002'
+              latency_ms: 272627
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 30
+              cost_usd: '0.0353945'
+              latency_ms: 50229
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers:
+            - provider: Anthropic
+              calls: 9
+              cost_usd: '0.129555'
+              latency_ms: 45346
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 2
+          cost_usd: '0.0001283'
+          latency_ms: 2305
+          total_tokens: 863
+          input_tokens: 779
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 84
+          reasoning_tokens: 15
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 2
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 2
+            cost_usd: '0.0001283'
+            latency_ms: 2305
+          unreported_calls: 0
+          fallback_calls: 0
+  superseded_attempts:
+  - attempt_number: 1
+    failure:
+      code: invalid_structured_output
+      type: OracleProtocolError
+      message: provider output did not match the judge result schema (answer:missing,
+        decision:extra_forbidden, evidence_numbers:extra_forbidden, reasoning:extra_forbidden)
+      call_id: OC-019fff0a672e7056b4fa6392cf77f384
+      diagnostics:
+        causes:
+        - exception_type: OracleProtocolError
+          module: deep20_oracle.errors
+          message: provider output did not match the judge result schema (answer:missing,
+            decision:extra_forbidden, evidence_numbers:extra_forbidden, reasoning:extra_forbidden)
+        - exception_type: ValidationError
+          module: pydantic_core._pydantic_core
+          message: validation failed
+        frames:
+        - exception_index: 0
+          module: deep20_game.engine
+          function: play
+          line: 712
+        - exception_index: 0
+          module: deep20_oracle.service
+          function: ask
+          line: 250
+        - exception_index: 0
+          module: deep20_oracle.service
+          function: _complete_structured_result
+          line: 496
+        - exception_index: 1
+          module: deep20_oracle.service
+          function: _complete_structured_result
+          line: 485
+        - exception_index: 1
+          module: deep20_oracle.service
+          function: parse
+          line: 437
+        - exception_index: 1
+          module: pydantic.main
+          function: model_validate_json
+          line: 766
+        provider:
+          http_status_code: 200
+          error_type: null
+          error_code: null
+          message: null
+          requested_model: anthropic/claude-opus-5
+          resolved_model: anthropic/claude-opus-5
+          requested_provider: openrouter-auto
+          resolved_provider: Amazon Bedrock
+          fallback_occurred: false
+          response_id: gen-1786690328-li6NlBxvNreZUwf8g0bM
+          response_cache_status: null
+          finish_reason: stop
+          request_attempts: 2
+          retry_after_ms: null
+          recovery:
+            request_attempts: 2
+            retried_calls: 1
+            recovered_calls: 0
+            exhausted_retries: 1
+            reasons:
+            - reason: invalid_judge_output
+              count: 1
+            retry_usage:
+              input_tokens: 1532
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 197
+              reasoning_tokens: 39
+              search_count: 0
+              cost_usd: '0.012585'
+              cache_discount_usd: null
+            retry_latency_ms: 12095
+          latency_ms: 15460
+          usage:
+            input_tokens: 3064
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 395
+            reasoning_tokens: 78
+            search_count: 0
+            cost_usd: '0.025195'
+            cache_discount_usd: null
+        metadata:
+          component: judge
+          validation_errors:
+          - type: missing
+            loc:
+            - answer
+            msg: Field required
+            url: https://errors.pydantic.dev/2.12/v/missing
+          - type: extra_forbidden
+            loc:
+            - decision
+            msg: Extra inputs are not permitted
+            url: https://errors.pydantic.dev/2.12/v/extra_forbidden
+          - type: extra_forbidden
+            loc:
+            - evidence_numbers
+            msg: Extra inputs are not permitted
+            url: https://errors.pydantic.dev/2.12/v/extra_forbidden
+          - type: extra_forbidden
+            loc:
+            - reasoning
+            msg: Extra inputs are not permitted
+            url: https://errors.pydantic.dev/2.12/v/extra_forbidden
+          oracle_role_traces:
+          - role: oracle
+            provider:
+              completed_at: '2026-08-14T06:51:52.303787+00:00'
+              latency_ms: 12609
+              http_status_code: 200
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens:
+                    truncated: true
+                  cached_input_tokens:
+                    truncated: true
+                  cache_write_tokens:
+                    truncated: true
+                  output_tokens:
+                    truncated: true
+                  reasoning_tokens:
+                    truncated: true
+                  search_count:
+                    truncated: true
+                  cost_usd:
+                    truncated: true
+                  cache_discount_usd:
+                    truncated: true
+                retry_latency_ms: 0
+              resolved_model: openai/gpt-5.6-luna
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              discarded_error_outputs: []
+          - role: reviewer
+            provider:
+              completed_at: '2026-08-14T06:51:56.723682+00:00'
+              latency_ms: 4418
+              http_status_code: 200
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens:
+                    truncated: true
+                  cached_input_tokens:
+                    truncated: true
+                  cache_write_tokens:
+                    truncated: true
+                  output_tokens:
+                    truncated: true
+                  reasoning_tokens:
+                    truncated: true
+                  search_count:
+                    truncated: true
+                  cost_usd:
+                    truncated: true
+                  cache_discount_usd:
+                    truncated: true
+                retry_latency_ms: 0
+              resolved_model: google/gemini-3.5-flash-lite
+              resolved_provider: Google AI Studio
+              fallback_occurred: false
+              discarded_error_outputs: []
+          - role: judge
+            provider:
+              completed_at: '2026-08-14T06:52:12.189982+00:00'
+              latency_ms: 15460
+              http_status_code: 200
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                retried_calls: 1
+                recovered_calls: 0
+                exhausted_retries: 1
+                reasons:
+                - truncated: true
+                retry_usage:
+                  input_tokens:
+                    truncated: true
+                  cached_input_tokens:
+                    truncated: true
+                  cache_write_tokens:
+                    truncated: true
+                  output_tokens:
+                    truncated: true
+                  reasoning_tokens:
+                    truncated: true
+                  search_count:
+                    truncated: true
+                  cost_usd:
+                    truncated: true
+                  cache_discount_usd:
+                    truncated: true
+                retry_latency_ms: 12095
+              resolved_model: anthropic/claude-opus-5
+              resolved_provider: Amazon Bedrock
+              fallback_occurred: false
+              discarded_error_outputs:
+              - attempt_number:
+                  truncated: true
+                finish_reason:
+                  truncated: true
+                output:
+                  truncated: true
+    partial_metrics:
+      counted_questions: 4
+      guesser_cost_usd: '0.008682'
+      oracle_cost_usd: '0.078231000'
+      reviewer_cost_usd: '0.0055080'
+      judge_cost_usd: '0'
+      validator_cost_usd: '0'
+      cost_usd: '0.086913000'
+      tokens: 45899
+      cached_input_tokens: 10464
+      cache_write_tokens: 0
+      estimated_cache_savings_usd: '0.00537600'
+      latency_ms: 89211
+      duration_ms: 89305
+      recovery:
+        request_attempts: 17
+        retried_calls: 1
+        recovered_calls: 0
+        exhausted_retries: 1
+        reasons:
+        - reason: invalid_judge_output
+          count: 1
+        retry_usage:
+          input_tokens: 1532
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 197
+          reasoning_tokens: 39
+          search_count: 0
+          cost_usd: '0.012585'
+          cache_discount_usd: null
+        retry_latency_ms: 12095
+    error_output_preview:
+      component: judge
+      attempt_number: 2
+      finish_reason: stop
+      text: '{"decision":"NO","basis":"evidence","evidence_numbers":[1,2],"reasoning":"Excerpt
+        1 identifies his role as missionary surgeon and founder of Lambaréné, with
+        the Nobel motivation citing humanitarian work. Excerpt 2 explicitly states
+        that although he w'
+      original_characters: 411
+      trailing_whitespace_characters: 0
+      truncated: true
+    superseded_at: '2026-08-14T08:43:31.004075+00:00'
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0015/BX-20260814-official-M0015-013/subjects/T-0002/trials/trial-004/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs:
+      relative_path: runs/M-0015/BX-20260814-official-M0015-013/subjects/T-0002/trials/trial-004/error-outputs.jsonl
+      record_count: 1
+      integrity_hash: 16eff5421ed78c1ce897b5a8235f0c14adb3bd9c308763c4f75b73da45d2f29b
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: da3c01204fe9d205d915c37e9de5b3fa8bfa8ce598a7ae24e78681fb51b9c300

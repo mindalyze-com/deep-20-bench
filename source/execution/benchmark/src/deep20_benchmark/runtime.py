@@ -41,8 +41,14 @@ class EpisodeExecutor(Protocol):
 class LiveEpisodeExecutor:
     """Compose one paid episode while the benchmark owns persistence and observation."""
 
-    def __init__(self, *, api_key: str):
+    def __init__(
+        self,
+        *,
+        api_key: str,
+        judge_ignored_providers: tuple[str, ...] = (),
+    ):
         self.api_key = api_key
+        self.judge_ignored_providers = judge_ignored_providers
 
     def execute(
         self,
@@ -64,6 +70,7 @@ class LiveEpisodeExecutor:
         oracle_providers = OpenRouterOracleProviderSet(
             self.api_key,
             definition.oracle_configuration,
+            judge_ignored_providers=self.judge_ignored_providers,
         )
         try:
             engine = GameEngine(

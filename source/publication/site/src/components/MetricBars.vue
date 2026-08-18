@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import { BarChart } from "echarts/charts";
-import {
-  AriaComponent,
-  GridComponent,
-  TooltipComponent,
-} from "echarts/components";
-import * as echarts from "echarts/core";
 import type {
   DefaultLabelFormatterCallbackParams as CallbackDataParams,
   EChartsOption,
 } from "echarts";
-import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import { echarts, standardChartComponents } from "@/lib/chart-registration";
 import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
+import {
+  chartTooltipPrimary,
+  chartTooltipRunLink,
+  chartTooltipTitle,
+} from "@/lib/chart-tooltip";
 import { money } from "@/lib/format";
 import {
   chartAnimationEnabled,
@@ -26,13 +25,7 @@ import {
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
 
-echarts.use([
-  BarChart,
-  GridComponent,
-  TooltipComponent,
-  AriaComponent,
-  SVGRenderer,
-]);
+echarts.use([BarChart, ...standardChartComponents]);
 
 export interface MetricBar {
   label: string;
@@ -89,12 +82,10 @@ const tooltip = (parameters: CallbackDataParams | CallbackDataParams[]): string 
       : `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem;line-height:1.45">${escapeHtml(item.detail)}</span>`;
   return [
     '<div style="min-width:180px;max-width:280px;padding:3px 2px">',
-    `<strong style="display:block;color:${theme.ink};font-size:.82rem;line-height:1.35">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:8px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.55rem;line-height:1">${escapeHtml(item.display)}</span>`,
+    chartTooltipTitle(theme, item.label),
+    chartTooltipPrimary(theme, item.display, "1.55rem"),
     detail,
-    item.link === undefined
-      ? ""
-      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight: var(--font-weight-bold);letter-spacing:.06em;text-transform:uppercase">View full run →</span>`,
+    chartTooltipRunLink(theme, item.link !== undefined, true),
     "</div>",
   ].join("");
 };
@@ -250,8 +241,6 @@ const handleChartClick = (parameters: CallbackDataParams): void => {
 
 const { chartElement, refresh } = useResponsiveEChart({
   height: chartHeight,
-  initialize: (element) =>
-    echarts.init(element, undefined, { renderer: "svg" }),
   option: chartOption,
   onClick: handleChartClick,
   pointerCursor: (parameters) =>

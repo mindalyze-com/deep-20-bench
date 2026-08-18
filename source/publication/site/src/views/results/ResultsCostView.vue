@@ -1,45 +1,33 @@
 <script setup lang="ts">
-import { computed, onActivated, ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed } from "vue";
 
-import ErrorState from "@/components/ErrorState.vue";
 import InfoPopover from "@/components/InfoPopover.vue";
-import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
-import ModelRunLink from "@/components/ModelRunLink.vue";
+import OfficialRunRankingRow from "@/components/OfficialRunRankingRow.vue";
+import RankingTable from "@/components/RankingTable.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
+import ResultsContent from "@/components/ResultsContent.vue";
 import StackedMetricBars, {
   type StackedBarRow,
   type StackedBarSegment,
 } from "@/components/StackedMetricBars.vue";
-import { getLeaderboard, getOfficialRuns } from "@/lib/api";
+import TableHeaderStack from "@/components/TableHeaderStack.vue";
 import { readChartTheme } from "@/lib/chart-theme";
 import { money, moneyEpisode, percent } from "@/lib/format";
-import { setRouteContext } from "@/lib/route-context";
-import type { LeaderboardRow, PublicRunSummary, RunDocument } from "@/lib/types";
+import { usePageRouteContext } from "@/lib/route-context";
+import { runRoute } from "@/lib/route-location";
+import type { PublicRunSummary } from "@/lib/types";
+import { useOfficialRunData } from "@/lib/use-official-run-data";
 
-const documents = ref<RunDocument[]>([]);
-const leaderboard = ref<LeaderboardRow[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
-const router = useRouter();
+const { documents, loading, error, providerFor, openRun } =
+  useOfficialRunData();
 
-const applyRouteContext = (): void => {
-  setRouteContext({
-    title: "Cost results",
-    description: "Compare recorded Deep20Bench run costs by model and component.",
-    level: null,
-    position: null,
-    crumbs: [],
-    previous: null,
-    next: null,
-  });
-};
-
-applyRouteContext();
-onActivated(applyRouteContext);
+usePageRouteContext({
+  title: "Cost results",
+  description: "Compare recorded Deep20Bench run costs by model and component.",
+});
 
 const runs = computed(() =>
   documents.value
@@ -73,6 +61,30 @@ const supportShare = computed(() =>
     ? String((totalSpend.value - guesserSpend.value) / totalSpend.value)
     : null,
 );
+
+const excludedRepairCost = (run: PublicRunSummary): number =>
+  Number(run.totals.excluded_repair?.cost_usd ?? 0);
+
+const mobileCostMetrics = (run: PublicRunSummary) => {
+  const metrics = [
+    {
+      label: "Guesser cost / episode",
+      value: moneyEpisode(run.comparison.guesser_cost_per_episode_usd),
+    },
+    {
+      label: "Benchmark cost / episode",
+      value: moneyEpisode(run.comparison.full_cost_per_episode_usd),
+    },
+    { label: "Benchmark run cost", value: money(run.totals.costs_usd.total) },
+  ];
+  if (excludedRepairCost(run) > 0) {
+    metrics.push({
+      label: "Excluded repair overhead",
+      value: money(excludedRepairCost(run)),
+    });
+  }
+  return metrics;
+};
 
 const summaryMetrics = computed<MetricGridItem[]>(() => [
   { key: "runs", label: "Models", value: runs.value.length },
@@ -161,54 +173,21 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
   return "middle";
 };
 
-const runLink = (run: PublicRunSummary) => ({
-  name: "run",
-  params: { executionId: run.execution_id },
-});
-
-const openRun = (run: PublicRunSummary): void => {
-  void router.push(runLink(run));
-};
-
-const providerFor = (modelId: string): string =>
-  leaderboard.value.find((row) => row.model.model_id === modelId)?.model.provider ??
-  modelId;
-
-const load = async (): Promise<void> => {
-  loading.value = true;
-  error.value = null;
-  try {
-    const [runDocuments, leaderboardDocument] = await Promise.all([
-      getOfficialRuns(),
-      getLeaderboard(),
-    ]);
-    documents.value = runDocuments;
-    leaderboard.value = leaderboardDocument.leaderboard;
-  } catch (reason: unknown) {
-    error.value =
-      reason instanceof Error ? reason.message : "Publication data could not be loaded.";
-  } finally {
-    loading.value = false;
-  }
-};
-
-void load();
 </script>
 
 <template>
   <div class="page results-view">
-    <LoadingState v-if="loading" label="Loading cost results" />
-    <ErrorState v-else-if="error !== null" :message="error" />
-
-    <section v-else-if="runs.length === 0" class="content-section empty-state">
-      <div class="content-inner">
+    <ResultsContent
+      :loading="loading"
+      loading-label="Loading cost results"
+      :error="error"
+      :empty="runs.length === 0"
+    >
+      <template #empty>
         <p class="eyebrow">Cost</p>
         <h2>No official runs are available.</h2>
-      </div>
-    </section>
+      </template>
 
-    <section v-else class="content-section">
-      <div class="content-inner">
         <MetricGrid
           class="results-summary"
           :items="summaryMetrics"
@@ -227,8 +206,8 @@ void load();
                 <h2 id="cost-chart-title">Guesser cost across the run.</h2>
               </div>
               <p>
-                Each bar adds the recorded provider cost of every call to the Guesser, the
-                model under test. Support costs are excluded here and shown in the breakdown below.
+                Each bar adds the recorded provider cost of Guesser calls in the retained terminal
+                attempts. Superseded infrastructure attempts and support costs are excluded.
               </p>
               <ResultHelp label="Cost metric explanations">
                 <InfoPopover label="Guesser and support cost">
@@ -241,6 +220,14 @@ void load();
                   <p>
                     Per-episode values divide the recorded run cost by the number of terminal
                     episodes. This keeps runs comparable if cohort sizes change.
+                  </p>
+                </InfoPopover>
+                <InfoPopover label="Repaired trials">
+                  <p>
+                    A repaired trial publishes only its retained terminal attempt. Superseded
+                    infrastructure attempts remain in the signed benchmark audit but do not
+                    increase the published model or benchmark cost. Any excluded repair overhead
+                    is listed beneath the run total.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="How this page is ordered">
@@ -269,9 +256,9 @@ void load();
                 <h3 id="component-ledger-title">Where the total cost came from.</h3>
               </div>
               <p>
-                Bar length shows the total cost of each benchmark run. Color separates
-                the Guesser, Primary Oracle, and Adjudication. Expand the exact breakdown
-                to compare Reviewer, Judge, and Validator cost.
+                Bar length shows the retained terminal attempts' benchmark cost. Color separates
+                the Guesser, Primary Oracle, and Adjudication. Expand the exact breakdown to
+                compare Reviewer, Judge, and Validator cost.
               </p>
             </header>
             <StackedMetricBars
@@ -282,12 +269,7 @@ void load();
           </section>
         </div>
 
-        <div
-          class="table-wrap ranking-table-wrap results-table-wrap"
-          aria-label="Cost comparison"
-        >
-          <table class="data-table ranking-table results-table">
-            <caption class="visually-hidden">Cost comparison</caption>
+        <RankingTable label="Cost comparison" min-width="960px">
             <thead>
               <tr>
                 <th class="rank-column">
@@ -296,42 +278,26 @@ void load();
                 </th>
                 <th class="model-column">Model</th>
                 <th data-numeric>
-                  <span class="table-header-stack">
-                    <span>Guesser cost</span>
-                    <span>per episode</span>
-                  </span>
+                  <TableHeaderStack first="Guesser cost" second="per episode" />
                 </th>
                 <th data-numeric>
-                  <span class="table-header-stack">
-                    <span>Benchmark cost</span>
-                    <span>per episode</span>
-                  </span>
+                  <TableHeaderStack first="Benchmark cost" second="per episode" />
                 </th>
                 <th data-numeric>
-                  <span class="table-header-stack">
-                    <span>Support cost</span>
-                    <span>per episode</span>
-                  </span>
+                  <TableHeaderStack first="Support cost" second="per episode" />
                 </th>
                 <th data-numeric>Support share</th>
                 <th data-numeric>Benchmark run cost</th>
               </tr>
             </thead>
             <tbody>
-              <tr
+              <OfficialRunRankingRow
                 v-for="(run, index) in runs"
                 :key="run.execution_id"
-                class="result-row--clickable result-row--navigable"
+                :rank="index + 1"
+                :run="run"
                 @click="openRun(run)"
               >
-                <td class="rank-column">{{ index + 1 }}</td>
-                <td class="model-column">
-                  <ModelRunLink
-                    :to="runLink(run)"
-                    :name="run.model_name"
-                    :meta="run.model_id"
-                  />
-                </td>
                 <td data-numeric>
                   {{ moneyEpisode(run.comparison.guesser_cost_per_episode_usd) }}
                 </td>
@@ -343,14 +309,18 @@ void load();
                 </td>
                 <td data-numeric>{{ percent(run.comparison.support_cost_share) }}</td>
                 <td data-numeric>
-                  <span :class="`value-signal value-signal--${costBand(index)}`">
-                    {{ money(run.totals.costs_usd.total) }}
-                  </span>
+                  <div class="run-cost-value">
+                    <span :class="`value-signal value-signal--${costBand(index)}`">
+                      {{ money(run.totals.costs_usd.total) }}
+                    </span>
+                    <small v-if="excludedRepairCost(run) > 0">
+                      Excluded repair overhead: {{ money(excludedRepairCost(run)) }}
+                    </small>
+                  </div>
                 </td>
-              </tr>
+              </OfficialRunRankingRow>
             </tbody>
-          </table>
-        </div>
+        </RankingTable>
 
         <div class="mobile-result-list" aria-label="Cost comparison">
           <MobileResultCard
@@ -359,39 +329,21 @@ void load();
             :rank="index + 1"
             :name="run.model_name"
             :provider="providerFor(run.model_id)"
-            :to="runLink(run)"
-            :metrics="[
-              {
-                label: 'Guesser cost / episode',
-                value: moneyEpisode(run.comparison.guesser_cost_per_episode_usd),
-              },
-              {
-                label: 'Benchmark cost / episode',
-                value: moneyEpisode(run.comparison.full_cost_per_episode_usd),
-              },
-              { label: 'Benchmark run cost', value: money(run.totals.costs_usd.total) },
-            ]"
+            :to="runRoute(run.execution_id)"
+            :metrics="mobileCostMetrics(run)"
           />
         </div>
 
         <p class="results-note">
-          Costs are provider-reported values for the selected official runs. A missing or
-          unreported provider price can affect the comparison.
+          Costs are provider-reported values for retained terminal attempts in the selected
+          official runs. Superseded infrastructure attempts are excluded. A missing or unreported
+          provider price can affect the comparison.
         </p>
-      </div>
-    </section>
+    </ResultsContent>
   </div>
 </template>
 
 <style scoped>
-.results-summary {
-  margin-bottom: var(--results-section-gap);
-}
-
-.results-table {
-  min-width: 960px;
-}
-
 .value-signal {
   display: inline-block;
   min-width: 4rem;
@@ -400,6 +352,22 @@ void load();
   background: var(--surface-raised);
   text-align: right;
   white-space: nowrap;
+}
+
+.run-cost-value {
+  display: inline-grid;
+  justify-items: end;
+  gap: 0.35rem;
+}
+
+.run-cost-value small {
+  max-width: 12rem;
+  color: var(--muted);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.35;
+  text-align: right;
+  white-space: normal;
 }
 
 .value-signal--good {
@@ -414,7 +382,4 @@ void load();
   border-color: var(--coral);
 }
 
-.empty-state {
-  min-height: 50vh;
-}
 </style>

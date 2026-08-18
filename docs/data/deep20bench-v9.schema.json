@@ -964,6 +964,31 @@
       "title": "PublicEvidence",
       "type": "object"
     },
+    "PublicExcludedRepairCost": {
+      "additionalProperties": false,
+      "properties": {
+        "affected_trials": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Affected Trials",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "default": "0",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Cost Usd",
+          "type": "string"
+        },
+        "superseded_attempts": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Superseded Attempts",
+          "type": "integer"
+        }
+      },
+      "title": "PublicExcludedRepairCost",
+      "type": "object"
+    },
     "PublicGuesserDisclosure": {
       "additionalProperties": false,
       "properties": {
@@ -1578,6 +1603,9 @@
       "properties": {
         "costs_usd": {
           "$ref": "#/$defs/PublicRunCostTotals"
+        },
+        "excluded_repair": {
+          "$ref": "#/$defs/PublicExcludedRepairCost"
         },
         "guesser_calls": {
           "minimum": 0,

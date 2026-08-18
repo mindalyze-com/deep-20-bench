@@ -3,18 +3,21 @@ import { computed, nextTick, onActivated, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import ErrorState from "@/components/ErrorState.vue";
+import ContractMetrics from "@/components/ContractMetrics.vue";
 import EpisodeReliabilityPanel from "@/components/episode/EpisodeReliabilityPanel.vue";
 import EpisodeSummary from "@/components/episode/EpisodeSummary.vue";
 import EpisodeTranscriptPanel from "@/components/episode/EpisodeTranscriptPanel.vue";
 import EpisodeUsagePanel from "@/components/episode/EpisodeUsagePanel.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { getEpisode } from "@/lib/api";
-import { contractPercent, formatCount, moneyEpisode } from "@/lib/format";
+import { formatCount, moneyEpisode } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
+import { episodeRoute, runRoute, subjectRoute } from "@/lib/route-location";
 import type {
   EpisodeDocument,
   PublicTrialSummary,
 } from "@/lib/types";
+import { useKeyedPublicationLoad } from "@/lib/use-keyed-publication-load";
 import {
   useRunWorkspace,
   useSubjectWorkspace,
@@ -23,9 +26,6 @@ import {
 const route = useRoute();
 const { document: runDocument, run, subjects } = useRunWorkspace();
 const { document: subjectDocument, subject } = useSubjectWorkspace();
-const episodeDocument = ref<EpisodeDocument | null>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
 type EpisodeTab = "transcript" | "reliability" | "usage";
 const activeTab = ref<EpisodeTab>("transcript");
 const episodeTabs: EpisodeTab[] = ["transcript", "reliability", "usage"];
@@ -33,6 +33,38 @@ const episodeTabs: EpisodeTab[] = ["transcript", "reliability", "usage"];
 const executionId = computed(() => String(route.params.executionId ?? ""));
 const targetId = computed(() => String(route.params.targetId ?? ""));
 const trialId = computed(() => String(route.params.trialId ?? ""));
+const { document: episodeDocument, loading, error } = useKeyedPublicationLoad({
+  parameters: (): [string, string, string] => [
+    executionId.value,
+    targetId.value,
+    trialId.value,
+  ],
+  clearBeforeLoad: true,
+  fallbackError: "The episode could not be loaded.",
+  onBeforeLoad: () => {
+    activeTab.value = "transcript";
+  },
+  load: async (requestedExecution, requestedTarget, requestedTrial) => {
+    const loadedEpisode: EpisodeDocument = await getEpisode(
+      requestedExecution,
+      requestedTarget,
+      requestedTrial,
+    );
+    if (
+      !runDocument.value?.subjects.some(
+        (candidate) => candidate.target_id === requestedTarget,
+      ) ||
+      !subjectDocument.value?.trials.some(
+        (candidate) => candidate.trial_id === requestedTrial,
+      )
+    ) {
+      throw new Error("The requested episode is not part of this run.");
+    }
+    return loadedEpisode;
+  },
+  onLoaded: () => applyRouteContext(),
+  onSettled: () => void revealLinkedViolation(),
+});
 const trial = computed(
   () =>
     subjectDocument.value?.trials.find(
@@ -98,22 +130,11 @@ const onEpisodeTabKeydown = (event: KeyboardEvent, current: EpisodeTab): void =>
   if (next !== undefined) selectEpisodeTab(next, true);
 };
 
-const episodeTo = (candidate: PublicTrialSummary) => ({
-  name: "episode" as const,
-  params: {
-    executionId: executionId.value,
-    targetId: targetId.value,
-    trialId: candidate.trial_id,
-  },
-});
+const episodeTo = (candidate: PublicTrialSummary) =>
+  episodeRoute(executionId.value, targetId.value, candidate.trial_id);
 
-const subjectTo = (subjectTargetId: string) => ({
-  name: "subject" as const,
-  params: {
-    executionId: executionId.value,
-    targetId: subjectTargetId,
-  },
-});
+const subjectTo = (subjectTargetId: string) =>
+  subjectRoute(executionId.value, subjectTargetId);
 
 const applyRouteContext = (): void => {
   const currentRun = run.value;
@@ -143,20 +164,11 @@ const applyRouteContext = (): void => {
       { label: "Results", to: { name: "results" } },
       {
         label: currentRun.model_name,
-        to: {
-          name: "run",
-          params: { executionId: currentRun.execution_id },
-        },
+        to: runRoute(currentRun.execution_id),
       },
       {
         label: currentSubject.display_name,
-        to: {
-          name: "subject",
-          params: {
-            executionId: currentRun.execution_id,
-            targetId: currentSubject.target_id,
-          },
-        },
+        to: subjectRoute(currentRun.execution_id, currentSubject.target_id),
       },
       { label: `Episode ${currentTrial.trial_number}` },
     ],
@@ -173,62 +185,6 @@ const applyRouteContext = (): void => {
   });
 };
 
-const load = async (): Promise<void> => {
-  const requestedExecution = executionId.value;
-  const requestedTarget = targetId.value;
-  const requestedTrial = trialId.value;
-  loading.value = true;
-  error.value = null;
-  activeTab.value = "transcript";
-  episodeDocument.value = null;
-  try {
-    const loadedEpisode = await getEpisode(
-      requestedExecution,
-      requestedTarget,
-      requestedTrial,
-    );
-    if (
-      executionId.value !== requestedExecution ||
-      targetId.value !== requestedTarget ||
-      trialId.value !== requestedTrial
-    ) {
-      return;
-    }
-    if (
-      !runDocument.value?.subjects.some(
-        (candidate) => candidate.target_id === requestedTarget,
-      ) ||
-      !subjectDocument.value?.trials.some(
-        (candidate) => candidate.trial_id === requestedTrial,
-      )
-    ) {
-      throw new Error("The requested episode is not part of this run.");
-    }
-    episodeDocument.value = loadedEpisode;
-    applyRouteContext();
-  } catch (cause: unknown) {
-    if (
-      executionId.value !== requestedExecution ||
-      targetId.value !== requestedTarget ||
-      trialId.value !== requestedTrial
-    ) {
-      return;
-    }
-    episodeDocument.value = null;
-    error.value = cause instanceof Error ? cause.message : "The episode could not be loaded.";
-  } finally {
-    if (
-      executionId.value === requestedExecution &&
-      targetId.value === requestedTarget &&
-      trialId.value === requestedTrial
-    ) {
-      loading.value = false;
-      void revealLinkedViolation();
-    }
-  }
-};
-
-watch([executionId, targetId, trialId], () => void load(), { immediate: true });
 watch(
   () => route.query.violation,
   () => void revealLinkedViolation(),
@@ -312,21 +268,11 @@ onActivated(() => {
               disclosed only the public action format, never whether an attempted answer was
               correct.
             </p>
-            <dl class="warning-facts">
-              <div>
-                <dt>Compliance</dt>
-                <dd>
-                  {{
-                    contractPercent(
-                      episode.contract.compliance_rate,
-                      episode.contract.violations,
-                    )
-                  }}
-                </dd>
-              </div>
-              <div><dt>Violations</dt><dd>{{ episode.contract.violations }}</dd></div>
-              <div><dt>Turn penalties</dt><dd>{{ episode.contract.counted_penalties }}</dd></div>
-            </dl>
+            <ContractMetrics
+              class="warning-facts"
+              :contract="episode.contract"
+              compact
+            />
           </div>
         </div>
       </section>
@@ -355,7 +301,7 @@ onActivated(() => {
 </template>
 
 <style scoped>
-.warning-facts dt {
+.warning-facts :deep(dt) {
   color: var(--muted);
   font-size: var(--text-caption);
   font-weight: var(--font-weight-bold);
@@ -381,16 +327,16 @@ onActivated(() => {
   border: var(--rule-default);
 }
 
-.warning-facts div {
+.warning-facts :deep(div) {
   padding: 0.9rem;
   border-right: var(--rule-default);
 }
 
-.warning-facts div:last-child {
+.warning-facts :deep(div:last-child) {
   border-right: 0;
 }
 
-.warning-facts dd {
+.warning-facts :deep(dd) {
   margin: 0.35rem 0 0;
   font-weight: var(--font-weight-bold);
 }

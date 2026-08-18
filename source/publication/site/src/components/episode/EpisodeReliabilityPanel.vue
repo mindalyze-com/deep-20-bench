@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import ContractMetrics from "@/components/ContractMetrics.vue";
 import { contractViolationDetails } from "@/lib/contract-violation-copy";
-import { contractPercent, statusLabel } from "@/lib/format";
 import type {
   PublicContractViolationTurn,
   PublicEpisodeDetail,
@@ -39,27 +39,7 @@ const violationTurns = computed(() =>
           already affect the question total; this section does not add another penalty.
         </p>
       </header>
-      <dl class="reliability-grid">
-        <div><dt>Status</dt><dd>{{ statusLabel(episode.contract.status) }}</dd></div>
-        <div><dt>Valid outputs</dt><dd>{{ episode.contract.valid_outputs }}</dd></div>
-        <div><dt>Evaluated outputs</dt><dd>{{ episode.contract.evaluated_outputs }}</dd></div>
-        <div>
-          <dt>Compliance</dt>
-          <dd>
-            {{
-              contractPercent(
-                episode.contract.compliance_rate,
-                episode.contract.violations,
-              )
-            }}
-          </dd>
-        </div>
-        <div><dt>Violations</dt><dd>{{ episode.contract.violations }}</dd></div>
-        <div>
-          <dt>Counted-turn penalties</dt>
-          <dd>{{ episode.contract.counted_penalties }}</dd>
-        </div>
-      </dl>
+      <ContractMetrics class="reliability-grid" :contract="episode.contract" />
       <section
         v-if="episode.contract.status === 'breached'"
         class="violation-summary"
@@ -98,21 +78,21 @@ const violationTurns = computed(() =>
   border: var(--rule-strong);
 }
 
-.reliability-grid > div {
+.reliability-grid :deep(div) {
   padding: 1rem;
   border-right: var(--rule-strong);
   border-bottom: var(--rule-strong);
 }
 
-.reliability-grid > div:nth-child(3n) {
+.reliability-grid :deep(div:nth-child(3n)) {
   border-right: 0;
 }
 
-.reliability-grid > div:nth-last-child(-n + 3) {
+.reliability-grid :deep(div:nth-last-child(-n + 3)) {
   border-bottom: 0;
 }
 
-.reliability-grid dt {
+.reliability-grid :deep(dt) {
   color: var(--text-secondary);
   font-size: var(--text-caption);
   font-weight: var(--font-weight-bold);
@@ -120,7 +100,7 @@ const violationTurns = computed(() =>
   text-transform: uppercase;
 }
 
-.reliability-grid dd {
+.reliability-grid :deep(dd) {
   margin: 0.4rem 0 0;
   font-family: var(--font-display);
   font-size: 1.8rem;
@@ -186,19 +166,19 @@ const violationTurns = computed(() =>
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .reliability-grid > div:nth-child(3n) {
+  .reliability-grid :deep(div:nth-child(3n)) {
     border-right: var(--rule-strong);
   }
 
-  .reliability-grid > div:nth-child(even) {
+  .reliability-grid :deep(div:nth-child(even)) {
     border-right: 0;
   }
 
-  .reliability-grid > div:nth-last-child(-n + 3) {
+  .reliability-grid :deep(div:nth-last-child(-n + 3)) {
     border-bottom: var(--rule-strong);
   }
 
-  .reliability-grid > div:nth-last-child(-n + 2) {
+  .reliability-grid :deep(div:nth-last-child(-n + 2)) {
     border-bottom: 0;
   }
 }
@@ -208,15 +188,15 @@ const violationTurns = computed(() =>
     grid-template-columns: 1fr;
   }
 
-  .reliability-grid > div,
-  .reliability-grid > div:nth-child(3n),
-  .reliability-grid > div:nth-child(even),
-  .reliability-grid > div:nth-last-child(-n + 2) {
+  .reliability-grid :deep(div),
+  .reliability-grid :deep(div:nth-child(3n)),
+  .reliability-grid :deep(div:nth-child(even)),
+  .reliability-grid :deep(div:nth-last-child(-n + 2)) {
     border-right: 0;
     border-bottom: var(--rule-strong);
   }
 
-  .reliability-grid > div:last-child {
+  .reliability-grid :deep(div:last-child) {
     border-bottom: 0;
   }
 

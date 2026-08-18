@@ -18,10 +18,12 @@ Deep20Bench distinguishes three mechanisms:
 Prompt caching is configured through API request fields; telling the model in natural-language
 instructions to remember or cache answers does not create a provider cache.
 
-Bounded retries for explicit no-result provider statuses resend the identical request and may
-therefore receive a provider prompt-cache read. They never reuse a complete response and do not
-change the application/response-cache prohibition. Attempt count and retry timing are measured
-as transport telemetry, not added to any prompt or cache key.
+Bounded transport retries for explicit no-result provider statuses resend the identical request
+and may therefore receive a provider prompt-cache read. They never reuse a complete response and
+do not change the application/response-cache prohibition. Attempt count and retry timing are
+measured as transport telemetry, not added to any prompt or cache key. The Oracle's one
+diversified research-recovery attempt is different: it is a new semantic request under a
+separate fixed prompt, session, and cache namespace. It is not an identical transport retry.
 
 The Guesser cache namespace includes the versioned branch-aware action schema hash. Invalid
 structured output is not invisibly retried. It becomes a scored turn; when budget remains, the
@@ -32,7 +34,7 @@ validation details, and recovery metadata from Guesser-visible state.
 
 The Oracle has useful repeated material across questions about one subject:
 
-- The versioned system policy.
+- The versioned primary or recovery system policy.
 - The subject snapshot.
 - The strict output schema.
 - The web-search tool definition.
@@ -66,10 +68,19 @@ Current decision:
 2. Do not add an application answer cache.
 3. Do not pad the Oracle prompt or add caching-only instructions.
 4. Leave provider automatic prompt caching available. Record `cached_input_tokens` and
-   `cache_write_tokens` in nested metrics and the full provider usage object in the audit.
+   `cache_write_tokens` in nested metrics and the full provider usage object in both the
+   privileged audit and the sanitized per-call result audit.
 5. Use a stable subject/run session key and a prompt cache key derived from the prompt version
    and subject snapshot. Continue measuring realistic sequences of different questions within
    the provider's cache lifetime before claiming savings.
+
+Primary and recovery research use distinct prompt versions, session namespaces, and cache
+keys. The recovery request contains the same trusted subject and current question, but no
+primary query, answer, evidence, outcome, provider trace, or history. Its fixed prompt selects
+alternative strategies by question family. This separation prevents a cache or sticky-routing
+hint from becoming a channel for prior research state. Recovery is expected to be uncommon, so
+its cache reads, writes, latency, search count, and cost must be measured separately. It is not
+padded and no savings are assumed.
 
 This decision must be revisited when the game engine creates realistic multi-question runs or
 when the default model/provider changes.

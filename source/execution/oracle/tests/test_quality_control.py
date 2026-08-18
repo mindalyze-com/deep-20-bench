@@ -5,19 +5,30 @@ import json
 import pytest
 from conftest import FakeProvider, make_oracle, provider_trace, review_payload
 from deep20_oracle.audit import RunAuditWriter
-from deep20_oracle.errors import OracleProviderError
+from deep20_oracle.errors import OracleProtocolError, OracleProviderError
 from deep20_oracle.models import (
     EvidenceDecisionBasis,
     OracleAnswer,
     OracleDecisionPath,
     OracleQuestionType,
     OracleRequest,
+    OracleResearchQuestionClass,
+    OracleResearchResolution,
 )
-from deep20_oracle.provider import ProviderRequest
-from deep20_oracle.question_type import classify_oracle_question
+from deep20_oracle.provider import ProviderExchange, ProviderRequest
+from deep20_oracle.question_type import (
+    classify_oracle_question,
+    classify_oracle_research_question,
+)
 
 
-def oracle_payload(answer: OracleAnswer, excerpt: str = "The supported fact.") -> str:
+def oracle_payload(
+    answer: OracleAnswer,
+    excerpt: str = "The supported fact.",
+    *,
+    outcome: str | None = None,
+    query: str = "subject current fact",
+) -> str:
     return json.dumps(
         {
             "answer": answer,
@@ -32,8 +43,32 @@ def oracle_payload(answer: OracleAnswer, excerpt: str = "The supported fact.") -
                     }
                 ]
             ),
+            "research_outcome": (
+                outcome or ("ambiguous_question" if answer is OracleAnswer.UNKNOWN else "answered")
+            ),
+            "attempted_queries": [query],
         }
     )
+
+
+class SequenceProvider:
+    def __init__(self, outputs: list[str]) -> None:
+        self.outputs = outputs
+        self.requests: list[ProviderRequest] = []
+
+    def complete(self, request: ProviderRequest) -> ProviderExchange:
+        self.requests.append(request)
+        raw_output = self.outputs.pop(0)
+        return ProviderExchange(
+            raw_output=raw_output,
+            trace=provider_trace(
+                raw_output=raw_output,
+                request={
+                    "messages": request.messages,
+                    "response_format": request.output_schema,
+                },
+            ),
+        )
 
 
 def decoded_review_payload(request: ProviderRequest) -> dict[str, object]:
@@ -114,10 +149,7 @@ def test_einstein_date_polarity_disagreement_still_uses_judge_final_answer(
     assert call.adjudication.judge is not None
     assert call.adjudication.judge.answer is OracleAnswer.NO
     assert call.adjudication.decision_path is OracleDecisionPath.JUDGE_DISAGREEMENT
-    assert (
-        call.adjudication.question_type
-        is OracleQuestionType.TEMPORAL_COMPARISON
-    )
+    assert call.adjudication.question_type is OracleQuestionType.TEMPORAL_COMPARISON
     assert call.adjudication.oracle_answer_changed is True
     assert call.guesser_answer() is OracleAnswer.NO
     assert call.metrics.judge is not None
@@ -174,10 +206,7 @@ def test_judge_can_label_stable_closed_fact_as_model_knowledge(
     assert call.adjudication.reviewer is not None
     assert call.adjudication.reviewer.answer is OracleAnswer.UNKNOWN
     assert call.adjudication.judge is not None
-    assert (
-        call.adjudication.judge.basis
-        is EvidenceDecisionBasis.MODEL_KNOWLEDGE
-    )
+    assert call.adjudication.judge.basis is EvidenceDecisionBasis.MODEL_KNOWLEDGE
     assert call.adjudication.judge.evidence_indices == ()
     assert call.guesser_answer() is OracleAnswer.NO
 
@@ -231,10 +260,7 @@ def test_reviewer_model_knowledge_agreement_skips_judge(
     ).ask(request)
 
     assert call.adjudication.reviewer is not None
-    assert (
-        call.adjudication.reviewer.basis
-        is EvidenceDecisionBasis.MODEL_KNOWLEDGE
-    )
+    assert call.adjudication.reviewer.basis is EvidenceDecisionBasis.MODEL_KNOWLEDGE
     assert call.adjudication.reviewer.evidence_indices == ()
     assert call.adjudication.decision_path is OracleDecisionPath.REVIEWER_AGREEMENT
     assert call.adjudication.judge_invoked is False
@@ -265,6 +291,38 @@ def test_question_type_classification_is_deterministic(
     expected: OracleQuestionType,
 ) -> None:
     assert classify_oracle_question(question) is expected
+
+
+@pytest.mark.parametrize(
+    ("question", "expected"),
+    [
+        (
+            "Is the person currently alive?",
+            OracleResearchQuestionClass.TEMPORAL_STATUS,
+        ),
+        (
+            "Was the person primarily known as an actor?",
+            OracleResearchQuestionClass.PRIMARY_RECOGNITION,
+        ),
+        (
+            "Did the person ever appear as an actor?",
+            OracleResearchQuestionClass.OPEN_WORLD_EVER,
+        ),
+        (
+            "Was the person an actor?",
+            OracleResearchQuestionClass.ROLE_OR_OCCUPATION,
+        ),
+        (
+            "Was the person born in Germany?",
+            OracleResearchQuestionClass.CLOSED_FACT,
+        ),
+    ],
+)
+def test_research_question_classification_selects_evidence_strategy(
+    question: str,
+    expected: OracleResearchQuestionClass,
+) -> None:
+    assert classify_oracle_research_question(question) is expected
 
 
 def test_reviewer_and_judge_are_blind_and_role_isolated(
@@ -339,8 +397,9 @@ def test_oracle_unknown_bypasses_both_quality_control_models(
         search_count=0,
         model=audit_writer.config.judge.model,
     )
+    oracle_provider = FakeProvider(oracle_payload(OracleAnswer.UNKNOWN))
     call = make_oracle(
-        FakeProvider(oracle_payload(OracleAnswer.UNKNOWN)),
+        oracle_provider,
         audit_writer,
         audit_writer.config,
         reviewer_provider=reviewer_provider,
@@ -349,8 +408,116 @@ def test_oracle_unknown_bypasses_both_quality_control_models(
 
     assert call.guesser_answer() is OracleAnswer.UNKNOWN
     assert call.adjudication.decision_path is OracleDecisionPath.ORACLE_UNKNOWN
+    assert len(oracle_provider.requests) == 1
+    assert call.audit.research is not None
+    assert call.audit.research.resolution is OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY
     assert reviewer_provider.requests == []
     assert judge_provider.requests == []
+
+
+def test_retryable_unknown_uses_blind_diversified_recovery_then_review(
+    oracle_request: OracleRequest,
+    audit_writer: RunAuditWriter,
+) -> None:
+    first_query = "PRIVATE_FIRST_QUERY Albert Einstein alive"
+    provider = SequenceProvider(
+        [
+            oracle_payload(
+                OracleAnswer.UNKNOWN,
+                outcome="no_results",
+                query=first_query,
+            ),
+            oracle_payload(
+                OracleAnswer.NO,
+                "He died on April 18, 1955.",
+                query="Albert Einstein death date Nobel biography",
+            ),
+        ]
+    )
+    request = oracle_request.model_copy(update={"question": "Is this person currently alive?"})
+
+    call = make_oracle(
+        provider,
+        audit_writer,
+        audit_writer.config,
+        reviewer_answer=OracleAnswer.NO,
+    ).ask(request)
+
+    assert call.guesser_answer() is OracleAnswer.NO
+    assert len(provider.requests) == 2
+    assert provider.requests[0].messages[1] == provider.requests[1].messages[1]
+    assert provider.requests[0].messages[0] != provider.requests[1].messages[0]
+    assert provider.requests[0].session_id != provider.requests[1].session_id
+    assert provider.requests[0].prompt_cache_key != provider.requests[1].prompt_cache_key
+    assert first_query not in json.dumps(provider.requests[1].messages)
+    assert call.audit.research is not None
+    assert call.audit.research.question_class is OracleResearchQuestionClass.TEMPORAL_STATUS
+    assert call.audit.research.resolution is OracleResearchResolution.ANSWERED_RECOVERY
+    assert len(call.audit.research.attempts) == 2
+    assert call.audit.research.summary().attempts[0].attempted_queries == (first_query,)
+    assert call.metrics.oracle is not None
+    assert call.metrics.oracle.search_count == 2
+
+
+def test_two_retrieval_failures_for_closed_fact_are_infrastructure_failure(
+    oracle_request: OracleRequest,
+    audit_writer: RunAuditWriter,
+) -> None:
+    provider = SequenceProvider(
+        [
+            oracle_payload(
+                OracleAnswer.UNKNOWN,
+                outcome="no_results",
+                query="Albert Einstein alive",
+            ),
+            oracle_payload(
+                OracleAnswer.UNKNOWN,
+                outcome="irrelevant_results",
+                query="Albert Einstein death date authoritative biography",
+            ),
+        ]
+    )
+    request = oracle_request.model_copy(update={"question": "Is this person currently alive?"})
+
+    with pytest.raises(OracleProtocolError) as caught:
+        make_oracle(provider, audit_writer, audit_writer.config).ask(request)
+
+    assert caught.value.code == "oracle_research_exhausted"
+    assert len(provider.requests) == 2
+    research = caught.value.details["oracle_research"]
+    assert research["question_class"] == "temporal_status"
+    assert research["resolution"] == "retrieval_exhausted_unknown"
+    assert len(research["attempts"]) == 2
+
+
+def test_two_retrieval_failures_for_role_question_remain_classified_unknown(
+    oracle_request: OracleRequest,
+    audit_writer: RunAuditWriter,
+) -> None:
+    provider = SequenceProvider(
+        [
+            oracle_payload(
+                OracleAnswer.UNKNOWN,
+                outcome="no_results",
+                query="Albert Einstein actor profession",
+            ),
+            oracle_payload(
+                OracleAnswer.UNKNOWN,
+                outcome="insufficient_coverage",
+                query="Albert Einstein biography acting credits",
+            ),
+        ]
+    )
+    request = oracle_request.model_copy(update={"question": "Was this person an actor?"})
+
+    call = make_oracle(provider, audit_writer, audit_writer.config).ask(request)
+
+    assert call.guesser_answer() is OracleAnswer.UNKNOWN
+    assert call.adjudication.decision_path is OracleDecisionPath.ORACLE_UNKNOWN
+    assert call.audit.research is not None
+    assert call.audit.research.question_class is OracleResearchQuestionClass.ROLE_OR_OCCUPATION
+    assert call.audit.research.resolution is OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN
+    assert len(provider.requests) == 2
 
 
 @pytest.mark.parametrize(
@@ -413,11 +580,7 @@ def test_required_reviewer_failure_does_not_fall_back_to_oracle_answer(
         ).ask(oracle_request)
 
     record = json.loads(
-        (
-            audit_writer.runs_root
-            / oracle_request.run_id
-            / "oracle-calls.jsonl"
-        ).read_text()
+        (audit_writer.runs_root / oracle_request.run_id / "oracle-calls.jsonl").read_text()
     )
     assert record["status"] == "failure"
     assert record["audit"]["component"] == "reviewer"
@@ -444,11 +607,7 @@ def test_required_judge_failure_does_not_fall_back_to_oracle_answer(
         ).ask(oracle_request)
 
     record = json.loads(
-        (
-            audit_writer.runs_root
-            / oracle_request.run_id
-            / "oracle-calls.jsonl"
-        ).read_text()
+        (audit_writer.runs_root / oracle_request.run_id / "oracle-calls.jsonl").read_text()
     )
     assert record["status"] == "failure"
     assert record["audit"]["component"] == "judge"

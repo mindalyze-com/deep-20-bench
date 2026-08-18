@@ -105,6 +105,7 @@ The following data is never placed in the next Guesser request:
   `output_limit_exceeded`, `empty_output`, `incomplete_output`);
 - Oracle, Reviewer, Judge, or Guess Validator input, output, evidence, decision, disagreement
   state, or explanation;
+- Oracle research-attempt class, strategy, outcome, query, trace, or recovery state;
 - subject identity or private state;
 - provider traces, costs, latency, cache telemetry, call IDs, or logs.
 

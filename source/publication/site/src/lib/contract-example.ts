@@ -1,5 +1,6 @@
 import type { RouteLocationRaw } from "vue-router";
 
+import { episodeRoute } from "./route-location";
 import type { PublicTrialSummary } from "./types";
 
 export const firstBreachedTrial = (
@@ -11,14 +12,5 @@ export const contractExampleRoute = (
   executionId: string,
   targetId: string,
   trialId: string,
-): RouteLocationRaw => ({
-  name: "episode",
-  params: {
-    executionId,
-    targetId,
-    trialId,
-  },
-  query: {
-    violation: "first",
-  },
-});
+): RouteLocationRaw =>
+  episodeRoute(executionId, targetId, trialId, { violation: "first" });

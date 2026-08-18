@@ -1,28 +1,29 @@
 <script setup lang="ts">
 import { BarChart, CustomChart, ScatterChart } from "echarts/charts";
 import {
-  AriaComponent,
-  GridComponent,
   MarkAreaComponent,
   MarkLineComponent,
-  TooltipComponent,
 } from "echarts/components";
-import * as echarts from "echarts/core";
 import type {
   DefaultLabelFormatterCallbackParams as CallbackDataParams,
   CustomSeriesRenderItem,
   ECElementEvent,
   EChartsOption,
 } from "echarts";
-import { SVGRenderer } from "echarts/renderers";
 import { computed, ref, useId, watch } from "vue";
-import { useRouter, type RouteLocationRaw } from "vue-router";
+import { useRouter } from "vue-router";
 
+import { echarts, standardChartComponents } from "@/lib/chart-registration";
 import {
   chartTooltipStyle,
   readChartTheme,
   type ChartTheme,
 } from "@/lib/chart-theme";
+import {
+  chartTooltipPrimary,
+  chartTooltipRunLink,
+  chartTooltipTitle,
+} from "@/lib/chart-tooltip";
 import {
   confidenceIntervalWidth,
   confidenceWidthScale,
@@ -30,6 +31,7 @@ import {
 } from "@/lib/confidence-width";
 import { number } from "@/lib/format";
 import { splitModelName } from "@/lib/model-name";
+import type { ScoreDot } from "@/lib/result-chart";
 import type { PublicRepeatAverage } from "@/lib/types";
 import {
   chartAnimationEnabled,
@@ -47,25 +49,10 @@ echarts.use([
   BarChart,
   CustomChart,
   ScatterChart,
-  GridComponent,
   MarkAreaComponent,
   MarkLineComponent,
-  TooltipComponent,
-  AriaComponent,
-  SVGRenderer,
+  ...standardChartComponents,
 ]);
-
-export interface ScoreDot {
-  modelId: string;
-  label: string;
-  value: number;
-  display: string;
-  confidenceLower?: number;
-  confidenceUpper?: number;
-  confidenceDisplay?: string;
-  detail?: string;
-  link?: RouteLocationRaw;
-}
 
 interface RepeatAverageGroup {
   modelId: string;
@@ -325,15 +312,13 @@ const summaryTooltipForItem = (item: ScoreDot): string => {
       : `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">${escapeHtml(item.detail)}</span>`;
   return [
     '<div style="min-width:180px;padding:3px 2px">',
-    `<strong style="display:block;color:${theme.ink};font: var(--font-weight-bold) .82rem/1.35 ${chartFont}">${escapeHtml(item.label)}</strong>`,
-    `<span style="display:block;margin-top:8px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.55rem">${escapeHtml(item.display)} questions</span>`,
+    chartTooltipTitle(theme, item.label),
+    chartTooltipPrimary(theme, `${item.display} questions`, "1.55rem"),
     confidence,
     width,
     detail,
     `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">Lower is better</span>`,
-    item.link === undefined
-      ? ""
-      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight: var(--font-weight-bold);text-transform:uppercase">View full run →</span>`,
+    chartTooltipRunLink(theme, item.link !== undefined),
     "</div>",
   ].join("");
 };
@@ -378,12 +363,19 @@ const repeatTooltip = (parameter: CallbackDataParams): string => {
       : `${successful} successful · ${modelFailed} model failures`;
   return [
     '<div style="min-width:205px;padding:3px 2px">',
-    `<strong style="display:block;color:${theme.ink};font: var(--font-weight-bold) .82rem/1.35 ${chartFont}">${escapeHtml(group.label)}</strong>`,
-    `<span style="display:block;margin-top:8px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.55rem">${group.value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} questions</span>`,
+    chartTooltipTitle(theme, group.label),
+    chartTooltipPrimary(
+      theme,
+      `${group.value.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })} questions`,
+      "1.55rem",
+    ),
     `<span style="display:block;margin-top:6px;color:${theme.inkSoft};font-size:.78rem;font-weight: var(--font-weight-semibold)">${escapeHtml(repeatNumbers(group.averages))} · ${cohort}</span>`,
     `<span style="display:block;margin-top:4px;color:${theme.muted};font-size:.75rem">${escapeHtml(outcomes)}</span>`,
     `<span style="display:block;margin-top:7px;color:${theme.muted};font-size:.75rem">Average of the same trial number across the fixed subject cohort</span>`,
-    `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight: var(--font-weight-bold);text-transform:uppercase">View full run →</span>`,
+    chartTooltipRunLink(theme, true),
     "</div>",
   ].join("");
 };
@@ -950,8 +942,6 @@ const handleWidthClick = (parameters: ECElementEvent): void => {
 const { chartElement: scoreChartElement, refresh: refreshScoreChart } =
   useResponsiveEChart({
     height: chartHeight,
-    initialize: (element) =>
-      echarts.init(element, undefined, { renderer: "svg" }),
     option: scoreChartOption,
     onClick: handleClick,
     pointerCursor: (parameters) =>
@@ -965,8 +955,6 @@ const { chartElement: scoreChartElement, refresh: refreshScoreChart } =
 const { chartElement: widthChartElement, refresh: refreshWidthChart } =
   useResponsiveEChart({
     height: chartHeight,
-    initialize: (element) =>
-      echarts.init(element, undefined, { renderer: "svg" }),
     option: widthChartOption,
     onClick: handleWidthClick,
     pointerCursor: (parameters) =>

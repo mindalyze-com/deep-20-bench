@@ -113,6 +113,9 @@ def _execute_suite(
                     model,
                     benchmark,
                     api_key=api_key,
+                    judge_ignored_providers=(
+                        repair.judge_ignored_providers if repair is not None else ()
+                    ),
                 )
                 _log_startup_canaries(canary_result)
                 if not canary_result.valid:
@@ -128,7 +131,12 @@ def _execute_suite(
                 model_catalog=models,
                 benchmark_catalog=benchmarks,
                 subject_catalog=subjects,
-                executor=LiveEpisodeExecutor(api_key=api_key),
+                executor=LiveEpisodeExecutor(
+                    api_key=api_key,
+                    judge_ignored_providers=(
+                        repair.judge_ignored_providers if repair is not None else ()
+                    ),
+                ),
             )
             result = runner.run(
                 request,
@@ -331,6 +339,16 @@ def repair_benchmark(
             help="Total start attempts allowed per trial, including the original run.",
         ),
     ] = 3,
+    judge_ignored_providers: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--judge-ignore-provider",
+            help=(
+                "OpenRouter provider slug to exclude from Judge calls during repair; "
+                "repeat as needed."
+            ),
+        ),
+    ] = None,
     max_consecutive_infrastructure_failures: Annotated[
         int,
         typer.Option(
@@ -360,7 +378,10 @@ def repair_benchmark(
         subjects_path=subjects_path,
         canary=canary,
         max_consecutive_infrastructure_failures=max_consecutive_infrastructure_failures,
-        repair=TrialRepairPolicy(max_attempts_per_trial=max_repair_attempts),
+        repair=TrialRepairPolicy(
+            max_attempts_per_trial=max_repair_attempts,
+            judge_ignored_providers=tuple(judge_ignored_providers or ()),
+        ),
     )
 
 

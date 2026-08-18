@@ -1,31 +1,29 @@
 <script setup lang="ts">
-import { computed, onActivated, ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed, ref } from "vue";
 
 import EfficiencyScatter, {
   type EfficiencyPoint,
 } from "@/components/EfficiencyScatter.vue";
 import EfficiencyMarkerLegend from "@/components/EfficiencyMarkerLegend.vue";
-import ErrorState from "@/components/ErrorState.vue";
 import InfoPopover from "@/components/InfoPopover.vue";
-import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
 import MetricDefinitionCard from "@/components/MetricDefinitionCard.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
-import ModelRunLink from "@/components/ModelRunLink.vue";
+import RankingTable from "@/components/RankingTable.vue";
+import RankingDataRow from "@/components/RankingDataRow.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
-import { getLeaderboard } from "@/lib/api";
+import ResultsContent from "@/components/ResultsContent.vue";
+import TableHeaderStack from "@/components/TableHeaderStack.vue";
 import { moneyEpisode, number, percent } from "@/lib/format";
-import { setRouteContext } from "@/lib/route-context";
+import { usePageRouteContext } from "@/lib/route-context";
+import { runRoute } from "@/lib/route-location";
 import type { LeaderboardRow } from "@/lib/types";
+import { useLeaderboardResults } from "@/lib/use-leaderboard-results";
 
-const leaderboard = ref<LeaderboardRow[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
+const { leaderboard, loading, error, openRun } = useLeaderboardResults();
 const expandedChartDialog = ref<HTMLDialogElement | null>(null);
 const expandedChartOpen = ref(false);
-const router = useRouter();
 
 const openExpandedChart = (): void => {
   const dialog = expandedChartDialog.value;
@@ -42,20 +40,10 @@ const handleExpandedChartClose = (): void => {
   expandedChartOpen.value = false;
 };
 
-const applyRouteContext = (): void => {
-  setRouteContext({
-    title: "Efficiency results",
-    description: "Compare normalized distance from the lower-left cost and quality ideal.",
-    level: null,
-    position: null,
-    crumbs: [],
-    previous: null,
-    next: null,
-  });
-};
-
-applyRouteContext();
-onActivated(applyRouteContext);
+usePageRouteContext({
+  title: "Efficiency results",
+  description: "Compare normalized distance from the lower-left cost and quality ideal.",
+});
 
 const idealDistanceRank = (row: LeaderboardRow): number | null =>
   row.ideal_distance_rank ?? row.efficiency_rank;
@@ -136,50 +124,25 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
   })),
 );
 
-const runLink = (row: LeaderboardRow) => ({
-  name: "run",
-  params: { executionId: row.execution_id },
-});
-
-const openRun = (row: LeaderboardRow): void => {
-  if (row.execution_id !== null) void router.push(runLink(row));
-};
-
-const load = async (): Promise<void> => {
-  loading.value = true;
-  error.value = null;
-  try {
-    leaderboard.value = (await getLeaderboard()).leaderboard;
-  } catch (reason: unknown) {
-    error.value =
-      reason instanceof Error ? reason.message : "Publication data could not be loaded.";
-  } finally {
-    loading.value = false;
-  }
-};
-
-void load();
 </script>
 
 <template>
   <div class="page results-view">
-    <LoadingState v-if="loading" label="Loading efficiency results" />
-    <ErrorState v-else-if="error !== null" :message="error" />
-
-    <section v-else-if="ranked.length === 0" class="content-section empty-state">
-      <div class="content-inner">
+    <ResultsContent
+      :loading="loading"
+      loading-label="Loading efficiency results"
+      :error="error"
+      :empty="ranked.length === 0"
+    >
+      <template #empty>
         <p class="eyebrow">Cost efficiency</p>
         <h2>No models can be ranked.</h2>
         <p>
           Efficiency is available when a model has a question score and a positive
           recorded Guesser cost for completed episodes.
         </p>
-      </div>
-    </section>
+      </template>
 
-    <template v-else>
-      <section class="content-section">
-        <div class="content-inner">
           <MetricGrid
             class="results-summary"
             :items="summaryMetrics"
@@ -295,14 +258,11 @@ void load();
             </div>
           </dialog>
 
-          <div
-            class="table-wrap ranking-table-wrap results-table-wrap"
-            aria-label="Efficiency ranking"
+          <RankingTable
+            label="Efficiency ranking"
+            min-width="64rem"
+            table-class="efficiency-results-table"
           >
-            <table
-              class="data-table ranking-table results-table efficiency-results-table"
-            >
-              <caption class="visually-hidden">Efficiency ranking</caption>
               <colgroup>
                 <col class="efficiency-col--rank" />
                 <col class="efficiency-col--model" />
@@ -321,58 +281,39 @@ void load();
                   </th>
                   <th class="model-column">Model</th>
                   <th data-numeric>
-                    <span class="table-header-stack">
-                      <span>Ideal</span>
-                      <span>distance</span>
-                    </span>
+                    <TableHeaderStack first="Ideal" second="distance" />
                   </th>
                   <th class="pareto-column">
-                    <span class="table-header-stack table-header-stack--center">
-                      <span>Pareto</span>
-                      <span>efficient</span>
-                    </span>
+                    <TableHeaderStack first="Pareto" second="efficient" centered />
                   </th>
                   <th data-numeric>
-                    <span class="table-header-stack">
-                      <span>Question</span>
-                      <span>rank</span>
-                    </span>
+                    <TableHeaderStack first="Question" second="rank" />
                   </th>
                   <th data-numeric>
-                    <span class="table-header-stack">
-                      <span>Question</span>
-                      <span>score</span>
-                    </span>
+                    <TableHeaderStack first="Question" second="score" />
                   </th>
                   <th data-numeric>
-                    <span class="table-header-stack">
-                      <span>Guesser cost</span>
-                      <span>per episode</span>
-                    </span>
+                    <TableHeaderStack first="Guesser cost" second="per episode" />
                   </th>
                   <th data-numeric>Success</th>
                 </tr>
               </thead>
               <tbody>
-                <tr
+                <RankingDataRow
                   v-for="row in ranked"
                   :key="row.model.model_id"
                   :class="{
                     'result-row--clickable': row.execution_id !== null,
                     'result-row--navigable': row.execution_id !== null,
                   }"
+                  :rank="idealDistanceRank(row)"
+                  :name="row.model.display_name"
+                  :meta="row.model.provider"
+                  :to="
+                    row.execution_id === null ? null : runRoute(row.execution_id)
+                  "
                   @click="openRun(row)"
                 >
-                  <td class="rank-column">{{ idealDistanceRank(row) }}</td>
-                  <td class="model-column">
-                    <ModelRunLink
-                      v-if="row.execution_id !== null"
-                      :to="runLink(row)"
-                      :name="row.model.display_name"
-                      :meta="row.model.provider"
-                    />
-                    <strong v-else>{{ row.model.display_name }}</strong>
-                  </td>
                   <td data-numeric>
                     {{ number(row.ideal_distance_score, 3) }}
                   </td>
@@ -388,10 +329,9 @@ void load();
                     {{ moneyEpisode(row.guesser_cost_per_episode_usd) }}
                   </td>
                   <td data-numeric>{{ percent(row.success_rate) }}</td>
-                </tr>
+                </RankingDataRow>
               </tbody>
-            </table>
-          </div>
+          </RankingTable>
 
           <div class="mobile-result-list" aria-label="Efficiency ranking">
             <MobileResultCard
@@ -400,7 +340,7 @@ void load();
               :rank="idealDistanceRank(row) ?? '-'"
               :name="row.model.display_name"
               :provider="row.model.provider"
-              :to="row.execution_id === null ? null : runLink(row)"
+              :to="row.execution_id === null ? null : runRoute(row.execution_id)"
               :metrics="[
                 {
                   label: 'Ideal distance',
@@ -451,14 +391,11 @@ void load();
               Adding or removing a model can change every normalized value and rank.
             </p>
           </MetricDefinitionCard>
-        </div>
-      </section>
-    </template>
+    </ResultsContent>
   </div>
 </template>
 
 <style scoped>
-.results-summary,
 .efficiency-panel,
 .tradeoff-panel {
   margin-bottom: var(--results-section-gap);
@@ -691,54 +628,49 @@ void load();
   }
 }
 
-.results-table {
-  min-width: 980px;
-}
-
-.efficiency-results-table {
-  min-width: 64rem;
+:deep(.efficiency-results-table) {
   table-layout: fixed;
 }
 
-.efficiency-results-table .rank-column,
-.efficiency-results-table .model-column {
+:deep(.efficiency-results-table .rank-column),
+:deep(.efficiency-results-table .model-column) {
   width: auto;
   min-width: 0;
 }
 
-.efficiency-results-table .efficiency-col--rank {
+:deep(.efficiency-results-table .efficiency-col--rank) {
   width: 4%;
 }
 
-.efficiency-results-table .efficiency-col--model {
+:deep(.efficiency-results-table .efficiency-col--model) {
   width: 25%;
 }
 
-.efficiency-results-table .efficiency-col--distance {
+:deep(.efficiency-results-table .efficiency-col--distance) {
   width: 10%;
 }
 
-.efficiency-results-table .efficiency-col--pareto {
+:deep(.efficiency-results-table .efficiency-col--pareto) {
   width: 10%;
 }
 
-.efficiency-results-table .efficiency-col--question-rank {
+:deep(.efficiency-results-table .efficiency-col--question-rank) {
   width: 11%;
 }
 
-.efficiency-results-table .efficiency-col--question-score {
+:deep(.efficiency-results-table .efficiency-col--question-score) {
   width: 12%;
 }
 
-.efficiency-results-table .efficiency-col--cost {
+:deep(.efficiency-results-table .efficiency-col--cost) {
   width: 18%;
 }
 
-.efficiency-results-table .efficiency-col--success {
+:deep(.efficiency-results-table .efficiency-col--success) {
   width: 10%;
 }
 
-.efficiency-results-table .pareto-column {
+:deep(.efficiency-results-table .pareto-column) {
   padding-inline: 0.5rem;
   text-align: center;
 }
@@ -760,11 +692,7 @@ void load();
   font-weight: var(--font-weight-bold);
 }
 
-.empty-state {
-  min-height: 50vh;
-}
-
-.empty-state p:last-child {
+:deep(.empty-state p:last-child) {
   max-width: 40rem;
   color: var(--muted);
   line-height: 1.65;

@@ -140,6 +140,24 @@ class TrialRepairPolicy(StrictModel):
     """Bounded re-execution of infrastructure-failed trials with unchanged identity."""
 
     max_attempts_per_trial: int = Field(default=3, ge=1, le=10)
+    judge_ignored_providers: tuple[str, ...] = Field(
+        default_factory=tuple,
+        max_length=16,
+        exclude_if=lambda value: not value,
+    )
+
+    @field_validator("judge_ignored_providers")
+    @classmethod
+    def valid_judge_ignored_providers(
+        cls,
+        providers: tuple[str, ...],
+    ) -> tuple[str, ...]:
+        normalized = tuple(provider.strip().casefold() for provider in providers)
+        if any(not provider for provider in normalized):
+            raise ValueError("ignored Judge providers must not be blank")
+        if len(normalized) != len(set(normalized)):
+            raise ValueError("ignored Judge providers must be unique")
+        return normalized
 
 
 class InfrastructureCircuitBreaker(StrictModel):

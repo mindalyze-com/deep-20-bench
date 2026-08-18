@@ -1,0 +1,1 @@
+var e=e=>({name:`run`,params:{executionId:e}}),t=(e,t)=>({name:`subject`,params:{executionId:e,targetId:t}}),n=(e,t,n,r)=>({name:`episode`,params:{executionId:e,targetId:t,trialId:n},...r===void 0?{}:{query:r}});export{e as n,t as r,n as t};

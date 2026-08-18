@@ -29,6 +29,7 @@ from .models import (
     PublicEpisodeDetail,
     PublicEpisodeTelemetry,
     PublicEvidence,
+    PublicExcludedRepairCost,
     PublicGuesserDisclosure,
     PublicGuesserRequiredFormats,
     PublicModel,
@@ -443,11 +444,18 @@ def _subject(
     )
 
 
-def _total_cost(run: LoadedRun) -> Decimal:
-    return run.summary.summary.total_cost_usd
+def _published_cost(run: LoadedRun) -> Decimal:
+    summary = run.summary.summary
+    # Public comparisons use only retained terminal attempts. Superseded infrastructure
+    # attempts remain in the signed execution total but must not inflate model costs.
+    return max(
+        summary.total_cost_usd - summary.repair.partial_metrics.cost_usd,
+        Decimal(0),
+    )
 
 
 def _public_run_totals(run: LoadedRun) -> PublicRunTotals:
+    repair = run.summary.summary.repair
     guesser_cost = Decimal(0)
     primary_oracle_cost = Decimal(0)
     reviewer_cost = Decimal(0)
@@ -487,21 +495,10 @@ def _public_run_totals(run: LoadedRun) -> PublicRunTotals:
             validator_cost += partial.validator_cost_usd
             total_tokens += partial.tokens
 
-    repair = run.summary.summary.repair.partial_metrics
-    guesser_cost += repair.guesser_cost_usd
-    reviewer_cost += repair.reviewer_cost_usd
-    judge_cost += repair.judge_cost_usd
-    primary_oracle_cost += max(
-        repair.oracle_cost_usd - repair.reviewer_cost_usd - repair.judge_cost_usd,
-        Decimal(0),
-    )
-    validator_cost += repair.validator_cost_usd
-    total_tokens += repair.tokens
-
     component_total_cost = (
         guesser_cost + primary_oracle_cost + reviewer_cost + judge_cost + validator_cost
     )
-    total_cost = _total_cost(run)
+    total_cost = _published_cost(run)
     if abs(total_cost - component_total_cost) > Decimal("0.00000001"):
         raise ValueError("public run component costs differ from the benchmark total")
 
@@ -513,6 +510,11 @@ def _public_run_totals(run: LoadedRun) -> PublicRunTotals:
             judge=judge_cost,
             validator=validator_cost,
             total=total_cost,
+        ),
+        excluded_repair=PublicExcludedRepairCost(
+            cost_usd=repair.partial_metrics.cost_usd,
+            superseded_attempts=repair.superseded_attempts,
+            affected_trials=repair.affected_trials,
         ),
         total_tokens=total_tokens,
         runtime_ms=round((run.state.updated_at - run.manifest.created_at).total_seconds() * 1_000),
@@ -738,7 +740,7 @@ def _public_run(
         success_rate=run.summary.summary.success_rate,
         question_score=published_question_score,
         question_score_confidence_interval=published_confidence_interval,
-        total_cost_usd=_total_cost(run),
+        total_cost_usd=totals.costs_usd.total,
         successful=counts.successful,
         model_failed=counts.model_failed,
         infrastructure_failed=counts.infrastructure_failed,

@@ -414,6 +414,7 @@ def run_startup_canaries(
     benchmark: BenchmarkCatalogEntry,
     *,
     api_key: str,
+    judge_ignored_providers: tuple[str, ...] = (),
     provider: EchoCanaryProvider | None = None,
     reviewer_provider: EvidenceReviewCanaryProvider | None = None,
     judge_provider: EvidenceReviewCanaryProvider | None = None,
@@ -447,6 +448,7 @@ def run_startup_canaries(
             benchmark.oracle_configuration.judge,
             enable_web_search=False,
             title="Deep20Bench Startup Judge Canary",
+            ignored_providers=judge_ignored_providers,
         )
         if judge_provider is None
         else judge_provider

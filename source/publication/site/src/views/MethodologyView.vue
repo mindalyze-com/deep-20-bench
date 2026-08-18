@@ -1,49 +1,23 @@
 <script setup lang="ts">
-import { computed, onActivated, onDeactivated, ref } from "vue";
+import { computed, ref } from "vue";
 
 import ErrorState from "@/components/ErrorState.vue";
 import IllustrativeRoundExample from "@/components/IllustrativeRoundExample.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { getManifest } from "@/lib/api";
-import { setRouteContext } from "@/lib/route-context";
+import { usePageRouteContext } from "@/lib/route-context";
 import type { ManifestDocument } from "@/lib/types";
+import { usePublicationLoad } from "@/lib/use-publication-load";
 
 const manifest = ref<ManifestDocument | null>(null);
-const error = ref<string | null>(null);
-const active = ref(true);
-
-const applyRouteContext = (): void => {
-  setRouteContext({
-    title: "Method",
-    description:
-      "From one Twenty Questions round to repeated trials, scoring, official comparison, and publication.",
-    level: null,
-    position: null,
-    crumbs: [],
-    previous: null,
-    next: null,
-  });
-};
-
-onActivated(() => {
-  active.value = true;
-  applyRouteContext();
+usePageRouteContext({
+  title: "Method",
+  description:
+    "From one Twenty Questions round to repeated trials, scoring, official comparison, and publication.",
 });
-onDeactivated(() => {
-  active.value = false;
-});
-
-const load = async (): Promise<void> => {
-  try {
-    manifest.value = await getManifest();
-    if (active.value) applyRouteContext();
-  } catch (reason: unknown) {
-    error.value = reason instanceof Error ? reason.message : "Method data is unavailable.";
-  }
-};
-
-void load();
-applyRouteContext();
+const { loading, error } = usePublicationLoad(async () => {
+  manifest.value = await getManifest();
+}, "Method data is unavailable.");
 
 const penalty = computed(() => {
   const value = manifest.value;
@@ -59,7 +33,7 @@ const totalTrials = computed(() => {
 
 <template>
   <div id="route-content" class="page methodology-page" tabindex="-1">
-    <LoadingState v-if="manifest === null && error === null" label="Loading method" />
+    <LoadingState v-if="loading" label="Loading method" />
     <ErrorState v-else-if="error !== null" :message="error" />
     <template v-else-if="manifest !== null">
       <section class="page-hero site-boundary-shell">
@@ -519,6 +493,11 @@ const totalTrials = computed(() => {
               If several current runs qualify for one model, the newest completed run is used.
               The publisher never selects the best score. Invalid discovered input stops the
               build.
+            </p>
+            <p>
+              Published cost comparisons use only each trial's retained terminal attempt.
+              Superseded infrastructure attempts remain in the signed repair ledger and gross
+              execution total, but do not increase public model or benchmark costs.
             </p>
           </div>
         </div>

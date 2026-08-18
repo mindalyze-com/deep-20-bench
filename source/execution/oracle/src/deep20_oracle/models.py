@@ -74,6 +74,40 @@ class OracleQuestionType(StrEnum):
     OTHER = "other"
 
 
+class OracleResearchQuestionClass(StrEnum):
+    TEMPORAL_STATUS = "temporal_status"
+    CLOSED_FACT = "closed_fact"
+    ROLE_OR_OCCUPATION = "role_or_occupation"
+    PRIMARY_RECOGNITION = "primary_recognition"
+    OPEN_WORLD_EVER = "open_world_ever"
+    ABSENCE_OR_EXCLUSIVITY = "absence_or_exclusivity"
+    COUNT_OR_COMPARISON = "count_or_comparison"
+    OTHER = "other"
+
+
+class OracleResearchOutcome(StrEnum):
+    ANSWERED = "answered"
+    NO_RESULTS = "no_results"
+    IRRELEVANT_RESULTS = "irrelevant_results"
+    INSUFFICIENT_COVERAGE = "insufficient_coverage"
+    CONFLICTING_SOURCES = "conflicting_sources"
+    AMBIGUOUS_QUESTION = "ambiguous_question"
+    OPEN_WORLD_NOT_PROVABLE = "open_world_not_provable"
+
+
+class OracleResearchStrategy(StrEnum):
+    PRIMARY = "primary"
+    DIVERSIFIED_RECOVERY = "diversified_recovery"
+
+
+class OracleResearchResolution(StrEnum):
+    ANSWERED_PRIMARY = "answered_primary"
+    ANSWERED_RECOVERY = "answered_recovery"
+    GENUINE_UNKNOWN_PRIMARY = "genuine_unknown_primary"
+    GENUINE_UNKNOWN_RECOVERY = "genuine_unknown_recovery"
+    RETRIEVAL_EXHAUSTED_UNKNOWN = "retrieval_exhausted_unknown"
+
+
 class RecoveryReason(StrEnum):
     HTTP_400 = "provider_http_400"
     HTTP_408 = "provider_http_408"
@@ -133,6 +167,44 @@ class OracleResult(StrictModel):
         return self.answer
 
 
+class OracleResearchAttemptResult(StrictModel):
+    """One untrusted, web-backed research attempt before final adjudication."""
+
+    answer: OracleAnswer
+    evidence: tuple[Evidence, ...] = Field(max_length=3)
+    research_outcome: OracleResearchOutcome
+    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=8)
+
+    @field_validator("attempted_queries")
+    @classmethod
+    def bounded_unique_queries(cls, values: tuple[str, ...]) -> tuple[str, ...]:
+        if any(any(ord(character) < 32 for character in value) for value in values):
+            raise ValueError("attempted queries must not contain control characters")
+        normalized = tuple(" ".join(value.split()) for value in values)
+        if any(not value or len(value) > 300 for value in normalized):
+            raise ValueError("attempted queries must contain 1 to 300 characters")
+        if len({value.casefold() for value in normalized}) != len(normalized):
+            raise ValueError("attempted queries must be unique ignoring case")
+        return normalized
+
+    @model_validator(mode="after")
+    def outcome_matches_answer(self) -> OracleResearchAttemptResult:
+        if self.answer is OracleAnswer.UNKNOWN:
+            if self.evidence:
+                raise ValueError("UNKNOWN research attempts must not carry answer evidence")
+            if self.research_outcome is OracleResearchOutcome.ANSWERED:
+                raise ValueError("UNKNOWN research attempts cannot be classified as answered")
+        else:
+            if not self.evidence:
+                raise ValueError("YES and NO research attempts require evidence")
+            if self.research_outcome is not OracleResearchOutcome.ANSWERED:
+                raise ValueError("decisive research attempts must be classified as answered")
+        return self
+
+    def final_result(self) -> OracleResult:
+        return OracleResult(answer=self.answer, evidence=self.evidence)
+
+
 class EvidenceReviewRequest(StrictModel):
     subject: Subject
     question: str = Field(min_length=1, max_length=1_000)
@@ -172,16 +244,9 @@ class EvidenceReviewResult(StrictModel):
             and self.basis is EvidenceDecisionBasis.EVIDENCE
             and not self.evidence_indices
         ):
-            raise ValueError(
-                "evidence-based YES and NO require supporting evidence indices"
-            )
-        if (
-            self.basis is EvidenceDecisionBasis.MODEL_KNOWLEDGE
-            and self.evidence_indices
-        ):
-            raise ValueError(
-                "model-knowledge decisions must not identify supporting evidence"
-            )
+            raise ValueError("evidence-based YES and NO require supporting evidence indices")
+        if self.basis is EvidenceDecisionBasis.MODEL_KNOWLEDGE and self.evidence_indices:
+            raise ValueError("model-knowledge decisions must not identify supporting evidence")
         return self
 
     def validate_evidence_count(self, evidence_count: int) -> EvidenceReviewResult:
@@ -335,6 +400,220 @@ class ProviderTrace(StrictModel):
         return normalize(value)
 
 
+class OracleResearchAttemptSummary(StrictModel):
+    attempt_number: int = Field(ge=1, le=2)
+    strategy: OracleResearchStrategy
+    outcome: OracleResearchOutcome
+    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=8)
+    query_provenance: Literal["model_reported"] = "model_reported"
+    web_search_requests: int = Field(ge=1)
+    annotation_count: int = Field(ge=0)
+    evidence_count: int = Field(ge=0, le=3)
+
+
+class OracleResearchSummary(StrictModel):
+    question_class: OracleResearchQuestionClass
+    resolution: OracleResearchResolution
+    attempts: tuple[OracleResearchAttemptSummary, ...] = Field(
+        min_length=1,
+        max_length=2,
+    )
+
+
+class OracleResearchAttemptAuditTrace(StrictModel):
+    attempt_number: int = Field(ge=1, le=2)
+    strategy: OracleResearchStrategy
+    prompt_version: str = Field(min_length=1, max_length=160)
+    prompt_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    messages: tuple[dict[str, str], ...]
+    result: OracleResearchAttemptResult
+    provider: ProviderTrace
+
+
+class OracleResearchAuditTrace(StrictModel):
+    question_class: OracleResearchQuestionClass
+    resolution: OracleResearchResolution
+    attempts: tuple[OracleResearchAttemptAuditTrace, ...] = Field(
+        min_length=1,
+        max_length=2,
+    )
+
+    @model_validator(mode="after")
+    def attempts_match_resolution(self) -> OracleResearchAuditTrace:
+        expected_numbers = tuple(range(1, len(self.attempts) + 1))
+        if tuple(attempt.attempt_number for attempt in self.attempts) != expected_numbers:
+            raise ValueError("research attempt numbers must be contiguous and one-based")
+        if self.attempts[0].strategy is not OracleResearchStrategy.PRIMARY:
+            raise ValueError("the first research attempt must use the primary strategy")
+        if len(self.attempts) == 2 and (
+            self.attempts[1].strategy is not OracleResearchStrategy.DIVERSIFIED_RECOVERY
+        ):
+            raise ValueError("the second research attempt must use recovery strategy")
+        if (
+            self.resolution
+            in {
+                OracleResearchResolution.ANSWERED_PRIMARY,
+                OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY,
+            }
+            and len(self.attempts) != 1
+        ):
+            raise ValueError("primary research resolutions require one attempt")
+        if (
+            self.resolution
+            in {
+                OracleResearchResolution.ANSWERED_RECOVERY,
+                OracleResearchResolution.GENUINE_UNKNOWN_RECOVERY,
+                OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN,
+            }
+            and len(self.attempts) != 2
+        ):
+            raise ValueError("recovery research resolutions require two attempts")
+        final_answer = self.attempts[-1].result.answer
+        if (
+            self.resolution
+            in {
+                OracleResearchResolution.ANSWERED_PRIMARY,
+                OracleResearchResolution.ANSWERED_RECOVERY,
+            }
+            and final_answer is OracleAnswer.UNKNOWN
+        ):
+            raise ValueError("answered research resolutions require YES or NO")
+        if (
+            self.resolution
+            in {
+                OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY,
+                OracleResearchResolution.GENUINE_UNKNOWN_RECOVERY,
+                OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN,
+            }
+            and final_answer is not OracleAnswer.UNKNOWN
+        ):
+            raise ValueError("unknown research resolutions require UNKNOWN")
+        primary_outcome = self.attempts[0].result.research_outcome
+        retrieval_outcomes = {
+            OracleResearchOutcome.NO_RESULTS,
+            OracleResearchOutcome.IRRELEVANT_RESULTS,
+            OracleResearchOutcome.INSUFFICIENT_COVERAGE,
+        }
+        retryable_outcomes = {
+            *retrieval_outcomes,
+            OracleResearchOutcome.CONFLICTING_SOURCES,
+        }
+        genuine_unknown_outcomes = {
+            OracleResearchOutcome.CONFLICTING_SOURCES,
+            OracleResearchOutcome.AMBIGUOUS_QUESTION,
+            OracleResearchOutcome.OPEN_WORLD_NOT_PROVABLE,
+        }
+        if len(self.attempts) == 2 and primary_outcome not in retryable_outcomes:
+            raise ValueError("recovery requires a retryable primary research outcome")
+        final_outcome = self.attempts[-1].result.research_outcome
+        if (
+            self.resolution is OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY
+            and final_outcome
+            not in {
+                OracleResearchOutcome.AMBIGUOUS_QUESTION,
+                OracleResearchOutcome.OPEN_WORLD_NOT_PROVABLE,
+            }
+        ):
+            raise ValueError("genuine primary UNKNOWN requires ambiguity or open-world limits")
+        if (
+            self.resolution is OracleResearchResolution.GENUINE_UNKNOWN_RECOVERY
+            and final_outcome not in genuine_unknown_outcomes
+        ):
+            raise ValueError("genuine recovery UNKNOWN has an invalid research outcome")
+        if (
+            self.resolution is OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN
+            and final_outcome not in retrieval_outcomes
+        ):
+            raise ValueError("retrieval exhaustion requires a retrieval-failure outcome")
+        return self
+
+    def summary(self) -> OracleResearchSummary:
+        return OracleResearchSummary(
+            question_class=self.question_class,
+            resolution=self.resolution,
+            attempts=tuple(
+                OracleResearchAttemptSummary(
+                    attempt_number=attempt.attempt_number,
+                    strategy=attempt.strategy,
+                    outcome=attempt.result.research_outcome,
+                    attempted_queries=attempt.result.attempted_queries,
+                    web_search_requests=attempt.provider.usage.search_count,
+                    annotation_count=len(attempt.provider.annotations),
+                    evidence_count=len(attempt.result.evidence),
+                )
+                for attempt in self.attempts
+            ),
+        )
+
+
+class RouterPipelineStageAudit(StrictModel):
+    """Bounded OpenRouter pipeline facts safe for retained benchmark results."""
+
+    stage_type: str = Field(min_length=1, max_length=120)
+    name: str | None = Field(default=None, min_length=1, max_length=160)
+    mode: str | None = Field(default=None, min_length=1, max_length=120)
+    tool_types: tuple[str, ...] = Field(default_factory=tuple, max_length=20)
+
+    @field_validator("tool_types")
+    @classmethod
+    def bounded_tool_types(cls, values: tuple[str, ...]) -> tuple[str, ...]:
+        if any(not value or len(value) > 120 for value in values):
+            raise ValueError("router tool types must contain 1 to 120 characters")
+        return values
+
+
+class RouterMetadataAudit(StrictModel):
+    """Allowlisted router metadata without endpoints, payloads, or free-form data."""
+
+    strategy: str | None = Field(default=None, min_length=1, max_length=160)
+    region: str | None = Field(default=None, min_length=1, max_length=120)
+    attempt: int | None = Field(default=None, ge=0)
+    is_byok: bool | None = None
+    endpoint_count: int = Field(default=0, ge=0)
+    attempt_count: int = Field(default=0, ge=0)
+    pipeline: tuple[RouterPipelineStageAudit, ...] = Field(
+        default_factory=tuple,
+        max_length=30,
+    )
+
+
+class ProviderResultAudit(StrictModel):
+    """Sanitized per-call provider facts retained in an episode result."""
+
+    schema_version: Literal[1] = 1
+    requested_at: str
+    completed_at: str
+    latency_ms: int = Field(ge=0)
+    http_status_code: int | None = Field(default=None, ge=100, le=599)
+    response_cache_status: str | None = Field(default=None, max_length=120)
+    finish_reason: str | None = Field(default=None, max_length=120)
+    retry_after_ms: int | None = Field(default=None, ge=0)
+    recovery: RecoveryMetrics = Field(default_factory=RecoveryMetrics)
+    requested_model: str = Field(min_length=1, max_length=300)
+    resolved_model: str | None = Field(default=None, min_length=1, max_length=300)
+    requested_provider: str = Field(min_length=1, max_length=300)
+    resolved_provider: str | None = Field(default=None, min_length=1, max_length=300)
+    fallback_occurred: bool | None = None
+    usage: ProviderUsage = Field(default_factory=ProviderUsage)
+    web_search_requests: int = Field(default=0, ge=0)
+    annotation_count: int = Field(default=0, ge=0)
+    url_citation_count: int = Field(default=0, ge=0)
+    raw_output_present: bool
+    raw_output_characters: int = Field(default=0, ge=0)
+    discarded_error_output_count: int = Field(default=0, ge=0)
+    router_metadata: RouterMetadataAudit | None = None
+
+    @model_validator(mode="after")
+    def search_requests_match_usage(self) -> ProviderResultAudit:
+        if self.web_search_requests != self.usage.search_count:
+            raise ValueError("web-search request count must match provider usage")
+        if self.url_citation_count > self.annotation_count:
+            raise ValueError("URL citation count cannot exceed annotation count")
+        if self.raw_output_present != (self.raw_output_characters > 0):
+            raise ValueError("raw-output presence must match its character count")
+        return self
+
+
 class FailureCause(StrictModel):
     exception_type: str = Field(min_length=1, max_length=200)
     module: str = Field(min_length=1, max_length=300)
@@ -394,6 +673,7 @@ class OracleAuditTrace(StrictModel):
     messages: tuple[dict[str, str], ...]
     evidence_validation: Literal["model_reported"]
     provider: ProviderTrace
+    research: OracleResearchAuditTrace | None = None
     reviewer: EvidenceReviewAuditTrace | None = None
     judge: EvidenceReviewAuditTrace | None = None
 

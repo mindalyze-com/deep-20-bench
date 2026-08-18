@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { onActivated, onDeactivated, reactive, ref } from "vue";
 import type { RouteLocationRaw } from "vue-router";
 
 export interface RouteCrumb {
@@ -20,6 +20,11 @@ export interface RouteContext {
   previous: RouteSibling | null;
   next: RouteSibling | null;
   version: number;
+}
+
+export interface PageRouteContext {
+  title: string;
+  description: string;
 }
 
 const defaultDescription =
@@ -59,4 +64,35 @@ export const setRouteContext = (
   state.previous = context.previous;
   state.next = context.next;
   state.version += 1;
+};
+
+export const usePageRouteContext = (context: PageRouteContext): void => {
+  const apply = (): void => {
+    setRouteContext({
+      ...context,
+      level: null,
+      position: null,
+      crumbs: [],
+      previous: null,
+      next: null,
+    });
+  };
+
+  apply();
+  onActivated(apply);
+};
+
+export const useActiveRouteContext = (apply: () => void): (() => void) => {
+  const active = ref(true);
+  onActivated(() => {
+    active.value = true;
+    apply();
+  });
+  onDeactivated(() => {
+    active.value = false;
+  });
+  apply();
+  return (): void => {
+    if (active.value) apply();
+  };
 };

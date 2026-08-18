@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import SubjectReferenceLink from "@/components/SubjectReferenceLink.vue";
 import {
   dateTime,
   integer,
@@ -67,15 +68,10 @@ const telemetryRows = computed<TelemetryRow[]>(() => [
           <span>Hidden subject</span>
           <strong>{{ episode.subject_name }}</strong>
           <p>{{ episode.subject_description }}</p>
-          <a
+          <SubjectReferenceLink
             v-if="episode.subject_reference_url"
             :href="episode.subject_reference_url"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Subject reference <span aria-hidden="true">↗</span>
-            <span class="visually-hidden">(opens in a new tab)</span>
-          </a>
+          />
         </article>
         <article>
           <span>Episode scope</span>

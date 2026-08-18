@@ -1,10 +1,14 @@
 <p align="center">
   <a href="https://mindalyze-com.github.io/deep-20-bench/">
-    <img
-      src="docs/og.webp"
-      width="1200"
-      alt="Deep20Bench - Can an LLM ask its way to the answer?"
-    >
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/og.webp">
+      <source media="(prefers-color-scheme: light)" srcset="docs/og-light.webp">
+      <img
+        src="docs/og-light.webp"
+        width="1200"
+        alt="Deep20Bench - Can an LLM ask its way to the answer?"
+      >
+    </picture>
   </a>
 </p>
 

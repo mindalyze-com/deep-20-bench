@@ -37,6 +37,19 @@ export const number = (
         maximumFractionDigits: digits,
       }).format(Number(value));
 
+export interface ConfidenceIntervalBounds {
+  lower: string | number;
+  upper: string | number;
+}
+
+export const confidenceIntervalLabel = (
+  interval: ConfidenceIntervalBounds | null | undefined,
+  digits = 2,
+): string =>
+  interval === null || interval === undefined
+    ? "-"
+    : `${number(interval.lower, digits)}–${number(interval.upper, digits)}`;
+
 export const integer = (value: number): string =>
   new Intl.NumberFormat("en", { maximumFractionDigits: 0 }).format(value);
 
@@ -67,6 +80,11 @@ export const formatCount = (
   singular: string,
   pluralForm = `${singular}s`,
 ): string => `${integer(count)} ${plural(count, singular, pluralForm)}`;
+
+const countWords: Readonly<Record<number, string>> = { 5: "five", 7: "seven" };
+
+export const countWord = (value: number): string =>
+  countWords[value] ?? String(value);
 
 export const money = (value: string | number | null | undefined): string =>
   value === null || value === undefined

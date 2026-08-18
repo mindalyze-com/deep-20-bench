@@ -156,6 +156,13 @@ bases while the public projection continues to treat the final quality-controlle
 authoritative and label the research Oracle's excerpts as model-reported. Blind Reviewer and
 Judge decisions remain outside the public episode projection.
 
+The source reader also validates a retained episode's optional sanitized `audit.calls` log.
+That validation includes the typed Oracle question class, primary and optional recovery
+outcomes, resolution, and bounded model-reported queries. This private forensic projection is
+not copied into public JSON. Public technical telemetry is still reconstructed from the
+aggregate allowlist, so call IDs, prompt hashes, research queries, recovery detail, router
+stages, and other per-call facts remain outside publication.
+
 ## Automatic discovery and explicit cohorts
 
 Runs are auto-discovered from the canonical run hierarchy. There is no hand-maintained list of

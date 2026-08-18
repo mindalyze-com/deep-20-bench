@@ -118,8 +118,15 @@ export interface PublicRunCostTotals {
   total: string;
 }
 
+export interface PublicExcludedRepairCost {
+  cost_usd: string;
+  superseded_attempts: number;
+  affected_trials: number;
+}
+
 export interface PublicRunTotals {
   costs_usd: PublicRunCostTotals;
+  excluded_repair?: PublicExcludedRepairCost;
   total_tokens: number;
   runtime_ms: number;
   guesser_think_time_ms: number;

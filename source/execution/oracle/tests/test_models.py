@@ -7,6 +7,8 @@ from deep20_oracle.models import (
     EvidenceReviewResult,
     OracleAnswer,
     OracleRequest,
+    OracleResearchAttemptResult,
+    OracleResearchOutcome,
     OracleResult,
     Subject,
 )
@@ -33,6 +35,38 @@ def test_unknown_rejects_evidence() -> None:
     assert OracleResult(answer=OracleAnswer.UNKNOWN, evidence=()).evidence == ()
     with pytest.raises(ValidationError):
         OracleResult(answer=OracleAnswer.UNKNOWN, evidence=(evidence(),))
+
+
+def test_research_attempt_outcome_and_queries_match_answer() -> None:
+    result = OracleResearchAttemptResult(
+        answer=OracleAnswer.UNKNOWN,
+        evidence=(),
+        research_outcome=OracleResearchOutcome.NO_RESULTS,
+        attempted_queries=("  Albert   Einstein alive  ",),
+    )
+
+    assert result.attempted_queries == ("Albert Einstein alive",)
+    with pytest.raises(ValidationError, match="classified as answered"):
+        OracleResearchAttemptResult(
+            answer=OracleAnswer.UNKNOWN,
+            evidence=(),
+            research_outcome=OracleResearchOutcome.ANSWERED,
+            attempted_queries=("query",),
+        )
+    with pytest.raises(ValidationError, match="must be unique"):
+        OracleResearchAttemptResult(
+            answer=OracleAnswer.UNKNOWN,
+            evidence=(),
+            research_outcome=OracleResearchOutcome.NO_RESULTS,
+            attempted_queries=("query", "QUERY"),
+        )
+    with pytest.raises(ValidationError, match="control characters"):
+        OracleResearchAttemptResult(
+            answer=OracleAnswer.UNKNOWN,
+            evidence=(),
+            research_outcome=OracleResearchOutcome.NO_RESULTS,
+            attempted_queries=("query\nsecond",),
+        )
 
 
 def test_evidence_review_basis_and_indices_are_consistent() -> None:
@@ -64,6 +98,7 @@ def test_evidence_review_basis_and_indices_are_consistent() -> None:
             answer=OracleAnswer.UNKNOWN,
             basis=EvidenceDecisionBasis.MODEL_KNOWLEDGE,
         )
+
 
 def test_models_reject_extra_fields_and_bad_urls() -> None:
     with pytest.raises(ValidationError):

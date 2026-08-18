@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onActivated, onDeactivated, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import ComparisonRankingTable from "@/components/ComparisonRankingTable.vue";
@@ -10,16 +10,25 @@ import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import ReasoningEffort from "@/components/ReasoningEffort.vue";
-import ScoreDotPlot, { type ScoreDot } from "@/components/ScoreDotPlot.vue";
+import ScoreDotPlot from "@/components/ScoreDotPlot.vue";
 import { getLeaderboard, getManifest } from "@/lib/api";
 import {
+  confidenceIntervalLabel,
   contractPercent,
+  countWord,
   formatCount,
   money,
   number,
   percent,
 } from "@/lib/format";
-import { setRouteContext } from "@/lib/route-context";
+import { setRouteContext, useActiveRouteContext } from "@/lib/route-context";
+import { runRoute } from "@/lib/route-location";
+import {
+  leaderboardScoreDot,
+  questionScoreChartSummary,
+  type ScoreDot,
+} from "@/lib/result-chart";
+import { supportResource } from "@/lib/site-resources";
 import { useRepeatAverages } from "@/lib/use-repeat-averages";
 import type {
   LeaderboardDocument,
@@ -30,7 +39,6 @@ import type {
 const manifest = ref<ManifestDocument | null>(null);
 const leaderboard = ref<LeaderboardDocument | null>(null);
 const error = ref<string | null>(null);
-const active = ref(true);
 const router = useRouter();
 const {
   averages: repeatAverages,
@@ -53,13 +61,7 @@ const applyRouteContext = (): void => {
   });
 };
 
-onActivated(() => {
-  active.value = true;
-  applyRouteContext();
-});
-onDeactivated(() => {
-  active.value = false;
-});
+const applyRouteContextIfActive = useActiveRouteContext(applyRouteContext);
 
 const load = async (): Promise<void> => {
   try {
@@ -67,14 +69,13 @@ const load = async (): Promise<void> => {
       getManifest(),
       getLeaderboard(),
     ]);
-    if (active.value) applyRouteContext();
+    applyRouteContextIfActive();
   } catch (reason: unknown) {
     error.value = reason instanceof Error ? reason.message : "Publication data is unavailable.";
   }
 };
 
 void load();
-applyRouteContext();
 
 const evaluated = computed(() =>
   (leaderboard.value?.leaderboard ?? []).filter((row) => row.status === "evaluated"),
@@ -83,52 +84,27 @@ const totalTrials = computed(() => {
   const cohort = manifest.value?.active_cohort;
   return cohort === undefined ? 0 : cohort.target_ids.length * cohort.iterations;
 });
-const countWords: Readonly<Record<number, string>> = { 5: "five", 7: "seven" };
-const countWord = (value: number): string => countWords[value] ?? String(value);
 const failurePenalty = computed(() => {
   const value = manifest.value;
   return value === null
     ? 51
     : value.active_cohort.max_questions + value.score_policy.failure_penalty_offset;
 });
-const winnerRows = computed(() => {
+const winnerRows = computed<Array<LeaderboardRow & { execution_id: string }>>(() => {
   const winner = manifest.value?.winner;
   if (winner === null || winner === undefined) return [];
   return winner.model_ids.flatMap((modelId) => {
     const row = evaluated.value.find((candidate) => candidate.model.model_id === modelId);
-    return row === undefined ? [] : [row];
+    return row === undefined || row.execution_id === null
+      ? []
+      : [{ ...row, execution_id: row.execution_id }];
   });
 });
-const runLink = (row: LeaderboardRow) => ({
-  name: "run",
-  params: { executionId: row.execution_id },
-});
 const openRun = (row: LeaderboardRow): void => {
-  if (row.execution_id !== null) void router.push(runLink(row));
+  if (row.execution_id !== null) void router.push(runRoute(row.execution_id));
 };
 const scoreDots = computed<ScoreDot[]>(() =>
-  evaluated.value.map((row) => ({
-    modelId: row.model.model_id,
-    label: row.model.display_name,
-    value: Number(row.question_score),
-    display: number(row.question_score),
-    confidenceLower:
-      row.question_score_confidence_interval === null
-        ? undefined
-        : Number(row.question_score_confidence_interval.lower),
-    confidenceUpper:
-      row.question_score_confidence_interval === null
-        ? undefined
-        : Number(row.question_score_confidence_interval.upper),
-    confidenceDisplay:
-      row.question_score_confidence_interval === null
-        ? undefined
-        : `${number(row.question_score_confidence_interval.lower, 2)}–${number(
-            row.question_score_confidence_interval.upper,
-            2,
-          )}`,
-    link: row.execution_id === null ? undefined : runLink(row),
-  })),
+  evaluated.value.map((row) => leaderboardScoreDot(row)),
 );
 </script>
 
@@ -179,14 +155,20 @@ const scoreDots = computed<ScoreDot[]>(() =>
               </p>
               <div class="hero-discussions">
                 <p>Use GitHub Discussions to suggest what we should test next.</p>
-                <a
-                  href="https://github.com/mindalyze-com/deep-20-bench/discussions"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Join discussion <span aria-hidden="true">↗</span>
-                  <span class="visually-hidden">(opens in a new tab)</span>
-                </a>
+                <div class="hero-discussion-links">
+                  <a
+                    href="https://github.com/mindalyze-com/deep-20-bench/discussions"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Join discussion <span aria-hidden="true">↗</span>
+                    <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
+                  <a :href="supportResource.href" target="_blank" rel="noreferrer">
+                    Support future benchmark runs <span aria-hidden="true">↗</span>
+                    <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
+                </div>
               </div>
             </article>
           </div>
@@ -284,7 +266,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                   v-for="row in winnerRows"
                   :key="row.execution_id ?? row.model.model_id"
                   class="winner-link"
-                  :to="runLink(row)"
+                  :to="runRoute(row.execution_id)"
                 >
                   {{ manifest.winner.joint ? row.model.display_name : "View full run" }} →
                 </RouterLink>
@@ -306,12 +288,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <div class="leaderboard-layout">
               <div class="score-chart">
                 <h3 class="chart-title">Question score</h3>
-                <p class="chart-description">
-                  Lower is better. The blue marker is the average question score. The colored
-                  line is its 95% confidence interval (CI). The companion plot shows each exact
-                  CI width. Its three bands divide the displayed width scale into equal
-                  ranges.
-                </p>
+                <p class="chart-description">{{ questionScoreChartSummary }}</p>
                 <ScoreDotPlot
                   :items="scoreDots"
                   context="pilot"
@@ -341,7 +318,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                     <td class="model-column">
                       <ModelRunLink
                         v-if="row.execution_id"
-                        :to="runLink(row)"
+                        :to="runRoute(row.execution_id)"
                         :name="row.model.display_name"
                         :meta="`${row.model.model_id} · ${row.model.provider}`"
                       />
@@ -384,7 +361,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 :rank="row.rank ?? '-'"
                 :name="row.model.display_name"
                 :provider="row.model.provider"
-                :to="row.execution_id === null ? null : runLink(row)"
+                :to="row.execution_id === null ? null : runRoute(row.execution_id)"
                 :metrics="[
                   {
                     label: 'Question score',
@@ -392,13 +369,9 @@ const scoreDots = computed<ScoreDot[]>(() =>
                   },
                   {
                     label: '95% CI',
-                    value:
-                      row.question_score_confidence_interval === null
-                        ? '-'
-                        : `${number(row.question_score_confidence_interval.lower, 2)}–${number(
-                            row.question_score_confidence_interval.upper,
-                            2,
-                          )}`,
+                    value: confidenceIntervalLabel(
+                      row.question_score_confidence_interval,
+                    ),
                   },
                   { label: 'Success', value: percent(row.success_rate) },
                   { label: 'Benchmark run cost', value: money(row.total_cost_usd) },
@@ -607,6 +580,13 @@ const scoreDots = computed<ScoreDot[]>(() =>
   color: rgb(255 255 255 / 69%);
   font-size: var(--text-small);
   line-height: 1.5;
+}
+
+.hero-discussion-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 1rem;
+  justify-content: flex-end;
 }
 
 .hero-discussions a {
@@ -938,6 +918,10 @@ dd {
   .hero-discussions {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .hero-discussion-links {
+    justify-content: flex-start;
   }
 
   .ability-grid,

@@ -325,6 +325,56 @@ models:
         input_usd_per_million: "10.00"
         cached_input_usd_per_million: "1.00"
         cache_write_multiplier: "1.25"
+  M-0015:
+    model_id: M-0015
+    display_name: Grok 4.6 (high)
+    configuration:
+      configuration_id: M-0015
+      gateway: openrouter
+      model: x-ai/grok-4.6
+      provider: xai
+      reasoning_effort: high
+      allow_fallbacks: false
+      max_output_tokens: 32768
+      timeout_seconds: 120
+      recovery: *default_recovery
+      seed_capability: supported
+      prompt_cache:
+        policy: best_effort
+        control: automatic
+        minimum_cacheable_tokens: 1024
+        ttl_seconds: 300
+        # OpenRouter advertised $2 input and $0.50 cache reads for the pinned
+        # xAI route on 2026-08-14.
+        input_usd_per_million: "2.00"
+        cached_input_usd_per_million: "0.50"
+        cache_write_multiplier: "1.00"
+  M-0016:
+    model_id: M-0016
+    display_name: Gemini 3.7 Flash (high)
+    configuration:
+      configuration_id: M-0016
+      gateway: openrouter
+      model: google/gemini-3.7-flash
+      # Google AI Studio had the higher 24-hour uptime in OpenRouter's endpoint
+      # metadata when this route was registered on 2026-08-17.
+      provider: google-ai-studio
+      reasoning_effort: high
+      allow_fallbacks: false
+      max_output_tokens: 32768
+      timeout_seconds: 120
+      recovery: *default_recovery
+      seed_capability: supported
+      prompt_cache:
+        policy: best_effort
+        control: automatic
+        minimum_cacheable_tokens: 1024
+        ttl_seconds: 300
+        # OpenRouter advertised $0.75 input and $0.075 cache reads for the
+        # pinned Google AI Studio route on 2026-08-17.
+        input_usd_per_million: "0.75"
+        cached_input_usd_per_million: "0.075"
+        cache_write_multiplier: "1.00"
 
 # Models with medium reasoning (high above in belo 100 range scope)
   M-0101:

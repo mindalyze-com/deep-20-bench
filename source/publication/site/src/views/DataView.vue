@@ -1,56 +1,30 @@
 <script setup lang="ts">
-import { onActivated, onDeactivated, ref } from "vue";
+import { ref } from "vue";
 
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { getManifest, publicDownloadUrl } from "@/lib/api";
 import { date } from "@/lib/format";
-import { setRouteContext } from "@/lib/route-context";
+import { usePageRouteContext } from "@/lib/route-context";
 import { citationResource, dataLicenseResource } from "@/lib/site-resources";
 import type { ManifestDocument } from "@/lib/types";
+import { usePublicationLoad } from "@/lib/use-publication-load";
 
 const manifest = ref<ManifestDocument | null>(null);
-const error = ref<string | null>(null);
-const active = ref(true);
-
-const applyRouteContext = (): void => {
-  setRouteContext({
-    title: "Data",
-    description:
-      "Download the public Deep20Bench record, trace each result, and run independent analyses.",
-    level: null,
-    position: null,
-    crumbs: [],
-    previous: null,
-    next: null,
-  });
-};
-
-onActivated(() => {
-  active.value = true;
-  applyRouteContext();
+usePageRouteContext({
+  title: "Data",
+  description:
+    "Download the public Deep20Bench record, trace each result, and run independent analyses.",
 });
-onDeactivated(() => {
-  active.value = false;
-});
-
-const load = async (): Promise<void> => {
-  try {
-    manifest.value = await getManifest();
-    if (active.value) applyRouteContext();
-  } catch (reason: unknown) {
-    error.value = reason instanceof Error ? reason.message : "Publication data is unavailable.";
-  }
-};
-
-void load();
-applyRouteContext();
+const { loading, error } = usePublicationLoad(async () => {
+  manifest.value = await getManifest();
+}, "Publication data is unavailable.");
 </script>
 
 <template>
   <div id="route-content" class="page data-page" tabindex="-1">
     <LoadingState
-      v-if="manifest === null && error === null"
+      v-if="loading"
       label="Loading data details"
     />
     <ErrorState v-else-if="error !== null" :message="error" />

@@ -20,6 +20,11 @@ export const softwareLicenseResource: SiteResourceLink = {
   label: "Software licensing - source-available",
 };
 
+export const supportResource: SiteResourceLink = {
+  href: "https://ko-fi.com/mindalyze",
+  label: "Support on Ko-fi",
+};
+
 export const citeAndReuseLinks: readonly SiteResourceLink[] = [
   { ...citationResource, label: "How to cite" },
   { ...dataLicenseResource, label: "Result data licence - CC BY 4.0" },
@@ -28,6 +33,7 @@ export const citeAndReuseLinks: readonly SiteResourceLink[] = [
 
 export const contributionLinks: readonly SiteResourceLink[] = [
   { href: `${repository}/discussions`, label: "Suggest a model or contact us" },
+  supportResource,
   { href: `${repository}/issues/new/choose`, label: "Report an error" },
   { href: repository, label: "Source repository" },
 ];

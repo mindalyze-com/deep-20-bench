@@ -21,18 +21,30 @@ from deep20_game.models import (
 from deep20_game.sampling import derive_guesser_prompt_nonce, derive_guesser_seed
 from deep20_game.validator import GuessValidator
 from deep20_oracle.config import OracleConfig
+from deep20_oracle.errors import OracleProtocolError
 from deep20_oracle.models import (
     Evidence,
     EvidenceDecisionBasis,
     EvidenceReviewResult,
     OracleAdjudication,
     OracleAnswer,
+    OracleAuditTrace,
+    OracleCall,
     OracleDecisionPath,
     OracleMetrics,
+    OracleRequest,
+    OracleResearchAttemptAuditTrace,
+    OracleResearchAttemptResult,
+    OracleResearchAuditTrace,
+    OracleResearchOutcome,
+    OracleResearchQuestionClass,
+    OracleResearchResolution,
+    OracleResearchStrategy,
+    OracleResult,
     OracleRoleMetrics,
 )
 
-from .conftest import FakeGameProvider, official_policy
+from .conftest import FakeGameProvider, official_policy, provider_trace
 
 
 def ask(question: str) -> str:
@@ -138,16 +150,12 @@ class FakeOracle:
                 oracle=role_metrics.model_copy(
                     update={
                         "cost_usd": (
-                            Decimal("0.02")
-                            if answer is OracleAnswer.UNKNOWN
-                            else Decimal("0.01")
+                            Decimal("0.02") if answer is OracleAnswer.UNKNOWN else Decimal("0.01")
                         ),
                         "search_count": 1,
                     }
                 ),
-                reviewer=(
-                    None if answer is OracleAnswer.UNKNOWN else role_metrics
-                ),
+                reviewer=(None if answer is OracleAnswer.UNKNOWN else role_metrics),
             ),
             guesser_answer=lambda: answer,
         )
@@ -186,6 +194,169 @@ def make_engine(
         oracle_config=audit_writer.oracle_config,
         validator_config=audit_writer.validator_config,
     )
+
+
+def test_oracle_unknown_result_audit_keeps_search_and_citation_counts(
+    model_config,
+    subject,
+) -> None:
+    trace = provider_trace(
+        model_config,
+        '{"answer":"UNKNOWN","evidence":[]}',
+        input_tokens=4_356,
+        cached_input_tokens=2_164,
+        output_tokens=169,
+    )
+    trace = trace.model_copy(
+        update={
+            "usage": trace.usage.model_copy(
+                update={
+                    "reasoning_tokens": 61,
+                    "search_count": 3,
+                    "cost_usd": Decimal("0.00037249"),
+                }
+            )
+        }
+    )
+    call = OracleCall(
+        call_id="OC-00000000000000000000000000000001",
+        request=OracleRequest(
+            run_id="result-audit-test",
+            subject=subject,
+            question="Is the person currently alive?",
+        ),
+        result=OracleResult(answer=OracleAnswer.UNKNOWN, evidence=()),
+        adjudication=OracleAdjudication(
+            oracle_answer=OracleAnswer.UNKNOWN,
+            disagreement=False,
+            judge_invoked=False,
+            final_answer=OracleAnswer.UNKNOWN,
+            decision_path=OracleDecisionPath.ORACLE_UNKNOWN,
+        ),
+        metrics=OracleMetrics(
+            cost_usd=Decimal("0.00037249"),
+            latency_ms=1_000,
+            input_tokens=4_356,
+            cached_input_tokens=2_164,
+            output_tokens=169,
+            reasoning_tokens=61,
+            search_count=3,
+        ),
+        audit=OracleAuditTrace(
+            prompt_version="test-oracle-v1",
+            prompt_hash="a" * 64,
+            messages=({"role": "system", "content": "private"},),
+            evidence_validation="model_reported",
+            provider=trace,
+            research=OracleResearchAuditTrace(
+                question_class=OracleResearchQuestionClass.TEMPORAL_STATUS,
+                resolution=OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY,
+                attempts=(
+                    OracleResearchAttemptAuditTrace(
+                        attempt_number=1,
+                        strategy=OracleResearchStrategy.PRIMARY,
+                        prompt_version="test-oracle-v1",
+                        prompt_hash="a" * 64,
+                        messages=({"role": "system", "content": "private"},),
+                        result=OracleResearchAttemptResult(
+                            answer=OracleAnswer.UNKNOWN,
+                            evidence=(),
+                            research_outcome=OracleResearchOutcome.AMBIGUOUS_QUESTION,
+                            attempted_queries=("subject alive",),
+                        ),
+                        provider=trace,
+                    ),
+                ),
+            ),
+        ),
+        recorded_at="2026-08-17T10:00:01+00:00",
+        integrity_hash="b" * 64,
+    )
+
+    audit = GameEngine._oracle_result_call_audit(call, turn_number=1)
+
+    assert audit.oracle.provider.web_search_requests == 3
+    assert audit.oracle.provider.annotation_count == 0
+    assert audit.oracle.provider.url_citation_count == 0
+    assert audit.research is not None
+    assert audit.research.question_class == "temporal_status"
+    assert audit.research.attempts[0].attempted_queries == ("subject alive",)
+    assert audit.research.attempts[0].query_provenance == "model_reported"
+    assert audit.reviewer is None
+    assert audit.judge is None
+    serialized = audit.model_dump_json()
+    assert "private" not in serialized
+    assert "response-0" not in serialized
+
+
+def test_research_exhaustion_is_retained_in_terminal_result_diagnostics(
+    audit_writer,
+    model_config,
+    validator_config,
+    policy,
+    subject,
+) -> None:
+    trace = provider_trace(model_config, '{"answer":"UNKNOWN"}')
+    trace = trace.model_copy(
+        update={
+            "usage": trace.usage.model_copy(update={"search_count": 2}),
+        }
+    )
+
+    class ExhaustedOracle:
+        def ask(self, request):
+            raise OracleProtocolError(
+                "Oracle research could not retrieve usable evidence for a closed fact",
+                code="oracle_research_exhausted",
+                call_id="OC-00000000000000000000000000000001",
+                details={
+                    "provider_trace": trace.model_dump(mode="json"),
+                    "oracle_research": {
+                        "question_class": "temporal_status",
+                        "resolution": "retrieval_exhausted_unknown",
+                        "attempts": [
+                            {
+                                "attempt_number": 1,
+                                "strategy": "primary",
+                                "outcome": "no_results",
+                                "attempted_queries": ["Albert Einstein alive"],
+                            },
+                            {
+                                "attempt_number": 2,
+                                "strategy": "diversified_recovery",
+                                "outcome": "irrelevant_results",
+                                "attempted_queries": ["Albert Einstein death date biography"],
+                            },
+                        ],
+                    },
+                },
+            )
+
+    engine = make_engine(
+        guesser_provider=FakeGameProvider(
+            model_config,
+            [ask("Is this person currently alive?")],
+        ),
+        validator_provider=FakeGameProvider(validator_config, []),
+        oracle=ExhaustedOracle(),
+        audit_writer=audit_writer,
+        policy=policy,
+        model_config=model_config,
+        validator_config=validator_config,
+    )
+
+    result = engine.play(GameRequest(run_id="research-exhausted", subject=subject))
+
+    assert result.terminal_reason is TerminalReason.INFRASTRUCTURE_FAILURE
+    assert result.scoring_eligible is False
+    assert result.failure is not None
+    assert result.failure.code == "oracle_research_exhausted"
+    assert result.failure.diagnostics is not None
+    research = result.failure.diagnostics.metadata["oracle_research"]
+    assert research["question_class"] == "temporal_status"
+    assert len(research["attempts"]) == 2
+    assert result.audit is not None
+    assert result.audit.unavailable_call_count == 1
 
 
 def test_immediate_correct_guess_reveals_only_category(
@@ -229,10 +400,7 @@ def test_immediate_correct_guess_reveals_only_category(
     )
     assert result.models.oracle.requested_model == "openai/test-oracle"
     assert result.models.oracle.resolved_models == ()
-    assert (
-        result.models.oracle.prompt_version
-        == "live-web-oracle-v7-direct-negative-evidence"
-    )
+    assert result.models.oracle.prompt_version == "live-web-oracle-v8-classified-research"
     assert result.costs_usd.guesser == Decimal("0.01")
     assert result.costs_usd.oracle == Decimal(0)
     assert result.costs_usd.validator == Decimal("0.01")
@@ -275,6 +443,27 @@ def test_immediate_correct_guess_reveals_only_category(
     assert isinstance(result.llm.guesser.configuration, ModelConfig)
     assert isinstance(result.llm.oracle.configuration, OracleConfig)
     assert result.llm.oracle.metrics.calls == 0
+    assert result.audit is not None
+    assert [audit.component for audit in result.audit.calls] == [
+        "guesser",
+        "validator",
+    ]
+    guesser_audit, validator_audit = result.audit.calls
+    assert guesser_audit.turn_number == 1
+    assert guesser_audit.provider.usage.cost_usd == Decimal("0.01")
+    assert guesser_audit.provider.raw_output_characters > 0
+    assert validator_audit.turn_number == 1
+    retained_result = result.model_dump_json()
+    assert "response-0" not in retained_result
+    assert "prompt_cache_key" not in retained_result
+    assert "session_id" not in retained_result
+    retained_file = yaml.safe_load(
+        (audit_writer.runs_root / "immediate" / "result.yml").read_text(encoding="utf-8")
+    )
+    assert [item["component"] for item in retained_file["audit"]["calls"]] == [
+        "guesser",
+        "validator",
+    ]
     guesser_provider_usage = result.llm.guesser.provider_usage
     assert guesser_provider_usage.unreported_calls == 0
     assert guesser_provider_usage.fallback_calls == 0
@@ -307,7 +496,7 @@ def test_immediate_correct_guess_reveals_only_category(
     ]
     assert (
         stored_result["models"]["oracle"]["prompt_version"]
-        == "live-web-oracle-v7-direct-negative-evidence"
+        == "live-web-oracle-v8-classified-research"
     )
     assert stored_result["summary"]["costs_usd"] == {
         "guesser": "0.01",
@@ -327,9 +516,7 @@ def test_immediate_correct_guess_reveals_only_category(
     assert stored_result["guesser_conversation"][-1]["role"] == "assistant"
     assert stored_result["guesser_conversation"][-1]["turn_number"] == 1
     assert (
-        json.loads(stored_result["guesser_conversation"][-1]["content"])["result"][
-            "action"
-        ]
+        json.loads(stored_result["guesser_conversation"][-1]["content"])["result"]["action"]
         == "GUESS"
     )
     assert len(stored_result["integrity_hash"]) == 64
@@ -439,10 +626,7 @@ def test_wrong_guess_oracle_unknown_then_success_preserves_visible_history(
         2,
         3,
     ]
-    assert (
-        json.loads(reported_messages[-1]["content"])["result"]["name"]
-        == "Albert Einstein"
-    )
+    assert json.loads(reported_messages[-1]["content"])["result"]["name"] == "Albert Einstein"
     assert reported_messages[-1]["role"] == "assistant"
     assert "Audit-only adjudication" not in str(reported_messages)
     assert all(
@@ -459,15 +643,10 @@ def test_wrong_guess_oracle_unknown_then_success_preserves_visible_history(
         ),
     }
     assert [
-        json.loads(request.messages[1]["content"])
-        for request in guesser_provider.requests
+        json.loads(request.messages[1]["content"]) for request in guesser_provider.requests
     ] == [expected_begin, expected_begin, expected_begin]
     assert all(
-        sum(
-            message["content"].count('"variation_token":')
-            for message in request.messages
-        )
-        == 1
+        sum(message["content"].count('"variation_token":') for message in request.messages) == 1
         for request in guesser_provider.requests
     )
     assert all(
@@ -506,9 +685,7 @@ def test_disagreement_metadata_never_enters_guesser_visible_projection(
                 final_answer=OracleAnswer.NO,
                 decision_path=OracleDecisionPath.JUDGE_DISAGREEMENT,
             )
-            call.metrics = call.metrics.model_copy(
-                update={"judge": call.metrics.reviewer}
-            )
+            call.metrics = call.metrics.model_copy(update={"judge": call.metrics.reviewer})
             call.audit.reviewer = SimpleNamespace(
                 provider=SimpleNamespace(
                     resolved_model="google/gemini-3.5-flash-lite",
@@ -758,6 +935,12 @@ def test_invalid_final_guesser_output_is_scored_protocol_failure(
     assert result.turns[0].feedback_event == "FORMAT_ERROR"
     assert result.turns[1].turn_type == "contract_violation"
     assert result.turns[1].feedback_event is None
+    assert result.audit is not None
+    assert result.audit.unavailable_call_count == 0
+    assert [call.status for call in result.audit.calls] == [
+        "contract_violation",
+        "contract_violation",
+    ]
     expected_begin = {
         "category": "person",
         "event": "BEGIN",
@@ -794,16 +977,13 @@ def test_invalid_final_guesser_output_is_scored_protocol_failure(
         assert f'"{forbidden_field}"' not in visible_conversation
     failures = [
         json.loads(line)
-        for line in (
-            audit_writer.runs_root / "bad-output" / "guesser-calls.jsonl"
-        ).read_text().splitlines()
+        for line in (audit_writer.runs_root / "bad-output" / "guesser-calls.jsonl")
+        .read_text()
+        .splitlines()
     ]
     assert len(failures) == 2
     assert all(failure["status"] == "failure" for failure in failures)
-    assert all(
-        failure["error"]["code"] == "invalid_guesser_output"
-        for failure in failures
-    )
+    assert all(failure["error"]["code"] == "invalid_guesser_output" for failure in failures)
     events = [
         json.loads(line)
         for line in (audit_writer.runs_root / "bad-output" / "episode-events.jsonl")
@@ -811,9 +991,7 @@ def test_invalid_final_guesser_output_is_scored_protocol_failure(
         .splitlines()
     ]
     terminal = next(event for event in events if event["event_type"] == "episode_finished")
-    violations = [
-        event for event in events if event["event_type"] == "contract_violation"
-    ]
+    violations = [event for event in events if event["event_type"] == "contract_violation"]
     assert len(violations) == 2
     diagnostics = terminal["payload"]["failure"]["diagnostics"]
     assert [cause["exception_type"] for cause in diagnostics["causes"]] == [
@@ -934,6 +1112,9 @@ def test_first_guesser_provider_failure_preserves_prompt_nonce_in_report(
     }
     assert json.loads(result.guesser_conversation[1].content) == expected_begin
     assert json.loads(provider.requests[0].messages[1]["content"]) == expected_begin
+    assert result.audit is not None
+    assert result.audit.calls == ()
+    assert result.audit.unavailable_call_count == 1
 
 
 def test_prompt_nonce_mismatch_is_an_infrastructure_failure_before_provider_call(
@@ -1128,9 +1309,7 @@ def test_consecutive_contract_violations_exhaust_as_scored_model_failure(
     policy,
     subject,
 ) -> None:
-    limited_policy = policy.model_copy(
-        update={"max_consecutive_contract_violations": 3}
-    )
+    limited_policy = policy.model_copy(update={"max_consecutive_contract_violations": 3})
     provider = ScriptedGameProvider(
         model_config,
         [("fail", "provider_output_limit_exceeded")] * 3,
@@ -1156,8 +1335,7 @@ def test_consecutive_contract_violations_exhaust_as_scored_model_failure(
     assert [turn.turn_type for turn in result.turns] == ["contract_violation"] * 3
     assert all(turn.feedback_event == "FORMAT_ERROR" for turn in result.turns)
     assert all(
-        turn.violation_kind is ContractViolationKind.OUTPUT_LIMIT_EXCEEDED
-        for turn in result.turns
+        turn.violation_kind is ContractViolationKind.OUTPUT_LIMIT_EXCEEDED for turn in result.turns
     )
     assert result.summary.contract.violations == 3
     assert result.summary.contract.counted_penalties == 3
@@ -1171,9 +1349,7 @@ def test_valid_action_resets_consecutive_violation_counter(
     policy,
     subject,
 ) -> None:
-    limited_policy = policy.model_copy(
-        update={"max_consecutive_contract_violations": 2}
-    )
+    limited_policy = policy.model_copy(update={"max_consecutive_contract_violations": 2})
     provider = ScriptedGameProvider(
         model_config,
         [

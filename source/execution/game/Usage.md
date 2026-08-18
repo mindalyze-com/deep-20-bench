@@ -179,7 +179,7 @@ A short game without a second eligible request reports `cache_status=not_applica
 
 ## Result
 
-On every controlled terminal path, the command prints one schema-v7 `EpisodeResult` JSON
+On every controlled terminal path, the command prints one schema-v9 `EpisodeResult` JSON
 object and writes the same content to `result.yml`. Its top-level sections are:
 
 - `run`: IDs, subject, timestamps, and wall-clock `duration_ms`.
@@ -205,6 +205,16 @@ object and writes the same content to `result.yml`. Its top-level sections are:
   configuration includes the independently pinned Reviewer and Judge routes; quality-control
   costs are also separated in the summary. Component `total_tokens` is input plus output;
   reasoning tokens remain a separate subset and are not counted twice.
+- `audit`: a versioned chronological call log. Each entry has its component call ID and turn,
+  prompt version/hash, safe provider route and completion state, usage, recovery, output length,
+  and bounded search/citation/router telemetry. Oracle calls contain separate primary,
+  optional research-recovery, Reviewer, and Judge entries. Their research summary records the
+  deterministic question class, strategy, outcome, resolution, evidence count, and bounded
+  query strings labelled `model_reported`. It contains no prompt or response body, raw output,
+  citation URL,
+  session, cache key, response ID, credential, header, or router endpoint. Its
+  `unavailable_call_count` makes missing safe traces explicit. Older schema-v9 results may omit
+  the additive `audit` section.
 
 The Python boundary is fully typed: `EpisodeResult` and every nested run, outcome, summary,
 model-version, turn, adjudication, evidence, component-configuration, and metric object is a
@@ -212,8 +222,10 @@ Pydantic model. Dictionaries are introduced only by explicit JSON/YAML serializa
 
 The final result includes the trusted subject snapshot, complete resolved transcript, and - by
 default - the Guesser's rendered system prompt and visible chat. Oracle, Reviewer, Judge, and
-Validator prompts, raw provider responses, and per-call provider traces remain
-component-audit-only.
+Validator prompts, raw provider responses, and full per-call provider traces remain
+component-audit-only. Only the bounded `audit.calls` projection is retained in `result.yml`.
+The retained research data is reporting-only and is never reused by the Guesser, a later Oracle
+attempt, Reviewer, Judge, Validator, or another trial.
 
 ## Run artifacts
 

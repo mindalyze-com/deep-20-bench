@@ -260,6 +260,33 @@ def test_automatic_evidence_review_route_lets_openrouter_select_provider() -> No
     assert "max_completion_tokens" not in sent
 
 
+def test_automatic_evidence_review_route_excludes_recorded_provider() -> None:
+    config = EvidenceReviewConfig(
+        model="anthropic/claude-opus-5",
+        provider=OPENROUTER_AUTO_PROVIDER,
+        provider_routing=ProviderRouting.AUTOMATIC,
+        allow_fallbacks=True,
+        token_limit_parameter=TokenLimitParameter.MAX_TOKENS,
+    )
+    provider = OpenRouterProvider.__new__(OpenRouterProvider)
+    provider.config = config
+    provider.enable_web_search = False
+    provider.ignored_providers = ("amazon-bedrock",)
+
+    sent = provider._request_payload(
+        ProviderRequest(
+            messages=({"role": "user", "content": "evidence data"},),
+            output_schema=OracleResult.model_json_schema(),
+        )
+    )
+
+    assert sent["provider"] == {
+        "allow_fallbacks": True,
+        "require_parameters": True,
+        "ignore": ["amazon-bedrock"],
+    }
+
+
 def test_openrouter_adapter_preserves_http_error_response_in_trace() -> None:
     config = OracleConfig(model="openai/test-model", provider="openai")
     provider = OpenRouterProvider.__new__(OpenRouterProvider)

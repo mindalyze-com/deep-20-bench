@@ -2375,7 +2375,9 @@ def test_repair_completes_an_execution_aborted_by_the_circuit_breaker(
     with caplog.at_level(logging.INFO, logger="deep20.benchmark"):
         repaired = repaired_runner.run(
             request,
-            repair=TrialRepairPolicy(),
+            repair=TrialRepairPolicy(
+                judge_ignored_providers=("amazon-bedrock",),
+            ),
             circuit_breaker=InfrastructureCircuitBreaker(),
         )
 
@@ -2401,6 +2403,7 @@ def test_repair_completes_an_execution_aborted_by_the_circuit_breaker(
         visible_context = canonical_json(context.model_dump(mode="json"))
         assert "OpenRouter request failed" not in visible_context
         assert "superseded_attempts" not in visible_context
+        assert "amazon-bedrock" not in visible_context
     assert repaired.run.git_commits == ("abc123", "def456")
     repaired_failures = tuple(
         attempt
@@ -2451,6 +2454,7 @@ def test_repair_completes_an_execution_aborted_by_the_circuit_breaker(
     assert len(resume_events) == 1
     assert resume_events[0]["operation"] == "repair"
     assert resume_events[0]["git_commit"] == "def456"
+    assert resume_events[0]["repair_policy"]["judge_ignored_providers"] == ["amazon-bedrock"]
 
 
 def test_circuit_breaker_resets_on_a_scoring_eligible_trial(tmp_path: Path) -> None:

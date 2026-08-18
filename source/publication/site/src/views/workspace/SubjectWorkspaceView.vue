@@ -3,15 +3,15 @@ import {
   computed,
   onActivated,
   provide,
-  ref,
   watch,
 } from "vue";
-import { useRoute, type RouteLocationRaw } from "vue-router";
+import { useRoute } from "vue-router";
 
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
+import SubjectReferenceLink from "@/components/SubjectReferenceLink.vue";
 import { getEpisode, getSubject } from "@/lib/api";
 import {
   contractPercent,
@@ -22,7 +22,9 @@ import {
   statusLabel,
 } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
-import type { PublicTrialSummary, SubjectDocument } from "@/lib/types";
+import { episodeRoute, runRoute, subjectRoute } from "@/lib/route-location";
+import type { PublicTrialSummary } from "@/lib/types";
+import { useKeyedPublicationLoad } from "@/lib/use-keyed-publication-load";
 import {
   subjectWorkspaceKey,
   useRunWorkspace,
@@ -33,12 +35,14 @@ import SubjectOverviewPane from "./SubjectOverviewPane.vue";
 
 const route = useRoute();
 const { run, subjects } = useRunWorkspace();
-const document = ref<SubjectDocument | null>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
-
 const executionId = computed(() => String(route.params.executionId ?? ""));
 const targetId = computed(() => String(route.params.targetId ?? ""));
+const { document, loading, error } = useKeyedPublicationLoad({
+  parameters: (): [string, string] => [executionId.value, targetId.value],
+  load: getSubject,
+  fallbackError: "The subject could not be loaded.",
+  onLoaded: () => applySubjectContext(),
+});
 const trialId = computed(() =>
   typeof route.params.trialId === "string" ? route.params.trialId : null,
 );
@@ -69,14 +73,8 @@ const trialScoreWidth = (trial: PublicTrialSummary): string => {
   return `${Math.min(100, Math.max(0, (score / maximum) * 100))}%`;
 };
 
-const episodeTo = (trial: PublicTrialSummary): RouteLocationRaw => ({
-  name: "episode",
-  params: {
-    executionId: executionId.value,
-    targetId: targetId.value,
-    trialId: trial.trial_id,
-  },
-});
+const episodeTo = (trial: PublicTrialSummary) =>
+  episodeRoute(executionId.value, targetId.value, trial.trial_id);
 
 const applySubjectContext = (): void => {
   const currentRun = run.value;
@@ -101,73 +99,23 @@ const applySubjectContext = (): void => {
       { label: "Results", to: { name: "results" } },
       {
         label: currentRun.model_name,
-        to: {
-          name: "run",
-          params: { executionId: currentRun.execution_id },
-        },
+        to: runRoute(currentRun.execution_id),
       },
       { label: currentSubject.display_name },
     ],
     previous: previousSubject
       ? {
           label: previousSubject.display_name,
-          to: {
-            name: "subject",
-            params: {
-              executionId: currentRun.execution_id,
-              targetId: previousSubject.target_id,
-            },
-          },
+          to: subjectRoute(currentRun.execution_id, previousSubject.target_id),
         }
       : null,
     next: nextSubject
       ? {
           label: nextSubject.display_name,
-          to: {
-            name: "subject",
-            params: {
-              executionId: currentRun.execution_id,
-              targetId: nextSubject.target_id,
-            },
-          },
+          to: subjectRoute(currentRun.execution_id, nextSubject.target_id),
         }
       : null,
   });
-};
-
-const load = async (): Promise<void> => {
-  const requestedExecution = executionId.value;
-  const requestedTarget = targetId.value;
-  loading.value = true;
-  error.value = null;
-  try {
-    const loaded = await getSubject(requestedExecution, requestedTarget);
-    if (
-      executionId.value !== requestedExecution ||
-      targetId.value !== requestedTarget
-    ) {
-      return;
-    }
-    document.value = loaded;
-    applySubjectContext();
-  } catch (cause: unknown) {
-    if (
-      executionId.value !== requestedExecution ||
-      targetId.value !== requestedTarget
-    ) {
-      return;
-    }
-    document.value = null;
-    error.value =
-      cause instanceof Error ? cause.message : "The subject could not be loaded.";
-  } finally {
-    if (
-      executionId.value === requestedExecution &&
-      targetId.value === requestedTarget
-    ) {
-      loading.value = false;
-    }
-  }
 };
 
 const warmEpisode = (trial: PublicTrialSummary): void => {
@@ -176,7 +124,6 @@ const warmEpisode = (trial: PublicTrialSummary): void => {
   void getEpisode(executionId.value, targetId.value, trial.trial_id);
 };
 
-watch([executionId, targetId], () => void load(), { immediate: true });
 watch(() => route.name, applySubjectContext);
 onActivated(applySubjectContext);
 episodeView.preload();
@@ -284,15 +231,10 @@ episodeView.preload();
         </nav>
 
         <footer class="episode-rail-footer">
-          <a
+          <SubjectReferenceLink
             v-if="profile.subject_reference_url"
             :href="profile.subject_reference_url"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Subject reference <span aria-hidden="true">↗</span>
-            <span class="visually-hidden">(opens in a new tab)</span>
-          </a>
+          />
           <span>{{ money(trials.reduce((sum, trial) => sum + Number(trial.cost_usd), 0)) }} total</span>
         </footer>
       </aside>

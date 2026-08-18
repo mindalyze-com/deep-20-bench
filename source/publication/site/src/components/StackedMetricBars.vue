@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import { BarChart } from "echarts/charts";
-import {
-  AriaComponent,
-  GridComponent,
-  TooltipComponent,
-} from "echarts/components";
-import * as echarts from "echarts/core";
 import type {
   DefaultLabelFormatterCallbackParams as CallbackDataParams,
   EChartsOption,
 } from "echarts";
-import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import { echarts, standardChartComponents } from "@/lib/chart-registration";
 import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
+import {
+  chartTooltipPrimary,
+  chartTooltipRunLink,
+  chartTooltipTitle,
+} from "@/lib/chart-tooltip";
 import { money } from "@/lib/format";
 import {
   chartAnimationEnabled,
@@ -26,13 +25,7 @@ import {
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
 
-echarts.use([
-  BarChart,
-  GridComponent,
-  TooltipComponent,
-  AriaComponent,
-  SVGRenderer,
-]);
+echarts.use([BarChart, ...standardChartComponents]);
 
 export interface StackedBarSegment {
   label: string;
@@ -96,13 +89,11 @@ const tooltip = (
         ].join("");
   return [
     '<div style="min-width:205px;max-width:280px;padding:3px 2px">',
-    `<strong style="display:block;color:${theme.ink};font: var(--font-weight-bold) .82rem/1.35 ${chartFont}">${escapeHtml(row.label)}</strong>`,
-    `<span style="display:block;margin-top:7px;color:${theme.ink};font-family:${chartDisplayFont};font-size:1.45rem">${escapeHtml(row.display)}</span>`,
+    chartTooltipTitle(theme, row.label),
+    chartTooltipPrimary(theme, row.display, "1.45rem", 7),
     detail,
     breakdown,
-    row.link === undefined
-      ? ""
-      : `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight: var(--font-weight-bold);text-transform:uppercase">View full run →</span>`,
+    chartTooltipRunLink(theme, row.link !== undefined),
     "</div>",
   ].join("");
 };
@@ -250,8 +241,6 @@ const handleClick = (parameters: CallbackDataParams): void => {
 
 const { chartElement, refresh } = useResponsiveEChart({
   height: chartHeight,
-  initialize: (element) =>
-    echarts.init(element, undefined, { renderer: "svg" }),
   option: chartOption,
   onClick: handleClick,
   pointerCursor: (parameters) =>

@@ -1,41 +1,28 @@
 <script setup lang="ts">
-import { computed, onActivated, ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed } from "vue";
 
-import ErrorState from "@/components/ErrorState.vue";
 import InfoPopover from "@/components/InfoPopover.vue";
-import LoadingState from "@/components/LoadingState.vue";
 import MetricBars from "@/components/MetricBars.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
-import ModelRunLink from "@/components/ModelRunLink.vue";
+import OfficialRunRankingRow from "@/components/OfficialRunRankingRow.vue";
+import RankingTable from "@/components/RankingTable.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
-import { getLeaderboard, getOfficialRuns } from "@/lib/api";
+import ResultsContent from "@/components/ResultsContent.vue";
+import TableHeaderStack from "@/components/TableHeaderStack.vue";
 import { duration, integer } from "@/lib/format";
-import { setRouteContext } from "@/lib/route-context";
-import type { LeaderboardRow, PublicRunSummary, RunDocument } from "@/lib/types";
+import { usePageRouteContext } from "@/lib/route-context";
+import { runRoute } from "@/lib/route-location";
+import { useOfficialRunData } from "@/lib/use-official-run-data";
 
-const documents = ref<RunDocument[]>([]);
-const leaderboard = ref<LeaderboardRow[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
-const router = useRouter();
+const { documents, loading, error, providerFor, openRun } =
+  useOfficialRunData();
 
-const applyRouteContext = (): void => {
-  setRouteContext({
-    title: "Time results",
-    description:
-      "Compare model time and end-to-end time across official Deep20Bench runs.",
-    level: null,
-    position: null,
-    crumbs: [],
-    previous: null,
-    next: null,
-  });
-};
-
-applyRouteContext();
-onActivated(applyRouteContext);
+usePageRouteContext({
+  title: "Time results",
+  description:
+    "Compare model time and end-to-end time across official Deep20Bench runs.",
+});
 
 const guesserRuns = computed(() =>
   documents.value
@@ -133,54 +120,21 @@ const benchmarkTimeBars = computed(() =>
   })),
 );
 
-const runLink = (run: PublicRunSummary) => ({
-  name: "run",
-  params: { executionId: run.execution_id },
-});
-
-const openRun = (run: PublicRunSummary): void => {
-  void router.push(runLink(run));
-};
-
-const providerFor = (modelId: string): string =>
-  leaderboard.value.find((row) => row.model.model_id === modelId)?.model.provider ??
-  modelId;
-
-const load = async (): Promise<void> => {
-  loading.value = true;
-  error.value = null;
-  try {
-    const [runDocuments, leaderboardDocument] = await Promise.all([
-      getOfficialRuns(),
-      getLeaderboard(),
-    ]);
-    documents.value = runDocuments;
-    leaderboard.value = leaderboardDocument.leaderboard;
-  } catch (reason: unknown) {
-    error.value =
-      reason instanceof Error ? reason.message : "Publication data could not be loaded.";
-  } finally {
-    loading.value = false;
-  }
-};
-
-void load();
 </script>
 
 <template>
   <div class="page results-view">
-    <LoadingState v-if="loading" label="Loading time results" />
-    <ErrorState v-else-if="error !== null" :message="error" />
-
-    <section v-else-if="guesserRuns.length === 0" class="content-section empty-state">
-      <div class="content-inner">
+    <ResultsContent
+      :loading="loading"
+      loading-label="Loading time results"
+      :error="error"
+      :empty="guesserRuns.length === 0"
+    >
+      <template #empty>
         <p class="eyebrow">Time</p>
         <h2>No official runs are available.</h2>
-      </div>
-    </section>
+      </template>
 
-    <section v-else class="content-section">
-      <div class="content-inner">
         <MetricGrid
           class="results-summary"
           :items="summaryMetrics"
@@ -249,12 +203,7 @@ void load();
           </section>
         </div>
 
-        <div
-          class="table-wrap ranking-table-wrap results-table-wrap"
-          aria-label="Time comparison"
-        >
-          <table class="data-table ranking-table results-table">
-            <caption class="visually-hidden">Time comparison</caption>
+        <RankingTable label="Time comparison" min-width="1020px">
             <thead>
               <tr>
                 <th class="rank-column">
@@ -265,35 +214,22 @@ void load();
                 <th data-numeric>Model time</th>
                 <th data-numeric>End-to-end time</th>
                 <th data-numeric>
-                  <span class="table-header-stack">
-                    <span>Model time</span>
-                    <span>per episode</span>
-                  </span>
+                  <TableHeaderStack first="Model time" second="per episode" />
                 </th>
                 <th data-numeric>
-                  <span class="table-header-stack">
-                    <span>Model time</span>
-                    <span>per call</span>
-                  </span>
+                  <TableHeaderStack first="Model time" second="per call" />
                 </th>
                 <th data-numeric>Model calls</th>
               </tr>
             </thead>
             <tbody>
-              <tr
+              <OfficialRunRankingRow
                 v-for="(run, index) in guesserRuns"
                 :key="run.execution_id"
-                class="result-row--clickable result-row--navigable"
+                :rank="index + 1"
+                :run="run"
                 @click="openRun(run)"
               >
-                <td class="rank-column">{{ index + 1 }}</td>
-                <td class="model-column">
-                  <ModelRunLink
-                    :to="runLink(run)"
-                    :name="run.model_name"
-                    :meta="run.model_id"
-                  />
-                </td>
                 <td data-numeric>{{ duration(run.totals.guesser_think_time_ms) }}</td>
                 <td data-numeric>{{ duration(run.totals.runtime_ms) }}</td>
                 <td data-numeric>
@@ -313,10 +249,9 @@ void load();
                   }}
                 </td>
                 <td data-numeric>{{ integer(run.totals.guesser_calls) }}</td>
-              </tr>
+              </OfficialRunRankingRow>
             </tbody>
-          </table>
-        </div>
+        </RankingTable>
 
         <div class="mobile-result-list" aria-label="Time comparison">
           <MobileResultCard
@@ -325,7 +260,7 @@ void load();
             :rank="index + 1"
             :name="run.model_name"
             :provider="providerFor(run.model_id)"
-            :to="runLink(run)"
+            :to="runRoute(run.execution_id)"
             :metrics="[
               {
                 label: 'Model time',
@@ -352,21 +287,6 @@ void load();
           The first chart ranks model time. The second ranks end-to-end time, so the
           order can change.
         </p>
-      </div>
-    </section>
+    </ResultsContent>
   </div>
 </template>
-
-<style scoped>
-.results-summary {
-  margin-bottom: var(--results-section-gap);
-}
-
-.results-table {
-  min-width: 1020px;
-}
-
-.empty-state {
-  min-height: 50vh;
-}
-</style>

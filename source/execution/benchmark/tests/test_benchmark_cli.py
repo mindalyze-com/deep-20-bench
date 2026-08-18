@@ -11,7 +11,9 @@ from deep20_benchmark.models import (
     BenchmarkLlmRole,
     BenchmarkRequest,
     ExecutionStatus,
+    TrialRepairPolicy,
 )
+from deep20_benchmark.runtime import LiveEpisodeExecutor
 from typer._click.utils import strip_ansi
 from typer.testing import CliRunner
 
@@ -163,7 +165,7 @@ def test_official_execution_runs_paid_startup_canaries_by_default(
 ) -> None:
     selected_model = object()
     selected_benchmark = object()
-    canary_inputs: tuple[object, object, str] | None = None
+    canary_inputs: tuple[object, object, str, tuple[str, ...]] | None = None
 
     class FakeModels:
         def model(self, _model_id: object) -> object:
@@ -185,9 +187,10 @@ def test_official_execution_runs_paid_startup_canaries_by_default(
         benchmark: object,
         *,
         api_key: str,
+        judge_ignored_providers: tuple[str, ...],
     ) -> object:
         nonlocal canary_inputs
-        canary_inputs = (model, benchmark, api_key)
+        canary_inputs = (model, benchmark, api_key, judge_ignored_providers)
         return SimpleNamespace(valid=True, roles=())
 
     monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
@@ -222,7 +225,7 @@ def test_official_execution_runs_paid_startup_canaries_by_default(
     )
 
     assert result.exit_code == 0
-    assert canary_inputs == (selected_model, selected_benchmark, "unused")
+    assert canary_inputs == (selected_model, selected_benchmark, "unused", ())
 
 
 @pytest.mark.parametrize("command", ("run", "repair"))
@@ -334,6 +337,65 @@ def test_repair_exits_nonzero_when_infrastructure_failures_remain(
     payload = json.loads(result.output)
     assert payload["error"]["code"] == "benchmark_infrastructure_failures_remain"
     assert "contains 2 infrastructure-failed terminal trial(s)" in payload["error"]["message"]
+
+
+def test_repair_records_judge_provider_exclusion(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    captured_policy: TrialRepairPolicy | None = None
+    captured_executor: LiveEpisodeExecutor | None = None
+
+    class FakeRunner:
+        def __init__(self, *, executor: LiveEpisodeExecutor, **_kwargs: object) -> None:
+            nonlocal captured_executor
+            captured_executor = executor
+
+        def run(
+            self,
+            _request: object,
+            *,
+            repair: TrialRepairPolicy,
+            **_kwargs: object,
+        ) -> object:
+            nonlocal captured_policy
+            captured_policy = repair
+            return SimpleNamespace(outcome=SimpleNamespace(has_infrastructure_failures=False))
+
+    monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
+    monkeypatch.setattr(cli, "load_model_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
+    monkeypatch.setattr(
+        cli,
+        "ArtifactStore",
+        lambda _root: SimpleNamespace(load_state=lambda *_args: None),
+    )
+    monkeypatch.setattr(cli, "BenchmarkRunner", FakeRunner)
+    monkeypatch.setattr(cli, "prevent_idle_system_sleep", nullcontext)
+
+    result = CliRunner().invoke(
+        benchmark_app,
+        [
+            "repair",
+            "B-0001",
+            "--run-id",
+            "BX-repair-ignore-001",
+            "--model",
+            "M-0001",
+            "--benchmark-mode",
+            "experimental",
+            "--judge-ignore-provider",
+            "Amazon-Bedrock",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert captured_policy is not None
+    assert captured_policy.judge_ignored_providers == ("amazon-bedrock",)
+    assert captured_executor is not None
+    assert captured_executor.judge_ignored_providers == ("amazon-bedrock",)
 
 
 def test_failed_startup_canary_prevents_benchmark_artifacts_and_execution(

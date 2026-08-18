@@ -23,7 +23,13 @@ from .models import (
     OracleProviderRoleTrace,
     OracleQuestionType,
     OracleRequest,
-    OracleResult,
+    OracleResearchAttemptAuditTrace,
+    OracleResearchAttemptResult,
+    OracleResearchAuditTrace,
+    OracleResearchOutcome,
+    OracleResearchQuestionClass,
+    OracleResearchResolution,
+    OracleResearchStrategy,
     OracleRole,
     OracleRoleMetrics,
     ProviderTrace,
@@ -36,9 +42,10 @@ from .prompt import (
     prompt_hash,
     render_evidence_review_messages,
     render_messages,
+    research_prompt_version,
 )
 from .provider import OracleProvider, ProviderRequest
-from .question_type import classify_oracle_question
+from .question_type import classify_oracle_question, classify_oracle_research_question
 from .recovery import (
     combine_recovery_metrics,
     combine_usage,
@@ -57,6 +64,22 @@ from .util import (
 )
 
 ResultT = TypeVar("ResultT", bound=StrictModel)
+
+_RETRYABLE_RESEARCH_OUTCOMES = {
+    OracleResearchOutcome.NO_RESULTS,
+    OracleResearchOutcome.IRRELEVANT_RESULTS,
+    OracleResearchOutcome.INSUFFICIENT_COVERAGE,
+    OracleResearchOutcome.CONFLICTING_SOURCES,
+}
+_RETRIEVAL_FAILURE_OUTCOMES = {
+    OracleResearchOutcome.NO_RESULTS,
+    OracleResearchOutcome.IRRELEVANT_RESULTS,
+    OracleResearchOutcome.INSUFFICIENT_COVERAGE,
+}
+_CLOSED_RESEARCH_CLASSES = {
+    OracleResearchQuestionClass.TEMPORAL_STATUS,
+    OracleResearchQuestionClass.CLOSED_FACT,
+}
 
 
 def validate_oracle_provider_trace(
@@ -132,33 +155,31 @@ class Oracle:
 
     def ask(self, request: OracleRequest) -> OracleCall:
         call_id = f"OC-{uuid.uuid7().hex}"
-        oracle_messages = render_messages(request)
+        primary_strategy = OracleResearchStrategy.PRIMARY
+        oracle_messages = render_messages(request, strategy=primary_strategy)
         active_role = OracleRole.ORACLE
         active_messages = oracle_messages
         active_prompt_version = PROMPT_VERSION
         active_trace: ProviderTrace | None = None
         role_traces: list[OracleProviderRoleTrace] = []
+        research_attempts: list[OracleResearchAttemptAuditTrace] = []
+        research_audit: OracleResearchAuditTrace | None = None
         try:
             self.audit_writer.prepare_run(request.run_id)
         except OracleError as error:
             error.call_id = call_id
             raise
         try:
-            oracle_provider_request = ProviderRequest(
+            oracle_provider_request = self._research_provider_request(
+                request=request,
+                strategy=primary_strategy,
                 messages=oracle_messages,
-                output_schema=OracleResult.model_json_schema(),
-                response_schema_name="oracle_result",
-                session_id=f"deep20-oracle-{request.run_id}-{request.subject.target_id}",
-                prompt_cache_key=self._prompt_cache_key(
-                    role=OracleRole.ORACLE,
-                    prompt_version=PROMPT_VERSION,
-                    request=request,
-                ),
+                prompt_version=PROMPT_VERSION,
             )
-            result, oracle_trace = self._complete_structured_result(
+            attempt_result, oracle_trace = self._complete_structured_result(
                 provider=self.provider,
                 provider_request=oracle_provider_request,
-                result_model=OracleResult,
+                result_model=OracleResearchAttemptResult,
                 config=self.config,
                 role=OracleRole.ORACLE,
             )
@@ -169,11 +190,94 @@ class Oracle:
                     provider=oracle_trace,
                 )
             )
+            research_attempts.append(
+                OracleResearchAttemptAuditTrace(
+                    attempt_number=1,
+                    strategy=primary_strategy,
+                    prompt_version=PROMPT_VERSION,
+                    prompt_hash=prompt_hash(oracle_messages),
+                    messages=oracle_messages,
+                    result=attempt_result,
+                    provider=oracle_trace,
+                )
+            )
+            question_class = classify_oracle_research_question(request.question)
+            resolution: OracleResearchResolution
+
+            if attempt_result.answer is not OracleAnswer.UNKNOWN:
+                resolution = OracleResearchResolution.ANSWERED_PRIMARY
+            elif attempt_result.research_outcome in _RETRYABLE_RESEARCH_OUTCOMES:
+                recovery_strategy = OracleResearchStrategy.DIVERSIFIED_RECOVERY
+                active_prompt_version = research_prompt_version(recovery_strategy)
+                active_messages = render_messages(
+                    request,
+                    strategy=recovery_strategy,
+                )
+                recovery_provider_request = self._research_provider_request(
+                    request=request,
+                    strategy=recovery_strategy,
+                    messages=active_messages,
+                    prompt_version=active_prompt_version,
+                )
+                attempt_result, recovery_trace = self._complete_structured_result(
+                    provider=self.provider,
+                    provider_request=recovery_provider_request,
+                    result_model=OracleResearchAttemptResult,
+                    config=self.config,
+                    role=OracleRole.ORACLE,
+                )
+                active_trace = recovery_trace
+                role_traces.append(
+                    OracleProviderRoleTrace(
+                        role=OracleRole.ORACLE,
+                        provider=recovery_trace,
+                    )
+                )
+                research_attempts.append(
+                    OracleResearchAttemptAuditTrace(
+                        attempt_number=2,
+                        strategy=recovery_strategy,
+                        prompt_version=active_prompt_version,
+                        prompt_hash=prompt_hash(active_messages),
+                        messages=active_messages,
+                        result=attempt_result,
+                        provider=recovery_trace,
+                    )
+                )
+                if attempt_result.answer is not OracleAnswer.UNKNOWN:
+                    resolution = OracleResearchResolution.ANSWERED_RECOVERY
+                elif (
+                    attempt_result.research_outcome is OracleResearchOutcome.CONFLICTING_SOURCES
+                    or attempt_result.research_outcome not in _RETRIEVAL_FAILURE_OUTCOMES
+                ):
+                    resolution = OracleResearchResolution.GENUINE_UNKNOWN_RECOVERY
+                else:
+                    resolution = OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN
+            else:
+                resolution = OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY
+
+            research_audit = OracleResearchAuditTrace(
+                question_class=question_class,
+                resolution=resolution,
+                attempts=tuple(research_attempts),
+            )
+            if (
+                resolution is OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN
+                and question_class in _CLOSED_RESEARCH_CLASSES
+            ):
+                raise OracleProtocolError(
+                    "Oracle research could not retrieve usable evidence for a closed fact",
+                    code="oracle_research_exhausted",
+                    details={
+                        "provider_trace": active_trace.model_dump(mode="json"),
+                        "oracle_research": research_audit.summary().model_dump(mode="json"),
+                    },
+                )
+
+            result = attempt_result.final_result()
             reviewer_audit: EvidenceReviewAuditTrace | None = None
             judge_audit: EvidenceReviewAuditTrace | None = None
-            question_type: OracleQuestionType = classify_oracle_question(
-                request.question
-            )
+            question_type: OracleQuestionType = classify_oracle_question(request.question)
 
             if result.answer is OracleAnswer.UNKNOWN:
                 adjudication = OracleAdjudication(
@@ -191,9 +295,7 @@ class Oracle:
                     evidence=result.evidence,
                 )
                 active_role = OracleRole.REVIEWER
-                active_prompt_version = evidence_review_prompt_version(
-                    OracleRole.REVIEWER
-                )
+                active_prompt_version = evidence_review_prompt_version(OracleRole.REVIEWER)
                 active_messages = render_evidence_review_messages(
                     review_request,
                     role=OracleRole.REVIEWER,
@@ -233,9 +335,7 @@ class Oracle:
                 judge_result: EvidenceReviewResult | None = None
                 if disagreement:
                     active_role = OracleRole.JUDGE
-                    active_prompt_version = evidence_review_prompt_version(
-                        OracleRole.JUDGE
-                    )
+                    active_prompt_version = evidence_review_prompt_version(OracleRole.JUDGE)
                     active_messages = render_evidence_review_messages(
                         review_request,
                         role=OracleRole.JUDGE,
@@ -298,6 +398,7 @@ class Oracle:
                 messages=oracle_messages,
                 evidence_validation="model_reported",
                 provider=oracle_trace,
+                research=research_audit,
                 reviewer=reviewer_audit,
                 judge=judge_audit,
             )
@@ -333,6 +434,11 @@ class Oracle:
                 error.details["oracle_role_traces"] = [
                     item.model_dump(mode="json") for item in role_traces
                 ]
+                if research_audit is not None:
+                    error.details.setdefault(
+                        "oracle_research",
+                        research_audit.summary().model_dump(mode="json"),
+                    )
             try:
                 details = safe_json_value(getattr(error, "details", {}))
                 diagnostics = diagnose_exception(error)
@@ -373,6 +479,29 @@ class Oracle:
                 },
             ) from error
 
+    def _research_provider_request(
+        self,
+        *,
+        request: OracleRequest,
+        strategy: OracleResearchStrategy,
+        messages: tuple[dict[str, str], ...],
+        prompt_version: str,
+    ) -> ProviderRequest:
+        session_role = "primary" if strategy is OracleResearchStrategy.PRIMARY else "recovery"
+        return ProviderRequest(
+            messages=messages,
+            output_schema=OracleResearchAttemptResult.model_json_schema(),
+            response_schema_name=f"oracle_{session_role}_research_result",
+            session_id=(
+                f"deep20-oracle-{session_role}-{request.run_id}-{request.subject.target_id}"
+            ),
+            prompt_cache_key=self._prompt_cache_key(
+                role=OracleRole.ORACLE,
+                prompt_version=prompt_version,
+                request=request,
+            ),
+        )
+
     def _review_provider_request(
         self,
         *,
@@ -388,9 +517,7 @@ class Oracle:
             messages=messages,
             output_schema=EvidenceReviewResult.model_json_schema(),
             response_schema_name=f"{role.value}_result",
-            session_id=(
-                f"deep20-oracle-{role.value}-{request.run_id}-{request.subject.target_id}"
-            ),
+            session_id=(f"deep20-oracle-{role.value}-{request.run_id}-{request.subject.target_id}"),
             prompt_cache_key=self._prompt_cache_key(
                 role=role,
                 prompt_version=prompt_version,
@@ -447,8 +574,7 @@ class Oracle:
                 budget = current_recovery_budget()
                 if (
                     config.recovery.invalid_output_retries == 0
-                    or provider_trace.request_attempts
-                    >= config.recovery.max_request_attempts
+                    or provider_trace.request_attempts >= config.recovery.max_request_attempts
                     or (budget is not None and budget.remaining_seconds <= 0)
                 ):
                     provider_trace = mark_recovery_exhausted(provider_trace)
@@ -470,8 +596,8 @@ class Oracle:
                             exhausted=True,
                         )
                         if isinstance(retry_error, OracleError):
-                            retry_error.details["provider_trace"] = (
-                                provider_trace.model_dump(mode="json")
+                            retry_error.details["provider_trace"] = provider_trace.model_dump(
+                                mode="json"
                             )
                     raise
                 provider_trace = merge_provider_traces(
@@ -515,14 +641,35 @@ class Oracle:
         )
 
     @classmethod
+    def _combined_role_metrics(
+        cls,
+        traces: tuple[ProviderTrace, ...],
+    ) -> OracleRoleMetrics:
+        usage = traces[0].usage
+        for trace in traces[1:]:
+            usage = combine_usage(usage, trace.usage)
+        return OracleRoleMetrics(
+            cost_usd=usage.cost_usd,
+            latency_ms=sum(trace.latency_ms for trace in traces),
+            input_tokens=usage.input_tokens,
+            cached_input_tokens=usage.cached_input_tokens,
+            cache_write_tokens=usage.cache_write_tokens,
+            output_tokens=usage.output_tokens,
+            reasoning_tokens=usage.reasoning_tokens,
+            search_count=usage.search_count,
+            recovery=combine_recovery_metrics(*(trace.recovery for trace in traces)),
+        )
+
+    @classmethod
     def _metrics(cls, audit: OracleAuditTrace) -> OracleMetrics:
+        oracle_traces = (
+            tuple(attempt.provider for attempt in audit.research.attempts)
+            if audit.research is not None
+            else (audit.provider,)
+        )
         traces = [
-            audit.provider,
-            *(
-                (audit.reviewer.provider,)
-                if audit.reviewer is not None
-                else ()
-            ),
+            *oracle_traces,
+            *((audit.reviewer.provider,) if audit.reviewer is not None else ()),
             *((audit.judge.provider,) if audit.judge is not None else ()),
         ]
         usage = traces[0].usage
@@ -538,17 +685,11 @@ class Oracle:
             reasoning_tokens=usage.reasoning_tokens,
             search_count=usage.search_count,
             recovery=combine_recovery_metrics(*(trace.recovery for trace in traces)),
-            oracle=cls._role_metrics(audit.provider),
+            oracle=cls._combined_role_metrics(oracle_traces),
             reviewer=(
-                cls._role_metrics(audit.reviewer.provider)
-                if audit.reviewer is not None
-                else None
+                cls._role_metrics(audit.reviewer.provider) if audit.reviewer is not None else None
             ),
-            judge=(
-                cls._role_metrics(audit.judge.provider)
-                if audit.judge is not None
-                else None
-            ),
+            judge=(cls._role_metrics(audit.judge.provider) if audit.judge is not None else None),
         )
 
     @staticmethod

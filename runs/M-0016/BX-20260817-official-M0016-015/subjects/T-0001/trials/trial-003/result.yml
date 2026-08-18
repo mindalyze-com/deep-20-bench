@@ -1,0 +1,4526 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260817-official-M0016-015
+    model_id: M-0016
+    target_id: T-0001
+    trial_id: trial-003
+    trial_number: 3
+    episode_run_id: BR-ffd7bf97bc8500a88fbacf2cebad5fccac5c3b45
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-ffd7bf97bc8500a88fbacf2cebad5fccac5c3b45
+      episode_id: EP-01a00f75193d73e8918d5a998858d944
+      subject:
+        target_id: T-0001
+        canonical_name: Albert Einstein
+        aliases:
+        - Einstein
+        entity_type: person
+        description: Albert Einstein, the German-born theoretical physicist known
+          for relativity, identified by Wikidata entity Q937.
+        reference_url: https://en.wikipedia.org/wiki/Albert_Einstein
+      started_at: '2026-08-17T11:22:07.549648+00:00'
+      completed_at: '2026-08-17T11:24:28.462119+00:00'
+      duration_ms: 140912
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 14
+      counted_questions: 13
+      guesser_call_count: 14
+      ask_count: 13
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      oracle_quality:
+        reviewed_questions: 13
+        agreements: 13
+        disagreements: 0
+        judge_invocations: 0
+        oracle_answers_changed: 0
+        final_unknown_answers: 0
+        judge_yes_answers: 0
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0084417'
+        judge_cost_usd: '0'
+        quality_control_cost_usd: '0.0084417'
+        question_types:
+        - question_type: other
+          reviewed_questions: 10
+          disagreements: 0
+        - question_type: temporal_comparison
+          reviewed_questions: 3
+          disagreements: 0
+      contract:
+        evaluated_outputs: 14
+        valid_outputs: 14
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: not_applicable
+      costs_usd:
+        guesser: '0.02480625'
+        oracle: '0.1102910850000000019'
+        validator: '0.0000546'
+        total: '0.1351519350000000019'
+      tokens:
+        guesser: 13607
+        oracle: 100734
+        validator: 396
+        total: 114737
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0016
+        requested_model: google/gemini-3.7-flash
+        requested_provider: google-ai-studio
+        resolved_models:
+        - google/gemini-3.7-flash
+        resolved_providers:
+        - Google AI Studio
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v8-classified-research
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the person currently alive?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f751d117197b011c368a7c66504
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Albert-Einstein
+          excerpt: Albert Einstein died on April 18, 1955, at age 76.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-01a00f75193d73e8918d5a9b84adf246
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Did this person die in or after the year 1900?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f753a4973878a144f02545dbea3
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/
+          excerpt: He died on April 18, 1955 at Princeton, New Jersey.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-01a00f753490710a8afaafd6e54ff4a0
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is this person female?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f75528474aca21b9931d47991a5
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical
+          excerpt: He married Mileva Maric in 1903 and they had a daughter and two
+            sons.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-01a00f754df9752f8bfc0914b01e26ad
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Was this person born in the United States?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f756f8d775caea8b01e52b49a41
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical
+          excerpt: Albert Einstein was born at Ulm, in Württemberg, Germany, on March
+            14, 1879.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-01a00f75688c757aa558911fd19500ce
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Was this person born in Europe?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f75847874f38c9b2aa44eea6ff3
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical
+          excerpt: Albert Einstein was born at Ulm, in Württemberg, Germany, on March
+            14, 1879.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-01a00f757f92756485c4865d60a0b2ef
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Was this person primarily known as a political leader or head of
+          state?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f75a1eb72309771478344a564e8
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.alberteinstein.com/biography/
+          excerpt: Albert Einstein was a theoretical physicist and the most famous
+            scientist in human history.
+          validation: model_reported
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical
+          excerpt: He was offered the Presidency of the State of Israel, which he
+            declined.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-01a00f7598e9773c9514ba5f9ce98a79
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Was this person primarily known for their work in science, mathematics,
+          or technology?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f75c719735d898a4142118eba22
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Albert-Einstein
+          excerpt: Albert Einstein had a massive influence on contemporary physics.
+            His theory of relativity shifted contemporary understanding of space completely.
+          validation: model_reported
+        - source_url: https://www.alberteinstein.com/
+          excerpt: Albert Einstein was a theoretical physicist and the most famous
+            scientist in human history.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-01a00f75c0c4759aa0c080ca10a0c320
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Did this person win a Nobel Prize?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f75f5dd7659a729e492c4a11c38
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary/
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein
+            "for his services to Theoretical Physics, and especially for his discovery
+            of the law of the photoelectric effect".
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-01a00f75ecd37595bbbd30f1b31b6ed2
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Did this person win the Nobel Prize in Physics?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f761050777cba7f66fd8ee08020
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein
+            "for his services to Theoretical Physics, and especially for his discovery
+            of the law of the photoelectric effect".
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-01a00f760ac37639bb7be6f65852f194
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Did this person receive the Nobel Prize in Physics before 1950?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f762fff7240bd166c805d345ae5
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/summary/
+          excerpt: The Nobel Prize in Physics 1921 was awarded to Albert Einstein...
+            Albert Einstein received his Nobel Prize one year later, in 1922.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-01a00f7625b370b9a1e086e4ef0a5e2b
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Was this person born in Germany?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f765226730ba2598dec4d3fe47a
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical
+          excerpt: Albert Einstein was born at Ulm, in Württemberg, Germany, on March
+            14, 1879.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-01a00f7645b674c29613264a4342a69b
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Did this person receive the Nobel Prize in Physics in or before
+          1920?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f76715b766d8bef93463e65faa5
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nobelprize.org/prizes/physics/1921/einstein/facts
+          excerpt: Albert Einstein — Nobel Prize in Physics 1921. Albert Einstein
+            received his Nobel Prize one year later, in 1922.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-01a00f76632a7314aa42ba3877b4fbb2
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Is this person best known for formulating the theory of relativity?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a00f76995676b887098dfa45b38a2b
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.alberteinstein.com/
+          excerpt: His most famous work, the theory of relativity, was first published
+            in 1905.
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Albert_Einstein
+          excerpt: Albert Einstein ... was a German-born theoretical physicist best
+            known for developing the theory of relativity.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-01a00f76894970beb463d474005a7dc3
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: GUESS
+        question: null
+        name: Albert Einstein
+        description: German-born theoretical physicist who developed the theory of
+          relativity and won the 1921 Nobel Prize in Physics.
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a00f773bcc75e7b9ce82534fbe2a23
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity exactly matches Albert Einstein, the trusted
+          subject.
+        oracle_quality: null
+      counted: false
+      counted_questions: 13
+      guesser_call_id: GC-01a00f7735687450a69d1f546755727f
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"AMZAISLM"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person currently alive?"}}'
+      turn_number: 1
+    - role: user
+      content: 'NO'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person die in or after the year 1900?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person female?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born in the United States?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born in Europe?"}}'
+      turn_number: 5
+    - role: user
+      content: 'YES'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known as a political leader or head of state?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person primarily known for their work in science, mathematics, or technology?"}}'
+      turn_number: 7
+    - role: user
+      content: 'YES'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person win a Nobel Prize?"}}'
+      turn_number: 8
+    - role: user
+      content: 'YES'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person win the Nobel Prize in Physics?"}}'
+      turn_number: 9
+    - role: user
+      content: 'YES'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person receive the Nobel Prize in Physics before 1950?"}}'
+      turn_number: 10
+    - role: user
+      content: 'YES'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born in Germany?"}}'
+      turn_number: 11
+    - role: user
+      content: 'YES'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person receive the Nobel Prize in Physics in or before 1920?"}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person best known for formulating the theory of relativity?"}}'
+      turn_number: 13
+    - role: user
+      content: 'YES'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"German-born theoretical
+        physicist who developed the theory of relativity and won the 1921 Nobel Prize
+        in Physics.","name":"Albert Einstein","question":null}}'
+      turn_number: 14
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0016
+          gateway: openrouter
+          model: google/gemini-3.7-flash
+          provider: google-ai-studio
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: supported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '0.75'
+            cached_input_usd_per_million: '0.075'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 14
+          cost_usd: '0.02480625'
+          latency_ms: 29493
+          total_tokens: 13607
+          input_tokens: 8740
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 4867
+          reasoning_tokens: 4402
+          estimated_cache_savings_usd: 0E-10
+          recovery:
+            request_attempts: 14
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Google AI Studio
+            calls: 14
+            cost_usd: '0.02480625'
+            latency_ms: 29493
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 13
+          cost_usd: '0.1102910850000000019'
+          latency_ms: 110232
+          total_tokens: 100734
+          input_tokens: 94999
+          cached_input_tokens: 50826
+          cache_write_tokens: 0
+          output_tokens: 5735
+          reasoning_tokens: 3268
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 27
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 14
+              cost_usd: '0.1018493850000000019'
+              latency_ms: 97894
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 13
+              cost_usd: '0.0084417'
+              latency_ms: 12338
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers: []
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0000546'
+          latency_ms: 989
+          total_tokens: 396
+          input_tokens: 366
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 30
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.0000546'
+            latency_ms: 989
+          unreported_calls: 0
+          fallback_calls: 0
+    audit:
+      schema_version: 1
+      calls:
+      - component: guesser
+        call_id: GC-01a00f75193d73e8918d5a9b84adf246
+        turn_number: 1
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 4ac2d5b262df4c1d8ab5f119d136af21c08a5c16e80a4b8d0e620cf4a16b22e4
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:22:07.550026+00:00'
+          completed_at: '2026-08-17T11:22:08.528363+00:00'
+          latency_ms: 978
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 422
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 57
+            reasoning_tokens: 33
+            search_count: 0
+            cost_usd: '0.00053025'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 102
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f751d117197b011c368a7c66504
+        turn_number: 1
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 58da930d71d200ed0433791c1a0874d2371fad6f6c209309e7e9474b3b638428
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:08.529820+00:00'
+            completed_at: '2026-08-17T11:22:13.321976+00:00'
+            latency_ms: 4792
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 3440
+              cached_input_tokens: 1318
+              cache_write_tokens: 0
+              output_tokens: 136
+              reasoning_tokens: 26
+              search_count: 1
+              cost_usd: '0.00535988'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 312
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: temporal_status
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein death date authoritative biography currently alive
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 58da930d71d200ed0433791c1a0874d2371fad6f6c209309e7e9474b3b638428
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:22:08.529820+00:00'
+              completed_at: '2026-08-17T11:22:13.321976+00:00'
+              latency_ms: 4792
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 3440
+                cached_input_tokens: 1318
+                cache_write_tokens: 0
+                output_tokens: 136
+                reasoning_tokens: 26
+                search_count: 1
+                cost_usd: '0.00535988'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 312
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: c56ae67be7e54fd20e910327f41117f258e3406b3c65846baa41256c0b3c18bc
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:13.323135+00:00'
+            completed_at: '2026-08-17T11:22:14.538608+00:00'
+            latency_ms: 1215
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 846
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 201
+              reasoning_tokens: 172
+              search_count: 0
+              cost_usd: '0.0007563'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 70
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f753490710a8afaafd6e54ff4a0
+        turn_number: 2
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 0920ad2086c0edee29fd1988869bf3a7430deeaa42f9b4e44461a7be6e3aa6cd
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:22:14.544717+00:00'
+          completed_at: '2026-08-17T11:22:16.008757+00:00'
+          latency_ms: 1464
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 449
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 77
+            reasoning_tokens: 44
+            search_count: 0
+            cost_usd: '0.0006255'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 118
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f753a4973878a144f02545dbea3
+        turn_number: 2
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: e1b652fb3ce72478b7180e0fc5e19de02127d929912cb9996f0f26194b876bec
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:16.010902+00:00'
+            completed_at: '2026-08-17T11:22:20.155109+00:00'
+            latency_ms: 4144
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4186
+              cached_input_tokens: 2537
+              cache_write_tokens: 0
+              output_tokens: 128
+              reasoning_tokens: 13
+              search_count: 1
+              cost_usd: '0.005308144999999999'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 311
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: closed_fact
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein death date died 1955 biography
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: e1b652fb3ce72478b7180e0fc5e19de02127d929912cb9996f0f26194b876bec
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:22:16.010902+00:00'
+              completed_at: '2026-08-17T11:22:20.155109+00:00'
+              latency_ms: 4144
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4186
+                cached_input_tokens: 2537
+                cache_write_tokens: 0
+                output_tokens: 128
+                reasoning_tokens: 13
+                search_count: 1
+                cost_usd: '0.005308144999999999'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 311
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 739426e7f897aff472431f893617570da942382d0d597ee0d33e00f50cf2f759
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:20.156057+00:00'
+            completed_at: '2026-08-17T11:22:21.043302+00:00'
+            latency_ms: 887
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 853
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 15
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0002934'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 58
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f754df9752f8bfc0914b01e26ad
+        turn_number: 3
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: fb75082041f185eb8c56adc712e81020d4f109346c54a22a6a7a6e5ff619e4ea
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:22:21.049993+00:00'
+          completed_at: '2026-08-17T11:22:22.211663+00:00'
+          latency_ms: 1161
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 485
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 81
+            reasoning_tokens: 58
+            search_count: 0
+            cost_usd: '0.0006675'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 94
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f75528474aca21b9931d47991a5
+        turn_number: 3
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: e2db2aa9fd799159432d0ec5d1ebc212aa88a2078b0a35972702c409eac35bf1
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:22.212848+00:00'
+            completed_at: '2026-08-17T11:22:27.129184+00:00'
+            latency_ms: 4916
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4172
+              cached_input_tokens: 2529
+              cache_write_tokens: 0
+              output_tokens: 216
+              reasoning_tokens: 99
+              search_count: 1
+              cost_usd: '0.0053601149999999995'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 340
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein biography male physicist official biography
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: e2db2aa9fd799159432d0ec5d1ebc212aa88a2078b0a35972702c409eac35bf1
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:22:22.212848+00:00'
+              completed_at: '2026-08-17T11:22:27.129184+00:00'
+              latency_ms: 4916
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4172
+                cached_input_tokens: 2529
+                cache_write_tokens: 0
+                output_tokens: 216
+                reasoning_tokens: 99
+                search_count: 1
+                cost_usd: '0.0053601149999999995'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 340
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: fc18cdfef8ea6c8d817dd2cff3910deab47aa1394d0a771137dfb77cd797501d
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:27.130117+00:00'
+            completed_at: '2026-08-17T11:22:27.803435+00:00'
+            latency_ms: 673
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 845
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 21
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.000306'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 68
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f75688c757aa558911fd19500ce
+        turn_number: 4
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: a27236da6ae57b676b347d0b818f17eb7fb1ef2a18c72525b8c7c7a564905ac6
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:22:27.852896+00:00'
+          completed_at: '2026-08-17T11:22:29.645031+00:00'
+          latency_ms: 1792
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 511
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 258
+            reasoning_tokens: 210
+            search_count: 0
+            cost_usd: '0.00135075'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 146
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f756f8d775caea8b01e52b49a41
+        turn_number: 4
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 7b87655ccafdacb21a2669317ce531abcf755c942b5deb03c99b6db04eec44f4
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:29.646592+00:00'
+            completed_at: '2026-08-17T11:22:33.196373+00:00'
+            latency_ms: 3549
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4546
+              cached_input_tokens: 2533
+              cache_write_tokens: 0
+              output_tokens: 171
+              reasoning_tokens: 36
+              search_count: 1
+              cost_usd: '0.005379405'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 369
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: closed_fact
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein born March 14 1879 Ulm Germany biography birthplace
+              authoritative
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 7b87655ccafdacb21a2669317ce531abcf755c942b5deb03c99b6db04eec44f4
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:22:29.646592+00:00'
+              completed_at: '2026-08-17T11:22:33.196373+00:00'
+              latency_ms: 3549
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4546
+                cached_input_tokens: 2533
+                cache_write_tokens: 0
+                output_tokens: 171
+                reasoning_tokens: 36
+                search_count: 1
+                cost_usd: '0.005379405'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 369
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: e068f24f5764444555a45f329cad14a8878fd5324e813065ebf5cebea7f9b195
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:33.197547+00:00'
+            completed_at: '2026-08-17T11:22:33.739879+00:00'
+            latency_ms: 542
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 853
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 15
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0002934'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 57
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f757f92756485c4865d60a0b2ef
+        turn_number: 5
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: f83a78d1e0d22be11468e271bf02d7f040cabbfbfa28d6624a9b7443e425805d
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:22:33.746398+00:00'
+          completed_at: '2026-08-17T11:22:34.999802+00:00'
+          latency_ms: 1253
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 541
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 179
+            reasoning_tokens: 154
+            search_count: 0
+            cost_usd: '0.001077'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 103
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f75847874f38c9b2aa44eea6ff3
+        turn_number: 5
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 0c56232e664abc2499c5b9b23e6e7d1f3efcacb1ac6f63e7f27a3f6ace3834f5
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:35.001953+00:00'
+            completed_at: '2026-08-17T11:22:39.438102+00:00'
+            latency_ms: 4436
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4265
+              cached_input_tokens: 2531
+              cache_write_tokens: 0
+              output_tokens: 138
+              reasoning_tokens: 13
+              search_count: 1
+              cost_usd: '0.00532471'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 352
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: closed_fact
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein born in Ulm Germany Europe biography birth date
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 0c56232e664abc2499c5b9b23e6e7d1f3efcacb1ac6f63e7f27a3f6ace3834f5
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:22:35.001953+00:00'
+              completed_at: '2026-08-17T11:22:39.438102+00:00'
+              latency_ms: 4436
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4265
+                cached_input_tokens: 2531
+                cache_write_tokens: 0
+                output_tokens: 138
+                reasoning_tokens: 13
+                search_count: 1
+                cost_usd: '0.00532471'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 352
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 23b128a6fa17fcdd76c84013be2689d27ec74147c4be5164357e14d6811d7c35
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:39.439399+00:00'
+            completed_at: '2026-08-17T11:22:40.228627+00:00'
+            latency_ms: 789
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 851
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 126
+              reasoning_tokens: 97
+              search_count: 0
+              cost_usd: '0.0005703'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 71
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f7598e9773c9514ba5f9ce98a79
+        turn_number: 6
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: bcd43b204934c058cadd962ab62eb79d112aa70e6ba49692ffcc0b001890c1c7
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:22:40.234182+00:00'
+          completed_at: '2026-08-17T11:22:42.538608+00:00'
+          latency_ms: 2304
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 569
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 314
+            reasoning_tokens: 282
+            search_count: 0
+            cost_usd: '0.00160425'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 143
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f75a1eb72309771478344a564e8
+        turn_number: 6
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 2c033a43b369cdf15dab156188dcbaf62174013f76867476639e5b91767846ad
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:42.539951+00:00'
+            completed_at: '2026-08-17T11:22:48.674653+00:00'
+            latency_ms: 6134
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4166
+              cached_input_tokens: 2538
+              cache_write_tokens: 0
+              output_tokens: 287
+              reasoning_tokens: 124
+              search_count: 1
+              cost_usd: '0.00540093'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 571
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein biography primarily known theoretical physicist political
+              leader head of state
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 2c033a43b369cdf15dab156188dcbaf62174013f76867476639e5b91767846ad
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:22:42.539951+00:00'
+              completed_at: '2026-08-17T11:22:48.674653+00:00'
+              latency_ms: 6134
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4166
+                cached_input_tokens: 2538
+                cache_write_tokens: 0
+                output_tokens: 287
+                reasoning_tokens: 124
+                search_count: 1
+                cost_usd: '0.00540093'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 571
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 5116346c06d1b169c0aa039db281e0074a1e65944eaef8186a1793a635d03076
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:48.675287+00:00'
+            completed_at: '2026-08-17T11:22:50.429807+00:00'
+            latency_ms: 1754
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 870
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 502
+              reasoning_tokens: 465
+              search_count: 0
+              cost_usd: '0.001516'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 85
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f75c0c4759aa0c080ca10a0c320
+        turn_number: 7
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: b3831bd6ab573a4bb630571871fc0fa9dc63589636c92c14b8fcfd67c8252de6
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:22:50.436515+00:00'
+          completed_at: '2026-08-17T11:22:52.056658+00:00'
+          latency_ms: 1620
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 604
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 243
+            reasoning_tokens: 209
+            search_count: 0
+            cost_usd: '0.00136425'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 158
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f75c719735d898a4142118eba22
+        turn_number: 7
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 4b1956f99e90af20e771b8311ebf7a76ec43f73a6e37bf44286451fd21f29ef3
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:22:52.058166+00:00'
+            completed_at: '2026-08-17T11:23:00.458308+00:00'
+            latency_ms: 8400
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8845
+              cached_input_tokens: 5601
+              cache_write_tokens: 0
+              output_tokens: 272
+              reasoning_tokens: 68
+              search_count: 2
+              cost_usd: '0.010624485'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 698
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein primarily known for work in science mathematics or technology
+              biography
+            - Albert Einstein best known primarily as scientist physicist authoritative
+              biography
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 4b1956f99e90af20e771b8311ebf7a76ec43f73a6e37bf44286451fd21f29ef3
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:22:52.058166+00:00'
+              completed_at: '2026-08-17T11:23:00.458308+00:00'
+              latency_ms: 8400
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8845
+                cached_input_tokens: 5601
+                cache_write_tokens: 0
+                output_tokens: 272
+                reasoning_tokens: 68
+                search_count: 2
+                cost_usd: '0.010624485'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 698
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 33797c190e3206a8102a2e18b72e1393e66a8df0acf307964f7b68edc2c06043
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:00.460737+00:00'
+            completed_at: '2026-08-17T11:23:01.705615+00:00'
+            latency_ms: 1244
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 878
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 301
+              reasoning_tokens: 264
+              search_count: 0
+              cost_usd: '0.0010159'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 86
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f75ecd37595bbbd30f1b31b6ed2
+        turn_number: 8
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 100bfa1a8ad1084a43443785e324cb2e11ab71603132f3525019cf3d62538d3f
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:23:01.716060+00:00'
+          completed_at: '2026-08-17T11:23:04.028096+00:00'
+          latency_ms: 2312
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 641
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 124
+            reasoning_tokens: 98
+            search_count: 0
+            cost_usd: '0.00094575'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 106
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f75f5dd7659a729e492c4a11c38
+        turn_number: 8
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 228f15c74dd5407ea9023469a461ac354fd20457baf0e32e62be07a65e5c56c1
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:04.030753+00:00'
+            completed_at: '2026-08-17T11:23:08.907315+00:00'
+            latency_ms: 4876
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4528
+              cached_input_tokens: 2532
+              cache_write_tokens: 0
+              output_tokens: 173
+              reasoning_tokens: 33
+              search_count: 1
+              cost_usd: '0.00537847'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 447
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein won Nobel Prize Nobel Prize official biography 1921
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 228f15c74dd5407ea9023469a461ac354fd20457baf0e32e62be07a65e5c56c1
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:23:04.030753+00:00'
+              completed_at: '2026-08-17T11:23:08.907315+00:00'
+              latency_ms: 4876
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4528
+                cached_input_tokens: 2532
+                cache_write_tokens: 0
+                output_tokens: 173
+                reasoning_tokens: 33
+                search_count: 1
+                cost_usd: '0.00537847'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 447
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: a90321edbeb0daa9c09d6ebd8f801c61395ef1144e8f566fde149e9953c0e4b8
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:08.907961+00:00'
+            completed_at: '2026-08-17T11:23:09.375549+00:00'
+            latency_ms: 467
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 864
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 33
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0003417'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 79
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f760ac37639bb7be6f65852f194
+        turn_number: 9
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: afa8796e84f41de225e62cdfde6ca5c1671c2ed6bd5332b91f4518b6e9d400dd
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:23:09.379803+00:00'
+          completed_at: '2026-08-17T11:23:10.799748+00:00'
+          latency_ms: 1419
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 670
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 162
+            reasoning_tokens: 134
+            search_count: 0
+            cost_usd: '0.00111'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 119
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f761050777cba7f66fd8ee08020
+        turn_number: 9
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 4c95d419137d02555bfdaa8d7dbcb5a3c45482f9297438fc9894bb2325e88e07
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:10.800905+00:00'
+            completed_at: '2026-08-17T11:23:15.362968+00:00'
+            latency_ms: 4562
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4410
+              cached_input_tokens: 2534
+              cache_write_tokens: 0
+              output_tokens: 151
+              reasoning_tokens: 12
+              search_count: 1
+              cost_usd: '0.00535029'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 447
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein won Nobel Prize in Physics 1921 official Nobel Prize
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 4c95d419137d02555bfdaa8d7dbcb5a3c45482f9297438fc9894bb2325e88e07
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:23:10.800905+00:00'
+              completed_at: '2026-08-17T11:23:15.362968+00:00'
+              latency_ms: 4562
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4410
+                cached_input_tokens: 2534
+                cache_write_tokens: 0
+                output_tokens: 151
+                reasoning_tokens: 12
+                search_count: 1
+                cost_usd: '0.00535029'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 447
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 0772168bb4aca9539454c767235af852ddc6ff625dea57a0892ac111a4bafe33
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:15.365190+00:00'
+            completed_at: '2026-08-17T11:23:16.265167+00:00'
+            latency_ms: 899
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 866
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 135
+              reasoning_tokens: 106
+              search_count: 0
+              cost_usd: '0.0005973'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 71
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f7625b370b9a1e086e4ef0a5e2b
+        turn_number: 10
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 883541bbf2e7fb295cc4bf9915af451f0609788f93238cb4b8212c7b2ff886f9
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:23:16.275541+00:00'
+          completed_at: '2026-08-17T11:23:18.910765+00:00'
+          latency_ms: 2635
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 701
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 646
+            reasoning_tokens: 612
+            search_count: 0
+            cost_usd: '0.00294825'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 135
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f762fff7240bd166c805d345ae5
+        turn_number: 10
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 7268b4797272d25deb21adbe60f0fcbb92488c4938420a0841363edbfc5473c9
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:18.912360+00:00'
+            completed_at: '2026-08-17T11:23:23.623974+00:00'
+            latency_ms: 4711
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4430
+              cached_input_tokens: 2538
+              cache_write_tokens: 0
+              output_tokens: 192
+              reasoning_tokens: 50
+              search_count: 1
+              cost_usd: '0.00537693'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 415
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: closed_fact
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein Nobel Prize in Physics 1921 awarded before 1950 official
+              Nobel Prize
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 7268b4797272d25deb21adbe60f0fcbb92488c4938420a0841363edbfc5473c9
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:23:18.912360+00:00'
+              completed_at: '2026-08-17T11:23:23.623974+00:00'
+              latency_ms: 4711
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4430
+                cached_input_tokens: 2538
+                cache_write_tokens: 0
+                output_tokens: 192
+                reasoning_tokens: 50
+                search_count: 1
+                cost_usd: '0.00537693'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 415
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: d099b635723118cecada3908d499dfa06d6c496de22e8e7581c35342b20be69c
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:23.625551+00:00'
+            completed_at: '2026-08-17T11:23:24.460444+00:00'
+            latency_ms: 834
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 868
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 179
+              reasoning_tokens: 146
+              search_count: 0
+              cost_usd: '0.0007079'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 79
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f7645b674c29613264a4342a69b
+        turn_number: 11
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: ff9492befd2c55d74cf24ca3e4a4493d35596ded7724e30381dc4f42b3ee7296
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:23:24.470621+00:00'
+          completed_at: '2026-08-17T11:23:27.653827+00:00'
+          latency_ms: 3183
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 738
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 838
+            reasoning_tokens: 813
+            search_count: 0
+            cost_usd: '0.003696'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 104
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f765226730ba2598dec4d3fe47a
+        turn_number: 11
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 00ccbd3c38d71f69dec28b55f184b2c4f0a7c04ffcb31eecb8b58de1d200a578
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:27.655039+00:00'
+            completed_at: '2026-08-17T11:23:31.463817+00:00'
+            latency_ms: 3808
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4446
+              cached_input_tokens: 2531
+              cache_write_tokens: 0
+              output_tokens: 134
+              reasoning_tokens: 13
+              search_count: 1
+              cost_usd: '0.0053449349999999994'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 350
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: closed_fact
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein born Germany birthplace Ulm Germany biography
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 00ccbd3c38d71f69dec28b55f184b2c4f0a7c04ffcb31eecb8b58de1d200a578
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:23:27.655039+00:00'
+              completed_at: '2026-08-17T11:23:31.463817+00:00'
+              latency_ms: 3808
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4446
+                cached_input_tokens: 2531
+                cache_write_tokens: 0
+                output_tokens: 134
+                reasoning_tokens: 13
+                search_count: 1
+                cost_usd: '0.0053449349999999994'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 350
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 4e2b4bfc13ac78517b1948d5e740765efa0a33c8db2acad657839e7a1927eac9
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:31.464485+00:00'
+            completed_at: '2026-08-17T11:23:32.007051+00:00'
+            latency_ms: 542
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 851
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 29
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0003278'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 71
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f76632a7314aa42ba3877b4fbb2
+        turn_number: 12
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 5c9e3d8ea5e5b5b00156d9586d5aa52252539d7a86ce5abfc3986514c63ce847
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:23:32.010317+00:00'
+          completed_at: '2026-08-17T11:23:35.642702+00:00'
+          latency_ms: 3632
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 766
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 666
+            reasoning_tokens: 630
+            search_count: 0
+            cost_usd: '0.003072'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 141
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f76715b766d8bef93463e65faa5
+        turn_number: 12
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: feec79ce516229423a0e687f245a1840bda55857f30a6e8460004f85c84f2f7c
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:35.644046+00:00'
+            completed_at: '2026-08-17T11:23:40.548299+00:00'
+            latency_ms: 4904
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4222
+              cached_input_tokens: 2540
+              cache_write_tokens: 0
+              output_tokens: 202
+              reasoning_tokens: 69
+              search_count: 1
+              cost_usd: '0.0053567'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 389
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: closed_fact
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein Nobel Prize in Physics 1921 awarded official Nobel Prize
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: feec79ce516229423a0e687f245a1840bda55857f30a6e8460004f85c84f2f7c
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:23:35.644046+00:00'
+              completed_at: '2026-08-17T11:23:40.548299+00:00'
+              latency_ms: 4904
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4222
+                cached_input_tokens: 2540
+                cache_write_tokens: 0
+                output_tokens: 202
+                reasoning_tokens: 69
+                search_count: 1
+                cost_usd: '0.0053567'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 389
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 00caf61b687c55b65e215395e67938f6e52492de89a326593eb446ed235b561d
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:40.549103+00:00'
+            completed_at: '2026-08-17T11:23:41.765464+00:00'
+            latency_ms: 1216
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 867
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 214
+              reasoning_tokens: 199
+              search_count: 0
+              cost_usd: '0.0007951'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 57
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f76894970beb463d474005a7dc3
+        turn_number: 13
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 7f1b6df708a0d7ae3bb10515a2577a01e0f7034c050c0d1b597910b6fdaae455
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:23:41.769853+00:00'
+          completed_at: '2026-08-17T11:23:45.876629+00:00'
+          latency_ms: 4106
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 805
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 996
+            reasoning_tokens: 966
+            search_count: 0
+            cost_usd: '0.00433875'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 139
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a00f76995676b887098dfa45b38a2b
+        turn_number: 13
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 07722876e29a919000be9a013ba0a8b2ba54f641e5796ce21f7dfbf8df3198ea
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:23:45.879977+00:00'
+            completed_at: '2026-08-17T11:23:57.242852+00:00'
+            latency_ms: 11362
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8057
+              cached_input_tokens: 5197
+              cache_write_tokens: 0
+              output_tokens: 426
+              reasoning_tokens: 288
+              search_count: 2
+              cost_usd: '0.010664845'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 8
+            url_citation_count: 8
+            raw_output_present: true
+            raw_output_characters: 265
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_recovery
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: conflicting_sources
+            attempted_queries:
+            - Albert Einstein best known for formulating theory of relativity biography
+            - Albert Einstein "best known" "theory of relativity" "E=mc2" authoritative
+              biography
+            query_provenance: model_reported
+            evidence_count: 0
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 07722876e29a919000be9a013ba0a8b2ba54f641e5796ce21f7dfbf8df3198ea
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:23:45.879977+00:00'
+              completed_at: '2026-08-17T11:23:57.242852+00:00'
+              latency_ms: 11362
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8057
+                cached_input_tokens: 5197
+                cache_write_tokens: 0
+                output_tokens: 426
+                reasoning_tokens: 288
+                search_count: 2
+                cost_usd: '0.010664845'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 8
+              url_citation_count: 8
+              raw_output_present: true
+              raw_output_characters: 265
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+          - attempt_number: 2
+            strategy: diversified_recovery
+            outcome: answered
+            attempted_queries:
+            - Albert Einstein best known for formulating theory of relativity principal
+              basis of recognition authoritative biography
+            - Albert Einstein "best known" "theory of relativity" biography official
+              university
+            - site:gov Albert Einstein best known for theory of relativity formulated
+              biography
+            - Albert Einstein "best known for developing the theory of relativity"
+              -Wikipedia authoritative biography
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-recovery-v1-diversified
+              hash: 8291c90e53b85c9f0f185dcfbb6fbb728f9f7495674f2187608bbf369f739462
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-17T11:23:57.246508+00:00'
+              completed_at: '2026-08-17T11:24:24.547382+00:00'
+              latency_ms: 27300
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 20097
+                cached_input_tokens: 13367
+                cache_write_tokens: 0
+                output_tokens: 1075
+                reasoning_tokens: 749
+                search_count: 4
+                cost_usd: '0.021619545000000004'
+                cache_discount_usd: null
+              web_search_requests: 4
+              annotation_count: 16
+              url_citation_count: 16
+              raw_output_present: true
+              raw_output_characters: 867
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 9a1a643d6b25ef14f92b4d3172ae146b73aa12e6bb6d039698ddf1974ace78db
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-17T11:24:24.548710+00:00'
+            completed_at: '2026-08-17T11:24:25.825589+00:00'
+            latency_ms: 1276
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 877
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 263
+              reasoning_tokens: 226
+              search_count: 0
+              cost_usd: '0.0009206'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 86
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a00f7735687450a69d1f546755727f
+        turn_number: 14
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 543d3bd329e7388deb5a5fc7fecadca10c9dc8b934293c184949cebd91caf778
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:24:25.832739+00:00'
+          completed_at: '2026-08-17T11:24:27.467474+00:00'
+          latency_ms: 1634
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: google/gemini-3.7-flash
+          resolved_model: google/gemini-3.7-flash
+          requested_provider: google-ai-studio
+          resolved_provider: Google AI Studio
+          fallback_occurred: false
+          usage:
+            input_tokens: 838
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 226
+            reasoning_tokens: 159
+            search_count: 0
+            cost_usd: '0.001476'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 232
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a00f773bcc75e7b9ce82534fbe2a23
+        turn_number: 14
+        status: success
+        prompt:
+          version: strict-guess-validator-v1
+          hash: dda94c33bf1b5fd26c8ebfc55e0c5e896270d8b1828a71ab362579c097a8600c
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-17T11:24:27.469252+00:00'
+          completed_at: '2026-08-17T11:24:28.458953+00:00'
+          latency_ms: 989
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 366
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 30
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.0000546'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 108
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      unavailable_call_count: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0016/BX-20260817-official-M0016-015/subjects/T-0001/trials/trial-003/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: e91ea8b01a3445a94496f7b8c12a16cc04ffd765bb5694dfc535c97f99751138

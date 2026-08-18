@@ -3,7 +3,9 @@ import { resolve } from "node:path";
 
 import type { IndexHtmlTransformResult, Plugin } from "vite";
 
-import { siteResourceLinks } from "./src/lib/site-resources";
+import { countWord } from "./src/lib/format";
+import { escapeHtml } from "./src/lib/html";
+import { siteResourceLinks, supportResource } from "./src/lib/site-resources";
 
 const HOME_MARKER = "<!-- deep20-static-home -->";
 const STRUCTURED_DATA_MARKER = "<!-- deep20-structured-data -->";
@@ -177,19 +179,6 @@ const loadPublication = (publicDirectory: string): StaticPublication => {
   };
 };
 
-const escapeHtml = (value: string): string =>
-  value.replace(
-    /[&<>"']/g,
-    (character) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
-      })[character] ?? character,
-  );
-
 const escapeJson = (value: object): string =>
   JSON.stringify(value).replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
 
@@ -207,9 +196,6 @@ const formatPercent = (value: string): string => {
   if (!Number.isFinite(percentage)) throw new Error(`Cannot format percentage ${value}.`);
   return `${percentage.toFixed(1).replace(/\.0$/, "")}%`;
 };
-
-const countWords: Readonly<Record<number, string>> = { 5: "five", 7: "seven" };
-const formatCountWord = (value: number): string => countWords[value] ?? String(value);
 
 const formatDate = (value: string): string => {
   const date = new Date(value);
@@ -338,18 +324,25 @@ const renderHome = (publication: StaticPublication, base: string): string => {
                 <p>
                   All results, game transcripts, and scoring data are public. The current pilot
                   compares ${leaderboard.length} model versions and settings across
-                  ${formatCountWord(cohort.subjectCount)} subjects, with
-                  ${formatCountWord(cohort.iterations)} rounds per subject. The concept works and
+                  ${countWord(cohort.subjectCount)} subjects, with
+                  ${countWord(cohort.iterations)} rounds per subject. The concept works and
                   the first step is complete. Expanding the pilot is straightforward; cost is the
                   main constraint.
                 </p>
                 <div class="static-discussions">
                   <p>Use GitHub Discussions to suggest what we should test next.</p>
-                  <a
-                    href="https://github.com/mindalyze-com/deep-20-bench/discussions"
-                    target="_blank"
-                    rel="noreferrer"
-                  >Join discussion <span aria-hidden="true">↗</span><span class="static-visually-hidden"> (opens in a new tab)</span></a>
+                  <div class="static-discussion-links">
+                    <a
+                      href="https://github.com/mindalyze-com/deep-20-bench/discussions"
+                      target="_blank"
+                      rel="noreferrer"
+                    >Join discussion <span aria-hidden="true">↗</span><span class="static-visually-hidden"> (opens in a new tab)</span></a>
+                    <a
+                      href="${escapeHtml(supportResource.href)}"
+                      target="_blank"
+                      rel="noreferrer"
+                    >Support future benchmark runs <span aria-hidden="true">↗</span><span class="static-visually-hidden"> (opens in a new tab)</span></a>
+                  </div>
                 </div>
               </article>
             </div>

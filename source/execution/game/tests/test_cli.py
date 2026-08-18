@@ -162,10 +162,7 @@ def test_game_play_cli_runs_one_complete_fake_episode(
     assert output["run"]["duration_ms"] >= 0
     assert output["models"]["under_test"]["requested_model"] == "openai/gpt-5.6-luna"
     assert output["models"]["under_test"]["resolved_models"] == ["openai/gpt-5.6-luna"]
-    assert (
-        output["models"]["oracle"]["prompt_version"]
-        == "live-web-oracle-v7-direct-negative-evidence"
-    )
+    assert output["models"]["oracle"]["prompt_version"] == "live-web-oracle-v8-classified-research"
     assert output["summary"]["costs_usd"] == {
         "guesser": "0.01",
         "oracle": "0",

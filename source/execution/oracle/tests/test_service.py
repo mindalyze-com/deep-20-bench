@@ -27,6 +27,8 @@ YES_PAYLOAD = json.dumps(
                 "validation": "model_reported",
             }
         ],
+        "research_outcome": "answered",
+        "attempted_queries": ["Albert Einstein birth date"],
     }
 )
 
@@ -40,6 +42,8 @@ PROVIDER_URL_ALIAS_PAYLOAD = json.dumps(
                 "validation": "model_reported",
             }
         ],
+        "research_outcome": "answered",
+        "attempted_queries": ["Albert Einstein birth date"],
     }
 )
 
@@ -97,7 +101,7 @@ def test_success_uses_oracle_and_blind_reviewer_calls_and_audits_everything(
     call = make_oracle(provider, audit_writer, audit_writer.config).ask(oracle_request)
 
     assert len(provider.requests) == 1
-    assert provider.requests[0].session_id == "deep20-oracle-test-run-T-0001"
+    assert provider.requests[0].session_id == "deep20-oracle-primary-test-run-T-0001"
     assert provider.requests[0].prompt_cache_key.startswith("deep20-o-o-")
     assert call.guesser_answer() is OracleAnswer.YES
     assert call.metrics.cost_usd == Decimal("0.02")
@@ -140,6 +144,8 @@ def test_invalid_oracle_output_is_retried_once_with_exact_request(
                     {
                         "answer": "UNKNOWN",
                         "evidence": [],
+                        "research_outcome": "no_results",
+                        "attempted_queries": ["Albert Einstein birth date"],
                         "unexpected": marker,
                     }
                 ),
@@ -220,6 +226,8 @@ def test_injection_text_is_inert_and_never_in_guesser_projection(
                     "validation": "model_reported",
                 }
             ],
+            "research_outcome": "answered",
+            "attempted_queries": ["Albert Einstein profession"],
         }
     )
     call = make_oracle(
@@ -263,9 +271,7 @@ def test_search_mode_changes_only_oracle_private_state(
         native_provider,
         native_writer,
         native_config,
-    ).ask(
-        oracle_request.model_copy(update={"run_id": "native-search-run"})
-    )
+    ).ask(oracle_request.model_copy(update={"run_id": "native-search-run"}))
 
     assert parallel_provider.requests[0].messages == native_provider.requests[0].messages
     assert parallel_call.guesser_answer() is OracleAnswer.YES
@@ -307,7 +313,14 @@ def test_search_mode_changes_configuration_hash_and_rejects_run_reuse(
     [
         (YES_PAYLOAD, 0, "web_search_not_used"),
         ("not json", 1, "invalid_structured_output"),
-        ('{"answer":"YES","evidence":[]}', 1, "invalid_structured_output"),
+        (
+            (
+                '{"answer":"YES","evidence":[],"research_outcome":"answered",'
+                '"attempted_queries":["query"]}'
+            ),
+            1,
+            "invalid_structured_output",
+        ),
     ],
 )
 def test_protocol_failures_are_audited_without_result(

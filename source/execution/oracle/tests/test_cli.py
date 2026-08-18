@@ -37,6 +37,8 @@ class CliProvider:
                             "validation": "model_reported",
                         }
                     ],
+                    "research_outcome": "answered",
+                    "attempted_queries": ["subject fact"],
                 }
             )
             if is_oracle

@@ -18,12 +18,15 @@ from deep20_oracle.models import (
     OracleProviderRoleTrace,
     OracleQuestionType,
     OracleRequest,
+    OracleRole,
     ProviderTrace,
+    ProviderUsage,
     RecoveryTotals,
     Subject,
 )
 from deep20_oracle.prompt import PROMPT_VERSION as ORACLE_PROMPT_VERSION
 from deep20_oracle.recovery import combine_recovery_totals
+from deep20_oracle.result_audit import provider_result_audit
 from deep20_oracle.service import Oracle
 from deep20_oracle.util import timestamp
 from pydantic import ValidationError
@@ -43,6 +46,7 @@ from .models import (
     ContractViolationPayload,
     ContractViolationProgress,
     ContractViolationTurnResult,
+    EpisodeCallAudit,
     EpisodeFinishedEvent,
     EpisodeFinishedPayload,
     EpisodeFinishedProgress,
@@ -50,6 +54,7 @@ from .models import (
     EpisodeModelVersions,
     EpisodeOutcome,
     EpisodeResult,
+    EpisodeResultAudit,
     EpisodeRun,
     EpisodeStartedEvent,
     EpisodeStartedPayload,
@@ -61,6 +66,7 @@ from .models import (
     GuesserAction,
     GuesserCall,
     GuesserConversationMessage,
+    GuesserResultCallAudit,
     GuesserSamplingDecision,
     GuessValidatorCall,
     LlmVersion,
@@ -68,7 +74,13 @@ from .models import (
     OracleProviderUsage,
     OracleQualityTotals,
     OracleQuestionTypeTotals,
+    OracleResearchAttemptResultCallAudit,
+    OracleResearchResultCallAudit,
+    OracleResultCallAudit,
+    OracleRoleResultCallAudit,
     ResolvedProviderUsage,
+    ResultCallStatus,
+    ResultPromptAudit,
     RoleProviderUsage,
     TerminalReason,
     TurnAdjudication,
@@ -76,6 +88,7 @@ from .models import (
     TurnResolvedEvent,
     TurnResolvedPayload,
     TurnResult,
+    ValidatorResultCallAudit,
     guesser_contract_reliability,
 )
 from .prompt import (
@@ -85,6 +98,8 @@ from .prompt import (
     append_visible_format_error,
     append_visible_turn,
     initial_guesser_messages,
+    prompt_hash,
+    validator_messages,
 )
 from .sampling import derive_guesser_prompt_nonce, guesser_sampling_decision
 from .service_util import metrics_from_trace, provider_trace_from_error
@@ -100,8 +115,7 @@ def _reported_guesser_conversation(
     for message in messages:
         message_turn: int | None = None
         if message["role"] == "assistant" or (
-            message["role"] == "user"
-            and _is_format_error_message(message["content"])
+            message["role"] == "user" and _is_format_error_message(message["content"])
         ):
             turn_number += 1
             message_turn = turn_number
@@ -160,9 +174,7 @@ class _MutableResolvedProviderUsage:
 
 @dataclass
 class _MutableRoleProviderUsage:
-    providers: dict[str, _MutableResolvedProviderUsage] = field(
-        default_factory=dict
-    )
+    providers: dict[str, _MutableResolvedProviderUsage] = field(default_factory=dict)
     unreported_calls: int = 0
     fallback_calls: int = 0
 
@@ -173,9 +185,7 @@ class _MutableRoleProviderUsage:
         cost_usd: Decimal | None,
         latency_ms: int,
     ) -> None:
-        self.fallback_calls += int(
-            getattr(trace, "fallback_occurred", None) is True
-        )
+        self.fallback_calls += int(getattr(trace, "fallback_occurred", None) is True)
         if trace.resolved_provider is None:
             self.unreported_calls += 1
             return
@@ -235,12 +245,8 @@ class _MutableTotals:
     judge_unknown_answers: int = 0
     reviewer_cost_usd: Decimal = Decimal(0)
     judge_cost_usd: Decimal = Decimal(0)
-    question_type_reviews: dict[OracleQuestionType, int] = field(
-        default_factory=dict
-    )
-    question_type_disagreements: dict[OracleQuestionType, int] = field(
-        default_factory=dict
-    )
+    question_type_reviews: dict[OracleQuestionType, int] = field(default_factory=dict)
+    question_type_disagreements: dict[OracleQuestionType, int] = field(default_factory=dict)
     provider_usage: _MutableRoleProviderUsage = field(
         default_factory=lambda: _MutableRoleProviderUsage()
     )
@@ -287,13 +293,29 @@ class _MutableTotals:
             self.recovery,
             call.metrics.recovery,
         )
-        self._add_route(call.audit.provider)
-        oracle_metrics = call.metrics.oracle or call.metrics
-        self.provider_usage.observe(
-            call.audit.provider,
-            cost_usd=oracle_metrics.cost_usd,
-            latency_ms=oracle_metrics.latency_ms,
+        research = getattr(call.audit, "research", None)
+        research_traces = (
+            tuple(attempt.provider for attempt in research.attempts)
+            if research is not None
+            else (call.audit.provider,)
         )
+        aggregate_oracle_metrics = call.metrics.oracle or call.metrics
+        for trace in research_traces:
+            self._add_route(trace)
+            usage = getattr(trace, "usage", None)
+            self.provider_usage.observe(
+                trace,
+                cost_usd=(
+                    usage.cost_usd
+                    if isinstance(usage, ProviderUsage)
+                    else aggregate_oracle_metrics.cost_usd
+                ),
+                latency_ms=getattr(
+                    trace,
+                    "latency_ms",
+                    aggregate_oracle_metrics.latency_ms,
+                ),
+            )
         adjudication = call.adjudication
         if adjudication.reviewer is not None:
             self.reviewed_questions += 1
@@ -303,25 +325,16 @@ class _MutableTotals:
             self.question_type_reviews[question_type] = (
                 self.question_type_reviews.get(question_type, 0) + 1
             )
-            self.question_type_disagreements[question_type] = (
-                self.question_type_disagreements.get(question_type, 0)
-                + int(adjudication.disagreement)
-            )
+            self.question_type_disagreements[question_type] = self.question_type_disagreements.get(
+                question_type, 0
+            ) + int(adjudication.disagreement)
         self.judge_invocations += int(adjudication.judge_invoked)
         self.oracle_answers_changed += int(adjudication.oracle_answer_changed)
-        self.final_unknown_answers += int(
-            adjudication.final_answer is OracleAnswer.UNKNOWN
-        )
+        self.final_unknown_answers += int(adjudication.final_answer is OracleAnswer.UNKNOWN)
         if adjudication.judge is not None:
-            self.judge_yes_answers += int(
-                adjudication.judge.answer is OracleAnswer.YES
-            )
-            self.judge_no_answers += int(
-                adjudication.judge.answer is OracleAnswer.NO
-            )
-            self.judge_unknown_answers += int(
-                adjudication.judge.answer is OracleAnswer.UNKNOWN
-            )
+            self.judge_yes_answers += int(adjudication.judge.answer is OracleAnswer.YES)
+            self.judge_no_answers += int(adjudication.judge.answer is OracleAnswer.NO)
+            self.judge_unknown_answers += int(adjudication.judge.answer is OracleAnswer.UNKNOWN)
         if call.metrics.reviewer is not None:
             self.reviewer_cost_usd += call.metrics.reviewer.cost_usd or Decimal(0)
             reviewer_audit = getattr(call.audit, "reviewer", None)
@@ -387,9 +400,7 @@ class _MutableTotals:
             judge_unknown_answers=self.judge_unknown_answers,
             reviewer_cost_usd=self.reviewer_cost_usd,
             judge_cost_usd=self.judge_cost_usd,
-            quality_control_cost_usd=(
-                self.reviewer_cost_usd + self.judge_cost_usd
-            ),
+            quality_control_cost_usd=(self.reviewer_cost_usd + self.judge_cost_usd),
             question_types=tuple(
                 OracleQuestionTypeTotals(
                     question_type=question_type,
@@ -516,6 +527,7 @@ class GameEngine:
         rejected_guess_count = 0
         oracle_unknown_count = 0
         turns: list[TurnResult] = []
+        call_audits: list[EpisodeCallAudit] = []
         totals = {
             "guesser": _MutableTotals(),
             "oracle": _MutableTotals(),
@@ -543,6 +555,23 @@ class GameEngine:
                 error_trace = provider_trace_from_error(error)
                 if error_trace is not None:
                     cache.observe(error_trace)
+                    if error.call_id is not None:
+                        call_audits.append(
+                            GuesserResultCallAudit(
+                                call_id=error.call_id,
+                                turn_number=guesser_call_count,
+                                status=(
+                                    ResultCallStatus.CONTRACT_VIOLATION
+                                    if error.code == "invalid_guesser_output"
+                                    else ResultCallStatus.FAILURE
+                                ),
+                                prompt=ResultPromptAudit(
+                                    version=GUESSER_PROMPT_VERSION,
+                                    hash=prompt_hash(messages),
+                                ),
+                                provider=provider_result_audit(error_trace),
+                            )
+                        )
                 self._add_error_trace(
                     totals["guesser"],
                     error,
@@ -557,8 +586,7 @@ class GameEngine:
                     violation_kind = (
                         ContractViolationKind(violation_kind_value)
                         if isinstance(violation_kind_value, str)
-                        and violation_kind_value
-                        in {kind.value for kind in ContractViolationKind}
+                        and violation_kind_value in {kind.value for kind in ContractViolationKind}
                         else ContractViolationKind.INVALID_ACTION
                     )
                     violation_turn = self._contract_violation_event(
@@ -617,6 +645,7 @@ class GameEngine:
                             cache_status=cache.status,
                             totals=totals,
                             turns=turns,
+                            call_audits=call_audits,
                             guesser_conversation=conversation,
                             error=GuesserProtocolError(
                                 "the model under test exceeded the consecutive "
@@ -641,6 +670,7 @@ class GameEngine:
                     cache_status=cache.status,
                     totals=totals,
                     turns=turns,
+                    call_audits=call_audits,
                     guesser_conversation=conversation,
                     error=error,
                 )
@@ -648,6 +678,20 @@ class GameEngine:
                 error_trace = provider_trace_from_error(error)
                 if error_trace is not None:
                     cache.observe(error_trace)
+                    call_id = getattr(error, "call_id", None)
+                    if isinstance(call_id, str) and call_id.startswith("GC-"):
+                        call_audits.append(
+                            GuesserResultCallAudit(
+                                call_id=call_id,
+                                turn_number=guesser_call_count,
+                                status=ResultCallStatus.FAILURE,
+                                prompt=ResultPromptAudit(
+                                    version=GUESSER_PROMPT_VERSION,
+                                    hash=prompt_hash(messages),
+                                ),
+                                provider=provider_result_audit(error_trace),
+                            )
+                        )
                 self._add_error_trace(
                     totals["guesser"],
                     error,
@@ -666,6 +710,7 @@ class GameEngine:
                     cache.status,
                     totals,
                     turns,
+                    call_audits,
                     conversation,
                     error,
                 )
@@ -677,6 +722,18 @@ class GameEngine:
             totals["guesser"].observe_valid_output()
             consecutive_contract_violations = 0
             cache.observe(guesser_call.audit.provider)
+            call_audits.append(
+                GuesserResultCallAudit(
+                    call_id=guesser_call.call_id,
+                    turn_number=guesser_call_count,
+                    status=ResultCallStatus.SUCCESS,
+                    prompt=ResultPromptAudit(
+                        version=guesser_call.audit.prompt_version,
+                        hash=guesser_call.audit.prompt_hash,
+                    ),
+                    provider=provider_result_audit(guesser_call.audit.provider),
+                )
+            )
             action = guesser_call.action
             messages = guesser_call.audit.messages
             conversation = append_visible_action(messages, action)
@@ -697,6 +754,7 @@ class GameEngine:
                     cache_status=cache.status,
                     totals=totals,
                     turns=turns,
+                    call_audits=call_audits,
                     guesser_conversation=conversation,
                     error=GuesserProtocolError(
                         "ASK is forbidden on the final guess-only opportunity",
@@ -731,10 +789,18 @@ class GameEngine:
                         cache.status,
                         totals,
                         turns,
+                        call_audits,
                         conversation,
                         error,
                     )
                 totals["oracle"].add_oracle(oracle_call)
+                if isinstance(oracle_call, OracleCall):
+                    call_audits.append(
+                        self._oracle_result_call_audit(
+                            oracle_call,
+                            turn_number=guesser_call_count,
+                        )
+                    )
                 answer = oracle_call.guesser_answer()
                 counted_questions += 1
                 if answer is OracleAnswer.UNKNOWN:
@@ -750,9 +816,7 @@ class GameEngine:
                     adjudicator_call_id=oracle_call.call_id,
                     answer=answer,
                     evidence=(
-                        oracle_call.result.evidence
-                        if self.policy.include_oracle_evidence
-                        else ()
+                        oracle_call.result.evidence if self.policy.include_oracle_evidence else ()
                     ),
                     explanation=None,
                     oracle_quality=oracle_call.adjudication,
@@ -781,11 +845,30 @@ class GameEngine:
                     guess=action,
                 )
             except (GameError, OracleError) as error:
+                error_trace = provider_trace_from_error(error)
                 self._add_error_trace(
                     totals["validator"],
                     error,
                     self.validator_config,
                 )
+                call_id = getattr(error, "call_id", None)
+                if (
+                    error_trace is not None
+                    and isinstance(call_id, str)
+                    and call_id.startswith("VC-")
+                ):
+                    call_audits.append(
+                        ValidatorResultCallAudit(
+                            call_id=call_id,
+                            turn_number=guesser_call_count,
+                            status=ResultCallStatus.FAILURE,
+                            prompt=ResultPromptAudit(
+                                version=VALIDATOR_PROMPT_VERSION,
+                                hash=prompt_hash(validator_messages(request.subject, action)),
+                            ),
+                            provider=provider_result_audit(error_trace),
+                        )
+                    )
                 return self._infrastructure_failure(
                     request,
                     episode_id,
@@ -799,12 +882,24 @@ class GameEngine:
                     cache.status,
                     totals,
                     turns,
+                    call_audits,
                     conversation,
                     error,
                 )
             totals["validator"].add_metrics(
                 validator_call.metrics,
                 validator_call.audit.provider,
+            )
+            call_audits.append(
+                ValidatorResultCallAudit(
+                    call_id=validator_call.call_id,
+                    turn_number=guesser_call_count,
+                    prompt=ResultPromptAudit(
+                        version=validator_call.audit.prompt_version,
+                        hash=validator_call.audit.prompt_hash,
+                    ),
+                    provider=provider_result_audit(validator_call.audit.provider),
+                )
             )
             answer = validator_call.result.answer
             counted = not final_opportunity and answer is not OracleAnswer.YES
@@ -854,6 +949,7 @@ class GameEngine:
                     cache_status=cache.status,
                     totals=totals,
                     turns=turns,
+                    call_audits=call_audits,
                     guesser_conversation=conversation,
                 )
             if answer is OracleAnswer.UNKNOWN:
@@ -873,6 +969,7 @@ class GameEngine:
                     cache_status=cache.status,
                     totals=totals,
                     turns=turns,
+                    call_audits=call_audits,
                     guesser_conversation=conversation,
                 )
             if final_opportunity:
@@ -892,6 +989,7 @@ class GameEngine:
                     cache_status=cache.status,
                     totals=totals,
                     turns=turns,
+                    call_audits=call_audits,
                     guesser_conversation=conversation,
                 )
             messages = append_visible_turn(messages, action, str(answer))
@@ -911,6 +1009,7 @@ class GameEngine:
         cache_status: CacheStatus,
         totals: dict[str, _MutableTotals],
         turns: list[TurnResult],
+        call_audits: list[EpisodeCallAudit],
         guesser_conversation: tuple[dict[str, str], ...],
         error: Exception,
     ) -> EpisodeResult:
@@ -930,6 +1029,7 @@ class GameEngine:
             cache_status=cache_status,
             totals=totals,
             turns=turns,
+            call_audits=call_audits,
             guesser_conversation=guesser_conversation,
             error=error,
         )
@@ -952,13 +1052,13 @@ class GameEngine:
         cache_status: CacheStatus,
         totals: dict[str, _MutableTotals],
         turns: list[TurnResult],
+        call_audits: list[EpisodeCallAudit],
         guesser_conversation: tuple[dict[str, str], ...],
         error: Exception | None = None,
     ) -> EpisodeResult:
         completed_at = timestamp()
         publication_eligible = (
-            self.policy.benchmark_mode is BenchmarkMode.OFFICIAL
-            and scoring_eligible
+            self.policy.benchmark_mode is BenchmarkMode.OFFICIAL and scoring_eligible
         )
         frozen_totals = {name: component.frozen() for name, component in totals.items()}
         total_cost_usd = sum(
@@ -1084,6 +1184,12 @@ class GameEngine:
                     provider_usage=totals["validator"].provider_usage.frozen(),
                 ),
             ),
+            audit=EpisodeResultAudit(
+                calls=tuple(call_audits),
+                unavailable_call_count=(
+                    guesser_call_count + ask_count + guess_count - len(call_audits)
+                ),
+            ),
             failure=failure,
         )
         self.audit_writer.persist_episode_event(
@@ -1145,6 +1251,85 @@ class GameEngine:
         )
         return turn
 
+    @staticmethod
+    def _oracle_result_call_audit(
+        call: OracleCall,
+        *,
+        turn_number: int,
+    ) -> OracleResultCallAudit:
+        def role_audit(
+            *,
+            role: OracleRole,
+            prompt_version: str,
+            prompt_hash_value: str,
+            provider: ProviderTrace,
+        ) -> OracleRoleResultCallAudit:
+            return OracleRoleResultCallAudit(
+                role=role,
+                prompt=ResultPromptAudit(
+                    version=prompt_version,
+                    hash=prompt_hash_value,
+                ),
+                provider=provider_result_audit(provider),
+            )
+
+        reviewer = call.audit.reviewer
+        judge = call.audit.judge
+        research = getattr(call.audit, "research", None)
+        return OracleResultCallAudit(
+            call_id=call.call_id,
+            turn_number=turn_number,
+            oracle=role_audit(
+                role=OracleRole.ORACLE,
+                prompt_version=call.audit.prompt_version,
+                prompt_hash_value=call.audit.prompt_hash,
+                provider=call.audit.provider,
+            ),
+            research=(
+                OracleResearchResultCallAudit(
+                    question_class=research.question_class,
+                    resolution=research.resolution,
+                    attempts=tuple(
+                        OracleResearchAttemptResultCallAudit(
+                            attempt_number=attempt.attempt_number,
+                            strategy=attempt.strategy,
+                            outcome=attempt.result.research_outcome,
+                            attempted_queries=attempt.result.attempted_queries,
+                            evidence_count=len(attempt.result.evidence),
+                            prompt=ResultPromptAudit(
+                                version=attempt.prompt_version,
+                                hash=attempt.prompt_hash,
+                            ),
+                            provider=provider_result_audit(attempt.provider),
+                        )
+                        for attempt in research.attempts
+                    ),
+                )
+                if research is not None
+                else None
+            ),
+            reviewer=(
+                role_audit(
+                    role=OracleRole.REVIEWER,
+                    prompt_version=reviewer.prompt_version,
+                    prompt_hash_value=reviewer.prompt_hash,
+                    provider=reviewer.provider,
+                )
+                if reviewer is not None
+                else None
+            ),
+            judge=(
+                role_audit(
+                    role=OracleRole.JUDGE,
+                    prompt_version=judge.prompt_version,
+                    prompt_hash_value=judge.prompt_hash,
+                    provider=judge.provider,
+                )
+                if judge is not None
+                else None
+            ),
+        )
+
     def _contract_violation_event(
         self,
         run_id: str,
@@ -1201,8 +1386,7 @@ class GameEngine:
         if isinstance(role_values, list):
             try:
                 traces = tuple(
-                    OracleProviderRoleTrace.model_validate(value).provider
-                    for value in role_values
+                    OracleProviderRoleTrace.model_validate(value).provider for value in role_values
                 )
             except ValidationError:
                 traces = ()

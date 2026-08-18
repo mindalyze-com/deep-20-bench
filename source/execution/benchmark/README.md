@@ -203,6 +203,21 @@ trailing zeroes removed. Calculations and complete trial/provider records retain
 `Decimal` precision; rounding occurs only when constructing aggregate and compact-summary
 objects.
 
+Every completed episode also contains a versioned `audit.calls` log. It records one sanitized
+entry for each retained Guesser, Oracle, and Validator call, in execution order. Entries keep
+the turn number, component call ID, prompt version/hash, timestamps, route, HTTP/finish/cache
+status, retry and recovery totals, exact provider usage, latency, cost, raw-output length,
+discarded-output count, web-search request count, citation-annotation count, and an allowlisted
+OpenRouter execution-stage summary. Oracle entries keep separate primary, Reviewer, and Judge
+role summaries, plus the optional diversified-recovery role. The research summary also retains
+the deterministic question class, attempt strategy, classified outcome and resolution,
+evidence count, and bounded model-reported query strings. A `web_search_requests` value counts
+search queries, not returned documents, and the reported query strings are not independently
+verified provider telemetry. Evidence and citation counts therefore remain separate
+observations. `unavailable_call_count`
+states how many attempted component calls had no safe trace to project. Schema-v9 results made
+before this additive field have no `audit` section and remain valid inputs.
+
 The exact serialized top-level object is written once to
 `runs/<model-id>/<execution-id>/result.yml` with a SHA-256 integrity hash. Nested result files
 are generated from the corresponding typed objects. Raw prompts and full provider exchanges are
@@ -216,9 +231,12 @@ error; it is not read back from the diagnostic artifact.
 ## Persistence and live observation
 
 In benchmark mode, component records are validated, integrity-hashed, acknowledged through the
-typed sink interfaces, and discarded in memory after their metrics and result have been
-incorporated. The lower components never open files, and the benchmark does not create
-per-trial component audit logs. When an error attempt returns textual output, the benchmark
+typed sink interfaces, and discarded in memory after their sanitized result audit and metrics
+have been incorporated. The lower components never open files, and the benchmark does not
+create per-trial raw component audit logs. The retained result audit excludes prompts, message
+history, request/response bodies, raw output, evidence text, citation URLs, response IDs,
+sessions, cache keys, headers, credentials, and router endpoint details. When an error attempt
+returns textual output, the benchmark
 composition root writes the full completion plus bounded attempt metadata to a signed
 `error-outputs.jsonl` with owner-only permissions. This applies to terminal failures and
 recovered error attempts. The diagnostic excludes prompts, message history, subject state, full
@@ -228,6 +246,12 @@ Guesser-visible history, provider requests, caches, progress events, live state,
 reports, and console logs. Benchmark progress JSONL, including typed contract-violation events,
 is appended and `fsync`ed immediately;
 `state.yml` is replaced atomically after every progress event.
+
+If two Oracle retrieval attempts cannot support a deterministic closed or temporal fact, the
+trial records `oracle_research_exhausted` as an infrastructure failure. The retained failure
+diagnostic includes only the typed research classification and bounded query summary needed to
+distinguish retrieval exhaustion from a genuine factual `UNKNOWN`; provider responses and
+evidence remain excluded.
 
 ```text
 runs/
@@ -256,10 +280,16 @@ terminal trial. The Oracle cost includes the Oracle, Reviewer, and any invoked J
 quality-control line separately reports Reviewer and Judge activity and cost. The run header
 also shows total benchmark cost, calculated by summing the unrounded recorded cost of every
 terminal trial, including partial costs from infrastructure-failed trials. Benchmark mode does
-not retain component prompts, full provider responses, episode events, or call-level audits.
-Error-output artifacts are the narrow exception: they retain only textual completions discarded
-by error handling and the metadata required to distinguish their attempts. Artifact references
+not retain component prompts, full provider responses, episode events, or raw call-level audits.
+It does retain the bounded `audit.calls` projection inside every `EpisodeResult`, so the trial,
+subject, and top-level exhaustive results preserve the same forensic facts. Error-output
+artifacts are the narrow raw-text exception: they retain only textual completions discarded by
+error handling and the metadata required to distinguish their attempts. Artifact references
 carry paths, record counts, and integrity hashes.
+
+The publication compiler uses only retained terminal attempts for model and benchmark cost
+comparisons. Superseded infrastructure attempts remain in this gross execution total and the
+repair ledger, but do not increase published comparative costs.
 
 ## Console policy
 

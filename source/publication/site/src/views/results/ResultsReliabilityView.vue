@@ -1,22 +1,23 @@
 <script setup lang="ts">
-import { computed, onActivated, ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed } from "vue";
 
-import ErrorState from "@/components/ErrorState.vue";
 import InfoPopover from "@/components/InfoPopover.vue";
-import LoadingState from "@/components/LoadingState.vue";
 import MetricDefinitionCard from "@/components/MetricDefinitionCard.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
-import ModelRunLink from "@/components/ModelRunLink.vue";
+import RankingTable from "@/components/RankingTable.vue";
+import RankingDataRow from "@/components/RankingDataRow.vue";
 import ReliabilityScatter from "@/components/ReliabilityScatter.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
-import { getLeaderboard } from "@/lib/api";
+import ResultsContent from "@/components/ResultsContent.vue";
+import TableHeaderStack from "@/components/TableHeaderStack.vue";
 import { confidenceIntervalWidth } from "@/lib/confidence-width";
-import { number, percent } from "@/lib/format";
+import { confidenceIntervalLabel, number, percent } from "@/lib/format";
 import type { ReliabilityChartItem } from "@/lib/reliability-chart";
-import { setRouteContext } from "@/lib/route-context";
+import { usePageRouteContext } from "@/lib/route-context";
+import { runRoute } from "@/lib/route-location";
 import type { LeaderboardRow } from "@/lib/types";
+import { useLeaderboardResults } from "@/lib/use-leaderboard-results";
 
 interface ReliabilityEntry {
   row: LeaderboardRow;
@@ -24,26 +25,13 @@ interface ReliabilityEntry {
   reliabilityRank: number;
 }
 
-const leaderboard = ref<LeaderboardRow[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
-const router = useRouter();
+const { leaderboard, loading, error, openRun } = useLeaderboardResults();
 
-const applyRouteContext = (): void => {
-  setRouteContext({
-    title: "Stability results",
-    description:
-      "Compare whether model scores remain consistent or vary across repeated trials on the same fixed subjects.",
-    level: null,
-    position: null,
-    crumbs: [],
-    previous: null,
-    next: null,
-  });
-};
-
-applyRouteContext();
-onActivated(applyRouteContext);
+usePageRouteContext({
+  title: "Stability results",
+  description:
+    "Compare whether model scores remain consistent or vary across repeated trials on the same fixed subjects.",
+});
 
 const rowConfidenceIntervalWidth = (row: LeaderboardRow): number | null => {
   const interval = row.question_score_confidence_interval;
@@ -100,7 +88,7 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
       label: row.model.display_name,
       score: Number(row.question_score ?? 0),
       scoreDisplay: number(row.question_score),
-      confidenceDisplay: `${number(interval.lower, 2)}–${number(interval.upper, 2)}`,
+      confidenceDisplay: confidenceIntervalLabel(interval),
       intervalWidth,
       intervalWidthDisplay: number(intervalWidth, 2),
       reliabilityRank,
@@ -110,47 +98,22 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
   }),
 );
 
-const runLink = (row: LeaderboardRow) => ({
-  name: "run",
-  params: { executionId: row.execution_id },
-});
-
-const openRun = (row: LeaderboardRow): void => {
-  if (row.execution_id !== null) void router.push(runLink(row));
-};
-
-const load = async (): Promise<void> => {
-  loading.value = true;
-  error.value = null;
-  try {
-    leaderboard.value = (await getLeaderboard()).leaderboard;
-  } catch (reason: unknown) {
-    error.value =
-      reason instanceof Error ? reason.message : "Publication data could not be loaded.";
-  } finally {
-    loading.value = false;
-  }
-};
-
-void load();
 </script>
 
 <template>
   <div class="page results-view">
-    <LoadingState v-if="loading" label="Loading stability results" />
-    <ErrorState v-else-if="error !== null" :message="error" />
-
-    <section v-else-if="ranked.length === 0" class="content-section empty-state">
-      <div class="content-inner">
+    <ResultsContent
+      :loading="loading"
+      loading-label="Loading stability results"
+      :error="error"
+      :empty="ranked.length === 0"
+    >
+      <template #empty>
         <p class="eyebrow">Repeated-trial stability</p>
         <h2>No models can be ranked.</h2>
         <p>Stability ranking requires a published 95% CI.</p>
-      </div>
-    </section>
+      </template>
 
-    <template v-else>
-      <section class="content-section">
-        <div class="content-inner">
           <MetricGrid
             class="results-summary"
             :items="summaryMetrics"
@@ -196,12 +159,7 @@ void load();
             <ReliabilityScatter :items="reliabilityChartItems" />
           </section>
 
-          <div
-            class="table-wrap ranking-table-wrap results-table-wrap"
-            aria-label="Stability ranking"
-          >
-            <table class="data-table ranking-table results-table">
-              <caption class="visually-hidden">Stability ranking</caption>
+          <RankingTable label="Stability ranking" min-width="900px">
               <thead>
                 <tr>
                   <th class="rank-column">
@@ -210,10 +168,7 @@ void load();
                   </th>
                   <th class="model-column">Model</th>
                   <th data-numeric>
-                    <span class="table-header-stack">
-                      <span>CI</span>
-                      <span>width</span>
-                    </span>
+                    <TableHeaderStack first="CI" second="width" />
                   </th>
                   <th data-numeric>Question rank</th>
                   <th data-numeric>Question score</th>
@@ -222,41 +177,36 @@ void load();
                 </tr>
               </thead>
               <tbody>
-                <tr
+                <RankingDataRow
                   v-for="entry in ranked"
                   :key="entry.row.model.model_id"
                   :class="{
                     'result-row--clickable': entry.row.execution_id !== null,
                     'result-row--navigable': entry.row.execution_id !== null,
                   }"
+                  :rank="entry.reliabilityRank"
+                  :name="entry.row.model.display_name"
+                  :meta="entry.row.model.provider"
+                  :to="
+                    entry.row.execution_id === null
+                      ? null
+                      : runRoute(entry.row.execution_id)
+                  "
                   @click="openRun(entry.row)"
                 >
-                  <td class="rank-column">{{ entry.reliabilityRank }}</td>
-                  <td class="model-column">
-                    <ModelRunLink
-                      v-if="entry.row.execution_id !== null"
-                      :to="runLink(entry.row)"
-                      :name="entry.row.model.display_name"
-                      :meta="entry.row.model.provider"
-                    />
-                    <strong v-else>{{ entry.row.model.display_name }}</strong>
-                  </td>
                   <td data-numeric>{{ number(entry.intervalWidth, 2) }}</td>
                   <td data-numeric>{{ entry.row.rank ?? "-" }}</td>
                   <td data-numeric>{{ number(entry.row.question_score) }}</td>
                   <td data-numeric>
                     <template v-if="entry.row.question_score_confidence_interval">
-                      {{ number(entry.row.question_score_confidence_interval.lower, 2) }}–{{
-                        number(entry.row.question_score_confidence_interval.upper, 2)
-                      }}
+                      {{ confidenceIntervalLabel(entry.row.question_score_confidence_interval) }}
                     </template>
                     <span v-else aria-hidden="true">-</span>
                   </td>
                   <td data-numeric>{{ percent(entry.row.success_rate) }}</td>
-                </tr>
+                </RankingDataRow>
               </tbody>
-            </table>
-          </div>
+          </RankingTable>
 
           <div class="mobile-result-list" aria-label="Stability ranking">
             <MobileResultCard
@@ -265,22 +215,19 @@ void load();
               :rank="entry.reliabilityRank"
               :name="entry.row.model.display_name"
               :provider="entry.row.model.provider"
-              :to="entry.row.execution_id === null ? null : runLink(entry.row)"
+              :to="
+                entry.row.execution_id === null
+                  ? null
+                  : runRoute(entry.row.execution_id)
+              "
               :metrics="[
                 { label: 'CI width', value: number(entry.intervalWidth, 2) },
                 { label: 'Question score', value: number(entry.row.question_score) },
                 {
                   label: '95% CI',
-                  value:
-                    entry.row.question_score_confidence_interval === null
-                      ? '-'
-                      : `${number(
-                          entry.row.question_score_confidence_interval.lower,
-                          2,
-                        )}–${number(
-                          entry.row.question_score_confidence_interval.upper,
-                          2,
-                        )}`,
+                  value: confidenceIntervalLabel(
+                    entry.row.question_score_confidence_interval,
+                  ),
                 },
                 { label: 'Success', value: percent(entry.row.success_rate) },
               ]"
@@ -321,20 +268,13 @@ void load();
               not a prediction interval for individual trials or a pairwise significance test.
             </p>
           </MetricDefinitionCard>
-        </div>
-      </section>
-    </template>
+    </ResultsContent>
   </div>
 </template>
 
 <style scoped>
-.results-summary,
 .reliability-scatter-panel {
   margin-bottom: var(--results-section-gap);
-}
-
-.results-table {
-  min-width: 900px;
 }
 
 </style>

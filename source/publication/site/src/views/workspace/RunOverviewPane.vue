@@ -96,6 +96,11 @@ const costLedger = computed<CostDonutItem[]>(() => {
   ];
 });
 
+const excludedRepair = computed(() => run.value?.totals.excluded_repair ?? null);
+const hasExcludedRepairCost = computed(
+  () => Number(excludedRepair.value?.cost_usd ?? 0) > 0,
+);
+
 const summaryMetrics = computed<MetricGridItem[]>(() => {
   const current = run.value;
   if (current === null) return [];
@@ -247,6 +252,16 @@ const roleGuide = runRoleOrder.map((role) => ({
           :items="costLedger"
           :total-display="money(run.totals.costs_usd.total)"
         />
+        <div v-if="hasExcludedRepairCost && excludedRepair" class="excluded-repair-cost">
+          <span>Excluded repair overhead</span>
+          <strong>{{ money(excludedRepair.cost_usd) }}</strong>
+          <small>
+            {{ integer(excludedRepair.superseded_attempts) }} superseded
+            attempt{{ excludedRepair.superseded_attempts === 1 ? "" : "s" }} across
+            {{ integer(excludedRepair.affected_trials) }} affected
+            trial{{ excludedRepair.affected_trials === 1 ? "" : "s" }}. Not included above.
+          </small>
+        </div>
         <div class="role-guide">
           <p>Roles in this cost:</p>
           <dl>
@@ -445,6 +460,30 @@ const roleGuide = runRoleOrder.map((role) => ({
   margin-top: 1.2rem;
   padding-top: 1rem;
   border-top: var(--rule-subtle);
+}
+
+.excluded-repair-cost {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.2rem 1rem;
+  margin-top: 1.2rem;
+  padding: 0.8rem 0;
+  border-top: var(--rule-subtle);
+  border-bottom: var(--rule-subtle);
+  color: var(--muted);
+  font-size: var(--text-caption);
+}
+
+.excluded-repair-cost span,
+.excluded-repair-cost strong {
+  color: var(--ink);
+  font-weight: var(--font-weight-bold);
+}
+
+.excluded-repair-cost small {
+  grid-column: 1 / -1;
+  font-size: inherit;
+  line-height: 1.45;
 }
 
 .role-guide > p {

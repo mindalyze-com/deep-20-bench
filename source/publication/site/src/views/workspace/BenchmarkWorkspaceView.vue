@@ -3,7 +3,6 @@ import {
   computed,
   onActivated,
   provide,
-  ref,
   watch,
 } from "vue";
 import { useRoute } from "vue-router";
@@ -16,18 +15,21 @@ import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
 import { getRun, getSubject } from "@/lib/api";
 import { number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
-import type { ContractReliability, RunDocument } from "@/lib/types";
+import type { ContractReliability } from "@/lib/types";
+import { useKeyedPublicationLoad } from "@/lib/use-keyed-publication-load";
 import { runWorkspaceKey } from "@/lib/workspace-context";
 import { subjectWorkspaceView } from "@/router";
 
 import RunOverviewPane from "./RunOverviewPane.vue";
 
 const route = useRoute();
-const document = ref<RunDocument | null>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
-
 const executionId = computed(() => String(route.params.executionId ?? ""));
+const { document, loading, error } = useKeyedPublicationLoad({
+  parameters: (): [string] => [executionId.value],
+  load: getRun,
+  fallbackError: "The run could not be loaded.",
+  onLoaded: () => applyRunContext(),
+});
 const run = computed(() => document.value?.run ?? null);
 const subjects = computed(() => document.value?.subjects ?? []);
 const selectedTargetId = computed(() =>
@@ -59,24 +61,6 @@ const applyRunContext = (): void => {
   });
 };
 
-const load = async (): Promise<void> => {
-  const requestedExecution = executionId.value;
-  loading.value = true;
-  error.value = null;
-  try {
-    const loaded = await getRun(requestedExecution);
-    if (executionId.value !== requestedExecution) return;
-    document.value = loaded;
-    applyRunContext();
-  } catch (cause: unknown) {
-    if (executionId.value !== requestedExecution) return;
-    document.value = null;
-    error.value = cause instanceof Error ? cause.message : "The run could not be loaded.";
-  } finally {
-    if (executionId.value === requestedExecution) loading.value = false;
-  }
-};
-
 const warmSubject = (targetId: string): void => {
   subjectWorkspaceView.preload();
   void getSubject(executionId.value, targetId);
@@ -88,7 +72,6 @@ const contractStatusLabel = (status: ContractReliability["status"]): string => {
   return "not evaluable";
 };
 
-watch(executionId, () => void load(), { immediate: true });
 watch(() => route.name, applyRunContext);
 onActivated(applyRunContext);
 subjectWorkspaceView.preload();

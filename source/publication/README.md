@@ -200,10 +200,15 @@ bad or inconsistently good. A scatter chart shows CI width against question scor
 means lower score and a smaller confidence interval width. The chart does not create a weighted score.
 
 Cost pages use provider-reported costs recorded in the selected signed run. They are historical
-measurements, not estimates based on current prices. Tested-model cost is called Guesser cost in
-the methodology. Full benchmark cost includes the Guesser,
+measurements, not estimates based on current prices. Published comparisons use only the retained
+terminal attempt for each trial. They exclude superseded infrastructure attempts so a repaired
+Oracle, Reviewer, Judge, Validator, or provider failure cannot inflate the tested model's cost.
+The signed benchmark artifact keeps those attempts in its gross execution total and repair
+ledger. Recovery requests inside the retained terminal attempt remain included. Tested-model
+cost is called Guesser cost in the methodology. Full benchmark cost includes the Guesser,
 Primary Oracle, Reviewer, Judge, and Validator. Per-episode values divide by terminal episodes.
-Support cost is full cost minus Guesser cost.
+Support cost is full cost minus Guesser cost. When repair overhead was excluded, the cost table
+and run ledger show its amount as separate, non-comparable information.
 
 The first chart on the Results time page shows tested-model response time. This is the sum of
 provider-reported latency for every recorded Guesser call. Model time per episode divides that
@@ -231,7 +236,7 @@ The calculation has three steps:
 
 1. Calculate the Question Score by averaging penalized trial values within each subject, then
    averaging those subject averages.
-2. Divide the run's total recorded Guesser cost by its terminal episode count.
+2. Divide the retained terminal attempts' recorded Guesser cost by the terminal episode count.
 3. Min/max-normalize both cohort measures and calculate their Euclidean distance from `(0, 0)`.
 
 For example, normalized question score `0.06` and normalized cost `0.08` give distance `0.10`.
@@ -329,6 +334,10 @@ recorded resolved-provider names and state that per-call provider totals were no
 compiler intentionally does not project system instructions, raw Guesser conversation records,
 variation tokens, call IDs, response IDs, support-model outputs, sessions, cache keys, recovery
 diagnostics, credentials, or headers.
+The strict source reader validates the private episode `audit.calls` projection when present,
+including the typed Oracle research-attempt classification and bounded model-reported queries,
+but the public compiler does not copy it into the public dataset. Public technical telemetry
+continues to come from the existing aggregate allowlist.
 The package accepts only the current manifest/summary schema 3, episode schema 9, and game
 protocol 9. It has no legacy adapter, schema downgrade, or per-run exclusion path. Every
 discovered run must satisfy the current strict read contract. Internal read-model names remain

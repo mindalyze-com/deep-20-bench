@@ -67,6 +67,43 @@ test("tables and horizontal breakdowns expose accessible names and focus", { tag
   await expect(page.locator(".score-dot-plot-canvas[tabindex]")).toHaveCount(0);
 });
 
+test("official cost and time rows open the selected run", { tag: ["@interactions", "@desktop"] }, async ({
+  page,
+}) => {
+  for (const routePath of ["results/cost/", "results/time/"]) {
+    await page.goto(routePath);
+    await waitForPublication(page);
+    const row = page.locator(".ranking-table tbody tr").first();
+    const link = row.getByRole("link");
+    const href = await link.getAttribute("href");
+    expect(href).not.toBeNull();
+    await row.locator("td[data-numeric]").first().click();
+    await expect(page).toHaveURL(new RegExp(`${href?.replaceAll("/", "\\/")}$`));
+  }
+});
+
+test("mobile score plots leave touch gestures to page scrolling", { tag: ["@interactions", "@both", "@smoke"] }, async ({
+  page,
+}, testInfo) => {
+  for (const routePath of ["", "results/"]) {
+    await page.goto(routePath);
+    await waitForPublication(page);
+
+    const scoreCanvases = page.locator(".score-dot-plot-canvas");
+    await expect(scoreCanvases).toHaveCount(2);
+
+    if (testInfo.project.name.startsWith("mobile")) {
+      await expect(scoreCanvases.first()).toHaveCSS("pointer-events", "none");
+      await expect(scoreCanvases.first()).toHaveCSS("touch-action", "pan-y");
+      await expect(scoreCanvases.last()).toHaveCSS("pointer-events", "none");
+      await expect(scoreCanvases.last()).toHaveCSS("touch-action", "pan-y");
+    } else {
+      await expect(scoreCanvases.first()).toHaveCSS("pointer-events", "auto");
+      await expect(scoreCanvases.last()).toHaveCSS("pointer-events", "auto");
+    }
+  }
+});
+
 test("primary and result navigation use distinct section names", { tag: ["@interactions", "@desktop"] }, async ({ page }) => {
   await page.goto("results/");
   await waitForPublication(page);

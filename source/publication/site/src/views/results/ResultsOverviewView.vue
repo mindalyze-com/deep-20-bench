@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { computed, onActivated, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import ComparisonRankingTable from "@/components/ComparisonRankingTable.vue";
-import ErrorState from "@/components/ErrorState.vue";
 import InfoPopover from "@/components/InfoPopover.vue";
-import LoadingState from "@/components/LoadingState.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
-import ScoreDotPlot, { type ScoreDot } from "@/components/ScoreDotPlot.vue";
+import ResultsContent from "@/components/ResultsContent.vue";
+import ScoreDotPlot from "@/components/ScoreDotPlot.vue";
 import { getLeaderboard, getManifest } from "@/lib/api";
 import {
+  confidenceIntervalLabel,
   contractPercent,
   duration,
   money,
@@ -21,14 +21,19 @@ import {
   number,
   percent,
 } from "@/lib/format";
-import { setRouteContext } from "@/lib/route-context";
+import { usePageRouteContext } from "@/lib/route-context";
+import { runRoute } from "@/lib/route-location";
+import {
+  leaderboardScoreDot,
+  questionScoreChartSummary,
+  type ScoreDot,
+} from "@/lib/result-chart";
 import type { LeaderboardRow, ManifestDocument } from "@/lib/types";
+import { usePublicationLoad } from "@/lib/use-publication-load";
 import { useRepeatAverages } from "@/lib/use-repeat-averages";
 
 const leaderboard = ref<LeaderboardRow[]>([]);
 const manifest = ref<ManifestDocument | null>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
 const router = useRouter();
 const {
   averages: repeatAverages,
@@ -37,20 +42,10 @@ const {
   load: loadRepeatAverages,
 } = useRepeatAverages();
 
-const applyRouteContext = (): void => {
-  setRouteContext({
-    title: "Results",
-    description: "Compare official Deep20Bench model scores, outcomes, costs, and time.",
-    level: null,
-    position: null,
-    crumbs: [],
-    previous: null,
-    next: null,
-  });
-};
-
-applyRouteContext();
-onActivated(applyRouteContext);
+usePageRouteContext({
+  title: "Results",
+  description: "Compare official Deep20Bench model scores, outcomes, costs, and time.",
+});
 
 const rows = computed(() =>
   leaderboard.value
@@ -97,76 +92,41 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
 ]);
 
 const scoreDots = computed<ScoreDot[]>(() =>
-  rows.value.map((row) => ({
-    modelId: row.model.model_id,
-    label: row.model.display_name,
-    value: Number(row.question_score ?? 0),
-    display: number(row.question_score),
-    confidenceLower:
-      row.question_score_confidence_interval === null
-        ? undefined
-        : Number(row.question_score_confidence_interval.lower),
-    confidenceUpper:
-      row.question_score_confidence_interval === null
-        ? undefined
-        : Number(row.question_score_confidence_interval.upper),
-    confidenceDisplay:
-      row.question_score_confidence_interval === null
-        ? undefined
-        : `${number(row.question_score_confidence_interval.lower, 2)}–${number(
-            row.question_score_confidence_interval.upper,
-            2,
-          )}`,
-    detail: `Rank ${row.rank ?? "-"} · ${percent(row.success_rate)} success`,
-    link:
-      row.execution_id === null ? undefined : `/runs/${row.execution_id}/`,
-  })),
+  rows.value.map((row) =>
+    leaderboardScoreDot(
+      row,
+      `Rank ${row.rank ?? "-"} · ${percent(row.success_rate)} success`,
+    ),
+  ),
 );
 
-const runLink = (row: LeaderboardRow) => ({
-  name: "run",
-  params: { executionId: row.execution_id },
-});
-
 const openRun = (row: LeaderboardRow): void => {
-  if (row.execution_id !== null) void router.push(runLink(row));
+  if (row.execution_id !== null) void router.push(runRoute(row.execution_id));
 };
 
-const load = async (): Promise<void> => {
-  loading.value = true;
-  error.value = null;
-  try {
-    const [leaderboardDocument, manifestDocument] = await Promise.all([
+const { loading, error } = usePublicationLoad(async () => {
+  const [leaderboardDocument, manifestDocument] = await Promise.all([
       getLeaderboard(),
       getManifest(),
-    ]);
-    leaderboard.value = leaderboardDocument.leaderboard;
-    manifest.value = manifestDocument;
-  } catch (reason: unknown) {
-    error.value =
-      reason instanceof Error ? reason.message : "Publication data could not be loaded.";
-  } finally {
-    loading.value = false;
-  }
-};
-
-void load();
+  ]);
+  leaderboard.value = leaderboardDocument.leaderboard;
+  manifest.value = manifestDocument;
+});
 </script>
 
 <template>
   <div class="page results-view">
-    <LoadingState v-if="loading" label="Loading official results" />
-    <ErrorState v-else-if="error !== null" :message="error" />
-
-    <section v-else-if="rows.length === 0" class="content-section empty-state">
-      <div class="content-inner">
+    <ResultsContent
+      :loading="loading"
+      loading-label="Loading official results"
+      :error="error"
+      :empty="rows.length === 0"
+    >
+      <template #empty>
         <p class="eyebrow">Official comparison</p>
         <h2>No official results are available.</h2>
-      </div>
-    </section>
+      </template>
 
-    <section v-else class="content-section">
-      <div class="content-inner">
         <MetricGrid
           class="results-summary"
           :items="summaryMetrics"
@@ -183,11 +143,7 @@ void load();
               <p class="eyebrow">Primary result</p>
               <h2 id="overview-chart-title">Question score.</h2>
             </div>
-            <p>
-              Lower is better. The blue marker is the average question score. The colored line
-              is its 95% confidence interval (CI). The companion plot shows each exact CI
-              width. Its three bands divide the displayed width scale into equal ranges.
-            </p>
+            <p>{{ questionScoreChartSummary }}</p>
             <ResultHelp label="Score metric explanations">
               <InfoPopover label="Question score">
                 <p>
@@ -247,7 +203,7 @@ void load();
                 <td class="model-column" data-label="Model">
                   <ModelRunLink
                     v-if="row.execution_id !== null"
-                    :to="runLink(row)"
+                    :to="runRoute(row.execution_id)"
                     :name="row.model.display_name"
                     :meta="row.model.provider"
                   />
@@ -301,7 +257,7 @@ void load();
             :rank="row.rank ?? '-'"
             :name="row.model.display_name"
             :provider="row.model.provider"
-            :to="row.execution_id === null ? null : runLink(row)"
+            :to="row.execution_id === null ? null : runRoute(row.execution_id)"
             :metrics="[
               {
                 label: 'Question score',
@@ -309,13 +265,9 @@ void load();
               },
               {
                 label: '95% CI',
-                value:
-                  row.question_score_confidence_interval === null
-                    ? '-'
-                    : `${number(row.question_score_confidence_interval.lower, 2)}–${number(
-                        row.question_score_confidence_interval.upper,
-                        2,
-                      )}`,
+                value: confidenceIntervalLabel(
+                  row.question_score_confidence_interval,
+                ),
               },
               { label: 'Success', value: percent(row.success_rate) },
               {
@@ -335,16 +287,11 @@ void load();
           thresholds. The 95% CI does not cover different subjects, model versions, or
           providers.
         </p>
-      </div>
-    </section>
+    </ResultsContent>
   </div>
 </template>
 
 <style scoped>
-.results-summary {
-  margin-bottom: var(--results-section-gap);
-}
-
 .comparison-panel {
   margin-bottom: var(--results-section-gap);
 }
@@ -355,10 +302,6 @@ void load();
 
 .results-table-wrap {
   margin-top: var(--results-section-gap);
-}
-
-.empty-state {
-  min-height: 50vh;
 }
 
 @media (max-width: 620px) {

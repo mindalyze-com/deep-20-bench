@@ -9,9 +9,11 @@ independent live-web Oracle with blind Reviewer/Judge quality control, and stric
 Validator. The control plane owns durable state, observation, logging, aggregation, and derived
 reporting.
 
-The Oracle researches each question against the live web. Every initial `YES` or `NO` is then
-checked by a blind no-web Reviewer. A blind no-web Judge produces the final answer only when
-the Oracle and Reviewer disagree. Both quality-control roles use evidence first and may use
+The Oracle researches each question against the live web. A typed primary research attempt may
+trigger one separate, diversified recovery attempt when search returned no usable evidence.
+The Oracle emits one final result after that internal research workflow. Every final `YES` or
+`NO` is then checked by a blind no-web Reviewer. A blind no-web Judge produces the final answer
+only when the Oracle and Reviewer disagree. Both quality-control roles use evidence first and may use
 their own high-confidence knowledge only for stable closed facts, with an explicit
 decision-basis label. The Reviewer applies this fallback conservatively because agreement
 bypasses the Judge. Neither quality-control role receives either earlier answer. Deep20Bench
@@ -23,8 +25,12 @@ flowchart LR
     Catalogs["Model + benchmark + subject catalogs"] --> Benchmark["Benchmark control plane"]
     Benchmark --> Engine["One-game engine"]
     Guesser["Stateful visible Guesser transcript"] --> Engine
-    Engine --> Oracle["Live-web Oracle research"]
-    Oracle --> OracleUnknown{"Oracle UNKNOWN?"}
+    Engine --> Oracle["Primary live-web research"]
+    Oracle --> Recovery{"Retryable retrieval UNKNOWN?"}
+    Recovery -->|"yes"| RecoveryOracle["Blind diversified recovery research"]
+    RecoveryOracle --> OracleResult["One final Oracle result"]
+    Recovery -->|"no"| OracleResult
+    OracleResult --> OracleUnknown{"Oracle UNKNOWN?"}
     OracleUnknown -->|"yes"| Final["Final factual token"]
     OracleUnknown -->|"no"| Reviewer["Blind no-web Reviewer"]
     Reviewer --> Agreement{"Oracle–Reviewer agreement?"}
@@ -81,6 +87,13 @@ independent.
 `YES` and `NO` require one to three evidence items. `UNKNOWN` requires an empty evidence list.
 Each evidence item has an HTTP(S) source URL, excerpt, and the fixed
 `validation="model_reported"` label.
+
+Before producing that final result, each provider-backed research attempt returns a strict
+`OracleResearchAttemptResult`. It adds a classified research outcome and one to eight bounded,
+model-reported query strings. The deterministic question class, attempt strategy, outcome,
+query list, search-request count, annotations, evidence count, and resolution are private audit
+data. Query strings are not verified provider telemetry and are never sent to the Guesser,
+Reviewer, Judge, or a later research attempt.
 
 ### Evidence review and final adjudication
 
@@ -142,17 +155,26 @@ audit-only.
 
 For every question, the Oracle:
 
-1. Renders a fixed versioned policy as a system message.
-2. Encodes the subject and question separately as untrusted JSON data.
-3. Makes one Oracle provider request with web search and strict JSON-schema output.
-4. Requires telemetry showing at least one web search and confirms the exact configured route.
-5. Returns an Oracle `UNKNOWN` directly; otherwise, sends only the trusted subject, original
+1. Classifies the current question into a deterministic research family.
+2. Renders a fixed versioned primary research policy as a system message.
+3. Encodes the subject and question separately as untrusted JSON data.
+4. Makes one Oracle provider request with web search and strict JSON-schema output.
+5. Requires telemetry showing at least one web search, confirms the exact configured route,
+   and validates the typed answer, evidence, research outcome, and model-reported queries.
+6. If the result is a retrieval-related `UNKNOWN`, makes exactly one separate recovery request
+   with the same subject and question under a fixed diversified-search prompt. The recovery
+   call receives no prior answer, evidence, query, result, trace, or history and uses a separate
+   session and prompt-cache namespace.
+7. Treats ambiguity and unprovable open-world absence as genuine `UNKNOWN`. Two exhausted
+   retrieval attempts for a deterministically closed fact fail the Oracle operation as
+   infrastructure; other exhausted research remains a classified final `UNKNOWN`.
+8. Returns a final Oracle `UNKNOWN` directly; otherwise, sends only the trusted subject, original
    question, and numbered evidence excerpts to a separately configured no-web Reviewer.
-6. Returns an Oracle–Reviewer agreement directly; otherwise, sends the same blind factual
+9. Returns an Oracle–Reviewer agreement directly; otherwise, sends the same blind factual
    package to the separately configured no-web Judge and treats its decision as final.
-7. Validates every role's typed result and persists the complete typed success or failure
+10. Validates every role's typed result and persists the complete typed success or failure
    record through the injected `OracleAuditSink`.
-8. Returns an immutable `OracleCall` only after the durable acknowledgement. The game projects
+11. Returns an immutable `OracleCall` only after the durable acknowledgement. The game projects
    only its final `YES`, `NO`, or `UNKNOWN` token into Guesser-visible history.
 
 The Oracle library does not choose paths, inspect run directories, configure handlers, or emit
@@ -176,7 +198,9 @@ The episode result applies the same safe provider aggregation to Guesser and Gue
 calls, so post-run reporting can identify the concrete backend used by every LLM role without
 changing any model-visible request or message history.
 
-There is no semantic repair prompt, answer cache, response cache, or persisted knowledge state.
+There is no answer cache, response cache, persisted knowledge state, or answer-correction
+prompt. The one research-recovery prompt changes evidence-acquisition strategy only; it is a
+new independent request, not an exact replay and not an adjudication retry.
 The OpenRouter adapters share a typed recovery policy for transport failures and explicit
 408/429/500/502/503/504/524/529 responses, including transient provider errors embedded in an
 HTTP-200 SDK failure. They honor `Retry-After`, retry empty/incomplete responses
@@ -204,7 +228,10 @@ independent.
 
 The Oracle uses OpenRouter's normal web-search ranking without a source-specific preference,
 domain allowlist, ordered fallback, or application-level reranking. It evaluates the returned
-sources and returns `UNKNOWN` when evidence remains insufficient, ambiguous, or conflicting.
+sources and classifies an unanswered attempt as no results, irrelevant results, insufficient
+coverage, conflicting sources, ambiguity, or an unprovable open-world claim. The first four
+may invoke the one diversified research attempt. A reliable direct counterfact, such as an
+authoritative death date for a current-life question, can directly support `NO`.
 Reviewer and Judge do not perform fresh research. Both can correct comparison, negation,
 boundary, and answer-polarity mistakes against the supplied excerpts. Both can also resolve a
 narrow class of missing-evidence cases from labelled stable model knowledge. Neither role can
@@ -242,6 +269,16 @@ Completed trials embed their complete `EpisodeResult`.
 Infrastructure failures use a discriminated variant with a `BenchmarkFailure`, partial metrics,
 and artifact references. Raw privileged records are linked rather than embedded.
 
+Each completed episode embeds a versioned, chronological `audit.calls` projection. Guesser and
+Validator calls have one entry; Oracle calls contain the primary provider call, optional
+research-recovery attempt, and separate Reviewer and Judge role entries. The projection retains
+turn and call linkage, prompt version/hash, timestamps, route,
+HTTP/finish/cache state, recovery, tokens, cost, latency, output lengths, web-search request
+counts, citation-annotation counts, bounded model-reported attempted query strings, classified
+research outcomes and resolution, and bounded allowlisted router-stage metadata. Search
+requests count queries and do not establish that any document was returned. Attempted query
+strings are model-reported and may differ from provider-internal execution.
+
 The catalogs and every public or cross-component value are strict frozen Pydantic models.
 Explicit types distinguish benchmark, execution, model, trial, episode, call, and event IDs.
 External arbitrary JSON is admitted only through an explicit recursive JSON type, then validated
@@ -269,6 +306,10 @@ execution state failed, and raises a typed error so a burst outage cannot burn t
 schedule; the execution can later be resumed or repaired. Both controls affect only which
 trials execute, never adjudication, scoring, prompts, or Guesser-visible state.
 
+Publication cost comparisons use retained terminal attempts only. Superseded infrastructure
+attempts stay in the signed execution total and repair metrics, but are excluded from public
+model, component, per-episode, and benchmark cost comparisons.
+
 ## Audit and reproducibility
 
 The benchmark owns one canonical artifact tree per model run:
@@ -288,12 +329,18 @@ runs/<model-id>/<execution-id>/
 Benchmark progress records are appended and `fsync`ed immediately. The typed live
 `BenchmarkState` is replaced atomically after every durable progress event. Component calls and
 episode events use a benchmark-owned, filesystem-free typed sink and are discarded after their
-result and metrics have been incorporated. Markdown is regenerated after each terminal trial.
+sanitized result audit, result, and metrics have been incorporated. Markdown is regenerated
+after each terminal trial.
 Trial, subject, and run YAML files are serialized from the matching typed result object.
 
 The top-level `result.yml` is the exact serialized `BenchmarkResult` and carries a SHA-256
 integrity hash. Benchmark mode does not retain raw prompts, provider exchanges, or call/event
-records. Typed artifact references record relative paths, counts, and integrity information.
+records. Its embedded call audit is an allowlisted projection, not a provider trace: it excludes
+prompts, histories, request/response bodies, raw output, evidence text, citation URLs, response
+IDs, sessions, cache keys, credentials, headers, and router endpoints. It may retain bounded
+model-reported search query strings and their provenance solely for post-run research diagnosis.
+Those strings never become later model input. Typed artifact references
+record relative paths, counts, and integrity information.
 
 `result.yml` is the sole exhaustive machine-readable result. The derived `summary.yml` contains
 the run aggregate, subject aggregates, concise trial outcomes, and artifact references without
@@ -317,12 +364,13 @@ The benchmark command configures handlers and component levels. At `INFO`, it em
 - One `benchmark.trial_context` line before every executed trial, preceded by an empty visual
   separator and containing only the trial ID, target ID, and canonical subject name.
 - One condensed `benchmark.turn` line combining the answer, Guesser and adjudicator metrics,
-  web-search count, evidence count, and prompt-cache reads and writes.
+  the original Guesser question JSON-escaped onto one physical line, web-search count, evidence
+  count, prompt-cache reads and writes, latency, and cost.
 - One terminal trial line.
 - One final benchmark result line whose `cost_usd` is the total run cost.
 
-A failure produces one `benchmark.failed` line with a stable code, available latency, and
-available cost. Provider failures use response-derived categories such as
+A failure produces one `benchmark.failed` line with a stable code and available model,
+web-search, latency, and cost metadata. Provider failures use response-derived categories such as
 `provider_rate_limited`, `provider_unavailable`, and `provider_overloaded` when OpenRouter
 returns enough typed status information. Embedded Oracle, Reviewer, Judge, Guesser, Validator,
 and game libraries do not emit duplicate routine result lines.
@@ -330,10 +378,11 @@ and game libraries do not emit duplicate routine result lines.
 Every log record starts with a local timestamp in `YYYY-MM-DD HH:MM:SS.mmm` format. The empty
 separator before a trial context is formatting only and is not itself a log record.
 
-Prompts, raw responses, evidence excerpts, annotations, and subject descriptions are never
-printed. Benchmark mode discards raw call records; standalone verbose commands may retain them
-in their own audits. Credentials are neither persisted nor printed, and call IDs remain absent
-from console output. The detailed conventions live in the repository `AGENTS.md`.
+Prompts, system instructions, raw responses, evidence excerpts, citation annotations, subject
+descriptions, credentials, headers, and environment values are never printed. Benchmark mode
+discards raw call records; standalone verbose commands may retain permitted details in their
+own audits. Credentials are neither persisted nor printed, and call IDs remain absent from
+console output. This section is the detailed console contract.
 
 Trial-context formatting is control-plane observability only. It is not added to provider
 requests, Guesser-visible messages, sessions, cache namespaces, retries, or persisted benchmark
@@ -341,9 +390,12 @@ events, so it does not affect prompt-prefix caching or introduce application res
 
 ## Failure handling
 
-Normal protocol states are not treated as exceptions. Oracle `UNKNOWN`, Reviewer `UNKNOWN`,
+Normal protocol states are not treated as exceptions. A genuine Oracle `UNKNOWN`, Reviewer `UNKNOWN`,
 Judge `UNKNOWN`, Validator `NO` or `UNKNOWN`, an exhausted question limit, and a valid but
 unsuccessful game remain typed outcomes.
+A second retrieval failure for a deterministically closed factual question is an Oracle
+infrastructure failure with code `oracle_research_exhausted`; it is not returned to the Guesser
+as an epistemic `UNKNOWN`.
 A Guesser response that violates the structured-action schema - or a Guesser provider call
 that ends without a completed structured action (`length` finish, empty output, or another
 non-`stop` finish) - becomes a typed contract-violation turn attributed to the model under
@@ -373,9 +425,10 @@ message history, raw output, subjects, guesses, evidence, citations, annotations
 and headers.
 
 Standalone verbose call audits may still retain the complete credential-free provider trace
-under their artifact policy. Benchmark mode keeps only the sanitized terminal diagnostics and
-typed metrics; it does not create raw per-call artifacts. Diagnostics are reporting-only and
-are never appended to Guesser messages, cache keys, sessions, retries, or provider requests.
+under their artifact policy. Benchmark mode keeps sanitized terminal diagnostics, typed
+metrics, and the bounded per-call result projection; it does not create raw per-call artifacts.
+Diagnostics and retained call summaries are reporting-only and are never appended to Guesser
+messages, cache keys, sessions, retries, or provider requests.
 Retry decisions depend only on the typed failure class and configured recovery budget, never
 on subject identity, adjudicator state, or a prior trial artifact. A finish reason may select
 an exact-request transport retry class. Local Guesser schema validation never triggers an

@@ -663,7 +663,7 @@ def test_successful_completed_trial_still_keeps_contract_breach() -> None:
     assert projected.contract.counted_penalties == 1
 
 
-def test_repair_metrics_are_typed_and_counted_without_entering_public_trials() -> None:
+def test_repair_metrics_are_excluded_from_public_costs_and_trials() -> None:
     loaded, _ = _qualification_context()
     superseded = SupersededInfrastructureAttemptSnapshot(
         attempt_number=1,
@@ -702,13 +702,17 @@ def test_repair_metrics_are_typed_and_counted_without_entering_public_trials() -
 
     totals = _public_run_totals(run)
 
-    assert totals.costs_usd.guesser == Decimal(2)
-    assert totals.costs_usd.primary_oracle == Decimal("1.5")
-    assert totals.costs_usd.reviewer == Decimal(1)
-    assert totals.costs_usd.judge == Decimal("0.5")
-    assert totals.costs_usd.validator == Decimal("0.25")
-    assert totals.costs_usd.total == Decimal("5.25")
-    assert totals.total_tokens == 12
+    assert run.summary.summary.total_cost_usd == Decimal("5.25")
+    assert totals.costs_usd.guesser == Decimal(0)
+    assert totals.costs_usd.primary_oracle == Decimal(0)
+    assert totals.costs_usd.reviewer == Decimal(0)
+    assert totals.costs_usd.judge == Decimal(0)
+    assert totals.costs_usd.validator == Decimal(0)
+    assert totals.costs_usd.total == Decimal(0)
+    assert totals.excluded_repair.cost_usd == Decimal("5.25")
+    assert totals.excluded_repair.superseded_attempts == 1
+    assert totals.excluded_repair.affected_trials == 1
+    assert totals.total_tokens == 0
 
     trial = loaded.summary.subjects[0].trials[0]
     assert isinstance(trial, CompletedTrialSummary)
@@ -876,14 +880,10 @@ def test_efficiency_rank_and_pareto_efficiency_are_independent_of_question_rank(
     assert by_id["M-0001"].product_efficiency_rank == 2
     assert by_id["M-0003"].product_efficiency_rank == 3
     assert by_id["M-0001"].ideal_distance_score is not None
-    assert abs(by_id["M-0001"].ideal_distance_score - Decimal(1) / Decimal(3)) < Decimal(
-        "1e-28"
-    )
+    assert abs(by_id["M-0001"].ideal_distance_score - Decimal(1) / Decimal(3)) < Decimal("1e-28")
     assert by_id["M-0001"].normalized_question_score == 0
     assert by_id["M-0001"].normalized_guesser_cost is not None
-    assert abs(by_id["M-0001"].normalized_guesser_cost - Decimal(1) / Decimal(3)) < Decimal(
-        "1e-28"
-    )
+    assert abs(by_id["M-0001"].normalized_guesser_cost - Decimal(1) / Decimal(3)) < Decimal("1e-28")
     assert by_id["M-0001"].pareto_efficient
     assert by_id["M-0002"].pareto_efficient
     assert not by_id["M-0003"].pareto_efficient
@@ -1478,6 +1478,31 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     assert "{ label: 'Benchmark run cost', value: money(row.total_cost_usd) }" in leaderboard_source
 
 
+def test_cost_documentation_excludes_superseded_infrastructure_attempts() -> None:
+    cost_source = (
+        REPOSITORY
+        / "source"
+        / "publication"
+        / "site"
+        / "src"
+        / "views"
+        / "results"
+        / "ResultsCostView.vue"
+    ).read_text(encoding="utf-8")
+    methodology_source = (
+        REPOSITORY / "source" / "publication" / "site" / "src" / "views" / "MethodologyView.vue"
+    ).read_text(encoding="utf-8")
+    run_source = _run_source()
+
+    cost_copy = " ".join(cost_source.split())
+    methodology_copy = " ".join(methodology_source.split())
+    assert "Superseded infrastructure attempts and support costs are excluded." in cost_copy
+    assert "do not increase the published model or benchmark cost" in cost_copy
+    assert "Excluded repair overhead" in cost_copy
+    assert "Excluded repair overhead" in run_source
+    assert "do not increase public model or benchmark costs" in methodology_copy
+
+
 def test_generated_homepage_matches_the_official_result_state() -> None:
     dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
     dataset = json.loads(dataset_path.read_text(encoding="utf-8"))
@@ -1490,22 +1515,10 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
         REPOSITORY / "source" / "publication" / "site" / "src" / "views" / "DataView.vue"
     ).read_text(encoding="utf-8")
     site_footer = (
-        REPOSITORY
-        / "source"
-        / "publication"
-        / "site"
-        / "src"
-        / "components"
-        / "SiteFooter.vue"
+        REPOSITORY / "source" / "publication" / "site" / "src" / "components" / "SiteFooter.vue"
     ).read_text(encoding="utf-8")
     site_resources = (
-        REPOSITORY
-        / "source"
-        / "publication"
-        / "site"
-        / "src"
-        / "lib"
-        / "site-resources.ts"
+        REPOSITORY / "source" / "publication" / "site" / "src" / "lib" / "site-resources.ts"
     ).read_text(encoding="utf-8")
     model_run_link = (
         REPOSITORY / "source" / "publication" / "site" / "src" / "components" / "ModelRunLink.vue"
@@ -1553,8 +1566,8 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "hash: '#answer-checks'" in homepage
     assert "Early runs exposed rare but basic Oracle errors" not in homepage
     assert "From one round to a comparable score." in methodology
-    assert '<IllustrativeRoundExample />' in homepage
-    assert '<IllustrativeRoundExample />' in methodology
+    assert "<IllustrativeRoundExample />" in homepage
+    assert "<IllustrativeRoundExample />" in methodology
     assert "Question score (single round)" in illustrative_round
     assert "The correct guess is excluded." in illustrative_round
     assert "Questions and guesses follow separate paths." in methodology
@@ -1564,7 +1577,10 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "Oracle UNKNOWN" in methodology
     assert "Guess Validator" in methodology
     assert "The Guesser is fully isolated from adjudication." in methodology
-    assert "contains only the broad category, its own prior actions, final YES, NO, or UNKNOWN" in methodology
+    assert (
+        "contains only the broad category, its own prior actions, final YES, NO, or UNKNOWN"
+        in methodology
+    )
     assert "searches, evidence, citations, adjudicator" in methodology
     assert "provider traces, or private artifacts" in methodology
     assert "Early runs exposed rare but basic Oracle errors" in methodology
@@ -1602,6 +1618,8 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "site-resources" in site_footer
     assert "How to cite" in site_resources
     assert "Report an error" in site_resources
+    assert "Support on Ko-fi" in site_resources
+    assert "https://ko-fi.com/mindalyze" in site_resources
     assert "source-available under a dual-license model" in site_footer
     assert "Software licensing - source-available" in site_resources
     assert "data-build-note" not in data_page
@@ -1610,6 +1628,7 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "CC BY 4.0" in data_page
     assert ".model.display_name" in data_page
     assert "Read the publication method" in data_page
+    assert "Support future benchmark runs" in homepage
     if evaluated:
         assert '<template v-if="evaluated.length > 0">' in homepage
         assert "<ComparisonRankingTable" in homepage
@@ -1764,6 +1783,7 @@ def test_generated_efficiency_distance_is_reproducible_from_public_decimals() ->
         "Grok 4.5 (high)",
         "Claude Sonnet 5 (high)",
         "GPT-5 Nano (medium)",
+        "Grok 4.6 (high)",
         "GPT-5.6 Luna (high)",
         "Claude Fable 5 (high)",
         "GPT-5.6 Sol (high)",
@@ -1773,22 +1793,21 @@ def test_generated_efficiency_distance_is_reproducible_from_public_decimals() ->
         "Mistral Medium 3.5 (high)",
     )
     assert tuple(format(row.ideal_distance_score, ".3f") for row in ordered) == (
-        "0.100",
-        "0.142",
-        "0.161",
+        "0.104",
+        "0.155",
         "0.162",
+        "0.167",
         "0.170",
+        "0.179",
         "0.283",
-        "0.386",
-        "0.389",
-        "0.441",
-        "0.446",
+        "0.420",
+        "0.420",
+        "0.468",
+        "0.485",
         "1.000",
         "1.076",
     )
-    assert {
-        row.model.display_name for row in ordered if row.pareto_efficient
-    } == {
+    assert {row.model.display_name for row in ordered if row.pareto_efficient} == {
         "Llama 4 Maverick (non-thinking)",
         "GPT-5 Nano (medium)",
         "Grok 4.5 (high)",
@@ -2017,13 +2036,13 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     time = (results / "ResultsTimeView.vue").read_text(encoding="utf-8")
     efficiency = (results / "ResultsEfficiencyView.vue").read_text(encoding="utf-8")
     reliability = (results / "ResultsReliabilityView.vue").read_text(encoding="utf-8")
-    reliability_scatter = (
-        source_root / "components" / "ReliabilityScatter.vue"
-    ).read_text(encoding="utf-8")
+    reliability_scatter = (source_root / "components" / "ReliabilityScatter.vue").read_text(
+        encoding="utf-8"
+    )
     result_help = (source_root / "components" / "ResultHelp.vue").read_text(encoding="utf-8")
-    metric_definition_card = (
-        source_root / "components" / "MetricDefinitionCard.vue"
-    ).read_text(encoding="utf-8")
+    metric_definition_card = (source_root / "components" / "MetricDefinitionCard.vue").read_text(
+        encoding="utf-8"
+    )
     model_run_link = (source_root / "components" / "ModelRunLink.vue").read_text(encoding="utf-8")
     mobile_result_card = (source_root / "components" / "MobileResultCard.vue").read_text(
         encoding="utf-8"
@@ -2053,7 +2072,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "<ComparisonRankingTable" in overview
     assert 'variant="results-overview"' in overview
     assert "const metricWidth" in comparison_ranking_table
-    assert '<colgroup>' in comparison_ranking_table
+    assert "<colgroup>" in comparison_ranking_table
     assert '"comparison-ranking-table"' in comparison_ranking_table
     assert 'variant="table"' in overview
     assert "primary-metric-column" in overview
@@ -2203,7 +2222,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "Definitions" not in result_help
     assert "font-size: var(--text-small);" in result_help
     assert "opacity: 0.78;" not in result_help
-    assert '.panel-heading--with-help' in app_css
+    assert ".panel-heading--with-help" in app_css
     assert 'grid-template-areas: "title text help";' in app_css
     assert ".panel-heading--with-help > .result-help" in app_css
     assert "padding-left: 1rem;" in app_css
@@ -2273,6 +2292,10 @@ def test_homepage_and_method_share_one_typed_illustrative_round() -> None:
     assert "<IllustrativeRoundExample />" in homepage
     assert "<IllustrativeRoundExample />" in method
     assert 'from "@/lib/illustrative-round"' not in story
+    assert "15 August 2026" in story
+    assert "17 August 2026" in story
+    assert "Gemini 3.7 Flash (high) added." in story
+    assert "Grok 4.6 (high) added." in story
     assert "5 August 2026" in story
     assert "Claude Fable 5 (high) added." in story
     assert 'class="round-section"' not in story

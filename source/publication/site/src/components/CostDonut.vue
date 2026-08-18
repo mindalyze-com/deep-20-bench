@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { PieChart } from "echarts/charts";
-import {
-  AriaComponent,
-  TooltipComponent,
-} from "echarts/components";
-import * as echarts from "echarts/core";
 import type {
   DefaultLabelFormatterCallbackParams as CallbackDataParams,
   EChartsOption,
 } from "echarts";
-import { SVGRenderer } from "echarts/renderers";
 import { computed, watch } from "vue";
 
+import { echarts, standardChartComponents } from "@/lib/chart-registration";
 import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import {
   chartAnimationEnabled,
@@ -20,7 +15,7 @@ import {
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
 
-echarts.use([PieChart, TooltipComponent, AriaComponent, SVGRenderer]);
+echarts.use([PieChart, ...standardChartComponents]);
 
 export interface CostDonutItem {
   label: string;
@@ -118,8 +113,6 @@ const chartOption = (): EChartsOption => {
 
 const { chartElement, refresh } = useResponsiveEChart({
   height: chartHeight,
-  initialize: (element) =>
-    echarts.init(element, undefined, { renderer: "svg" }),
   option: chartOption,
 });
 

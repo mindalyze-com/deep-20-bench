@@ -82,6 +82,256 @@ class RecoveryTotalsSnapshot(FrozenModel):
     retry_latency_ms: int = Field(default=0, ge=0)
 
 
+class RecoveryMetricsSnapshot(FrozenModel):
+    request_attempts: int = Field(default=1, ge=1)
+    retried_calls: int = Field(default=0, ge=0)
+    recovered_calls: int = Field(default=0, ge=0)
+    exhausted_retries: int = Field(default=0, ge=0)
+    reasons: tuple[RecoveryReasonCountSnapshot, ...] = ()
+    retry_usage: RecoveryUsageSnapshot = Field(default_factory=RecoveryUsageSnapshot)
+    retry_latency_ms: int = Field(default=0, ge=0)
+
+
+class RouterPipelineStageAuditSnapshot(FrozenModel):
+    stage_type: str = Field(min_length=1, max_length=120)
+    name: str | None = Field(default=None, min_length=1, max_length=160)
+    mode: str | None = Field(default=None, min_length=1, max_length=120)
+    tool_types: tuple[str, ...] = Field(default_factory=tuple, max_length=20)
+
+    @field_validator("tool_types")
+    @classmethod
+    def bounded_tool_types(cls, values: tuple[str, ...]) -> tuple[str, ...]:
+        if any(not value or len(value) > 120 for value in values):
+            raise ValueError("router tool types must contain 1 to 120 characters")
+        return values
+
+
+class RouterMetadataAuditSnapshot(FrozenModel):
+    strategy: str | None = Field(default=None, min_length=1, max_length=160)
+    region: str | None = Field(default=None, min_length=1, max_length=120)
+    attempt: int | None = Field(default=None, ge=0)
+    is_byok: bool | None = None
+    endpoint_count: int = Field(default=0, ge=0)
+    attempt_count: int = Field(default=0, ge=0)
+    pipeline: tuple[RouterPipelineStageAuditSnapshot, ...] = Field(
+        default_factory=tuple,
+        max_length=30,
+    )
+
+
+class ProviderResultAuditSnapshot(FrozenModel):
+    schema_version: Literal[1]
+    requested_at: datetime
+    completed_at: datetime
+    latency_ms: int = Field(ge=0)
+    http_status_code: int | None = Field(default=None, ge=100, le=599)
+    response_cache_status: str | None = Field(default=None, max_length=120)
+    finish_reason: str | None = Field(default=None, max_length=120)
+    retry_after_ms: int | None = Field(default=None, ge=0)
+    recovery: RecoveryMetricsSnapshot
+    requested_model: str = Field(min_length=1, max_length=300)
+    resolved_model: str | None = Field(default=None, min_length=1, max_length=300)
+    requested_provider: str = Field(min_length=1, max_length=300)
+    resolved_provider: str | None = Field(default=None, min_length=1, max_length=300)
+    fallback_occurred: bool | None = None
+    usage: RecoveryUsageSnapshot
+    web_search_requests: int = Field(ge=0)
+    annotation_count: int = Field(ge=0)
+    url_citation_count: int = Field(ge=0)
+    raw_output_present: bool
+    raw_output_characters: int = Field(ge=0)
+    discarded_error_output_count: int = Field(ge=0)
+    router_metadata: RouterMetadataAuditSnapshot | None = None
+
+    @model_validator(mode="after")
+    def consistent_counts(self) -> ProviderResultAuditSnapshot:
+        if self.web_search_requests != self.usage.search_count:
+            raise ValueError("web-search request count differs from provider usage")
+        if self.url_citation_count > self.annotation_count:
+            raise ValueError("URL citation count exceeds annotation count")
+        if self.raw_output_present != (self.raw_output_characters > 0):
+            raise ValueError("raw-output presence differs from its character count")
+        return self
+
+
+class ResultPromptAuditSnapshot(FrozenModel):
+    version: str = Field(min_length=1, max_length=160)
+    hash: str = Field(pattern=SHA256_PATTERN)
+
+
+class GuesserResultCallAuditSnapshot(FrozenModel):
+    component: Literal["guesser"]
+    call_id: str = Field(pattern=r"^GC-[0-9a-f]{32}$")
+    turn_number: int = Field(ge=1)
+    status: Literal["success", "contract_violation", "failure"]
+    prompt: ResultPromptAuditSnapshot
+    provider: ProviderResultAuditSnapshot
+
+
+class ValidatorResultCallAuditSnapshot(FrozenModel):
+    component: Literal["validator"]
+    call_id: str = Field(pattern=r"^VC-[0-9a-f]{32}$")
+    turn_number: int = Field(ge=1)
+    status: Literal["success", "failure"]
+    prompt: ResultPromptAuditSnapshot
+    provider: ProviderResultAuditSnapshot
+
+
+class OracleRoleResultCallAuditSnapshot(FrozenModel):
+    role: Literal["oracle", "reviewer", "judge"]
+    prompt: ResultPromptAuditSnapshot
+    provider: ProviderResultAuditSnapshot
+
+
+OracleResearchQuestionClassSnapshot = Literal[
+    "temporal_status",
+    "closed_fact",
+    "role_or_occupation",
+    "primary_recognition",
+    "open_world_ever",
+    "absence_or_exclusivity",
+    "count_or_comparison",
+    "other",
+]
+OracleResearchOutcomeSnapshot = Literal[
+    "answered",
+    "no_results",
+    "irrelevant_results",
+    "insufficient_coverage",
+    "conflicting_sources",
+    "ambiguous_question",
+    "open_world_not_provable",
+]
+OracleResearchStrategySnapshot = Literal["primary", "diversified_recovery"]
+OracleResearchResolutionSnapshot = Literal[
+    "answered_primary",
+    "answered_recovery",
+    "genuine_unknown_primary",
+    "genuine_unknown_recovery",
+    "retrieval_exhausted_unknown",
+]
+
+
+class OracleResearchAttemptResultCallAuditSnapshot(FrozenModel):
+    attempt_number: int = Field(ge=1, le=2)
+    strategy: OracleResearchStrategySnapshot
+    outcome: OracleResearchOutcomeSnapshot
+    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=8)
+    query_provenance: Literal["model_reported"]
+    evidence_count: int = Field(ge=0, le=3)
+    prompt: ResultPromptAuditSnapshot
+    provider: ProviderResultAuditSnapshot
+
+
+class OracleResearchResultCallAuditSnapshot(FrozenModel):
+    question_class: OracleResearchQuestionClassSnapshot
+    resolution: OracleResearchResolutionSnapshot
+    attempts: tuple[OracleResearchAttemptResultCallAuditSnapshot, ...] = Field(
+        min_length=1,
+        max_length=2,
+    )
+
+    @model_validator(mode="after")
+    def contiguous_attempts(self) -> OracleResearchResultCallAuditSnapshot:
+        expected = tuple(range(1, len(self.attempts) + 1))
+        if tuple(attempt.attempt_number for attempt in self.attempts) != expected:
+            raise ValueError("retained research attempts must be contiguous and one-based")
+        if self.attempts[0].strategy != "primary":
+            raise ValueError("the first retained research attempt must be primary")
+        if len(self.attempts) == 2 and self.attempts[1].strategy != "diversified_recovery":
+            raise ValueError("the second retained research attempt must be recovery")
+        primary_resolutions = {"answered_primary", "genuine_unknown_primary"}
+        if (self.resolution in primary_resolutions) != (len(self.attempts) == 1):
+            raise ValueError("retained research resolution differs from attempt count")
+        for attempt in self.attempts:
+            if (attempt.outcome == "answered") != (attempt.evidence_count > 0):
+                raise ValueError("retained research outcome differs from evidence count")
+        final_answered = self.attempts[-1].outcome == "answered"
+        answered_resolution = self.resolution in {
+            "answered_primary",
+            "answered_recovery",
+        }
+        if final_answered != answered_resolution:
+            raise ValueError("retained research resolution differs from final outcome")
+        retrieval_outcomes = {
+            "no_results",
+            "irrelevant_results",
+            "insufficient_coverage",
+        }
+        retryable_outcomes = {*retrieval_outcomes, "conflicting_sources"}
+        if len(self.attempts) == 2 and self.attempts[0].outcome not in retryable_outcomes:
+            raise ValueError("retained recovery requires a retryable primary outcome")
+        final_outcome = self.attempts[-1].outcome
+        if self.resolution == "genuine_unknown_primary" and final_outcome not in {
+            "ambiguous_question",
+            "open_world_not_provable",
+        }:
+            raise ValueError("retained primary UNKNOWN has an invalid outcome")
+        if self.resolution == "genuine_unknown_recovery" and final_outcome not in {
+            "conflicting_sources",
+            "ambiguous_question",
+            "open_world_not_provable",
+        }:
+            raise ValueError("retained recovery UNKNOWN has an invalid outcome")
+        if (
+            self.resolution == "retrieval_exhausted_unknown"
+            and final_outcome not in retrieval_outcomes
+        ):
+            raise ValueError("retained retrieval exhaustion has an invalid outcome")
+        return self
+
+
+class OracleResultCallAuditSnapshot(FrozenModel):
+    component: Literal["oracle"]
+    call_id: str = Field(pattern=r"^OC-[0-9a-f]{32}$")
+    turn_number: int = Field(ge=1)
+    status: Literal["success"]
+    oracle: OracleRoleResultCallAuditSnapshot
+    research: OracleResearchResultCallAuditSnapshot | None = None
+    reviewer: OracleRoleResultCallAuditSnapshot | None = None
+    judge: OracleRoleResultCallAuditSnapshot | None = None
+
+    @model_validator(mode="after")
+    def roles_match_fields(self) -> OracleResultCallAuditSnapshot:
+        if self.oracle.role != "oracle":
+            raise ValueError("primary Oracle audit must use the oracle role")
+        if self.reviewer is not None and self.reviewer.role != "reviewer":
+            raise ValueError("Reviewer audit must use the reviewer role")
+        if self.judge is not None and self.judge.role != "judge":
+            raise ValueError("Judge audit must use the judge role")
+        if self.research is not None:
+            primary = self.research.attempts[0]
+            if primary.prompt != self.oracle.prompt or primary.provider != self.oracle.provider:
+                raise ValueError("primary research audit must match the Oracle role audit")
+        return self
+
+
+EpisodeCallAuditSnapshot = Annotated[
+    GuesserResultCallAuditSnapshot
+    | ValidatorResultCallAuditSnapshot
+    | OracleResultCallAuditSnapshot,
+    Field(discriminator="component"),
+]
+
+
+class EpisodeResultAuditSnapshot(FrozenModel):
+    schema_version: Literal[1]
+    calls: tuple[EpisodeCallAuditSnapshot, ...] = ()
+    unavailable_call_count: int = Field(default=0, ge=0)
+
+    @model_validator(mode="after")
+    def unique_chronological_calls(self) -> EpisodeResultAuditSnapshot:
+        call_ids = tuple(call.call_id for call in self.calls)
+        if len(call_ids) != len(set(call_ids)):
+            raise ValueError("retained result call-audit IDs must be unique")
+        if any(
+            later.turn_number < earlier.turn_number
+            for earlier, later in zip(self.calls, self.calls[1:], strict=False)
+        ):
+            raise ValueError("retained result call audits must be chronological")
+        return self
+
+
 class ModelConfigurationSnapshot(FrozenModel):
     configuration_id: str = Field(min_length=1, max_length=160)
     gateway: str = Field(min_length=1, max_length=80)
@@ -923,15 +1173,9 @@ class RoleProviderUsageSnapshot(FrozenModel):
 
 
 class OracleProviderUsageSnapshot(FrozenModel):
-    oracle: RoleProviderUsageSnapshot = Field(
-        default_factory=RoleProviderUsageSnapshot
-    )
-    reviewer: RoleProviderUsageSnapshot = Field(
-        default_factory=RoleProviderUsageSnapshot
-    )
-    judge: RoleProviderUsageSnapshot = Field(
-        default_factory=RoleProviderUsageSnapshot
-    )
+    oracle: RoleProviderUsageSnapshot = Field(default_factory=RoleProviderUsageSnapshot)
+    reviewer: RoleProviderUsageSnapshot = Field(default_factory=RoleProviderUsageSnapshot)
+    judge: RoleProviderUsageSnapshot = Field(default_factory=RoleProviderUsageSnapshot)
 
 
 class EvidenceReviewConfigurationSnapshot(FrozenModel):
@@ -960,17 +1204,13 @@ class OracleConfigurationSnapshot(EvidenceReviewConfigurationSnapshot):
 class ModelLlmDetail(FrozenModel):
     configuration: ModelConfigurationSnapshot
     metrics: EpisodeComponentMetrics
-    provider_usage: RoleProviderUsageSnapshot = Field(
-        default_factory=RoleProviderUsageSnapshot
-    )
+    provider_usage: RoleProviderUsageSnapshot = Field(default_factory=RoleProviderUsageSnapshot)
 
 
 class OracleLlmDetail(FrozenModel):
     configuration: OracleConfigurationSnapshot
     metrics: EpisodeComponentMetrics
-    provider_usage: OracleProviderUsageSnapshot = Field(
-        default_factory=OracleProviderUsageSnapshot
-    )
+    provider_usage: OracleProviderUsageSnapshot = Field(default_factory=OracleProviderUsageSnapshot)
 
 
 class EpisodeLlmDetails(FrozenModel):
@@ -1008,6 +1248,7 @@ class EpisodeResultArtifact(FrozenModel):
     turns: tuple[EpisodeTurn, ...]
     guesser_conversation: tuple[GuesserConversationMessage, ...]
     llm_details: EpisodeLlmDetails
+    audit: EpisodeResultAuditSnapshot | None = None
     failure: EpisodeTerminalFailure | None = None
 
     @model_validator(mode="after")
@@ -1024,6 +1265,12 @@ class EpisodeResultArtifact(FrozenModel):
             raise ValueError("only an exceptional terminal attempt may remain unresolved")
         if self.failure is not None and self.outcome.success:
             raise ValueError("successful episode cannot carry terminal failure")
+        if self.audit is not None:
+            expected_calls = (
+                self.summary.guesser_call_count + self.summary.ask_count + self.summary.guess_count
+            )
+            if len(self.audit.calls) + self.audit.unavailable_call_count != expected_calls:
+                raise ValueError("retained result call-audit coverage differs from call counts")
         return self
 
 
@@ -1455,8 +1702,23 @@ class PublicRunCostTotals(FrozenModel):
         return self
 
 
+class PublicExcludedRepairCost(FrozenModel):
+    cost_usd: Decimal = Field(default=Decimal(0), ge=0)
+    superseded_attempts: int = Field(default=0, ge=0)
+    affected_trials: int = Field(default=0, ge=0)
+
+    @model_validator(mode="after")
+    def attempt_counts_are_consistent(self) -> PublicExcludedRepairCost:
+        if self.affected_trials > self.superseded_attempts:
+            raise ValueError("affected repair trials cannot exceed superseded attempts")
+        if self.cost_usd > 0 and self.superseded_attempts == 0:
+            raise ValueError("excluded repair cost requires a superseded attempt")
+        return self
+
+
 class PublicRunTotals(FrozenModel):
     costs_usd: PublicRunCostTotals
+    excluded_repair: PublicExcludedRepairCost = Field(default_factory=PublicExcludedRepairCost)
     total_tokens: int = Field(ge=0)
     runtime_ms: int = Field(ge=0)
     guesser_think_time_ms: int = Field(ge=0)

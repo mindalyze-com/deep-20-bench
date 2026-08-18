@@ -86,6 +86,11 @@ test("illustrative round connects the correct guess to its trial score", { tag: 
   );
   await expect(discussionLink).toHaveAttribute("target", "_blank");
   await expect(discussionLink).toHaveText(/Join discussion/);
+  const supportLink = details.getByRole("link", {
+    name: "Support future benchmark runs (opens in a new tab)",
+  });
+  await expect(supportLink).toHaveAttribute("href", "https://ko-fi.com/mindalyze");
+  await expect(supportLink).toHaveAttribute("target", "_blank");
 
   const round = page.locator(".round-example");
   const transcript = round.locator(".round-card");
@@ -360,10 +365,28 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
 
   const news = page.locator("#news");
   await expect(news.getByRole("heading", { name: "Project news." })).toBeVisible();
-  await expect(news.locator("time")).toHaveAttribute("datetime", "2026-08-05");
-  await expect(news.locator("time")).toHaveText("5 August 2026");
-  await expect(news).toContainText("Claude Fable 5 (high) added.");
-  await expect(news.getByRole("link", { name: "View run" })).toHaveAttribute(
+  const entries = news.locator(".news-entry");
+  await expect(entries).toHaveCount(3);
+  await expect(entries.nth(0).locator("time")).toHaveAttribute("datetime", "2026-08-17");
+  await expect(entries.nth(0).locator("time")).toHaveText("17 August 2026");
+  await expect(entries.nth(0)).toContainText("Gemini 3.7 Flash (high) added.");
+  await expect(entries.nth(0)).toContainText("14.0 questions with 34 of 35 successful trials.");
+  await expect(entries.nth(0).getByRole("link", { name: "View run" })).toHaveAttribute(
+    "href",
+    "/deep-20-bench/runs/BX-20260817-official-M0016-015/",
+  );
+  await expect(entries.nth(1).locator("time")).toHaveAttribute("datetime", "2026-08-15");
+  await expect(entries.nth(1).locator("time")).toHaveText("15 August 2026");
+  await expect(entries.nth(1)).toContainText("Grok 4.6 (high) added.");
+  await expect(entries.nth(1)).toContainText("14.3 questions with 35 of 35 successful trials.");
+  await expect(entries.nth(1).getByRole("link", { name: "View run" })).toHaveAttribute(
+    "href",
+    "/deep-20-bench/runs/BX-20260814-official-M0015-013/",
+  );
+  await expect(entries.nth(2).locator("time")).toHaveAttribute("datetime", "2026-08-05");
+  await expect(entries.nth(2).locator("time")).toHaveText("5 August 2026");
+  await expect(entries.nth(2)).toContainText("Claude Fable 5 (high) added.");
+  await expect(entries.nth(2).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260805-official-M0014-011/",
   );

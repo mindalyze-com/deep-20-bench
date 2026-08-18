@@ -1,4 +1,5 @@
 @import "./typography.css";
+@import "./accessibility.css";
 
 :root {
   --static-ink: #0c111b;
@@ -36,13 +37,17 @@ html.static-document:not([data-file-preview]) #app {
   margin: 0;
   place-items: center;
   padding: 2rem;
+  font-family: var(--font-sans);
+}
+
+.static-route-fallback,
+.static-hero {
   background:
     linear-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px),
     linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px),
     var(--static-ink);
   background-size: 44px 44px;
   color: #fff;
-  font-family: var(--font-sans);
 }
 
 .static-route-fallback--editorial {
@@ -69,7 +74,8 @@ html.static-document:not([data-file-preview]) #app {
   color: rgb(255 255 255 / 68%);
 }
 
-.static-route-fallback > div > p:first-child {
+.static-route-fallback > div > p:first-child,
+.static-route-result > p:first-child {
   color: var(--static-acid);
   font-size: 0.72rem;
   font-weight: var(--font-weight-extrabold);
@@ -98,11 +104,6 @@ html.static-document:not([data-file-preview]) #app {
 
 .static-route-result > p:first-child {
   margin-bottom: 0.6rem;
-  color: var(--static-acid);
-  font-size: 0.72rem;
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
 }
 
 .static-route-result h2 {
@@ -244,12 +245,6 @@ html.static-document:not([data-file-preview]) #app {
   gap: clamp(3rem, 7vw, 7rem);
   grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.55fr);
   padding-block: clamp(4.5rem, 8vw, 7rem);
-  background:
-    linear-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px),
-    var(--static-ink);
-  background-size: 44px 44px;
-  color: #fff;
 }
 
 .static-home::after {
@@ -349,6 +344,13 @@ html.static-document:not([data-file-preview]) #app {
   line-height: 1.5;
 }
 
+.static-discussion-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 1rem;
+  justify-content: flex-end;
+}
+
 .static-discussions a {
   flex: 0 0 auto;
   color: var(--static-acid);
@@ -360,18 +362,6 @@ html.static-document:not([data-file-preview]) #app {
 .static-discussions a:hover,
 .static-discussions a:focus-visible {
   text-decoration: underline;
-}
-
-.static-visually-hidden {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
 }
 
 .static-actions {
@@ -793,6 +783,10 @@ html.static-document:not([data-file-preview]) #app {
   .static-discussions {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .static-discussion-links {
+    justify-content: flex-start;
   }
 
   .static-home::after {

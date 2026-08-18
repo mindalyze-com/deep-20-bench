@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import ContractStatusCard from "@/components/ContractStatusCard.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
+import SubjectReferenceLink from "@/components/SubjectReferenceLink.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import {
   contractExampleRoute,
@@ -76,15 +77,10 @@ const facts = computed<MetricGridItem[]>(() => {
         <p class="eyebrow">Subject overview</p>
         <h2>{{ subject.display_name }}</h2>
         <p>{{ document.profile.subject_description }}</p>
-        <a
+        <SubjectReferenceLink
           v-if="document.profile.subject_reference_url"
           :href="document.profile.subject_reference_url"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Subject reference <span aria-hidden="true">↗</span>
-          <span class="visually-hidden">(opens in a new tab)</span>
-        </a>
+        />
       </header>
 
       <div class="subject-score-card">

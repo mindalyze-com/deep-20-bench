@@ -2,6 +2,7 @@ import type {
   ECElementEvent,
   EChartsOption,
 } from "echarts";
+import { init } from "echarts/core";
 import type { EChartsType } from "echarts/core";
 import {
   nextTick,
@@ -14,15 +15,16 @@ import {
   type Ref,
 } from "vue";
 
+export { escapeHtml } from "./html";
+
 interface ResponsiveChartOptions {
   height: Readonly<Ref<number>>;
-  initialize: (element: HTMLDivElement) => EChartsType;
   option: (width: number) => EChartsOption;
   onClick?: (parameters: ECElementEvent) => void;
   pointerCursor?: (parameters: ECElementEvent) => boolean;
 }
 
-interface ResponsiveChart {
+export interface ResponsiveChart {
   chartElement: Ref<HTMLDivElement | null>;
   refresh: () => void;
 }
@@ -98,14 +100,6 @@ export const chartValueDomain = (
   };
 };
 
-export const escapeHtml = (value: string): string =>
-  value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
 export const chartAnimationEnabled = (): boolean =>
   !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
   !window.matchMedia("(max-width: 760px)").matches;
@@ -175,7 +169,7 @@ export const useResponsiveEChart = (
       return;
     }
     if (chart === null) {
-      chart = options.initialize(element);
+      chart = init(element, undefined, { renderer: "svg" });
       if (options.onClick !== undefined) chart.on("click", options.onClick);
       if (options.pointerCursor !== undefined) {
         chart.on("mouseover", updatePointerCursor);

@@ -96,13 +96,17 @@ class OpenRouterProvider:
         *,
         enable_web_search: bool = True,
         title: str = "Deep20Bench Oracle",
+        ignored_providers: tuple[str, ...] = (),
     ):
         if not api_key:
             raise ValueError("OpenRouter API key is required")
         if enable_web_search and not isinstance(config, OracleConfig):
             raise ValueError("web-enabled providers require an OracleConfig")
+        if ignored_providers and config.provider_routing is not ProviderRouting.AUTOMATIC:
+            raise ValueError("provider exclusions require automatic routing")
         self.config = config
         self.enable_web_search = enable_web_search
+        self.ignored_providers = ignored_providers
         self.http_client = _RecordingClient(config.timeout_seconds)
         self.client = OpenRouter(
             api_key=api_key,
@@ -330,6 +334,8 @@ class OpenRouterProvider:
             provider_preferences["require_parameters"] = True
         if self.config.provider_routing is ProviderRouting.EXACT:
             provider_preferences["only"] = [self.config.provider]
+        elif ignored_providers := getattr(self, "ignored_providers", ()):
+            provider_preferences["ignore"] = list(ignored_providers)
         payload = {
             "model": self.config.model,
             "messages": list(request.messages),
@@ -545,7 +551,13 @@ class OpenRouterProvider:
 class OpenRouterOracleProviderSet:
     """Role-isolated OpenRouter clients for one Oracle adjudication service."""
 
-    def __init__(self, api_key: str, config: OracleConfig):
+    def __init__(
+        self,
+        api_key: str,
+        config: OracleConfig,
+        *,
+        judge_ignored_providers: tuple[str, ...] = (),
+    ):
         self.oracle = OpenRouterProvider(
             api_key,
             config,
@@ -563,6 +575,7 @@ class OpenRouterOracleProviderSet:
             config.judge,
             enable_web_search=False,
             title="Deep20Bench Oracle Judge",
+            ignored_providers=judge_ignored_providers,
         )
 
     def close(self) -> None:

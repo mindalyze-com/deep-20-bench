@@ -1,8 +1,9 @@
 # Oracle usage
 
 The `deep20-oracle` package answers one yes/no question about one configured subject. It makes
-one live-web research call, blind-reviews every initial `YES` or `NO` without web access, and
-uses a separate blind Judge only when those decisions disagree. It writes the complete typed
+one live-web research attempt and, for a retrieval-related failure, one independent diversified
+attempt. It blind-reviews every resulting `YES` or `NO` without web access and uses a separate
+blind Judge only when those decisions disagree. It writes the complete typed research and
 adjudication audit before returning. Reviewer and Judge use evidence first and have a labelled,
 narrow model-knowledge fallback for stable closed facts. The Reviewer applies it conservatively
 because agreement bypasses the Judge.
@@ -112,6 +113,33 @@ OpenRouter's web-search server tool runs at the router layer; enabling that endp
 causes otherwise-capable OpenAI endpoints to be rejected before the server tool can run.
 Exact model and provider routing are still enforced through `model`, `provider.only`, disabled
 fallbacks by default, resolved-model validation, and required web-search telemetry.
+
+## Research outcomes and recovery
+
+Each research attempt returns an answer, evidence, a classified outcome, and one to eight exact
+query strings reported by the model. The query strings are bounded audit data. They are not
+verified against provider telemetry and are labelled `model_reported`; provider telemetry
+separately records only the number of web-search requests.
+
+The outcome is one of `answered`, `no_results`, `irrelevant_results`,
+`insufficient_coverage`, `conflicting_sources`, `ambiguous_question`, or
+`open_world_not_provable`. The first four non-answer outcomes trigger exactly one recovery
+attempt. The recovery receives only the same trusted subject and current question. It uses a
+fixed prompt with alternative strategies by question family, a distinct session, and a
+distinct prompt-cache namespace. It never receives the first query, answer, evidence, outcome,
+trace, or provider response.
+
+The primary prompt permits a reliable direct counterfact. For example, an authoritative death
+date directly supports `NO` for "Is this person currently alive?" A bare profession or role is
+interpreted as a documented professional or recognized biographical role, not any incidental
+appearance or activity.
+
+`ambiguous_question` and `open_world_not_provable` are genuine final `UNKNOWN` outcomes and do
+not invoke recovery. Two retrieval failures on a deterministic closed or temporal fact produce
+the infrastructure error `oracle_research_exhausted`; they do not silently become a factual
+`UNKNOWN`. Repeated retrieval failure for an open-world or other non-closed family remains a
+classified final `UNKNOWN`. Reviewer and Judge still receive only a decisive result's trusted
+subject, original question, and numbered evidence.
 
 ## Subject catalog
 
@@ -276,8 +304,9 @@ metadata.
 ### Cost and latency
 
 `OracleCall.metrics` groups the total provider-reported cost, latency, token counts, and
-web-search count. Its `oracle`, `reviewer`, and optional `judge` fields retain the same metrics
-per role. `OracleCall.adjudication` retains the blind role decisions, each decision's basis,
+web-search count. Its `oracle` field combines primary and recovery research when both ran;
+`reviewer` and optional `judge` retain the other role metrics. `OracleCall.adjudication` retains
+the blind role decisions, each decision's basis,
 decision path, final answer, and a deterministic question-shape category (`temporal_comparison`,
 `quantitative_comparison`, `negation`, or `other`). Benchmark summaries aggregate agreement,
 disagreement by question type, Judge answer changes, and Reviewer/Judge cost without exposing
@@ -309,10 +338,10 @@ search. Reviewer and Judge may use parametric knowledge under the bounded policy
 not conversation memory or an answer cache.
 
 Provider-side prompt caching is a separate optimization that can reuse computation for an
-exact shared input prefix. Each subject/run uses a stable OpenRouter session ID, and the prompt
-cache key is derived from the prompt version and trusted subject snapshot, then namespaced by
-the selected search mode so Parallel and automatic/native experiments cannot share a cache
-namespace. No explicit breakpoint or padding is configured. Automatic caching is available at
+exact shared input prefix. Each subject/run and research strategy uses a stable OpenRouter
+session ID. The prompt cache key is derived from the prompt version and trusted subject
+snapshot. Primary and recovery therefore use distinct session and cache namespaces. No
+explicit breakpoint or padding is configured. Automatic caching is available at
 the provider, and `OracleCall.metrics` records `cached_input_tokens` and
 `cache_write_tokens` for every call.
 
@@ -328,6 +357,27 @@ and the
 experiment required before this decision changes.
 
 ## Result contract
+
+The provider-facing research-attempt shape includes the classified outcome and exact queries:
+
+```json
+{
+  "answer": "YES",
+  "evidence": [
+    {
+      "source_url": "https://example.org/source",
+      "excerpt": "The passage used by the model.",
+      "validation": "model_reported"
+    }
+  ],
+  "research_outcome": "answered",
+  "attempted_queries": ["Albert Einstein date of death biography"]
+}
+```
+
+An unsuccessful attempt uses `UNKNOWN`, no evidence, a non-`answered` outcome, and the queries
+it tried. The Oracle keeps this attempt data in its audit and projects the selected attempt into
+the simpler final `OracleResult` below.
 
 A decisive result has one to three model-reported evidence items:
 
@@ -427,6 +477,7 @@ The manifest contains the Git revision, dirty-tree state, Oracle configuration a
 subject-catalog hash, evidence policy, creation time, and reproducibility statement.
 
 Each JSONL line is either a `success` or `failure` record. It includes the original request,
+typed primary and optional recovery attempts, classified resolution, model-reported queries,
 research result or error, final adjudication, nested Reviewer and optional Judge traces, model
 routing, web-search telemetry, per-role tokens/cost/latency, timestamps, and integrity hash.
 
@@ -459,6 +510,7 @@ Failures are typed and audited when a run context is available. Important codes 
 | `web_search_not_used` | Provider telemetry reported no web search. |
 | `resolved_model_mismatch` | The resolved model differed from the configured model. |
 | `invalid_structured_output` | JSON or domain validation failed. |
+| `oracle_research_exhausted` | Two research attempts failed to retrieve usable support for a deterministic closed or temporal fact. |
 | `audit_configuration_mismatch` | A run ID was reused with another Oracle configuration. |
 | `audit_catalog_mismatch` | A run ID was reused with another subject catalog. |
 | `audit_integrity_mismatch` | Existing run data failed its integrity check. |
@@ -468,10 +520,12 @@ The adapters retry typed transient transport failures and explicit
 408/429/500/502/503/504/524/529 responses within the configured bounded backoff budget,
 honoring `Retry-After`. Empty and incomplete results receive the configured bounded no-result
 retry. Each role may retry invalid structured output under its own policy by replaying the exact
-request without adding validation feedback. There is no semantic repair prompt. Oracle,
-Reviewer, and Judge `UNKNOWN` values are valid decisions; transport, exhausted schema recovery,
-search, model-routing, and audit failures are exceptions. A required Reviewer or Judge failure
-fails the complete adjudication and never falls back to the provisional Oracle answer.
+request without adding validation feedback. These are transport or format retries. The Oracle's
+one research-recovery request is a separate semantic evidence-acquisition strategy and receives
+no prior-attempt content. Genuine Oracle, Reviewer, and Judge `UNKNOWN` values are valid
+decisions; transport, exhausted closed-fact research, exhausted schema recovery, search,
+model-routing, and audit failures are exceptions. A required Reviewer or Judge failure fails
+the complete adjudication and never falls back to the provisional Oracle answer.
 
 ## Testing
 

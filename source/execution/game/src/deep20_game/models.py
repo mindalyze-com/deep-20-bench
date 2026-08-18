@@ -14,6 +14,12 @@ from deep20_oracle.models import (
     OracleAnswer,
     OracleMetrics,
     OracleQuestionType,
+    OracleResearchOutcome,
+    OracleResearchQuestionClass,
+    OracleResearchResolution,
+    OracleResearchStrategy,
+    OracleRole,
+    ProviderResultAudit,
     ProviderTrace,
     RecoveryMetrics,
     RecoveryTotals,
@@ -174,10 +180,7 @@ class GuesserSamplingDecision(StrictModel):
 
     @model_validator(mode="after")
     def seed_matches_mode(self) -> GuesserSamplingDecision:
-        if (
-            self.mode is GuesserSamplingMode.PROMPT_NONCE_PLUS_PROVIDER_SEED
-            and self.seed is None
-        ):
+        if self.mode is GuesserSamplingMode.PROMPT_NONCE_PLUS_PROVIDER_SEED and self.seed is None:
             raise ValueError("prompt nonce plus provider seed sampling requires a seed")
         if self.mode is GuesserSamplingMode.PROMPT_NONCE_ONLY and self.seed is not None:
             raise ValueError("prompt nonce only sampling cannot include a provider seed")
@@ -211,6 +214,177 @@ class CallMetrics(StrictModel):
     cache_discount_usd: Decimal | None = None
     estimated_cache_savings_usd: Decimal = Field(default=Decimal(0))
     recovery: RecoveryMetrics = Field(default_factory=RecoveryMetrics)
+
+
+class ResultCallStatus(StrEnum):
+    SUCCESS = "success"
+    CONTRACT_VIOLATION = "contract_violation"
+    FAILURE = "failure"
+
+
+class ResultPromptAudit(StrictModel):
+    version: str = Field(min_length=1, max_length=160)
+    hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class GuesserResultCallAudit(StrictModel):
+    component: Literal["guesser"] = "guesser"
+    call_id: str = Field(pattern=GUESSER_CALL_ID_PATTERN)
+    turn_number: int = Field(ge=1)
+    status: ResultCallStatus
+    prompt: ResultPromptAudit
+    provider: ProviderResultAudit
+
+
+class ValidatorResultCallAudit(StrictModel):
+    component: Literal["validator"] = "validator"
+    call_id: str = Field(pattern=VALIDATOR_CALL_ID_PATTERN)
+    turn_number: int = Field(ge=1)
+    status: Literal[ResultCallStatus.SUCCESS, ResultCallStatus.FAILURE] = ResultCallStatus.SUCCESS
+    prompt: ResultPromptAudit
+    provider: ProviderResultAudit
+
+
+class OracleRoleResultCallAudit(StrictModel):
+    role: OracleRole
+    prompt: ResultPromptAudit
+    provider: ProviderResultAudit
+
+
+class OracleResearchAttemptResultCallAudit(StrictModel):
+    attempt_number: int = Field(ge=1, le=2)
+    strategy: OracleResearchStrategy
+    outcome: OracleResearchOutcome
+    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=8)
+    query_provenance: Literal["model_reported"] = "model_reported"
+    evidence_count: int = Field(ge=0, le=3)
+    prompt: ResultPromptAudit
+    provider: ProviderResultAudit
+
+
+class OracleResearchResultCallAudit(StrictModel):
+    question_class: OracleResearchQuestionClass
+    resolution: OracleResearchResolution
+    attempts: tuple[OracleResearchAttemptResultCallAudit, ...] = Field(
+        min_length=1,
+        max_length=2,
+    )
+
+    @model_validator(mode="after")
+    def contiguous_attempts(self) -> OracleResearchResultCallAudit:
+        expected = tuple(range(1, len(self.attempts) + 1))
+        if tuple(attempt.attempt_number for attempt in self.attempts) != expected:
+            raise ValueError("retained research attempts must be contiguous and one-based")
+        if self.attempts[0].strategy is not OracleResearchStrategy.PRIMARY:
+            raise ValueError("the first retained research attempt must be primary")
+        if len(self.attempts) == 2 and (
+            self.attempts[1].strategy is not OracleResearchStrategy.DIVERSIFIED_RECOVERY
+        ):
+            raise ValueError("the second retained research attempt must be recovery")
+        primary_resolutions = {
+            OracleResearchResolution.ANSWERED_PRIMARY,
+            OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY,
+        }
+        if (self.resolution in primary_resolutions) != (len(self.attempts) == 1):
+            raise ValueError("retained research resolution differs from attempt count")
+        for attempt in self.attempts:
+            if (attempt.outcome is OracleResearchOutcome.ANSWERED) != (attempt.evidence_count > 0):
+                raise ValueError("retained research outcome differs from evidence count")
+        final_answered = self.attempts[-1].outcome is OracleResearchOutcome.ANSWERED
+        answered_resolution = self.resolution in {
+            OracleResearchResolution.ANSWERED_PRIMARY,
+            OracleResearchResolution.ANSWERED_RECOVERY,
+        }
+        if final_answered != answered_resolution:
+            raise ValueError("retained research resolution differs from final outcome")
+        retrieval_outcomes = {
+            OracleResearchOutcome.NO_RESULTS,
+            OracleResearchOutcome.IRRELEVANT_RESULTS,
+            OracleResearchOutcome.INSUFFICIENT_COVERAGE,
+        }
+        retryable_outcomes = {
+            *retrieval_outcomes,
+            OracleResearchOutcome.CONFLICTING_SOURCES,
+        }
+        if len(self.attempts) == 2 and self.attempts[0].outcome not in retryable_outcomes:
+            raise ValueError("retained recovery requires a retryable primary outcome")
+        final_outcome = self.attempts[-1].outcome
+        if (
+            self.resolution is OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY
+            and final_outcome
+            not in {
+                OracleResearchOutcome.AMBIGUOUS_QUESTION,
+                OracleResearchOutcome.OPEN_WORLD_NOT_PROVABLE,
+            }
+        ):
+            raise ValueError("retained primary UNKNOWN has an invalid outcome")
+        if (
+            self.resolution is OracleResearchResolution.GENUINE_UNKNOWN_RECOVERY
+            and final_outcome
+            not in {
+                OracleResearchOutcome.CONFLICTING_SOURCES,
+                OracleResearchOutcome.AMBIGUOUS_QUESTION,
+                OracleResearchOutcome.OPEN_WORLD_NOT_PROVABLE,
+            }
+        ):
+            raise ValueError("retained recovery UNKNOWN has an invalid outcome")
+        if (
+            self.resolution is OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN
+            and final_outcome not in retrieval_outcomes
+        ):
+            raise ValueError("retained retrieval exhaustion has an invalid outcome")
+        return self
+
+
+class OracleResultCallAudit(StrictModel):
+    component: Literal["oracle"] = "oracle"
+    call_id: str = Field(pattern=r"^OC-[0-9a-f]{32}$")
+    turn_number: int = Field(ge=1)
+    status: Literal[ResultCallStatus.SUCCESS] = ResultCallStatus.SUCCESS
+    oracle: OracleRoleResultCallAudit
+    research: OracleResearchResultCallAudit | None = None
+    reviewer: OracleRoleResultCallAudit | None = None
+    judge: OracleRoleResultCallAudit | None = None
+
+    @model_validator(mode="after")
+    def roles_match_fields(self) -> OracleResultCallAudit:
+        if self.oracle.role is not OracleRole.ORACLE:
+            raise ValueError("primary Oracle audit must use the oracle role")
+        if self.reviewer is not None and self.reviewer.role is not OracleRole.REVIEWER:
+            raise ValueError("Reviewer audit must use the reviewer role")
+        if self.judge is not None and self.judge.role is not OracleRole.JUDGE:
+            raise ValueError("Judge audit must use the judge role")
+        if self.research is not None:
+            primary = self.research.attempts[0]
+            if primary.prompt != self.oracle.prompt or primary.provider != self.oracle.provider:
+                raise ValueError("primary research audit must match the Oracle role audit")
+        return self
+
+
+EpisodeCallAudit = Annotated[
+    GuesserResultCallAudit | ValidatorResultCallAudit | OracleResultCallAudit,
+    Field(discriminator="component"),
+]
+
+
+class EpisodeResultAudit(StrictModel):
+    """Sanitized chronological call log embedded in the retained result."""
+
+    schema_version: Literal[1] = 1
+    calls: tuple[EpisodeCallAudit, ...] = ()
+    unavailable_call_count: int = Field(default=0, ge=0)
+
+    @model_validator(mode="after")
+    def unique_call_ids(self) -> EpisodeResultAudit:
+        call_ids = tuple(call.call_id for call in self.calls)
+        if len(call_ids) != len(set(call_ids)):
+            raise ValueError("retained result call-audit IDs must be unique")
+        if any(
+            later.turn_number < earlier.turn_number
+            for earlier, later in zip(self.calls, self.calls[1:], strict=False)
+        ):
+            raise ValueError("retained result call audits must be chronological")
+        return self
 
 
 class GameCallAudit(StrictModel):
@@ -317,9 +491,7 @@ def guesser_contract_reliability(
         counted_penalties=counted_penalties,
         affected_trials=affected_trials,
         compliance_rate=(
-            Decimal(valid_outputs) / Decimal(evaluated_outputs)
-            if evaluated_outputs
-            else None
+            Decimal(valid_outputs) / Decimal(evaluated_outputs) if evaluated_outputs else None
         ),
         status=(
             ContractReliabilityStatus.BREACHED
@@ -370,9 +542,7 @@ class RoleProviderUsage(StrictModel):
 
     @model_validator(mode="after")
     def valid_provider_totals(self) -> RoleProviderUsage:
-        if len({item.provider.casefold() for item in self.providers}) != len(
-            self.providers
-        ):
+        if len({item.provider.casefold() for item in self.providers}) != len(self.providers):
             raise ValueError("resolved provider usage must be unique")
         if self.fallback_calls > (
             sum(item.calls for item in self.providers) + self.unreported_calls
@@ -476,27 +646,19 @@ class OracleQualityTotals(StrictModel):
         if self.judge_invocations != self.disagreements:
             raise ValueError("every disagreement must invoke exactly one Judge")
         if (
-            self.judge_yes_answers
-            + self.judge_no_answers
-            + self.judge_unknown_answers
+            self.judge_yes_answers + self.judge_no_answers + self.judge_unknown_answers
             != self.judge_invocations
         ):
             raise ValueError("Judge answer distribution must match Judge invocations")
         if self.oracle_answers_changed > self.judge_invocations:
             raise ValueError("only Judge decisions may change an Oracle answer")
-        if self.quality_control_cost_usd != (
-            self.reviewer_cost_usd + self.judge_cost_usd
-        ):
+        if self.quality_control_cost_usd != (self.reviewer_cost_usd + self.judge_cost_usd):
             raise ValueError("quality-control cost must equal Reviewer plus Judge cost")
-        if len({item.question_type for item in self.question_types}) != len(
-            self.question_types
-        ):
+        if len({item.question_type for item in self.question_types}) != len(self.question_types):
             raise ValueError("question-type quality totals must be unique")
         if self.question_types and (
-            sum(item.reviewed_questions for item in self.question_types)
-            != self.reviewed_questions
-            or sum(item.disagreements for item in self.question_types)
-            != self.disagreements
+            sum(item.reviewed_questions for item in self.question_types) != self.reviewed_questions
+            or sum(item.disagreements for item in self.question_types) != self.disagreements
         ):
             raise ValueError("question-type totals must match overall quality totals")
         return self
@@ -570,9 +732,7 @@ TurnResult = Annotated[
 class GameRequest(StrictModel):
     run_id: str = Field(pattern=RUN_ID_PATTERN)
     subject: Subject
-    guesser_sampling: GuesserSamplingContext = Field(
-        default_factory=GuesserSamplingContext
-    )
+    guesser_sampling: GuesserSamplingContext = Field(default_factory=GuesserSamplingContext)
 
 
 class EpisodeRun(StrictModel):
@@ -600,9 +760,7 @@ class EpisodeSummary(StrictModel):
     rejected_guess_count: int = Field(ge=0)
     oracle_unknown_count: int = Field(ge=0)
     oracle_quality: OracleQualityTotals = Field(default_factory=OracleQualityTotals)
-    contract: GuesserContractReliability = Field(
-        default_factory=GuesserContractReliability
-    )
+    contract: GuesserContractReliability = Field(default_factory=GuesserContractReliability)
     cache_status: CacheStatus
     costs_usd: ComponentCosts
     tokens: ComponentTokens
@@ -640,6 +798,10 @@ class EpisodeResult(StrictModel):
     turns: tuple[TurnResult, ...]
     guesser_conversation: tuple[GuesserConversationMessage, ...]
     llm_details: EpisodeLlmDetails
+    audit: EpisodeResultAudit | None = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+    )
     failure: EpisodeTerminalFailure | None = Field(
         default=None,
         exclude_if=lambda value: value is None,
@@ -656,6 +818,12 @@ class EpisodeResult(StrictModel):
             }
         ):
             raise ValueError("terminal failure details require a failed exceptional outcome")
+        if self.audit is not None:
+            expected_calls = (
+                self.summary.guesser_call_count + self.summary.ask_count + self.summary.guess_count
+            )
+            if len(self.audit.calls) + self.audit.unavailable_call_count != expected_calls:
+                raise ValueError("retained result call-audit coverage differs from call counts")
         return self
 
     @property
@@ -879,10 +1047,7 @@ class EpisodeFinishedEvent(StrictModel):
 
 
 EpisodeEvent = Annotated[
-    EpisodeStartedEvent
-    | TurnResolvedEvent
-    | ContractViolationEvent
-    | EpisodeFinishedEvent,
+    EpisodeStartedEvent | TurnResolvedEvent | ContractViolationEvent | EpisodeFinishedEvent,
     Field(discriminator="event_type"),
 ]
 
@@ -918,8 +1083,5 @@ class EpisodeFinishedProgress(StrictModel):
 
 
 GameProgressEvent = (
-    EpisodeStartedProgress
-    | TurnProgress
-    | ContractViolationProgress
-    | EpisodeFinishedProgress
+    EpisodeStartedProgress | TurnProgress | ContractViolationProgress | EpisodeFinishedProgress
 )

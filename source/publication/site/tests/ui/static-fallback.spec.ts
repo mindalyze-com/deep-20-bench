@@ -79,6 +79,11 @@ test("homepage remains useful without JavaScript", { tag: ["@static-fallback", "
     "https://github.com/mindalyze-com/deep-20-bench/discussions",
   );
   await expect(staticDiscussionLink).toHaveAttribute("target", "_blank");
+  const staticSupportLink = page.getByRole("link", {
+    name: "Support future benchmark runs (opens in a new tab)",
+  });
+  await expect(staticSupportLink).toHaveAttribute("href", "https://ko-fi.com/mindalyze");
+  await expect(staticSupportLink).toHaveAttribute("target", "_blank");
   await expect(page.getByText("Deep20Bench needs JavaScript")).toHaveCount(0);
   const staticFooter = page.locator(".static-footer");
   await expect(staticFooter).toBeVisible();

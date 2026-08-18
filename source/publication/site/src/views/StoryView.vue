@@ -3,6 +3,30 @@ import { onActivated } from "vue";
 
 import { setRouteContext } from "@/lib/route-context";
 
+const newsEntries = [
+  {
+    date: "2026-08-17",
+    displayDate: "17 August 2026",
+    title: "Gemini 3.7 Flash (high) added.",
+    summary: "It scored 14.0 questions with 34 of 35 successful trials.",
+    executionId: "BX-20260817-official-M0016-015",
+  },
+  {
+    date: "2026-08-15",
+    displayDate: "15 August 2026",
+    title: "Grok 4.6 (high) added.",
+    summary: "It scored 14.3 questions with 35 of 35 successful trials.",
+    executionId: "BX-20260814-official-M0015-013",
+  },
+  {
+    date: "2026-08-05",
+    displayDate: "5 August 2026",
+    title: "Claude Fable 5 (high) added.",
+    summary: "We added Claude Fable 5 (high) to the official Deep20Bench results.",
+    executionId: "BX-20260805-official-M0014-011",
+  },
+] as const;
+
 const priorWork = [
   {
     year: "2018",
@@ -89,27 +113,33 @@ onActivated(applyRouteContext);
       <div class="content-inner">
         <header class="section-heading">
           <div>
-            <p class="eyebrow">Latest update</p>
+            <p class="eyebrow">Updates</p>
             <h2 id="news-title">Project news.</h2>
           </div>
           <p>Dated changes to the official publication.</p>
         </header>
-        <article class="news-entry">
-          <time datetime="2026-08-05">5 August 2026</time>
-          <div>
-            <h3>Claude Fable 5 (high) added.</h3>
-            <p>We added Claude Fable 5 (high) to the official Deep20Bench results.</p>
-          </div>
-          <RouterLink
-            class="news-link"
-            :to="{
-              name: 'run',
-              params: { executionId: 'BX-20260805-official-M0014-011' },
-            }"
+        <div class="news-list">
+          <article
+            v-for="entry in newsEntries"
+            :key="entry.executionId"
+            class="news-entry"
           >
-            View run →
-          </RouterLink>
-        </article>
+            <time :datetime="entry.date">{{ entry.displayDate }}</time>
+            <div>
+              <h3>{{ entry.title }}</h3>
+              <p>{{ entry.summary }}</p>
+            </div>
+            <RouterLink
+              class="news-link"
+              :to="{
+                name: 'run',
+                params: { executionId: entry.executionId },
+              }"
+            >
+              View run →
+            </RouterLink>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -265,6 +295,11 @@ onActivated(applyRouteContext);
 
 .news-section {
   background: var(--surface-rail);
+}
+
+.news-list {
+  display: grid;
+  gap: 1rem;
 }
 
 .news-entry {

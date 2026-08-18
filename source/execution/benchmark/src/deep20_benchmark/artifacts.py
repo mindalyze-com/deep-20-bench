@@ -822,6 +822,16 @@ class BenchmarkTrialSink:
             trace=source.audit.provider,
             recorded_at=source.recorded_at,
         )
+        if source.audit.research is not None:
+            for attempt in source.audit.research.attempts[1:]:
+                self._persist_error_outputs(
+                    component="oracle",
+                    call_id=source.call_id,
+                    failure_code=None,
+                    recovered=True,
+                    trace=attempt.provider,
+                    recorded_at=source.recorded_at,
+                )
         if source.audit.reviewer is not None:
             self._persist_error_outputs(
                 component="reviewer",
@@ -863,9 +873,7 @@ class BenchmarkTrialSink:
                     if source.provider_trace is not None
                     else None
                 ),
-                "role_traces": tuple(
-                    trace.model_dump(mode="json") for trace in source.role_traces
-                ),
+                "role_traces": tuple(trace.model_dump(mode="json") for trace in source.role_traces),
             },
             "error": source.failure.model_dump(mode="json"),
             "recorded_at": source.recorded_at,
@@ -876,10 +884,7 @@ class BenchmarkTrialSink:
             _signed_payload(base),
         )
         for role_trace in source.role_traces:
-            if (
-                role_trace.role is source.component
-                and role_trace.provider == source.provider_trace
-            ):
+            if role_trace.role is source.component and role_trace.provider == source.provider_trace:
                 continue
             self._persist_error_outputs(
                 component=role_trace.role.value,

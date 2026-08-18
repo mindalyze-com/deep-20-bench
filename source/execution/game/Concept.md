@@ -17,9 +17,12 @@ repeatedly.
 flowchart LR
     Request["GameRequest: run + hidden subject"] --> Engine["GameEngine.play"]
     Engine --> Guesser["Guesser (model under test)"]
-    Guesser -->|"ASK"| Oracle["Oracle research (live web)"]
+    Guesser -->|"ASK"| Oracle["Primary Oracle research (live web)"]
     Guesser -->|"GUESS"| Validator["Guess Validator (no web)"]
-    Oracle --> Unknown{"Oracle UNKNOWN?"}
+    Oracle --> Retrieval{"Retrieval-related UNKNOWN?"}
+    Retrieval -->|"yes"| Recovery["Independent diversified research"]
+    Recovery --> Unknown{"Final Oracle UNKNOWN?"}
+    Retrieval -->|"no"| Unknown
     Unknown -->|"yes"| Engine
     Unknown -->|"no"| Reviewer["Blind Reviewer (no web)"]
     Reviewer --> Agreement{"Agrees with Oracle?"}
@@ -91,10 +94,12 @@ opportunity. The prompt requires `GUESS` at that point; returning `ASK` is a pro
 | Consecutive-violation limit reached | Not adjudicated | Yes | Scoring-eligible protocol failure |
 | Final `ASK` | Not adjudicated | No additional count | Scoring-eligible protocol failure |
 
-An Oracle `UNKNOWN` is final without review and play continues. A Reviewer `UNKNOWN` is a
-disagreement with an initial Oracle `YES` or `NO` and therefore invokes the Judge. A Judge
-`UNKNOWN` is the final factual answer and play continues. A Validator `UNKNOWN` means the
-identity proposal cannot be adjudicated confidently, so the episode terminates.
+An Oracle `UNKNOWN` is final without review after its internal research policy completes, and
+play continues. A retrieval-related primary `UNKNOWN` first invokes one independent diversified
+research attempt. A Reviewer `UNKNOWN` is a disagreement with an initial Oracle `YES` or `NO`
+and therefore invokes the Judge. A Judge `UNKNOWN` is the final factual answer and play
+continues. A Validator `UNKNOWN` means the identity proposal cannot be adjudicated confidently,
+so the episode terminates.
 
 "Malformed output" covers both a completed response that fails the structured-action schema
 and a Guesser provider call that ends without a completed structured action: a `length`
@@ -137,8 +142,10 @@ The Guesser never receives:
 - Guess Validator explanations or raw validator output.
 - Provider traces, token usage, costs, or hidden reasoning.
 
-The Oracle receives only the trusted subject snapshot and the current untrusted question. It
-does not receive episode history. The Reviewer and Judge each receive only the trusted subject
+The primary Oracle receives only the trusted subject snapshot and the current untrusted
+question. It does not receive episode history. A recovery attempt receives that same projection
+under a different fixed policy; it does not receive the primary query, answer, evidence,
+outcome, trace, or response. The Reviewer and Judge each receive only the trusted subject
 snapshot, the same current question, and the Oracle's numbered evidence excerpts. Neither
 receives the Oracle answer, the Reviewer answer, explanations, search traces, or episode
 history; neither has web access. Both may independently return `UNKNOWN`. Both use evidence
@@ -209,6 +216,18 @@ type, and disagreement state. Episode summaries aggregate agreement, Judge use a
 changed answers, final `UNKNOWN` values, and Reviewer/Judge cost. Typed benchmark progress and
 verbose Oracle audits retain the per-role token, cache, latency, cost, and recovery metrics.
 
+The result's versioned `audit.calls` section retains a chronological, sanitized call projection
+for the Guesser, primary Oracle, optional research recovery, Reviewer, Judge, and Validator. It
+includes prompt hashes,
+routes, timing, finish/cache/HTTP state, recovery, token and cost usage, search-request and
+citation-annotation counts, output lengths, and allowlisted router-stage facts. It excludes
+prompts, messages, raw outputs, request/response bodies, evidence text, citation URLs, response
+IDs, sessions, cache keys, headers, credentials, and router endpoint details. Search requests
+are query counts and are not treated as search-result counts. Oracle research entries also
+retain the deterministic question class, attempt strategy, classified outcome and resolution,
+evidence count, and bounded query strings labelled `model_reported`. No retained attempt detail
+enters a later provider request or the Guesser conversation.
+
 At terminal completion, the engine returns the same typed result it supplies to the audit sink.
 The benchmark writes it into the hierarchical trial result; the standalone game command writes
 it below its selected run directory.
@@ -235,6 +254,8 @@ Failures are classified by what they measure:
 - A provider, required Reviewer, required Judge, Oracle, Guess Validator, configuration, or
   persistence failure is an infrastructure failure and is excluded from scoring. The system
   never substitutes the provisional Oracle answer after a required quality-control failure.
+- Two unsuccessful retrieval attempts for a deterministic closed or temporal fact are an
+  Oracle infrastructure failure, not an ordinary factual `UNKNOWN`.
 - Enabled result and audit persistence is fail-closed.
 
 ## Deliberate non-goals
