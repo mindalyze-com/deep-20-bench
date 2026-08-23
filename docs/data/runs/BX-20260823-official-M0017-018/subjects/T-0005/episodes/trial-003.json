@@ -1,0 +1,317 @@
+{
+  "document_type": "episode",
+  "schema_version": 2,
+  "execution_id": "BX-20260823-official-M0017-018",
+  "target_id": "T-0005",
+  "trial_id": "trial-003",
+  "episode": {
+    "episode_run_id": "BR-b2e2f7cded91d35281df1118b4ffd4249adc5028",
+    "episode_id": "EP-01a02d197c46750cbc9c39f2730b1213",
+    "subject_name": "Achilles",
+    "subject_description": "Achilles, the Greek mythological hero and greatest Greek warrior of the Trojan War in Homer's Iliad, identified by Wikidata entity Q41746.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Achilles",
+    "started_at": "2026-08-23T05:30:40.070794Z",
+    "completed_at": "2026-08-23T05:33:16.012645Z",
+    "duration_ms": 155942,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 10,
+    "counted_questions": 9,
+    "ask_count": 8,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.120976250000000001",
+    "total_tokens": 105240,
+    "contract": {
+      "evaluated_outputs": 10,
+      "valid_outputs": 9,
+      "violations": 1,
+      "counted_penalties": 1,
+      "affected_trials": 1,
+      "compliance_rate": "0.9",
+      "status": "breached"
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"mythological_figure\",\"event\":\"BEGIN\",\"variation_token\":\"AMZAISLM\"}",
+      "required_formats": {
+        "ask": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"<non-empty yes-or-no property question>\"}}",
+        "guess": "{\"result\":{\"action\":\"GUESS\",\"description\":\"<non-empty identifying description>\",\"name\":\"<non-empty candidate name>\",\"question\":null}}"
+      },
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 10,
+        "cost_usd": "0",
+        "latency_ms": 52676,
+        "total_tokens": 8718,
+        "input_tokens": 7931,
+        "cached_input_tokens": 6272,
+        "cache_write_tokens": 0,
+        "output_tokens": 787,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0000"
+      },
+      "oracle": {
+        "calls": 8,
+        "cost_usd": "0.120855050000000001",
+        "latency_ms": 102015,
+        "total_tokens": 96106,
+        "input_tokens": 90278,
+        "cached_input_tokens": 51860,
+        "cache_write_tokens": 0,
+        "output_tokens": 5828,
+        "reasoning_tokens": 3719,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0001212",
+        "latency_ms": 1041,
+        "total_tokens": 416,
+        "input_tokens": 378,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 38,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 1,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 1,
+        "rejected_outputs": [
+          {
+            "attempt_number": 1,
+            "finish_reason": "stop",
+            "text": "{\"action\":\"ASK\",\"question\":\"Is this figure from Greek mythology?\"}"
+          }
+        ]
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is this figure from Greek mythology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/articles/achilles",
+            "excerpt": "The warrior Achilles is one of the great heroes of Greek mythology.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure from Greek mythology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is this figure a deity (god or goddess) rather than a mortal hero?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.britishmuseum.org/blog/who-was-achilles",
+            "excerpt": "For the ancient Greeks he was an archetypal hero who embodied the human condition. Despite his greatness he was still mortal and fated to die.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles was the strongest warrior and hero in the Greek army during the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure a deity (god or goddess) rather than a mortal hero?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is this figure male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.greekmythology.com/Myths/Heroes/Achilles/achilles.html",
+            "excerpt": "Gender | Male",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Is this figure the son of a god (a demigod)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.greekmythology.com/Myths/Heroes/Achilles/achilles.html",
+            "excerpt": "Achilles was a demigod, not a god. His mother Thetis was an immortal sea-goddess and his father Peleus was a mortal king.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Thetis",
+            "excerpt": "The child of their union was the warrior Achilles.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure the son of a god (a demigod)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is this figure known for performing a famous series of great labors or quests imposed on him?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Achilles was the bravest, handsomest, and greatest warrior of the army of Agamemnon in the Trojan War.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.infoplease.com/culture-entertainment/mythology-folklore/heroes-greek-mythology",
+            "excerpt": "As punishment Heracles performed twelve seemingly impossible labors.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure known for performing a famous series of great labors or quests imposed on him?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is this figure famous for killing or defeating a well-known monster?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "Quick Facts — Role In: Trojan War.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britishmuseum.org/blog/who-was-achilles",
+            "excerpt": "The Greek hero Achilles is one of the most famous figures in Greek myth and a key character in the Trojan War.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/topic/Hector-Greek-mythology",
+            "excerpt": "Achilles, distraught and wanting to avenge the death of his friend Patroclus, returns to the war and kills Hector.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure famous for killing or defeating a well-known monster?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Is this figure associated with the Trojan War?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Achilles-Greek-mythology",
+            "excerpt": "In Greek mythology Achilles was the strongest warrior and hero in the Greek army during the Trojan War.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britishmuseum.org/blog/who-was-achilles",
+            "excerpt": "What did Achilles do in the Trojan War? Achilles arrives at Troy with 50 ships. He is the leader of the army known as the Myrmidons and is the best fighter on the side of the Greeks.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure associated with the Trojan War?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is this figure the central warrior hero of Homer's Iliad on the Greek side?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/topic/Iliad-epic-poem-by-Homer",
+            "excerpt": "The central figure of the Iliad, Achilles is the bravest, handsomest, and greatest warrior of the army of Agamemnon in the Trojan War.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this figure the central warrior hero of Homer's Iliad on the Greek side?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Achilles",
+        "guess_description": "Greek demigod hero of the Iliad, son of Peleus and Thetis, greatest Greek warrior at Troy",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Achilles, the Greek mythological hero and greatest Greek warrior of the Trojan War.",
+        "counted": false,
+        "counted_questions": 9,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Greek demigod hero of the Iliad, son of Peleus and Thetis, greatest Greek warrior at Troy\",\"name\":\"Achilles\",\"question\":null}}"
+      }
+    ]
+  }
+}

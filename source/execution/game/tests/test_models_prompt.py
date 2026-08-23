@@ -10,6 +10,7 @@ from deep20_benchmark.models import BenchmarkModelId
 from deep20_game.config import (
     GamePolicy,
     ReasoningControl,
+    StructuredOutputMode,
     load_game_policy,
     load_model_config,
 )
@@ -285,7 +286,7 @@ def test_repository_model_catalog_has_expected_active_ids() -> None:
     catalog = load_model_catalog(root / "config/models.yaml")
 
     assert tuple(catalog.models) == (
-        *(f"M-{number:04d}" for number in range(1, 17)),
+        *(f"M-{number:04d}" for number in range(1, 18)),
         "M-0101",
         "M-0104",
     )
@@ -330,6 +331,18 @@ def test_qwen_benchmark_routes_use_generic_reasoning_control(model_id: str) -> N
     )
 
     assert configuration.reasoning_control is ReasoningControl.GENERIC
+
+
+def test_ox_alpha_uses_json_object_output_mode() -> None:
+    root = Path(__file__).parents[4]
+    configuration = (
+        load_model_catalog(root / "config/models.yaml")
+        .model(BenchmarkModelId("M-0017"))
+        .configuration
+    )
+
+    assert configuration.structured_output_mode is StructuredOutputMode.JSON_OBJECT
+    assert configuration.model_dump(mode="json")["structured_output_mode"] == "json_object"
 
 
 @pytest.mark.parametrize(
@@ -530,6 +543,19 @@ def test_qwen_benchmark_routes_use_generic_reasoning_control(model_id: str) -> N
             1_024,
         ),
         (
+            "M-0017",
+            "Ox Alpha (high)",
+            "stealth/ox-alpha",
+            "stealth",
+            "high",
+            32_768,
+            300,
+            "unsupported",
+            Decimal("0.00"),
+            Decimal("0.00"),
+            1_024,
+        ),
+        (
             "M-0101",
             "GPT-5.6 Luna (medium)",
             "openai/gpt-5.6-luna",
@@ -626,6 +652,7 @@ def test_active_benchmark_model_routes_are_fully_pinned(
         "M-0014",
         "M-0015",
         "M-0016",
+        "M-0017",
         "M-0101",
         "M-0104",
     ],
@@ -657,5 +684,6 @@ def test_active_model_configuration_stays_out_of_guesser_visible_projection(
         assert private_control not in serialized_messages
     assert "reasoning_effort" not in serialized_messages
     assert "reasoning_control" not in serialized_messages
+    assert "structured_output_mode" not in serialized_messages
     if configuration.reasoning_effort != "none":
         assert configuration.reasoning_effort not in serialized_messages

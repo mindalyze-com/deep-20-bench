@@ -37,7 +37,12 @@ from deep20_oracle.recovery import (
 from deep20_oracle.util import timestamp
 from openrouter import OpenRouter
 
-from .config import CacheControl, ModelConfig, ReasoningControl
+from .config import (
+    CacheControl,
+    ModelConfig,
+    ReasoningControl,
+    StructuredOutputMode,
+)
 from .errors import GameProviderError
 from .models import GameProviderExchange, GameProviderRequest
 
@@ -87,7 +92,7 @@ class _RecordingClient:
 
 
 class OpenRouterGameProvider:
-    """Exact-route structured-output adapter with prompt caching and no web tools."""
+    """Exact-route JSON-output adapter with prompt caching and no web tools."""
 
     def __init__(self, api_key: str, config: ModelConfig, *, title: str):
         if not api_key:
@@ -315,20 +320,28 @@ class OpenRouterGameProvider:
         return GameProviderExchange(raw_output=raw_output, trace=trace)
 
     def _request_payload(self, request: GameProviderRequest) -> dict[str, Any]:
-        schema = copy.deepcopy(request.output_schema)
-        self._make_schema_strict(schema)
-        payload: dict[str, Any] = {
-            "model": self.config.model,
-            "messages": list(request.messages),
-            "max_tokens": self.config.max_output_tokens,
-            "response_format": {
+        response_format: dict[str, Any]
+        if (
+            self.config.structured_output_mode
+            is StructuredOutputMode.STRICT_JSON_SCHEMA
+        ):
+            schema = copy.deepcopy(request.output_schema)
+            self._make_schema_strict(schema)
+            response_format = {
                 "type": "json_schema",
                 "json_schema": {
                     "name": request.schema_name,
                     "strict": True,
                     "schema": schema,
                 },
-            },
+            }
+        else:
+            response_format = {"type": "json_object"}
+        payload: dict[str, Any] = {
+            "model": self.config.model,
+            "messages": list(request.messages),
+            "max_tokens": self.config.max_output_tokens,
+            "response_format": response_format,
             "provider": {
                 "only": [self.config.provider],
                 "allow_fallbacks": self.config.allow_fallbacks,

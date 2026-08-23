@@ -1,0 +1,4274 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260823-official-M0017-018
+    model_id: M-0017
+    target_id: T-0005
+    trial_id: trial-001
+    trial_number: 1
+    episode_run_id: BR-7bd8ad171ee5934c14c0f7959ba12fff19c1fa73
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-7bd8ad171ee5934c14c0f7959ba12fff19c1fa73
+      episode_id: EP-01a02d13d9d276228b82cfceb96a97c3
+      subject:
+        target_id: T-0005
+        canonical_name: Achilles
+        aliases:
+        - Achilleus
+        entity_type: mythological_figure
+        description: Achilles, the Greek mythological hero and greatest Greek warrior
+          of the Trojan War in Homer's Iliad, identified by Wikidata entity Q41746.
+        reference_url: https://en.wikipedia.org/wiki/Achilles
+      started_at: '2026-08-23T05:24:30.802959+00:00'
+      completed_at: '2026-08-23T05:28:10.401493+00:00'
+      duration_ms: 219599
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 14
+      counted_questions: 13
+      guesser_call_count: 14
+      ask_count: 12
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      oracle_quality:
+        reviewed_questions: 12
+        agreements: 12
+        disagreements: 0
+        judge_invocations: 0
+        oracle_answers_changed: 0
+        final_unknown_answers: 0
+        judge_yes_answers: 0
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0123816'
+        judge_cost_usd: '0'
+        quality_control_cost_usd: '0.0123816'
+        question_types:
+        - question_type: other
+          reviewed_questions: 12
+          disagreements: 0
+      contract:
+        evaluated_outputs: 14
+        valid_outputs: 13
+        violations: 1
+        counted_penalties: 1
+        affected_trials: 1
+        compliance_rate: '0.9285714285714285714285714286'
+        status: breached
+      cache_status: compliant
+      costs_usd:
+        guesser: '0'
+        oracle: '0.187851849999999999'
+        validator: '0.000121'
+        total: '0.187972849999999999'
+      tokens:
+        guesser: 13011
+        oracle: 194417
+        validator: 415
+        total: 207843
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0017
+        requested_model: stealth/ox-alpha
+        requested_provider: stealth
+        resolved_models:
+        - stealth/ox-alpha
+        resolved_providers:
+        - Stealth
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v8-classified-research
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: contract_violation
+      turn_number: 1
+      violation_code: invalid_guesser_output
+      violation_kind: invalid_action
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-01a02d13d9d3729ab6bab8d8c041fe71
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is this figure from Greek mythology?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d13f2c274a3b9324ccc1939d2f3
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.history.com/articles/achilles
+          excerpt: The warrior Achilles is one of the great heroes of Greek mythology.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-01a02d13e3f77640a160d0fe1aa0263e
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is this figure a deity (a Greek god or goddess)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d14160970309613a1d22b4becd6
+        answer: 'NO'
+        evidence:
+        - source_url: https://chs.harvard.edu/book/nagy-gregory-the-ancient-greek-hero-in-24-hours/
+          excerpt: In Greek tradition, a hero was a human... Despite their mortality,
+            heroes, like the gods, were objects of cult worship.
+          validation: model_reported
+        - source_url: https://www.britannica.com/topic/Achilles-Greek-mythology
+          excerpt: Achilles, in Greek mythology, son of the mortal Peleus... and the
+            Nereid... Thetis. Achilles was... the greatest warrior of the army.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-01a02d140aa37045994399b87b61b5e3
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is this figure a monster or creature rather than a human?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d145011727aa05c21ec19f43e8e
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Achilles-Greek-mythology
+          excerpt: Achilles was fathered by Peleus, a mortal.
+          validation: model_reported
+        - source_url: https://www.greekmythology.com/Myths/Heroes/Achilles/achilles.html
+          excerpt: Achilles was the greatest warrior of the Greek army at Troy, the
+            son of the mortal king Peleus and the sea-goddess Thetis.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-01a02d144635706e85979518af9b6af2
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is this figure male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d1478aa7044bebcac79e6d5e0ec
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Achilles-Greek-mythology
+          excerpt: Achilles, in Greek mythology, son of the mortal Peleus ... and
+            the Nereid ... Thetis. Achilles was the bravest, handsomest, and greatest
+            warrior of the army of Agamemnon in the Trojan War.
+          validation: model_reported
+        - source_url: https://www.britishmuseum.org/blog/who-was-achilles
+          excerpt: Achilles was the son of Peleus, a Greek king, and Thetis, a sea
+            nymph or goddess.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-01a02d1468287492b84cab757c0c13f0
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is this figure a hero famous for performing a series of labors or
+          quests?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d14a30a762a8809378fb34a8841
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Achilles-Greek-mythology
+          excerpt: Achilles was considered a hero because he was the most successful
+            soldier in the Greek army during the Trojan War.
+          validation: model_reported
+        - source_url: https://kids.britannica.com/students/article/Greek-mythology-at-a-glance/624589
+          excerpt: Heracles ... performed 12 seemingly impossible tasks called the
+            Labors of Heracles.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-01a02d149a4b70a29120929fb0f66c05
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is this figure known for his exceptional beauty?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d14f6de768683748c2b40cf79da
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.history.com/articles/achilles
+          excerpt: Homer painted Achilles as a great hero with superhuman strength
+            and courage, and he was supremely handsome.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-01a02d14e38172d5bcb83e724bc25c51
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Is this figure known for falling in love with his own reflection?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d152ed1735187c575182a5721bc
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Narcissus-Greek-mythology
+          excerpt: Nemesis caused Narcissus to fall in love with his own reflection.
+          validation: model_reported
+        - source_url: https://www.history.com/articles/achilles
+          excerpt: The warrior Achilles is one of the great heroes of Greek mythology.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-01a02d15219870b19a9809fc75618493
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Was this figure loved by the goddess Aphrodite?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d156c59714fadef82c0be28cc78
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.greekmythology.com/Myths/The_Myths/Adonis_and_Aphrodite/adonis_and_aphrodite.html
+          excerpt: Adonis was one of only two mortals the goddess Aphrodite ever fell
+            for; the other was Anchises.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-01a02d155d047599b6ff951083d5beed
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Was this figure taken up to Mount Olympus to serve as the gods'
+          cupbearer?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d1654ee77858b511e94b0e824a1
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.theoi.com/Ouranios/Ganymedes.html
+          excerpt: 'Ganymede Summary: God of — Cupbearer of the gods; Home — Mount
+            Olympus.'
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Ganymede_%28mythology%29
+          excerpt: On Olympus, Zeus granted Ganymede eternal youth and immortality
+            as the official cup bearer to the gods.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-01a02d16043b74f4920632840576823b
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Is this figure associated with the Trojan War?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d168fa272a8a5f66a9ea50ad6dc
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Achilles-Greek-mythology
+          excerpt: In Greek mythology Achilles was the strongest warrior and hero
+            in the Greek army during the Trojan War.
+          validation: model_reported
+        - source_url: https://www.britishmuseum.org/blog/who-was-achilles
+          excerpt: What did Achilles do in the Trojan War? Achilles arrives at Troy
+            with 50 ships.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-01a02d168992720cb9b6f880866dfe01
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Was this figure a warrior who fought on the Greek side in the Trojan
+          War?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d16bd9275a2a2dfcdcdca1d81eb
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.history.com/articles/achilles
+          excerpt: To be a great warrior was Achilles’ fate, however, and he soon
+            left Skyros and joined the Greek army.
+          validation: model_reported
+        - source_url: https://www.britannica.com/event/Trojan-War
+          excerpt: The death of Achilles, the greatest Greek warrior of the Trojan
+            War, is not described in Homeric works.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-01a02d16a6f67746839a65083d92a733
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Was this figure the son of the sea nymph Thetis?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d1700ee7567a1473780374aaf45
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/topic/Achilles-Greek-mythology
+          excerpt: Achilles, in Greek mythology, son of the mortal Peleus and the
+            Nereid, or sea nymph, Thetis.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-01a02d16d72f74018ceeb075ca362ad5
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: GUESS
+        question: null
+        name: Achilles
+        description: The greatest Greek warrior of the Trojan War, hero of the Iliad,
+          invulnerable except for his heel
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a02d172f8977b09b727aed573933d4
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity matches Achilles, the Greek mythological
+          hero and greatest Greek warrior of the Trojan War.
+        oracle_quality: null
+      counted: false
+      counted_questions: 13
+      guesser_call_id: GC-01a02d1727a3760d87a4e367555f9c53
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"mythological_figure","event":"BEGIN","variation_token":"EAQCORIU"}'
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this figure from Greek mythology?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this figure a deity (a Greek god or goddess)?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this figure a monster or creature rather than a human?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this figure male?"}}'
+      turn_number: 5
+    - role: user
+      content: 'YES'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this figure a hero famous for performing a series of labors or quests?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this figure known for his exceptional beauty?"}}'
+      turn_number: 7
+    - role: user
+      content: 'YES'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this figure known for falling in love with his own reflection?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this figure loved by the goddess Aphrodite?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this figure taken up to Mount Olympus to serve as the gods'' cupbearer?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this figure associated with the Trojan War?"}}'
+      turn_number: 11
+    - role: user
+      content: 'YES'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this figure a warrior who fought on the Greek side in the Trojan War?"}}'
+      turn_number: 12
+    - role: user
+      content: 'YES'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this figure the son of the sea nymph Thetis?"}}'
+      turn_number: 13
+    - role: user
+      content: 'YES'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The greatest Greek warrior
+        of the Trojan War, hero of the Iliad, invulnerable except for his heel","name":"Achilles","question":null}}'
+      turn_number: 14
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0017
+          gateway: openrouter
+          model: stealth/ox-alpha
+          provider: stealth
+          reasoning_effort: high
+          structured_output_mode: json_object
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '0.00'
+            cached_input_usd_per_million: '0.00'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 14
+          cost_usd: '0'
+          latency_ms: 71220
+          total_tokens: 13011
+          input_tokens: 12045
+          cached_input_tokens: 8192
+          cache_write_tokens: 0
+          output_tokens: 966
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: '0.0000'
+          recovery:
+            request_attempts: 14
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Stealth
+            calls: 14
+            cost_usd: '0'
+            latency_ms: 71220
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 12
+          cost_usd: '0.187851849999999999'
+          latency_ms: 147066
+          total_tokens: 194417
+          input_tokens: 185518
+          cached_input_tokens: 128305
+          cache_write_tokens: 0
+          output_tokens: 8899
+          reasoning_tokens: 5641
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 24
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 12
+              cost_usd: '0.175470249999999999'
+              latency_ms: 130652
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 12
+              cost_usd: '0.0123816'
+              latency_ms: 16414
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers: []
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.000121'
+          latency_ms: 1034
+          total_tokens: 415
+          input_tokens: 377
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 38
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.000121'
+            latency_ms: 1034
+          unreported_calls: 0
+          fallback_calls: 0
+    audit:
+      schema_version: 1
+      calls:
+      - component: guesser
+        call_id: GC-01a02d13d9d3729ab6bab8d8c041fe71
+        turn_number: 1
+        status: contract_violation
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 36117647ba09b5705a3084f93aee6ca20ff99a8d624f4d585dedaa5e063e7fc3
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:24:30.803138+00:00'
+          completed_at: '2026-08-23T05:24:33.383648+00:00'
+          latency_ms: 2580
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 568
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 40
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 66
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: guesser
+        call_id: GC-01a02d13e3f77640a160d0fe1aa0263e
+        turn_number: 2
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 2554a4747c510c94eb5168a06893dbce6f86647875daa1a1a12056aff5cde0e5
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:24:33.399373+00:00'
+          completed_at: '2026-08-23T05:24:37.185261+00:00'
+          latency_ms: 3785
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 679
+            cached_input_tokens: 128
+            cache_write_tokens: 0
+            output_tokens: 36
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 108
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d13f2c274a3b9324ccc1939d2f3
+        turn_number: 2
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 6450610cbe98f5f96e5109f4fa212a9c492be54bc913fef56fefe10114184067
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:24:37.188560+00:00'
+            completed_at: '2026-08-23T05:24:42.346804+00:00'
+            latency_ms: 5158
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 3586
+              cached_input_tokens: 1331
+              cache_write_tokens: 0
+              output_tokens: 147
+              reasoning_tokens: 40
+              search_count: 1
+              cost_usd: '0.005766469999999999'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 334
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles figure from Greek mythology Greek mythological hero authoritative
+              source
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 6450610cbe98f5f96e5109f4fa212a9c492be54bc913fef56fefe10114184067
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:24:37.188560+00:00'
+              completed_at: '2026-08-23T05:24:42.346804+00:00'
+              latency_ms: 5158
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 3586
+                cached_input_tokens: 1331
+                cache_write_tokens: 0
+                output_tokens: 147
+                reasoning_tokens: 40
+                search_count: 1
+                cost_usd: '0.005766469999999999'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 334
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: fbe3271103491badd5fc487a5ab69a6e07d3b470252dbf72769d36c235ca730a
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:24:42.348366+00:00'
+            completed_at: '2026-08-23T05:24:43.283107+00:00'
+            latency_ms: 934
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 854
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 121
+              reasoning_tokens: 88
+              search_count: 0
+              cost_usd: '0.0005587'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 79
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d140aa37045994399b87b61b5e3
+        turn_number: 3
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 6c525a390377867811a1fb51ccec1a267c32485bf570a15946ee1f7982aa3353
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:24:43.300055+00:00'
+          completed_at: '2026-08-23T05:24:46.216108+00:00'
+          latency_ms: 2916
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 709
+            cached_input_tokens: 128
+            cache_write_tokens: 0
+            output_tokens: 48
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 120
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d14160970309613a1d22b4becd6
+        turn_number: 3
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: c784111d984bc9b8ff0754e5ac1be229f2465cd74326136462109cb5f73c4b2b
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:24:46.219613+00:00'
+            completed_at: '2026-08-23T05:24:56.857827+00:00'
+            latency_ms: 10638
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8378
+              cached_input_tokens: 5208
+              cache_write_tokens: 0
+              output_tokens: 491
+              reasoning_tokens: 235
+              search_count: 2
+              cost_usd: '0.01148541'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 743
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles Greek mythology hero not a god deity son of Peleus and Thetis
+              Britannica
+            - Achilles hero cult not god Greek mythology worshipped as hero source
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: c784111d984bc9b8ff0754e5ac1be229f2465cd74326136462109cb5f73c4b2b
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:24:46.219613+00:00'
+              completed_at: '2026-08-23T05:24:56.857827+00:00'
+              latency_ms: 10638
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8378
+                cached_input_tokens: 5208
+                cache_write_tokens: 0
+                output_tokens: 491
+                reasoning_tokens: 235
+                search_count: 2
+                cost_usd: '0.01148541'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 743
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: d4c1c49376e4ab763b4921fdd7928b968a5b283d449edaf6503cde58482fc7ce
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:24:56.860575+00:00'
+            completed_at: '2026-08-23T05:24:58.531739+00:00'
+            latency_ms: 1671
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 912
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 420
+              reasoning_tokens: 404
+              search_count: 0
+              cost_usd: '0.0013236'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 63
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d144635706e85979518af9b6af2
+        turn_number: 4
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 308c5a880139e4e5d3f2231d3ec5e65a307f71e1d05bf7584ea08a0980fa7a00
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:24:58.549360+00:00'
+          completed_at: '2026-08-23T05:25:01.071322+00:00'
+          latency_ms: 2522
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 745
+            cached_input_tokens: 704
+            cache_write_tokens: 0
+            output_tokens: 53
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 129
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d145011727aa05c21ec19f43e8e
+        turn_number: 4
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 7f8d649621b5ccfd7cdab170264007cd97a664d111074afb6a80f1e0e1333a72
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:25:01.074871+00:00'
+            completed_at: '2026-08-23T05:25:05.596289+00:00'
+            latency_ms: 4521
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 3971
+              cached_input_tokens: 2548
+              cache_write_tokens: 0
+              output_tokens: 218
+              reasoning_tokens: 45
+              search_count: 1
+              cost_usd: '0.00566801'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 565
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles Greek mythology human mortal hero not monster creature biography
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 7f8d649621b5ccfd7cdab170264007cd97a664d111074afb6a80f1e0e1333a72
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:25:01.074871+00:00'
+              completed_at: '2026-08-23T05:25:05.596289+00:00'
+              latency_ms: 4521
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 3971
+                cached_input_tokens: 2548
+                cache_write_tokens: 0
+                output_tokens: 218
+                reasoning_tokens: 45
+                search_count: 1
+                cost_usd: '0.00566801'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 565
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: a97bb5efff6ed96ec1383d75f6b2408bfd2d3c146950cbc3125efceaf9f89bcf
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:25:05.598479+00:00'
+            completed_at: '2026-08-23T05:25:07.223201+00:00'
+            latency_ms: 1624
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 896
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 375
+              reasoning_tokens: 338
+              search_count: 0
+              cost_usd: '0.0012063'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 85
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d1468287492b84cab757c0c13f0
+        turn_number: 5
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 348887a7c1c8c8f27a6ca34c6d54ea35fad52757bada42056f374e30c8032e73
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:25:07.240478+00:00'
+          completed_at: '2026-08-23T05:25:11.464716+00:00'
+          latency_ms: 4224
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 780
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 37
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 92
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d1478aa7044bebcac79e6d5e0ec
+        turn_number: 5
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: c5da19afef842ca17f6b841069c779c45e505e29f16fabd6f496b9bc2f9a735e
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:25:11.468227+00:00'
+            completed_at: '2026-08-23T05:25:18.584926+00:00'
+            latency_ms: 7116
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8616
+              cached_input_tokens: 5349
+              cache_write_tokens: 0
+              output_tokens: 306
+              reasoning_tokens: 66
+              search_count: 2
+              cost_usd: '0.01129048'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 701
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles Greek mythological hero male figure biography
+            - Achilles male son of Peleus Thetis source museum encyclopedia
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: c5da19afef842ca17f6b841069c779c45e505e29f16fabd6f496b9bc2f9a735e
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:25:11.468227+00:00'
+              completed_at: '2026-08-23T05:25:18.584926+00:00'
+              latency_ms: 7116
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8616
+                cached_input_tokens: 5349
+                cache_write_tokens: 0
+                output_tokens: 306
+                reasoning_tokens: 66
+                search_count: 2
+                cost_usd: '0.01129048'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 701
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: b6daaa30784afe63a1a372f5aeb634d89562ef9f40b3b2480f400090c3f7e2b9
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:25:18.586828+00:00'
+            completed_at: '2026-08-23T05:25:20.067110+00:00'
+            latency_ms: 1480
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 918
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 394
+              reasoning_tokens: 357
+              search_count: 0
+              cost_usd: '0.0012604'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 86
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d149a4b70a29120929fb0f66c05
+        turn_number: 6
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: c69dae04551c115414f8309be7017e44d094f6ee5d314d5659c447e99a347960
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:25:20.075337+00:00'
+          completed_at: '2026-08-23T05:25:22.312713+00:00'
+          latency_ms: 2237
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 808
+            cached_input_tokens: 128
+            cache_write_tokens: 0
+            output_tokens: 61
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 145
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d14a30a762a8809378fb34a8841
+        turn_number: 6
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 055120530a2c8750dba13152632e70f4db533b769b1c71c973ec260cdeef4560
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:25:22.316425+00:00'
+            completed_at: '2026-08-23T05:25:36.465171+00:00'
+            latency_ms: 14149
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 12413
+              cached_input_tokens: 8512
+              cache_write_tokens: 0
+              output_tokens: 583
+              reasoning_tokens: 271
+              search_count: 3
+              cost_usd: '0.01684449'
+              cache_discount_usd: null
+            web_search_requests: 3
+            annotation_count: 14
+            url_citation_count: 14
+            raw_output_present: true
+            raw_output_characters: 851
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles Greek mythological hero famous Trojan War greatest warrior
+              not series of labors or quests Heracles Twelve Labors
+            - Achilles famous for Trojan War Heracles famous for twelve labors source
+              mythology comparison
+            - site:britannica.com Achilles hero Trojan War site:britannica.com Heracles
+              Twelve Labors famous
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 055120530a2c8750dba13152632e70f4db533b769b1c71c973ec260cdeef4560
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:25:22.316425+00:00'
+              completed_at: '2026-08-23T05:25:36.465171+00:00'
+              latency_ms: 14149
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 12413
+                cached_input_tokens: 8512
+                cache_write_tokens: 0
+                output_tokens: 583
+                reasoning_tokens: 271
+                search_count: 3
+                cost_usd: '0.01684449'
+                cache_discount_usd: null
+              web_search_requests: 3
+              annotation_count: 14
+              url_citation_count: 14
+              raw_output_present: true
+              raw_output_characters: 851
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 7daea4f4e3e35d731fd70b43067fb7dd7d6449e8ce50278037796b1f12368522
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:25:36.467577+00:00'
+            completed_at: '2026-08-23T05:25:38.802704+00:00'
+            latency_ms: 2335
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 896
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 681
+              reasoning_tokens: 652
+              search_count: 0
+              cost_usd: '0.0019713'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 76
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d14e38172d5bcb83e724bc25c51
+        turn_number: 7
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: ee02962d184fc872510306ca65c509bf812a7340cf13f3c8b59b95631cc7eae9
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:25:38.817515+00:00'
+          completed_at: '2026-08-23T05:25:43.772006+00:00'
+          latency_ms: 4954
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 847
+            cached_input_tokens: 704
+            cache_write_tokens: 0
+            output_tokens: 84
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 120
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d14f6de768683748c2b40cf79da
+        turn_number: 7
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: c66ee902508b5696477192a22d4325fa7dd478a867794648252822072b28dd40
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:25:43.775763+00:00'
+            completed_at: '2026-08-23T05:25:53.933417+00:00'
+            latency_ms: 10157
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 14324
+              cached_input_tokens: 9595
+              cache_write_tokens: 0
+              output_tokens: 349
+              reasoning_tokens: 139
+              search_count: 3
+              cost_usd: '0.01679235'
+              cache_discount_usd: null
+            web_search_requests: 3
+            annotation_count: 11
+            url_citation_count: 11
+            raw_output_present: true
+            raw_output_characters: 518
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles exceptional beauty known for beautiful handsome mythology source
+            - Achilles "beautiful" "handsome" ancient Greek mythology source biography
+            - site:edu Achilles "beautiful" "handsome" mythology Achilles beauty
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: c66ee902508b5696477192a22d4325fa7dd478a867794648252822072b28dd40
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:25:43.775763+00:00'
+              completed_at: '2026-08-23T05:25:53.933417+00:00'
+              latency_ms: 10157
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 14324
+                cached_input_tokens: 9595
+                cache_write_tokens: 0
+                output_tokens: 349
+                reasoning_tokens: 139
+                search_count: 3
+                cost_usd: '0.01679235'
+                cache_discount_usd: null
+              web_search_requests: 3
+              annotation_count: 11
+              url_citation_count: 11
+              raw_output_present: true
+              raw_output_characters: 518
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 0e607ec0167a8dbbe4a0544fa43fb7214ba10d758ad109ce3890737c0f9f7e34
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:25:53.935338+00:00'
+            completed_at: '2026-08-23T05:25:54.700887+00:00'
+            latency_ms: 765
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 863
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 108
+              reasoning_tokens: 75
+              search_count: 0
+              cost_usd: '0.0005289'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 79
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d15219870b19a9809fc75618493
+        turn_number: 8
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 4b2ceee84db269d007843191876245c8bb6574d1e75b61bf89f480c67885d343
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:25:54.712959+00:00'
+          completed_at: '2026-08-23T05:25:58.095346+00:00'
+          latency_ms: 3382
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 879
+            cached_input_tokens: 832
+            cache_write_tokens: 0
+            output_tokens: 97
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 137
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d152ed1735187c575182a5721bc
+        turn_number: 8
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 156f7f3ce6ed39d87e9485c64d65c4d6dcca7b136d1c5535f7e77f30f1311fe3
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:25:58.099118+00:00'
+            completed_at: '2026-08-23T05:26:08.646188+00:00'
+            latency_ms: 10547
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8709
+              cached_input_tokens: 5412
+              cache_write_tokens: 0
+              output_tokens: 418
+              reasoning_tokens: 216
+              search_count: 2
+              cost_usd: '0.01143364'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 593
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles mythological figure falling in love with his own reflection
+              Narcissus
+            - Britannica Achilles Greek mythology hero Trojan War Narcissus own reflection
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 156f7f3ce6ed39d87e9485c64d65c4d6dcca7b136d1c5535f7e77f30f1311fe3
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:25:58.099118+00:00'
+              completed_at: '2026-08-23T05:26:08.646188+00:00'
+              latency_ms: 10547
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8709
+                cached_input_tokens: 5412
+                cache_write_tokens: 0
+                output_tokens: 418
+                reasoning_tokens: 216
+                search_count: 2
+                cost_usd: '0.01143364'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 593
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: c4a7eaca2377bb92ece03106393660adb4570140f31db50272b5256a046d33d9
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:26:08.648733+00:00'
+            completed_at: '2026-08-23T05:26:09.915615+00:00'
+            latency_ms: 1266
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 881
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 301
+              reasoning_tokens: 280
+              search_count: 0
+              cost_usd: '0.0010168'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 68
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d155d047599b6ff951083d5beed
+        turn_number: 9
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 007f83ee05bc48c16ee34b2bad5f5a8b2e644973ac32f15fafc76bc4a2741774
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:26:09.924643+00:00'
+          completed_at: '2026-08-23T05:26:13.847073+00:00'
+          latency_ms: 3922
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 915
+            cached_input_tokens: 832
+            cache_write_tokens: 0
+            output_tokens: 73
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 119
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d156c59714fadef82c0be28cc78
+        turn_number: 9
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: bc665ce8287977f295363cb821e048deeb9e64d8b5903e012a0f3bcb68c6bead
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:26:13.850673+00:00'
+            completed_at: '2026-08-23T05:26:51.309769+00:00'
+            latency_ms: 37459
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 84020
+              cached_input_tokens: 70123
+              cache_write_tokens: 0
+              output_tokens: 1629
+              reasoning_tokens: 1019
+              search_count: 11
+              cost_usd: '0.05683016'
+              cache_discount_usd: null
+            web_search_requests: 11
+            annotation_count: 45
+            url_citation_count: 45
+            raw_output_present: true
+            raw_output_characters: 762
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles loved by goddess Aphrodite mythology source
+            - '"Aphrodite" "Achilles" "loved" mythology'
+            - Achilles Aphrodite romance myth ancient source
+            - site:theoi.com Aphrodite Achilles love
+            - Aphrodite lovers consorts Achilles
+            - '"Aphrodite loved Achilles"'
+            - Greek mythology Aphrodite lovers Ares Adonis Anchises Hermes list Achilles
+              not lover
+            - site:theoi.com/Olympios/AphroditeLoves2.html Achilles Aphrodite mortal
+              loves only
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: bc665ce8287977f295363cb821e048deeb9e64d8b5903e012a0f3bcb68c6bead
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:26:13.850673+00:00'
+              completed_at: '2026-08-23T05:26:51.309769+00:00'
+              latency_ms: 37459
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 84020
+                cached_input_tokens: 70123
+                cache_write_tokens: 0
+                output_tokens: 1629
+                reasoning_tokens: 1019
+                search_count: 11
+                cost_usd: '0.05683016'
+                cache_discount_usd: null
+              web_search_requests: 11
+              annotation_count: 45
+              url_citation_count: 45
+              raw_output_present: true
+              raw_output_characters: 762
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 197eb1dc61604bdcac7cd10cbb836be7563b0a586a2609d795327011c6f843ea
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:26:51.312630+00:00'
+            completed_at: '2026-08-23T05:26:52.714952+00:00'
+            latency_ms: 1402
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 866
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 283
+              reasoning_tokens: 268
+              search_count: 0
+              cost_usd: '0.0009673'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 57
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d16043b74f4920632840576823b
+        turn_number: 10
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 9d71e3e5c9e243444ce65ff550d88e543ba7178b5fa0ae46b14300a90fa94b0a
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:26:52.731416+00:00'
+          completed_at: '2026-08-23T05:27:13.388711+00:00'
+          latency_ms: 20657
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 949
+            cached_input_tokens: 896
+            cache_write_tokens: 0
+            output_tokens: 91
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 146
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d1654ee77858b511e94b0e824a1
+        turn_number: 10
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 148ea69f2ce0022e42703670d00b272d609b832d0c912f2765ab456efe9f3d49
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:27:13.391553+00:00'
+            completed_at: '2026-08-23T05:27:24.636158+00:00'
+            latency_ms: 11244
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 14659
+              cached_input_tokens: 10017
+              cache_write_tokens: 0
+              output_tokens: 418
+              reasoning_tokens: 138
+              search_count: 3
+              cost_usd: '0.01686184'
+              cache_discount_usd: null
+            web_search_requests: 3
+            annotation_count: 14
+            url_citation_count: 14
+            raw_output_present: true
+            raw_output_characters: 704
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles taken up to Mount Olympus serve as the gods' cupbearer myth
+            - Achilles mythology Mount Olympus cupbearer Ganymede Achilles fate after
+              death
+            - Achilles after death Olympus Greek mythology Ganymede cupbearer gods
+              source
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 148ea69f2ce0022e42703670d00b272d609b832d0c912f2765ab456efe9f3d49
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:27:13.391553+00:00'
+              completed_at: '2026-08-23T05:27:24.636158+00:00'
+              latency_ms: 11244
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 14659
+                cached_input_tokens: 10017
+                cache_write_tokens: 0
+                output_tokens: 418
+                reasoning_tokens: 138
+                search_count: 3
+                cost_usd: '0.01686184'
+                cache_discount_usd: null
+              web_search_requests: 3
+              annotation_count: 14
+              url_citation_count: 14
+              raw_output_present: true
+              raw_output_characters: 704
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: ac80986c343a40a506859071c6116ffc8a1f0ac13a8617ee9cdb7e7da22a4d33
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:27:24.638593+00:00'
+            completed_at: '2026-08-23T05:27:26.851744+00:00'
+            latency_ms: 2213
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 898
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 464
+              reasoning_tokens: 435
+              search_count: 0
+              cost_usd: '0.0014294'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 76
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d168992720cb9b6f880866dfe01
+        turn_number: 11
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 4d7c60f8309c535bbdb28c2f9d9d0a52422f54d002accc73aebb43e58ce6d041
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:27:26.866498+00:00'
+          completed_at: '2026-08-23T05:27:28.417572+00:00'
+          latency_ms: 1551
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 989
+            cached_input_tokens: 896
+            cache_write_tokens: 0
+            output_tokens: 29
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 118
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d168fa272a8a5f66a9ea50ad6dc
+        turn_number: 11
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: e747d77ebebe9110698d83cb8bc2a3917b91b0e621ae21d97b965f8317536058
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:27:28.419923+00:00'
+            completed_at: '2026-08-23T05:27:33.543746+00:00'
+            latency_ms: 5123
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4046
+              cached_input_tokens: 2545
+              cache_write_tokens: 0
+              output_tokens: 206
+              reasoning_tokens: 40
+              search_count: 1
+              cost_usd: '0.00567305'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 566
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles associated with the Trojan War Greek mythological hero source
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: e747d77ebebe9110698d83cb8bc2a3917b91b0e621ae21d97b965f8317536058
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:27:28.419923+00:00'
+              completed_at: '2026-08-23T05:27:33.543746+00:00'
+              latency_ms: 5123
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4046
+                cached_input_tokens: 2545
+                cache_write_tokens: 0
+                output_tokens: 206
+                reasoning_tokens: 40
+                search_count: 1
+                cost_usd: '0.00567305'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 566
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: d6b11ef834f58c737bab290bdafb16828ddcdab9dd0aad11cf3563c71c0382e3
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:27:33.545697+00:00'
+            completed_at: '2026-08-23T05:27:34.379327+00:00'
+            latency_ms: 833
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 888
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 130
+              reasoning_tokens: 93
+              search_count: 0
+              cost_usd: '0.0005914'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 86
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d16a6f67746839a65083d92a733
+        turn_number: 12
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 0574262abbb1cca4e3325524c1e9d2111ed12ebc6381de6b3682353f309e7360
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:27:34.391039+00:00'
+          completed_at: '2026-08-23T05:27:40.176315+00:00'
+          latency_ms: 5785
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 1021
+            cached_input_tokens: 960
+            cache_write_tokens: 0
+            output_tokens: 139
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 145
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d16bd9275a2a2dfcdcdca1d81eb
+        turn_number: 12
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: bc746c3550e99ed2bc3fa0dc158403890d0583a766b9c73b8b183de57486b7e6
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:27:40.180343+00:00'
+            completed_at: '2026-08-23T05:27:45.788818+00:00'
+            latency_ms: 5608
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4136
+              cached_input_tokens: 2552
+              cache_write_tokens: 0
+              output_tokens: 231
+              reasoning_tokens: 65
+              search_count: 1
+              cost_usd: '0.00572394'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 562
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles warrior fought on Greek side in Trojan War source biography
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: bc746c3550e99ed2bc3fa0dc158403890d0583a766b9c73b8b183de57486b7e6
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:27:40.180343+00:00'
+              completed_at: '2026-08-23T05:27:45.788818+00:00'
+              latency_ms: 5608
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4136
+                cached_input_tokens: 2552
+                cache_write_tokens: 0
+                output_tokens: 231
+                reasoning_tokens: 65
+                search_count: 1
+                cost_usd: '0.00572394'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 562
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: b7b9f059c45635299f7c271b0b89dcf56c0e4ade0f9a397c2e0eef0a84110786
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:27:45.790740+00:00'
+            completed_at: '2026-08-23T05:27:46.721842+00:00'
+            latency_ms: 931
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 903
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 200
+              reasoning_tokens: 163
+              search_count: 0
+              cost_usd: '0.0007709'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 86
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d16d72f74018ceeb075ca362ad5
+        turn_number: 13
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: b277ee96ac669a842041df93a4871c9ce6efa239f6330071b8c3cf4f72643efb
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:27:46.735543+00:00'
+          completed_at: '2026-08-23T05:27:57.420476+00:00'
+          latency_ms: 10685
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 1060
+            cached_input_tokens: 960
+            cache_write_tokens: 0
+            output_tokens: 128
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 120
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d1700ee7567a1473780374aaf45
+        turn_number: 13
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 56356c7007f3c46e08e5983d3cfb82265430b19770957ce425aacbf4960a4b86
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:27:57.424193+00:00'
+            completed_at: '2026-08-23T05:28:06.356864+00:00'
+            latency_ms: 8932
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8013
+              cached_input_tokens: 5113
+              cache_write_tokens: 0
+              output_tokens: 228
+              reasoning_tokens: 49
+              search_count: 2
+              cost_usd: '0.01110041'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 419
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Achilles son of sea nymph Thetis mythology authoritative source
+            - site:britannica.com Achilles son of Thetis Peleus sea nymph
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 56356c7007f3c46e08e5983d3cfb82265430b19770957ce425aacbf4960a4b86
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T05:27:57.424193+00:00'
+              completed_at: '2026-08-23T05:28:06.356864+00:00'
+              latency_ms: 8932
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8013
+                cached_input_tokens: 5113
+                cache_write_tokens: 0
+                output_tokens: 228
+                reasoning_tokens: 49
+                search_count: 2
+                cost_usd: '0.01110041'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 419
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 1dd344d9fb4c65b02c3098f72f6b9c8117602809b3aa7ceb4ebb2c28ef9abfb6
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T05:28:06.358552+00:00'
+            completed_at: '2026-08-23T05:28:07.319202+00:00'
+            latency_ms: 960
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 872
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 198
+              reasoning_tokens: 165
+              search_count: 0
+              cost_usd: '0.0007566'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 79
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d1727a3760d87a4e367555f9c53
+        turn_number: 14
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: ea08af466204870db3d876b34b81a7863a667bd529f7ae8e6d7ed935fb93d7dc
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:28:07.331602+00:00'
+          completed_at: '2026-08-23T05:28:09.351741+00:00'
+          latency_ms: 2020
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 1096
+            cached_input_tokens: 1024
+            cache_write_tokens: 0
+            output_tokens: 50
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 177
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a02d172f8977b09b727aed573933d4
+        turn_number: 14
+        status: success
+        prompt:
+          version: strict-guess-validator-v1
+          hash: 710a1903b31fb66e9e4ad81db923cecf0602c5287a23afdbff4f38603bf6ee8d
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T05:28:09.354876+00:00'
+          completed_at: '2026-08-23T05:28:10.389689+00:00'
+          latency_ms: 1034
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 377
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 38
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.000121'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 146
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      unavailable_call_count: 0
+  error_output_preview:
+    component: guesser
+    attempt_number: 1
+    finish_reason: stop
+    text: '{"action":"ASK","question":"Is this figure from Greek mythology?"}'
+    original_characters: 66
+    trailing_whitespace_characters: 0
+    truncated: false
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0017/BX-20260823-official-M0017-018/subjects/T-0005/trials/trial-001/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs:
+      relative_path: runs/M-0017/BX-20260823-official-M0017-018/subjects/T-0005/trials/trial-001/error-outputs.jsonl
+      record_count: 1
+      integrity_hash: 4a44113a383fa6ad3d013a242c6decf14086c8a659396cc53febe68ed8ea626b
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 73af875fb1bf2a18d92a068f53c01b6160705b67de7fe66f13571beda958343e

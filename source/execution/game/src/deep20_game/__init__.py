@@ -7,6 +7,7 @@ from .config import (
     GamePolicy,
     ModelConfig,
     PromptCacheConfig,
+    StructuredOutputMode,
     load_game_policy,
     load_model_config,
 )
@@ -37,6 +38,7 @@ __all__ = [
     "GuesserAction",
     "ModelConfig",
     "PromptCacheConfig",
+    "StructuredOutputMode",
     "TerminalReason",
     "load_game_policy",
     "load_model_config",

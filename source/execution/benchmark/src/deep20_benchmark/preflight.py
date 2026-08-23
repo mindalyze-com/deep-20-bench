@@ -6,7 +6,11 @@ from typing import Literal, Protocol
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
-from deep20_game.config import ModelConfig, ReasoningControl
+from deep20_game.config import (
+    ModelConfig,
+    ReasoningControl,
+    StructuredOutputMode,
+)
 from deep20_oracle.config import EvidenceReviewConfig, ProviderRouting
 from deep20_oracle.models import JsonObject, StrictModel
 from deep20_oracle.util import timestamp
@@ -199,7 +203,9 @@ def _game_required_parameters(
     *,
     include_seed: bool,
 ) -> tuple[str, ...]:
-    required = ["max_tokens", "response_format", "structured_outputs"]
+    required = ["max_tokens", "response_format"]
+    if config.structured_output_mode is StructuredOutputMode.STRICT_JSON_SCHEMA:
+        required.append("structured_outputs")
     if config.reasoning_effort.casefold() != "none":
         required.append(
             "reasoning"
@@ -372,9 +378,16 @@ def validate_catalog_routes(
         issues: list[str] = []
         if assessment.active_endpoint_count == 0:
             issues.append("configured exact provider has no active endpoint")
-        if assessment.active_endpoint_count and (
-            "structured_outputs" in assessment.missing_parameters
-            or "response_format" in assessment.missing_parameters
+        if (
+            assessment.active_endpoint_count
+            and "response_format" in assessment.missing_parameters
+        ):
+            issues.append("exact route does not advertise JSON response formatting")
+        if (
+            assessment.active_endpoint_count
+            and config.structured_output_mode
+            is StructuredOutputMode.STRICT_JSON_SCHEMA
+            and "structured_outputs" in assessment.missing_parameters
         ):
             issues.append("exact route does not advertise strict structured output")
         if (

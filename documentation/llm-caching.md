@@ -118,11 +118,19 @@ such as `benchmark_mode`, Oracle-evidence retention, and Guesser-conversation re
 excluded from the namespace because they do not change the provider request. Hidden provider
 reasoning is neither persisted nor replayed.
 
-Messages are append-only and canonically serialized. The fixed instructions, structured-output
-schema, model parameters, and earlier action/answer messages remain an exact prefix; only the
-new tail changes. A contract failure appends the same fixed correction tail for every subject
-and parser failure; the malformed response itself is absent. Final-turn enforcement happens in
-the engine without changing the provider schema.
+Messages are append-only and canonically serialized. The fixed instructions, configured output
+format, model parameters, and earlier action/answer messages remain an exact prefix; strict
+routes also keep the same structured-output schema. Only the new tail changes. A contract
+failure appends the same fixed correction tail for every subject and parser failure; the
+malformed response itself is absent. Final-turn enforcement happens in the engine without
+changing the configured output format.
+
+Ox Alpha is registered in JSON-object mode because its pinned Stealth endpoint did not
+advertise strict JSON Schema support on 23 August 2026. That choice changes only the configured
+provider response-format parameter: the stable prompt, local action schema, visible history,
+and scored recovery remain unchanged. The endpoint advertised zero input and output prices and
+did not advertise implicit prompt caching. Its configuration therefore keeps automatic caching
+as best effort, records any reported cache telemetry, and claims no cache savings.
 
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two

@@ -92,6 +92,10 @@ The provider wire schema is discriminated by `action`: `ASK` requires `question`
 and the two identity fields to be JSON null, while `GUESS` requires `question` to be JSON null
 and both identity fields to be strings. This prevents strict-output providers from filling
 inactive nullable fields with empty strings that the domain protocol would correctly reject.
+Model configurations normally use `structured_output_mode: strict_json_schema`. A registered
+route may use `json_object` when the exact provider lacks strict JSON Schema enforcement. It
+still receives the same contract instructions and its output is validated locally against the
+same branches without repair or response healing.
 Active empty strings and every other schema violation create a scored contract-violation turn.
 A Guesser provider call that ends without a completed structured action - a `length` finish,
 an empty completed response, or another non-`stop` finish - is classified and scored the same

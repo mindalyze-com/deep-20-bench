@@ -35,6 +35,13 @@ The provider wire response must match exactly one of these branches:
 The root and action objects reject additional fields. Active strings must be non-empty, and
 inactive fields must be JSON `null`.
 
+Provider-side enforcement is fixed by the immutable model configuration. The default
+`strict_json_schema` mode sends these branches as a strict JSON Schema. A registered
+`json_object` route asks the provider only for a JSON object when strict schema enforcement is
+unavailable. It receives the same fixed contract instructions, and its completed output must
+still pass the same strict local validation shown above. Deep20Bench does not repair or heal the
+output, so provider-format limitations remain measurable contract violations.
+
 Concrete contract violations include:
 
 - plain prose such as `I would ask whether the person was born before 1900`;

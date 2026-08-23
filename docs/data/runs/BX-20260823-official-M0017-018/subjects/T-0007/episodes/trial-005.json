@@ -1,0 +1,229 @@
+{
+  "document_type": "episode",
+  "schema_version": 2,
+  "execution_id": "BX-20260823-official-M0017-018",
+  "target_id": "T-0007",
+  "trial_id": "trial-005",
+  "episode": {
+    "episode_run_id": "BR-6dc7015c04d650170b87a31fa5194c0fffbe90e6",
+    "episode_id": "EP-01a02d5a87ff76ce964657785e73d309",
+    "subject_name": "Mario",
+    "subject_description": "Mario, the fictional Nintendo video-game character created by Shigeru Miyamoto and protagonist of the Mario franchise, identified by Wikidata entity Q12379.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Mario",
+    "started_at": "2026-08-23T06:41:42.911365Z",
+    "completed_at": "2026-08-23T06:49:42.737062Z",
+    "duration_ms": 479826,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 7,
+    "counted_questions": 6,
+    "ask_count": 5,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.04835318",
+    "total_tokens": 38301,
+    "contract": {
+      "evaluated_outputs": 7,
+      "valid_outputs": 6,
+      "violations": 1,
+      "counted_penalties": 1,
+      "affected_trials": 1,
+      "compliance_rate": "0.8571428571428571428571428571",
+      "status": "breached"
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"video_game_character\",\"event\":\"BEGIN\",\"variation_token\":\"XSZW5TRZ\"}",
+      "required_formats": {
+        "ask": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"<non-empty yes-or-no property question>\"}}",
+        "guess": "{\"result\":{\"action\":\"GUESS\",\"description\":\"<non-empty identifying description>\",\"name\":\"<non-empty candidate name>\",\"question\":null}}"
+      },
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 7,
+        "cost_usd": "0",
+        "latency_ms": 427302,
+        "total_tokens": 5483,
+        "input_tokens": 5121,
+        "cached_input_tokens": 2880,
+        "cache_write_tokens": 0,
+        "output_tokens": 362,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0000"
+      },
+      "oracle": {
+        "calls": 5,
+        "cost_usd": "0.04823498",
+        "latency_ms": 50793,
+        "total_tokens": 32412,
+        "input_tokens": 29767,
+        "cached_input_tokens": 18044,
+        "cache_write_tokens": 0,
+        "output_tokens": 2645,
+        "reasoning_tokens": 1728,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0001182",
+        "latency_ms": 1593,
+        "total_tokens": 406,
+        "input_tokens": 369,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 37,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 1,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 1,
+        "rejected_outputs": [
+          {
+            "attempt_number": 1,
+            "finish_reason": "stop",
+            "text": "{\"action\":\"ASK\",\"question\":\"Is the character human?\"}"
+          }
+        ]
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Does the character originate from a Nintendo franchise?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/articles/super-mario-history-nintendo-donkey-kong-facts",
+            "excerpt": "Originally a second banana character in 'Donkey Kong' in 1981, Mario went on to conquer the video game world.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.cnbc.com/2018/09/13/super-mario-bros-how-shigeru-miyamoto-created-mario-for-nintendo.html",
+            "excerpt": "Legendary Nintendo video game designer Shigeru Miyamoto originally had a much different vision for the Mario character.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character originate from a Nintendo franchise?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is the character from the Super Mario franchise?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.mariowiki.com/Mario",
+            "excerpt": "Mario is the main character and titular protagonist of the long-running and highly successful Super Mario franchise.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character from the Super Mario franchise?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Does the character have a mustache?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://mario.nintendo.com/characters/",
+            "excerpt": "Mario is instantly recognizable with his blue overalls, red cap, and trademark moustache.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character have a mustache?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Does the character typically wear a hat or cap?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://mario.nintendo.com/characters/",
+            "excerpt": "Mario is instantly recognizable with his blue overalls, red cap, and trademark moustache.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character typically wear a hat or cap?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the character's primary outfit color red?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://mario.nintendo.com/characters/",
+            "excerpt": "Mario is instantly recognizable with his blue overalls, red cap, and trademark moustache.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character's primary outfit color red?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Mario",
+        "guess_description": "The iconic plumber protagonist of the Super Mario series, wearing a red cap and overalls",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity matches Mario, the Nintendo video-game character and protagonist of the Super Mario franchise.",
+        "counted": false,
+        "counted_questions": 6,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"The iconic plumber protagonist of the Super Mario series, wearing a red cap and overalls\",\"name\":\"Mario\",\"question\":null}}"
+      }
+    ]
+  }
+}

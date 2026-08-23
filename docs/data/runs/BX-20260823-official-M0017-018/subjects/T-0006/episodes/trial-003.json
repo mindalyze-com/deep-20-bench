@@ -1,0 +1,920 @@
+{
+  "document_type": "episode",
+  "schema_version": 2,
+  "execution_id": "BX-20260823-official-M0017-018",
+  "target_id": "T-0006",
+  "trial_id": "trial-003",
+  "episode": {
+    "episode_run_id": "BR-8bef872cbbb90b3f959cd2ce9e7dc250ed7aa502",
+    "episode_id": "EP-01a02d3288b1737e883be6cc018f1f33",
+    "subject_name": "Genghis Khan",
+    "subject_description": "Genghis Khan, the founder and first khan of the Mongol Empire, identified by Wikidata entity Q720.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Genghis_Khan",
+    "started_at": "2026-08-23T05:58:01.649958Z",
+    "completed_at": "2026-08-23T06:13:26.538243Z",
+    "duration_ms": 924888,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 36,
+    "counted_questions": 35,
+    "ask_count": 30,
+    "guess_count": 4,
+    "rejected_guess_count": 3,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.535301560000000000",
+    "total_tokens": 534323,
+    "contract": {
+      "evaluated_outputs": 36,
+      "valid_outputs": 34,
+      "violations": 2,
+      "counted_penalties": 2,
+      "affected_trials": 1,
+      "compliance_rate": "0.9444444444444444444444444444",
+      "status": "breached"
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"AMZAISLM\"}",
+      "required_formats": {
+        "ask": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"<non-empty yes-or-no property question>\"}}",
+        "guess": "{\"result\":{\"action\":\"GUESS\",\"description\":\"<non-empty identifying description>\",\"name\":\"<non-empty candidate name>\",\"question\":null}}"
+      },
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 36,
+        "cost_usd": "0",
+        "latency_ms": 391436,
+        "total_tokens": 53706,
+        "input_tokens": 46844,
+        "cached_input_tokens": 39616,
+        "cache_write_tokens": 0,
+        "output_tokens": 6862,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0000"
+      },
+      "oracle": {
+        "calls": 30,
+        "cost_usd": "0.534752160000000000",
+        "latency_ms": 527456,
+        "total_tokens": 478860,
+        "input_tokens": 452101,
+        "cached_input_tokens": 289233,
+        "cache_write_tokens": 0,
+        "output_tokens": 26759,
+        "reasoning_tokens": 17595,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 4,
+        "cost_usd": "0.0005494",
+        "latency_ms": 5231,
+        "total_tokens": 1757,
+        "input_tokens": 1559,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 198,
+        "reasoning_tokens": 33,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 1,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 1,
+        "rejected_outputs": [
+          {
+            "attempt_number": 1,
+            "finish_reason": "stop",
+            "text": "{\"action\":\"ASK\",\"question\":\"Is this person male?\"}"
+          }
+        ]
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is this person still alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/history/death-genghis-khan/",
+            "excerpt": "Genghis Khan, the founder of the Mongol Empire, died on August 18, 1227, at his summer residence in Gansu, China.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person still alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Did this person die in the 20th century (between 1901 and 2000)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/history/death-genghis-khan/",
+            "excerpt": "Genghis Khan, the founder of the Mongol Empire, died on August 18, 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person die in the 20th century (between 1901 and 2000)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Was this person primarily known for work in politics or government?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was best known for unifying the Mongolian steppe under a massive empire; he was a Mongolian warrior-ruler.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known for work in politics or government?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Was this person a head of state or head of government of their country?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "In 1206 an assembly of leaders declared him universal emperor of the Mongolian steppe.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "Mongol leader Genghis Khan ... rose from humble beginnings to establish the largest land empire in history.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a head of state or head of government of their country?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of a country in Europe?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Title / Office: khan (1206-1227), Mongol empire.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "When Genghis Khan returned to Mongolia in 1225, he controlled a huge swath of territory from the Sea of Japan to the Caspian Sea.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of a country in Europe?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of a country in the Americas?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "http://britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a warrior and ruler ... who brought all the nomadic tribes of Mongolia under the rule of himself and his family ... He then turned his attention toward ... peoples beyond the borders of his nomadic realm.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/kids/article/Genghis-Khan/353171",
+            "excerpt": "Genghis Khan was a conqueror who brought together the wandering peoples of central Asia. He made their lands into the state of Mongolia.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of a country in the Americas?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of a country in Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a warrior and ruler ... who brought all the nomadic tribes of Mongolia under the rule of himself and his family in a rigidly disciplined military state.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "He then extended his empire across Asia to the Adriatic Sea.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of a country in Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of a country in the Middle East?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Title / Office: khan (1206–1227), Mongol empire.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/students/article/Mongol-Empire/275900",
+            "excerpt": "Under Möngke, the main new conquest was in the Middle East. Hülegü, a brother of Möngke, conquered what are now Iran, Iraq, and Syria in the 1250s.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of a country in the Middle East?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of China?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Kublai-Khan",
+            "excerpt": "In 1279 he completed the conquest of China and became the first Yuan ruler of all of China.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/Mongol-Empire-Timeline",
+            "excerpt": "In 1206 he is accepted as emperor of all the steppe people and is proclaimed Genghis Khan.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of China?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of Japan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "In 1206 an assembly of leaders declared him universal emperor of the Mongolian steppe.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Emperor_Go-Horikawa",
+            "excerpt": "Emperor Go-Horikawa was the 86th emperor of Japan; Emperor of Japan (1221–1232).",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Title / Office: khan (1206–1227), Mongol empire.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of Japan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of India?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a Mongolian warrior-ruler who consolidated tribes into a unified Mongolia.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/place/Delhi-sultanate",
+            "excerpt": "Sultan Iltutmish (reigned 1211–36) had made his permanent capital at Delhi and gained firm control of the main urban strategic centers of the North Indian Plain.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of India?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of South Korea?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan held the title of khan of the Mongol Empire from 1206 to 1227 and died on August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/students/article/South-Korea/489861",
+            "excerpt": "South Korea was established in 1948 as a democratic republic; its president is head of state and government.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of South Korea?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of a Southeast Asian country?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a warrior and ruler ... who brought all of the nomadic tribes of Mongolia under the rule of himself and his family.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Mongol_invasion_of_Java",
+            "excerpt": "Mongol invasion of Java ... 1293 ... Kublai Khan's campaigns ... Result: Majapahit victory.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of a Southeast Asian country?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of Pakistan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "http://ebsco.com/research-starters/history/death-genghis-khan",
+            "excerpt": "The death of Genghis Khan ... occurred on August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/place/Pakistan/Birth-of-the-new-state",
+            "excerpt": "Pakistan became independent on August 14–15, 1947; Muhammad Ali Jinnah took the oath as the first governor-general of the country.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of Pakistan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of a country in Central Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan brought all the nomadic tribes of Mongolia under the rule of himself and his family in a rigidly disciplined military state.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/articles/10-things-you-may-not-know-about-genghis-khan",
+            "excerpt": "Born ... on the steppes of Central Asia, Genghis Khan became famous as the Mongolian warrior-ruler who built the largest land empire in the world.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of a country in Central Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Was this person the head of state of Turkmenistan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan died on August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://2001-2009.state.gov/r/pa/ei/bgn/35884.htm",
+            "excerpt": "Turkmenistan declared its independence on October 27, 1991. Saparmyrat Niyazov became the first president of the new republic.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state of Turkmenistan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Was this person the head of state of Uzbekistan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Title / Office: khan (1206–1227), Mongol empire; Died: August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikipedia.org/wiki/List_of_leaders_of_Uzbekistan",
+            "excerpt": "Below is the list of leaders of present-day Uzbekistan since the establishment of Uzbek SSR in 1924.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state of Uzbekistan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Was this person the head of state of Kazakhstan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan ... died August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://2009-2017.state.gov/outofdate/bgn/kazakhstan/80741.htm",
+            "excerpt": "Kazakhstan declared independence on December 16, 1991.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state of Kazakhstan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Was this person the head of state of Tajikistan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [
+          {
+            "source_url": "http://britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan ... died August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.mvd.tj/1032-declaration-of-state-independence.html",
+            "excerpt": "On 9 September 1991 ... [Tajikistan] achieved real independence.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state of Tajikistan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "ASK",
+        "question": "Was this person the head of state of Kyrgyzstan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/List_of_leaders_of_Kyrgyzstan",
+            "excerpt": "The list identifies Askar Akayev as President of Kyrgyzstan beginning October 27, 1990.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/this-day-in-history/august-18/genghis-khan-dies",
+            "excerpt": "Genghis Khan dies in 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state of Kyrgyzstan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of Afghanistan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/place/Afghanistan/The-first-Muslim-dynasties",
+            "excerpt": "Genghis Khan invaded the eastern part of ʿAlāʾ al-Dīn’s empire in 1219.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Jalal-al-Din-Mingburnu",
+            "excerpt": "Jalāl al-Dīn Mingburnu rallied the Afghan highlanders at Parwan ... and inflicted a crushing defeat on the Mongols under Kutikonian. Genghis Khan, who was then at Herāt, hastened to avenge the defeat.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of Afghanistan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "ASK",
+        "question": "Was this person the head of state or government of Mongolia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a warrior and ruler who brought all the nomadic tribes of Mongolia under his rule.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://investmongolia.gov.mn/mongolia-at-a-glance/",
+            "excerpt": "The concept of the Mongolian state was founded by Genghis Khan (Chinggis Khaan) when he unified disparate nomadic tribes in 1206.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the head of state or government of Mongolia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Punsalmaagiin Ochirbat",
+        "guess_description": "First president of Mongolia, serving from 1990 to 1997, who died in January 2025",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Punsalmaagiin Ochirbat, while the trusted subject is Genghis Khan.",
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"First president of Mongolia, serving from 1990 to 1997, who died in January 2025\",\"name\":\"Punsalmaagiin Ochirbat\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "ASK",
+        "question": "Did this person lead Mongolia before the democratic transition of 1990?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [
+          {
+            "source_url": "https://1997-2001.state.gov/background_notes/mongolia_0498_bgn.html",
+            "excerpt": "In 1203 AD, a single Mongolian state was formed based on nomadic tribal groupings under the leadership of Genghis Khan. 1990: First democratic elections held.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person lead Mongolia before the democratic transition of 1990?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Jambyn Batmönkh",
+        "guess_description": "Mongolian communist leader who served as General Secretary of the MPRP and Chairman of the Presidium of the People's Great Khural of the Mongolian People's Republic in the late 1980s",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "Jambyn Batmönkh was a different Mongolian political leader from Genghis Khan.",
+        "counted": true,
+        "counted_questions": 26,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Mongolian communist leader who served as General Secretary of the MPRP and Chairman of the Presidium of the People's Great Khural of the Mongolian People's Republic in the late 1980s\",\"name\":\"Jambyn Batmönkh\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 27,
+        "action": "ASK",
+        "question": "Was this person the leader of Mongolia during World War II?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 27,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/this-day-in-history/august-18/genghis-khan-dies",
+            "excerpt": "Genghis Khan dies on August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/summary/World-War-II",
+            "excerpt": "World War II began in 1939 and ended in 1945.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person the leader of Mongolia during World War II?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 28,
+        "action": "ASK",
+        "question": "Did this person lead Mongolia during the 1970s?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 28,
+        "evidence": [
+          {
+            "source_url": "http://britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was born in 1162 and died on August 18, 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person lead Mongolia during the 1970s?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 29,
+        "action": "ASK",
+        "question": "Did this person lead Mongolia during the 1950s?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 29,
+        "evidence": [
+          {
+            "source_url": "http://ebsco.com/research-starters/history/death-genghis-khan",
+            "excerpt": "Genghis Khan, the founder of the Mongol Empire, died on August 18, 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person lead Mongolia during the 1950s?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 30,
+        "action": "ASK",
+        "question": "Did this person lead Mongolia during the 1930s?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 30,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan (born 1162—died August 18, 1227) was a Mongolian warrior-ruler.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person lead Mongolia during the 1930s?\"}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 31,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 31,
+        "rejected_outputs": [
+          {
+            "attempt_number": 1,
+            "finish_reason": "stop",
+            "text": "{\"result\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person lead Mongolia during the 1920s?\"}"
+          }
+        ]
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 32,
+        "action": "ASK",
+        "question": "Did this person lead Mongolia during the 1920s?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 32,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan died on August 18, 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person lead Mongolia during the 1920s?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 33,
+        "action": "ASK",
+        "question": "Did this person lead Mongolia during the 1960s?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 33,
+        "evidence": [
+          {
+            "source_url": "http://britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan ... died August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/this-day-in-history/august-18/genghis-khan-dies",
+            "excerpt": "Genghis Khan ... dies in camp during a campaign against the Chinese kingdom of Xi Xia.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person lead Mongolia during the 1960s?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 34,
+        "action": "ASK",
+        "question": "Did this person lead Mongolia during the 1940s?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 34,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan died on August 18, 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person lead Mongolia during the 1940s?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 35,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Dumaagiin Sodnom",
+        "guess_description": "Mongolian politician who served as Chairman of the Council of Ministers (Prime Minister) of the Mongolian People's Republic from 1984 to 1990",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Dumaagiin Sodnom, a Mongolian politician, while the trusted subject is Genghis Khan.",
+        "counted": true,
+        "counted_questions": 35,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Mongolian politician who served as Chairman of the Council of Ministers (Prime Minister) of the Mongolian People's Republic from 1984 to 1990\",\"name\":\"Dumaagiin Sodnom\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 36,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Genghis Khan",
+        "guess_description": "Founder of the Mongol Empire in the 13th century, its first Great Khan",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity exactly matches Genghis Khan, the founder and first khan of the Mongol Empire.",
+        "counted": false,
+        "counted_questions": 35,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Founder of the Mongol Empire in the 13th century, its first Great Khan\",\"name\":\"Genghis Khan\",\"question\":null}}"
+      }
+    ]
+  }
+}

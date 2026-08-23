@@ -5,6 +5,14 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-08-23",
+    displayDate: "23 August 2026",
+    title: "OpenRouter’s Ox Alpha (high) tested.",
+    summary:
+      "The Stealth-routed model won 32 of 35 trials and scored 17.6 questions, placing 12th of 15.",
+    executionId: "BX-20260823-official-M0017-018",
+  },
+  {
     date: "2026-08-17",
     displayDate: "17 August 2026",
     title: "Gemini 3.7 Flash (high) added.",

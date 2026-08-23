@@ -17,6 +17,10 @@ paths, configure logging, or own routine benchmark `INFO` lines.
 ## Catalogs and scheduling
 
 `config/models.yaml` registers exact Guesser configurations by immutable `M-…` ID.
+Each configuration also declares `structured_output_mode`. The normal
+`strict_json_schema` mode requires provider-side JSON Schema enforcement. A route explicitly
+set to `json_object` still requires OpenRouter JSON formatting, uses the same fixed action
+instructions, and is validated locally against the complete action contract without repair.
 `config/benchmarks.yaml` registers benchmark policy templates by `B-…` ID and fixes:
 
 - Default iterations, normally three.
@@ -165,6 +169,11 @@ The current `openai/gpt-5.6-luna` OpenRouter route is registered as `unsupported
 `seed` parameter leaves no compatible OpenAI endpoint. The benchmark therefore uses
 OpenRouter's normal pinned-provider routing for `M-0001` and records that its sampling is
 prompt-token-only.
+
+`M-0017` uses `stealth/ox-alpha` pinned to the Stealth endpoint. The route does not advertise
+`seed` or strict structured outputs, so it uses the subject-independent prompt variation token
+and `structured_output_mode: json_object`. Invalid or incomplete JSON remains a scored model
+contract violation under the same recovery policy as every other Guesser.
 
 The default base seed is `0`. Reusing a base seed reproduces the variation schedule on a
 best-effort basis; use a different `--seed` for a new controlled replicate set.

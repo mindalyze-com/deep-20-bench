@@ -1,0 +1,504 @@
+{
+  "document_type": "episode",
+  "schema_version": 2,
+  "execution_id": "BX-20260823-official-M0017-018",
+  "target_id": "T-0006",
+  "trial_id": "trial-002",
+  "episode": {
+    "episode_run_id": "BR-dca2819c9a2a3726c08bb1d0b63abe8473739799",
+    "episode_id": "EP-01a02d2d50db74adb68c167f9165322f",
+    "subject_name": "Genghis Khan",
+    "subject_description": "Genghis Khan, the founder and first khan of the Mongol Empire, identified by Wikidata entity Q720.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Genghis_Khan",
+    "started_at": "2026-08-23T05:52:19.675810Z",
+    "completed_at": "2026-08-23T05:58:01.519393Z",
+    "duration_ms": 341844,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 18,
+    "counted_questions": 17,
+    "ask_count": 15,
+    "guess_count": 2,
+    "rejected_guess_count": 1,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.264555209999999998",
+    "total_tokens": 241774,
+    "contract": {
+      "evaluated_outputs": 18,
+      "valid_outputs": 17,
+      "violations": 1,
+      "counted_penalties": 1,
+      "affected_trials": 1,
+      "compliance_rate": "0.9444444444444444444444444444",
+      "status": "breached"
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"BKXG3AZI\"}",
+      "required_formats": {
+        "ask": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"<non-empty yes-or-no property question>\"}}",
+        "guess": "{\"result\":{\"action\":\"GUESS\",\"description\":\"<non-empty identifying description>\",\"name\":\"<non-empty candidate name>\",\"question\":null}}"
+      },
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 18,
+        "cost_usd": "0",
+        "latency_ms": 113475,
+        "total_tokens": 18155,
+        "input_tokens": 16564,
+        "cached_input_tokens": 12928,
+        "cache_write_tokens": 0,
+        "output_tokens": 1591,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0000"
+      },
+      "oracle": {
+        "calls": 15,
+        "cost_usd": "0.264283809999999998",
+        "latency_ms": 225556,
+        "total_tokens": 222742,
+        "input_tokens": 209961,
+        "cached_input_tokens": 131743,
+        "cache_write_tokens": 0,
+        "output_tokens": 12781,
+        "reasoning_tokens": 8363,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 2,
+        "cost_usd": "0.0002714",
+        "latency_ms": 2430,
+        "total_tokens": 877,
+        "input_tokens": 781,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 96,
+        "reasoning_tokens": 15,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 1,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 1,
+        "rejected_outputs": [
+          {
+            "attempt_number": 1,
+            "finish_reason": "stop",
+            "text": "{\"action\":\"ASK\",\"question\":\"Is this person still alive?\"}"
+          }
+        ]
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is this person still alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.biography.com/political-figures/genghis-khan",
+            "excerpt": "Genghis Khan died in 1227.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person still alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Is this person male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.biography.com/political-figures/genghis-khan",
+            "excerpt": "Gender: Male",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is this person known primarily for work in politics or government?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "http://britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was best known for unifying the Mongolian steppe under a massive empire and was one of the most famous conquerors of history.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person known primarily for work in politics or government?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Did this person die in the 20th century (1901-2000)?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://ebsco.com/research-starters/history/death-genghis-khan",
+            "excerpt": "Genghis Khan, the founder of the Mongol Empire, died on August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://afe.easia.columbia.edu/mongols/figures/figu_geng_death.htm",
+            "excerpt": "In 1227 ... Chinggis Khan died.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person die in the 20th century (1901-2000)?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Was this person a political leader in Europe?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Title / Office: khan (1206–1227), Mongol empire.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nationalgeographic.com/history/article/mongols-empire-conquest-europe",
+            "excerpt": "Ögedei employed Batu Khan, one of Genghis Khan’s grandsons, to lead the push westward across Europe in 1235.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a political leader in Europe?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Was this person a political leader in the United States?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/place/Mongol-empire",
+            "excerpt": "The Mongol Empire was founded by Genghis Khan, who united Mongol tribes in 1206.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Genghis_Khan",
+            "excerpt": "Genghis Khan (born Temüjin; c. 1162–18 or 25 August 1227) was the founder and first khan of the Mongol Empire.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a political leader in the United States?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Was this person a political leader in Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Title / Office: khan (1206–1227), Mongol empire.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/articles/10-things-you-may-not-know-about-genghis-khan",
+            "excerpt": "Genghis Khan became famous as the Mongolian warrior-ruler who built the largest land empire in the world.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a political leader in Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Was this person a head of state or government of an Asian country?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a warrior and ruler ... who brought all the nomadic tribes of Mongolia under the rule of himself and his family in a rigidly disciplined military state.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://historyguild.org/genghis-khan/?srsltid=AfmBOorF9PavYZ-k1d0fP05jhpv86QcpSdvYF-6yjfx9u0C_9lXixHfD",
+            "excerpt": "Genghis Khan was the first leader, or Khan, of the Mongol Empire, from 1206 CE–1227 CE.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a head of state or government of an Asian country?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Was this person a leader in East Asia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/articles/genghis-khan",
+            "excerpt": "Mongol leader Genghis Khan ... established the largest land empire in history.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://kids.britannica.com/students/article/Mongolia/275899",
+            "excerpt": "In the frontier zone of East Asia ... the land that is now Mongolia formed the heart of the great empire of Genghis Khan.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a leader in East Asia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Did this person lead North Korea?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "http://britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan ... died on August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Kim-Il-Sung",
+            "excerpt": "Kim Il-Sung was leader of North Korea from 1948 until his death in 1994.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person lead North Korea?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Was this person a leader of China?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/articles/kublai-khan",
+            "excerpt": "Kublai was the first Mongol to rule over China when he conquered the Song Dynasty of southern China in 1279.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Kublai-Khan",
+            "excerpt": "In 1279 he completed the conquest of China begun by Genghis Khan and became the first Yuan ruler of all of China.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a leader of China?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Was this person a leader of Japan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a Mongolian warrior-ruler and died on August 18, 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.archives.go.jp/about/activity/international/jp_mn50/english/ch01.html",
+            "excerpt": "Kublai Khan ordered Goryeo to prepare troops and warships for the Mongol invasion of Japan; the first invasion occurred in 1274.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a leader of Japan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Was this person a leader of South Korea?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://www.history.com/this-day-in-history/august-18/genghis-khan-dies",
+            "excerpt": "Genghis Khan, the Mongol leader ... dies ... in 1227.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://korea.net/Government/Constitution-and-Government/Constitution",
+            "excerpt": "The government of the Republic of Korea was formed on August 15, 1948.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a leader of South Korea?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Was this person a leader of Taiwan?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan ... was a Mongolian warrior-ruler ... who consolidated tribes into a unified Mongolia.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.president.gov.tw/qrcode/16e",
+            "excerpt": "Presidents of the Republic of China (Taiwan) ... Chiang Kai-shek (1948-1975) was the first- to fifth-term president.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a leader of Taiwan?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Was this person a leader of Mongolia?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Genghis-Khan",
+            "excerpt": "Genghis Khan was a Mongolian warrior-ruler ... who consolidated tribes into a unified Mongolia.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a leader of Mongolia?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Punsalmaagiin Ochirbat",
+        "guess_description": "Former President of Mongolia (1990–1997) who led the country's transition to democracy and a market economy; he died in 2025.",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "Punsalmaagiin Ochirbat is a former President of Mongolia, not Genghis Khan.",
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Former President of Mongolia (1990–1997) who led the country's transition to democracy and a market economy; he died in 2025.\",\"name\":\"Punsalmaagiin Ochirbat\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Genghis Khan",
+        "guess_description": "Founder and first Great Khan of the Mongol Empire, who united the Mongol tribes and built the largest contiguous land empire in history.",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposed identity exactly matches Genghis Khan, the founder and first khan of the Mongol Empire.",
+        "counted": false,
+        "counted_questions": 17,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Founder and first Great Khan of the Mongol Empire, who united the Mongol tribes and built the largest contiguous land empire in history.\",\"name\":\"Genghis Khan\",\"question\":null}}"
+      }
+    ]
+  }
+}

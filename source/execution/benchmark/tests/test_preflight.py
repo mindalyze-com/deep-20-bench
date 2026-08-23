@@ -156,6 +156,74 @@ def test_catalog_route_preflight_omits_capability_issues_for_inactive_route() ->
     )
 
 
+def test_catalog_route_preflight_accepts_json_object_route_without_strict_schema() -> None:
+    root = Path(__file__).parents[4]
+    catalog = load_model_catalog(root / "config" / "models.yaml")
+
+    class JsonObjectRouteMetadata:
+        def endpoints(self, model: str) -> OpenRouterEndpointData:
+            return OpenRouterEndpointData(
+                id=model,
+                endpoints=(
+                    OpenRouterEndpoint(
+                        provider_name="Stealth",
+                        tag="stealth",
+                        max_completion_tokens=131_072,
+                        supported_parameters=(
+                            "max_tokens",
+                            "reasoning_effort",
+                            "response_format",
+                        ),
+                        status=0,
+                    ),
+                ),
+            )
+
+    result = validate_catalog_routes(
+        catalog,
+        JsonObjectRouteMetadata(),
+        model_ids=(BenchmarkModelId("M-0017"),),
+    )
+
+    assert result.valid is True
+    assert result.routes[0].issues == ()
+
+
+def test_catalog_route_preflight_still_requires_schema_support_for_strict_route() -> None:
+    root = Path(__file__).parents[4]
+    catalog = load_model_catalog(root / "config" / "models.yaml")
+
+    class NonStrictRouteMetadata:
+        def endpoints(self, model: str) -> OpenRouterEndpointData:
+            return OpenRouterEndpointData(
+                id=model,
+                endpoints=(
+                    OpenRouterEndpoint(
+                        provider_name="OpenAI",
+                        tag="openai",
+                        max_completion_tokens=65_536,
+                        supported_parameters=(
+                            "max_tokens",
+                            "reasoning_effort",
+                            "response_format",
+                        ),
+                        status=0,
+                    ),
+                ),
+            )
+
+    result = validate_catalog_routes(
+        catalog,
+        NonStrictRouteMetadata(),
+        model_ids=(BenchmarkModelId("M-0001"),),
+    )
+
+    assert result.valid is False
+    assert result.routes[0].issues == (
+        "exact route does not advertise strict structured output",
+    )
+
+
 def test_catalog_route_preflight_rejects_provider_or_limit_mismatch() -> None:
     root = Path(__file__).parents[4]
     catalog = load_model_catalog(root / "config" / "models.yaml")

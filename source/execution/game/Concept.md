@@ -77,8 +77,11 @@ proposal uses `GUESS` directly rather than an `ASK` that merely confirms the sam
 This reflects the scoring contract: a correct `GUESS` costs zero counted questions, while an
 incorrect `GUESS` and an `ASK` each cost one.
 
-The provider-facing schema remains identical throughout the episode, including on the final
-opportunity. The prompt requires `GUESS` at that point; returning `ASK` is a protocol failure.
+The action contract remains identical throughout the episode, including on the final
+opportunity. Most routes receive its strict JSON Schema at the provider. An explicitly
+registered JSON-object route receives the same fixed contract instructions and JSON-object
+formatting, then undergoes the same strict local validation without repair. The prompt requires
+`GUESS` on the final opportunity; returning `ASK` is a protocol failure.
 
 ### Adjudication and counting
 

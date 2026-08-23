@@ -1,0 +1,4031 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260823-official-M0017-018
+    model_id: M-0017
+    target_id: T-0006
+    trial_id: trial-004
+    trial_number: 4
+    episode_run_id: BR-181478b34e0a1b92ee2058b387ef2336bb643c20
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-181478b34e0a1b92ee2058b387ef2336bb643c20
+      episode_id: EP-01a02d40a64c709a9e1e363567c05f6e
+      subject:
+        target_id: T-0006
+        canonical_name: Genghis Khan
+        aliases:
+        - Chinggis Khan
+        - Temüjin
+        - Temujin
+        entity_type: person
+        description: Genghis Khan, the founder and first khan of the Mongol Empire,
+          identified by Wikidata entity Q720.
+        reference_url: https://en.wikipedia.org/wiki/Genghis_Khan
+      started_at: '2026-08-23T06:13:26.732019+00:00'
+      completed_at: '2026-08-23T06:19:55.575988+00:00'
+      duration_ms: 388844
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 13
+      counted_questions: 12
+      guesser_call_count: 13
+      ask_count: 11
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 1
+      oracle_quality:
+        reviewed_questions: 10
+        agreements: 9
+        disagreements: 1
+        judge_invocations: 1
+        oracle_answers_changed: 0
+        final_unknown_answers: 1
+        judge_yes_answers: 0
+        judge_no_answers: 1
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0107853'
+        judge_cost_usd: '0.011245'
+        quality_control_cost_usd: '0.0220303'
+        question_types:
+        - question_type: other
+          reviewed_questions: 7
+          disagreements: 1
+        - question_type: temporal_comparison
+          reviewed_questions: 3
+          disagreements: 0
+      contract:
+        evaluated_outputs: 13
+        valid_outputs: 12
+        violations: 1
+        counted_penalties: 1
+        affected_trials: 1
+        compliance_rate: '0.9230769230769230769230769231'
+        status: breached
+      cache_status: compliant
+      costs_usd:
+        guesser: '0'
+        oracle: '0.165495490000000001'
+        validator: '0.0001234'
+        total: '0.165618890000000001'
+      tokens:
+        guesser: 11950
+        oracle: 154933
+        validator: 417
+        total: 167300
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0017
+        requested_model: stealth/ox-alpha
+        requested_provider: stealth
+        resolved_models:
+        - stealth/ox-alpha
+        resolved_providers:
+        - Stealth
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v8-classified-research
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: contract_violation
+      turn_number: 1
+      violation_code: invalid_guesser_output
+      violation_kind: invalid_action
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-01a02d40a64c709a9e1e363750527e80
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is this person currently alive?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d4120a874828a046cdd6649a041
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan died on August 18, 1227.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-01a02d4103be726ab5a693d460b2f52c
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Was this person known primarily as an entertainer (actor, musician,
+          or performer)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d41c83d71cfa66343acc270239d
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Genghis_Khan
+          excerpt: Genghis Khan (born Temüjin; c. 1162 – 18 or 25 August 1227), also
+            known as Chinggis Khan, was the founder and first khan of the Mongol Empire.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-01a02d413b5572c097b847db944c6537
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Was this person a scientist or inventor?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d4207a3760a8157d56f344cb9e4
+        answer: UNKNOWN
+        evidence: []
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-01a02d41f99677d6bf0825696bf5b783
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Was this person a political leader, such as a president, prime minister,
+          or monarch?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d42a44f77d9a0d5f4da44dc783b
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan was a Mongolian warrior-ruler... who consolidated
+            tribes into a unified Mongolia.
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Genghis_Khan
+          excerpt: He was the founder and first khan of the Mongol Empire.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-01a02d429de170729ffc30e82fa44a28
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Did this person die in the 20th century or later?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d42d3d877e9bbf93b55f8544828
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan died on August 18, 1227.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-01a02d42c96475dfaf174438771425a5
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Was this person a ruler of a European country?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d42f3df71df93794767ddb74931
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: 'Title / Office: khan (1206–1227), Mongol empire.'
+          validation: model_reported
+        - source_url: https://kids.britannica.com/students/article/Mongol-Empire/275900
+          excerpt: In 1206 Genghis Khan was elected head of the All the Mongols league...
+            and founded the Mongol Dynasty. Between 1206 and 1227... the Mongols conquered
+            a dominion that stretched from the China Sea to the Caspian.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-01a02d42ea8872a0859f6065ab51430b
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Was this person a President of the United States?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d44540c77959ac5f2dbd8622931
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.biography.com/political-figures/genghis-khan
+          excerpt: Genghis Khan died in 1227.
+          validation: model_reported
+        - source_url: https://www.archives.gov/files/legislative/features/gw-inauguration/
+          excerpt: George Washington's First Inaugural Address, April 30, 1789.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-01a02d43658773158c7df9d17421134f
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Was this person a political leader in Asia?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d44a5aa76b6a66c50eadde80645
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Genghis_Khan
+          excerpt: Genghis Khan was the founder and first khan of the Mongol Empire
+            and conquered large parts of China and Central Asia.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-01a02d4495fd730399dbe58ddf3dceb8
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Did this person live before the year 1000 AD?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d44cf1674d781ce8f782590a3db
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.history.com/this-day-in-history/august-18/genghis-khan-dies
+          excerpt: Genghis Khan was born as Temujin around 1162.
+          validation: model_reported
+        - source_url: https://www.berkshirepublishing.com/ecph-china/2018/01/04/genghis-khan-1162-1227/
+          excerpt: In July of the same year, he died of illness at his headquarters.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-01a02d44c19f718ca9bb0233796d5bbe
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Was this person the founder or ruler of a large empire?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d459d97710e9bec8458c981eb78
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Genghis_Khan
+          excerpt: Genghis Khan ... was the founder and first khan of the Mongol Empire.
+          validation: model_reported
+        - source_url: https://www.metmuseum.org/essays/the-legacy-of-genghis-khan
+          excerpt: This famed clan leader and his immediate successors created the
+            largest empire ever to exist.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-01a02d44e99c76dda3fd5f39f4e8d403
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Was this person born before the year 1200?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a02d45d2ef7159bcc1a1ed9f73f277
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Various dates are given for the birth of Temüjin... He may have
+            been born in 1155, in 1162... or in 1167.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-01a02d45b7dc752a8a31a9a0d925b1c7
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: GUESS
+        question: null
+        name: Genghis Khan
+        description: Founder and Great Khan of the Mongol Empire, the largest contiguous
+          land empire in history
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a02d468f1371c9aedf80d51ea6b5f1
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity exactly matches Genghis Khan, the founder
+          and first khan of the Mongol Empire.
+        oracle_quality: null
+      counted: false
+      counted_questions: 12
+      guesser_call_id: GC-01a02d45f0c674d6bf1b0c3c4237d495
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"BYOMPCJW"}'
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this person currently alive?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person known primarily as an entertainer (actor, musician, or performer)?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person a scientist or inventor?"}}'
+      turn_number: 4
+    - role: user
+      content: UNKNOWN
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person a political leader, such as a president, prime minister, or monarch?"}}'
+      turn_number: 5
+    - role: user
+      content: 'YES'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person die in the 20th century or later?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person a ruler of a European country?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person a President of the United States?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person a political leader in Asia?"}}'
+      turn_number: 9
+    - role: user
+      content: 'YES'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        this person live before the year 1000 AD?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person the founder or ruler of a large empire?"}}'
+      turn_number: 11
+    - role: user
+      content: 'YES'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        this person born before the year 1200?"}}'
+      turn_number: 12
+    - role: user
+      content: 'YES'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Founder and Great Khan
+        of the Mongol Empire, the largest contiguous land empire in history","name":"Genghis
+        Khan","question":null}}'
+      turn_number: 13
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0017
+          gateway: openrouter
+          model: stealth/ox-alpha
+          provider: stealth
+          reasoning_effort: high
+          structured_output_mode: json_object
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '0.00'
+            cached_input_usd_per_million: '0.00'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 13
+          cost_usd: '0'
+          latency_ms: 239714
+          total_tokens: 11950
+          input_tokens: 10978
+          cached_input_tokens: 6016
+          cache_write_tokens: 0
+          output_tokens: 972
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: '0.0000'
+          recovery:
+            request_attempts: 14
+            retried_calls: 1
+            recovered_calls: 1
+            exhausted_retries: 0
+            reasons:
+            - reason: provider_empty_response
+              count: 1
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 2717
+        provider_usage:
+          providers:
+          - provider: Stealth
+            calls: 13
+            cost_usd: '0'
+            latency_ms: 239714
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 11
+          cost_usd: '0.165495490000000001'
+          latency_ms: 147311
+          total_tokens: 154933
+          input_tokens: 146513
+          cached_input_tokens: 93862
+          cache_write_tokens: 0
+          output_tokens: 8420
+          reasoning_tokens: 5740
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 23
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 12
+              cost_usd: '0.143465190000000001'
+              latency_ms: 129091
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 10
+              cost_usd: '0.0107853'
+              latency_ms: 15110
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers:
+            - provider: Claude Platform on AWS
+              calls: 1
+              cost_usd: '0.011245'
+              latency_ms: 3110
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0001234'
+          latency_ms: 1557
+          total_tokens: 417
+          input_tokens: 377
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 40
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.0001234'
+            latency_ms: 1557
+          unreported_calls: 0
+          fallback_calls: 0
+    audit:
+      schema_version: 1
+      calls:
+      - component: guesser
+        call_id: GC-01a02d40a64c709a9e1e363750527e80
+        turn_number: 1
+        status: contract_violation
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 45ba27c8fa4839b86498a527b5c5d5e2f800b495415c61372cac01dae1f22224
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:13:26.732183+00:00'
+          completed_at: '2026-08-23T06:13:50.640494+00:00'
+          latency_ms: 23908
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 566
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 40
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 85
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: guesser
+        call_id: GC-01a02d4103be726ab5a693d460b2f52c
+        turn_number: 2
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 1bb3bbf0c45a1569d2f956e09a1258e861d00e9a0d2eb1f28470cdc6313a723d
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:13:50.654300+00:00'
+          completed_at: '2026-08-23T06:13:58.054470+00:00'
+          latency_ms: 7400
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 677
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 39
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 103
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d4120a874828a046cdd6649a041
+        turn_number: 2
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 0df96189a2c78460b5642fdf83dfedb9f878fae856237e2793e181c128b95225
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:13:58.057762+00:00'
+            completed_at: '2026-08-23T06:14:03.917230+00:00'
+            latency_ms: 5859
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4196
+              cached_input_tokens: 1333
+              cache_write_tokens: 0
+              output_tokens: 148
+              reasoning_tokens: 33
+              search_count: 1
+              cost_usd: '0.005919710000000001'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 284
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: temporal_status
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan death date died 1227 biography Britannica
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 0df96189a2c78460b5642fdf83dfedb9f878fae856237e2793e181c128b95225
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:13:58.057762+00:00'
+              completed_at: '2026-08-23T06:14:03.917230+00:00'
+              latency_ms: 5859
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4196
+                cached_input_tokens: 1333
+                cache_write_tokens: 0
+                output_tokens: 148
+                reasoning_tokens: 33
+                search_count: 1
+                cost_usd: '0.005919710000000001'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 284
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 5dfc9e0bea908c145b43b1a96782c39214b985ed178cef0307039555339a3ac7
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:14:03.918820+00:00'
+            completed_at: '2026-08-23T06:14:04.868310+00:00'
+            latency_ms: 949
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 855
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 117
+              reasoning_tokens: 88
+              search_count: 0
+              cost_usd: '0.000549'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 70
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d413b5572c097b847db944c6537
+        turn_number: 3
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: f8431644af7feafe0bf7707f8ec857c8fb60933a29360058cd9b7657c16d1c7e
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:14:04.885501+00:00'
+          completed_at: '2026-08-23T06:14:40.956080+00:00'
+          latency_ms: 36068
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 706
+            cached_input_tokens: 128
+            cache_write_tokens: 0
+            output_tokens: 48
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 154
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d41c83d71cfa66343acc270239d
+        turn_number: 3
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 1e0b1af8bc42d0b444809ca5887af4ef4d3bd9d96ce42640991c8e5cbaf7e361
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:14:40.959306+00:00'
+            completed_at: '2026-08-23T06:14:46.901390+00:00'
+            latency_ms: 5942
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 3785
+              cached_input_tokens: 2556
+              cache_write_tokens: 0
+              output_tokens: 259
+              reasoning_tokens: 102
+              search_count: 1
+              cost_usd: '0.00566887'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 439
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: role_or_occupation
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan biography primarily known founder first khan of Mongol
+              Empire entertainer actor musician performer
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 1e0b1af8bc42d0b444809ca5887af4ef4d3bd9d96ce42640991c8e5cbaf7e361
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:14:40.959306+00:00'
+              completed_at: '2026-08-23T06:14:46.901390+00:00'
+              latency_ms: 5942
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 3785
+                cached_input_tokens: 2556
+                cache_write_tokens: 0
+                output_tokens: 259
+                reasoning_tokens: 102
+                search_count: 1
+                cost_usd: '0.00566887'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 439
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: a53cc3b5434dc2d3e38088122e973faf96c7604e699b8990d0587929ea4f002f
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:14:46.903672+00:00'
+            completed_at: '2026-08-23T06:14:50.465954+00:00'
+            latency_ms: 3562
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 898
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 1036
+              reasoning_tokens: 1009
+              search_count: 0
+              cost_usd: '0.0028594'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 74
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge:
+          role: judge
+          prompt:
+            version: oracle-evidence-judge-v5-explicit-wire-format
+            hash: a3d4510adb025a315eca7cd4f65ee1e522173b48ec1239abe16d7514cde552b7
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:14:50.467756+00:00'
+            completed_at: '2026-08-23T06:14:53.578249+00:00'
+            latency_ms: 3110
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: anthropic/claude-opus-5
+            resolved_model: anthropic/claude-opus-5
+            requested_provider: openrouter-auto
+            resolved_provider: Claude Platform on AWS
+            fallback_occurred: false
+            usage:
+              input_tokens: 2099
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 30
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.011245'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 57
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+      - component: guesser
+        call_id: GC-01a02d41f99677d6bf0825696bf5b783
+        turn_number: 4
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: f49d865bc74f6d3848a3e632a9b6fa4085cd2e6aa2a6b2ea48c551117f518132
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:14:53.591033+00:00'
+          completed_at: '2026-08-23T06:14:57.185876+00:00'
+          latency_ms: 3594
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 2
+            retried_calls: 1
+            recovered_calls: 1
+            exhausted_retries: 0
+            reasons:
+            - reason: provider_empty_response
+              count: 1
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 2717
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 747
+            cached_input_tokens: 128
+            cache_write_tokens: 0
+            output_tokens: 44
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 112
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d4207a3760a8157d56f344cb9e4
+        turn_number: 4
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: d914f1e69e6cca58010697eae010a426c1cdb7fb321afe129f159a8635575a38
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:14:57.189304+00:00'
+            completed_at: '2026-08-23T06:15:06.542223+00:00'
+            latency_ms: 9352
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8102
+              cached_input_tokens: 5270
+              cache_write_tokens: 0
+              output_tokens: 379
+              reasoning_tokens: 244
+              search_count: 2
+              cost_usd: '0.01126775'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 9
+            url_citation_count: 9
+            raw_output_present: true
+            raw_output_characters: 251
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: role_or_occupation
+          resolution: genuine_unknown_recovery
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: insufficient_coverage
+            attempted_queries:
+            - Genghis Khan biography occupation scientist inventor founder khan Mongol
+              Empire
+            - '"Genghis Khan" "scientist" OR "inventor" biography occupation'
+            query_provenance: model_reported
+            evidence_count: 0
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: d914f1e69e6cca58010697eae010a426c1cdb7fb321afe129f159a8635575a38
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:14:57.189304+00:00'
+              completed_at: '2026-08-23T06:15:06.542223+00:00'
+              latency_ms: 9352
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8102
+                cached_input_tokens: 5270
+                cache_write_tokens: 0
+                output_tokens: 379
+                reasoning_tokens: 244
+                search_count: 2
+                cost_usd: '0.01126775'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 9
+              url_citation_count: 9
+              raw_output_present: true
+              raw_output_characters: 251
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+          - attempt_number: 2
+            strategy: diversified_recovery
+            outcome: open_world_not_provable
+            attempted_queries:
+            - Genghis Khan biography occupation scientist inventor historical role
+              founder khan Mongol Empire
+            - Wikidata Q720 Genghis Khan occupation statesperson military leader monarch
+              inventor scientist
+            - Genghis Khan occupations military leader monarch traditional leader
+              biography no scientist inventor
+            - site:britannica.com Genghis Khan "military leader" ruler biography occupation
+            query_provenance: model_reported
+            evidence_count: 0
+            prompt:
+              version: live-web-oracle-recovery-v1-diversified
+              hash: ab75143fc0807bc3123c0313103fe00b63c9749dac8c8d632bfe7fc9ec336710
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:15:06.545053+00:00'
+              completed_at: '2026-08-23T06:15:35.634530+00:00'
+              latency_ms: 29089
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 45035
+                cached_input_tokens: 33566
+                cache_write_tokens: 0
+                output_tokens: 1295
+                reasoning_tokens: 976
+                search_count: 6
+                cost_usd: '0.03509152'
+                cache_discount_usd: null
+              web_search_requests: 6
+              annotation_count: 25
+              url_citation_count: 25
+              raw_output_present: true
+              raw_output_characters: 479
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer: null
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d429de170729ffc30e82fa44a28
+        turn_number: 5
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 23cb00304ffa7e109fc82f48ef07d9c60863aeb09bb618d8645394183bdca85e
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:15:35.649882+00:00'
+          completed_at: '2026-08-23T06:15:37.293904+00:00'
+          latency_ms: 1644
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 778
+            cached_input_tokens: 512
+            cache_write_tokens: 0
+            output_tokens: 44
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 156
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d42a44f77d9a0d5f4da44dc783b
+        turn_number: 5
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 3f29e4838e51dfb8189a14c08976b1b6d528afb1f2acf6f7e0bf5115e388a0ef
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:15:37.296822+00:00'
+            completed_at: '2026-08-23T06:15:45.734732+00:00'
+            latency_ms: 8437
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8560
+              cached_input_tokens: 5276
+              cache_write_tokens: 0
+              output_tokens: 300
+              reasoning_tokens: 78
+              search_count: 2
+              cost_usd: '0.011286069999999999'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 615
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: role_or_occupation
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan political leader founder first khan Mongol Empire monarch
+              biography
+            - site:britannica.com Genghis Khan first great khan Mongol Empire ruler
+              political leader
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 3f29e4838e51dfb8189a14c08976b1b6d528afb1f2acf6f7e0bf5115e388a0ef
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:15:37.296822+00:00'
+              completed_at: '2026-08-23T06:15:45.734732+00:00'
+              latency_ms: 8437
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8560
+                cached_input_tokens: 5276
+                cache_write_tokens: 0
+                output_tokens: 300
+                reasoning_tokens: 78
+                search_count: 2
+                cost_usd: '0.011286069999999999'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 615
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 96de7250daf96141f252e5b30014ec12fe0cc4f07d0f90bf2b04b652e735922f
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:15:45.736589+00:00'
+            completed_at: '2026-08-23T06:15:46.776586+00:00'
+            latency_ms: 1040
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 889
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 197
+              reasoning_tokens: 180
+              search_count: 0
+              cost_usd: '0.0007592'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 60
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d42c96475dfaf174438771425a5
+        turn_number: 6
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 424881137d4b018d3978bb680fdf77211fdb83477ab848ed2c26bb2f80049003
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:15:46.788625+00:00'
+          completed_at: '2026-08-23T06:15:49.462911+00:00'
+          latency_ms: 2674
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 819
+            cached_input_tokens: 704
+            cache_write_tokens: 0
+            output_tokens: 54
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 121
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d42d3d877e9bbf93b55f8544828
+        turn_number: 6
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: e738c1a6f6b4e093c5b6c329aa0a0d26260bdde40d8b935836bdbf8873b74bb9
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:15:49.466618+00:00'
+            completed_at: '2026-08-23T06:15:54.181394+00:00'
+            latency_ms: 4714
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4620
+              cached_input_tokens: 2552
+              cache_write_tokens: 0
+              output_tokens: 153
+              reasoning_tokens: 32
+              search_count: 1
+              cost_usd: '0.005751340000000001'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 285
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: closed_fact
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan death date 1227 biography died August 1227
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: e738c1a6f6b4e093c5b6c329aa0a0d26260bdde40d8b935836bdbf8873b74bb9
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:15:49.466618+00:00'
+              completed_at: '2026-08-23T06:15:54.181394+00:00'
+              latency_ms: 4714
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4620
+                cached_input_tokens: 2552
+                cache_write_tokens: 0
+                output_tokens: 153
+                reasoning_tokens: 32
+                search_count: 1
+                cost_usd: '0.005751340000000001'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 285
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 1a5371a94a8d25789d1476386321d4bc6f5629f489c35f5aa8cd245ba2280a45
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:15:54.183652+00:00'
+            completed_at: '2026-08-23T06:15:55.255841+00:00'
+            latency_ms: 1072
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 863
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 131
+              reasoning_tokens: 98
+              search_count: 0
+              cost_usd: '0.0005864'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 78
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d42ea8872a0859f6065ab51430b
+        turn_number: 7
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: e62fd6cfcfcd8e4f53e2c36302d11c08d4931c62da8556fc8e56754a984adaca
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:15:55.272965+00:00'
+          completed_at: '2026-08-23T06:15:57.661259+00:00'
+          latency_ms: 2388
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 855
+            cached_input_tokens: 768
+            cache_write_tokens: 0
+            output_tokens: 49
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 118
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d42f3df71df93794767ddb74931
+        turn_number: 7
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 0adbd816587d06340e853150e47a34240a29862d221b4c301c3ef971e98a8701
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:15:57.664882+00:00'
+            completed_at: '2026-08-23T06:16:23.726192+00:00'
+            latency_ms: 26061
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 31686
+              cached_input_tokens: 23400
+              cache_write_tokens: 0
+              output_tokens: 1172
+              reasoning_tokens: 760
+              search_count: 5
+              cost_usd: '0.028945'
+              cache_discount_usd: null
+            web_search_requests: 5
+            annotation_count: 25
+            url_citation_count: 25
+            raw_output_present: true
+            raw_output_characters: 895
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan ruler of Mongol Empire not ruler of a European country
+              biography Britannica Europe conquered
+            - Genghis Khan ruler of Mongolia founder Mongol Empire biography source
+            - Britannica Mongol Empire Asian empire Genghis Khan khan 1206 1227 Europe
+            - Genghis Khan ruled Mongol Empire "not" European ruler country
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 0adbd816587d06340e853150e47a34240a29862d221b4c301c3ef971e98a8701
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:15:57.664882+00:00'
+              completed_at: '2026-08-23T06:16:23.726192+00:00'
+              latency_ms: 26061
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 31686
+                cached_input_tokens: 23400
+                cache_write_tokens: 0
+                output_tokens: 1172
+                reasoning_tokens: 760
+                search_count: 5
+                cost_usd: '0.028945'
+                cache_discount_usd: null
+              web_search_requests: 5
+              annotation_count: 25
+              url_citation_count: 25
+              raw_output_present: true
+              raw_output_characters: 895
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 4bafe116972924e755143e617b181618d78983c4826603602efc21de98d9c2e0
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:16:23.728108+00:00'
+            completed_at: '2026-08-23T06:16:26.746536+00:00'
+            latency_ms: 3018
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 922
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 756
+              reasoning_tokens: 727
+              search_count: 0
+              cost_usd: '0.0021666'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 76
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d43658773158c7df9d17421134f
+        turn_number: 8
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 956b683f99ed534b69cc640ba7ddab508d7510145af0e36af282a7c8f9fb4525
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:16:26.759485+00:00'
+          completed_at: '2026-08-23T06:17:27.819005+00:00'
+          latency_ms: 61059
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 888
+            cached_input_tokens: 128
+            cache_write_tokens: 0
+            output_tokens: 70
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 121
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d44540c77959ac5f2dbd8622931
+        turn_number: 8
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: fbb2f4f4990566d5a2a2d272aa3e5f77b581a2d861c3157ad77b7407cd7a5071
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:17:27.820722+00:00'
+            completed_at: '2026-08-23T06:17:43.513038+00:00'
+            latency_ms: 15692
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 14454
+              cached_input_tokens: 9709
+              cache_write_tokens: 0
+              output_tokens: 505
+              reasoning_tokens: 221
+              search_count: 3
+              cost_usd: '0.01698583'
+              cache_discount_usd: null
+            web_search_requests: 3
+            annotation_count: 15
+            url_citation_count: 15
+            raw_output_present: true
+            raw_output_characters: 710
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan biography President of the United States occupation ruler
+              Mongol Empire
+            - Genghis Khan died 1227 official biography United States presidency first
+              president George Washington 1789 official
+            - site:archives.gov George Washington first President United States inaugurated
+              April 30 1789
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: fbb2f4f4990566d5a2a2d272aa3e5f77b581a2d861c3157ad77b7407cd7a5071
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:17:27.820722+00:00'
+              completed_at: '2026-08-23T06:17:43.513038+00:00'
+              latency_ms: 15692
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 14454
+                cached_input_tokens: 9709
+                cache_write_tokens: 0
+                output_tokens: 505
+                reasoning_tokens: 221
+                search_count: 3
+                cost_usd: '0.01698583'
+                cache_discount_usd: null
+              web_search_requests: 3
+              annotation_count: 15
+              url_citation_count: 15
+              raw_output_present: true
+              raw_output_characters: 710
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 2961776f3484bb042ad46258ed7ef22f75922369319b1614a34eb2970fa76f58
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:17:43.515710+00:00'
+            completed_at: '2026-08-23T06:17:44.684798+00:00'
+            latency_ms: 1169
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 881
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 280
+              reasoning_tokens: 251
+              search_count: 0
+              cost_usd: '0.0009643'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 76
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d4495fd730399dbe58ddf3dceb8
+        turn_number: 9
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 5d704c7647ea2cec6de8aee4bed0bfd0efe7c1fe973255d9b46790668d5511a4
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:17:44.701476+00:00'
+          completed_at: '2026-08-23T06:17:48.712747+00:00'
+          latency_ms: 4011
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 921
+            cached_input_tokens: 832
+            cache_write_tokens: 0
+            output_tokens: 79
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 115
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d44a5aa76b6a66c50eadde80645
+        turn_number: 9
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 781d92e8b2e4adfaf863f1d61b732ca0d1d0dd1f8891993df9f9e1248b16f670
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:17:48.716453+00:00'
+            completed_at: '2026-08-23T06:17:54.683586+00:00'
+            latency_ms: 5967
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 3769
+              cached_input_tokens: 2548
+              cache_write_tokens: 0
+              output_tokens: 232
+              reasoning_tokens: 110
+              search_count: 1
+              cost_usd: '0.00563431'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 370
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: role_or_occupation
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan political leader Asia founder Mongol Empire biography
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 781d92e8b2e4adfaf863f1d61b732ca0d1d0dd1f8891993df9f9e1248b16f670
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:17:48.716453+00:00'
+              completed_at: '2026-08-23T06:17:54.683586+00:00'
+              latency_ms: 5967
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 3769
+                cached_input_tokens: 2548
+                cache_write_tokens: 0
+                output_tokens: 232
+                reasoning_tokens: 110
+                search_count: 1
+                cost_usd: '0.00563431'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 370
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 842573ed9a51892b1c4a0538f488a61175f205040051187ff05973edcb46684d
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:17:54.685742+00:00'
+            completed_at: '2026-08-23T06:17:55.863537+00:00'
+            latency_ms: 1177
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 865
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 233
+              reasoning_tokens: 200
+              search_count: 0
+              cost_usd: '0.000842'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 79
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d44c19f718ca9bb0233796d5bbe
+        turn_number: 10
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 842579f7920cb801646a2fb864b6773ca4744f1b152662fa4e6b8289b712c5e7
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:17:55.872082+00:00'
+          completed_at: '2026-08-23T06:17:59.316788+00:00'
+          latency_ms: 3444
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 953
+            cached_input_tokens: 768
+            cache_write_tokens: 0
+            output_tokens: 108
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 117
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d44cf1674d781ce8f782590a3db
+        turn_number: 10
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: d86f9c04615e58e983193f79a6c06b8d7b84b211e7ef2d10414a34b83ef4347f
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:17:59.320618+00:00'
+            completed_at: '2026-08-23T06:18:05.064230+00:00'
+            latency_ms: 5743
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4100
+              cached_input_tokens: 2551
+              cache_write_tokens: 0
+              output_tokens: 271
+              reasoning_tokens: 86
+              search_count: 1
+              cost_usd: '0.00576317'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 516
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: closed_fact
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan birth year 1162 death 1227 biography
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: d86f9c04615e58e983193f79a6c06b8d7b84b211e7ef2d10414a34b83ef4347f
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:17:59.320618+00:00'
+              completed_at: '2026-08-23T06:18:05.064230+00:00'
+              latency_ms: 5743
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4100
+                cached_input_tokens: 2551
+                cache_write_tokens: 0
+                output_tokens: 271
+                reasoning_tokens: 86
+                search_count: 1
+                cost_usd: '0.00576317'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 516
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: d2845fe622408ace85d1aba0c370a70b1c5b96eb4629cbd1ba60732cd3f86591
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:18:05.066535+00:00'
+            completed_at: '2026-08-23T06:18:06.095549+00:00'
+            latency_ms: 1029
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 885
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 168
+              reasoning_tokens: 135
+              search_count: 0
+              cost_usd: '0.0006855'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 78
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d44e99c76dda3fd5f39f4e8d403
+        turn_number: 11
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 9ee70783a587ec9caed68565afc01dbac6ebc58091d18327f75bf06beb5182d2
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:18:06.108958+00:00'
+          completed_at: '2026-08-23T06:18:52.181577+00:00'
+          latency_ms: 46072
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 988
+            cached_input_tokens: 128
+            cache_write_tokens: 0
+            output_tokens: 96
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 127
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d459d97710e9bec8458c981eb78
+        turn_number: 11
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: dce46918b55d9c5c1e08775badd603781410ee439b23a4c6f278eee32e54c0e5
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:18:52.184553+00:00'
+            completed_at: '2026-08-23T06:18:58.219009+00:00'
+            latency_ms: 6034
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 3629
+              cached_input_tokens: 2551
+              cache_write_tokens: 0
+              output_tokens: 234
+              reasoning_tokens: 72
+              search_count: 1
+              cost_usd: '0.00560102'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 546
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan founder ruler large empire Mongol Empire authoritative
+              biography
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: dce46918b55d9c5c1e08775badd603781410ee439b23a4c6f278eee32e54c0e5
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:18:52.184553+00:00'
+              completed_at: '2026-08-23T06:18:58.219009+00:00'
+              latency_ms: 6034
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 3629
+                cached_input_tokens: 2551
+                cache_write_tokens: 0
+                output_tokens: 234
+                reasoning_tokens: 72
+                search_count: 1
+                cost_usd: '0.00560102'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 546
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 4b811330299ab5bbf654de8b51a4e3460cea57b7c5db41efe3841449dbca8e04
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:18:58.221316+00:00'
+            completed_at: '2026-08-23T06:18:58.895358+00:00'
+            latency_ms: 674
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 883
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 23
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0003224'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 66
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d45b7dc752a8a31a9a0d925b1c7
+        turn_number: 12
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 134ccfec82a6264a9bec3d165cdc0e117ae414077cfd13474f49772f0bd813d6
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:18:58.908890+00:00'
+          completed_at: '2026-08-23T06:19:05.838332+00:00'
+          latency_ms: 6929
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 1023
+            cached_input_tokens: 960
+            cache_write_tokens: 0
+            output_tokens: 160
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 114
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a02d45d2ef7159bcc1a1ed9f73f277
+        turn_number: 12
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 5092c52233e3062286ee5108a807186acef989d95151b03801f7b6546c95c3ab
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:19:05.841266+00:00'
+            completed_at: '2026-08-23T06:19:12.042719+00:00'
+            latency_ms: 6201
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 3652
+              cached_input_tokens: 2550
+              cache_write_tokens: 0
+              output_tokens: 187
+              reasoning_tokens: 53
+              search_count: 1
+              cost_usd: '0.0055506'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 356
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: closed_fact
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan born 1162 birth year authoritative biography
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 5092c52233e3062286ee5108a807186acef989d95151b03801f7b6546c95c3ab
+            provider:
+              schema_version: 1
+              requested_at: '2026-08-23T06:19:05.841266+00:00'
+              completed_at: '2026-08-23T06:19:12.042719+00:00'
+              latency_ms: 6201
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 3652
+                cached_input_tokens: 2550
+                cache_write_tokens: 0
+                output_tokens: 187
+                reasoning_tokens: 53
+                search_count: 1
+                cost_usd: '0.0055506'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 356
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: b0c8fd86831e9a0f1808384eb1443855243e72e9eba13fa9fb161e5f907bb551
+          provider:
+            schema_version: 1
+            requested_at: '2026-08-23T06:19:12.044860+00:00'
+            completed_at: '2026-08-23T06:19:13.464948+00:00'
+            latency_ms: 1420
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 885
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 314
+              reasoning_tokens: 285
+              search_count: 0
+              cost_usd: '0.0010505'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 71
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a02d45f0c674d6bf1b0c3c4237d495
+        turn_number: 13
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 8b126a57e404d107ba8dba185c9ed256348a949a1ea89c17419cfc05320d6303
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:19:13.479013+00:00'
+          completed_at: '2026-08-23T06:19:54.002027+00:00'
+          latency_ms: 40523
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: stealth/ox-alpha
+          resolved_model: stealth/ox-alpha
+          requested_provider: stealth
+          resolved_provider: Stealth
+          fallback_occurred: false
+          usage:
+            input_tokens: 1057
+            cached_input_tokens: 960
+            cache_write_tokens: 0
+            output_tokens: 141
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 174
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a02d468f1371c9aedf80d51ea6b5f1
+        turn_number: 13
+        status: success
+        prompt:
+          version: strict-guess-validator-v1
+          hash: 8c317e76a9e5867642ba88cb9a3e68c3cc48938524e1311dababf8913842d26f
+        provider:
+          schema_version: 1
+          requested_at: '2026-08-23T06:19:54.004461+00:00'
+          completed_at: '2026-08-23T06:19:55.562296+00:00'
+          latency_ms: 1557
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 377
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 40
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.0001234'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 133
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      unavailable_call_count: 0
+  error_output_preview:
+    component: guesser
+    attempt_number: 1
+    finish_reason: stop
+    text: '{"action":"ASK","question":"Is this person still alive?","expected":"YES/NO/UNKNOWN"}'
+    original_characters: 85
+    trailing_whitespace_characters: 0
+    truncated: false
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0017/BX-20260823-official-M0017-018/subjects/T-0006/trials/trial-004/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs:
+      relative_path: runs/M-0017/BX-20260823-official-M0017-018/subjects/T-0006/trials/trial-004/error-outputs.jsonl
+      record_count: 1
+      integrity_hash: 39c3deaf970495d73b8834cd55d3e9055eeb3940e5d75d5bc5123cff24d718de
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 455331020ccf79f1f31968d4078ace7ca714ca1e80da30bffcc6c0f226a9e1a5

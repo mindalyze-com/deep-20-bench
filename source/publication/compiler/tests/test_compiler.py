@@ -38,6 +38,7 @@ from deep20_publication.models import (
     LeaderboardRow,
     LoadedEpisode,
     LoadedRun,
+    ModelConfigurationSnapshot,
     PartialTrialMetrics,
     PublicModel,
     PublicRun,
@@ -231,6 +232,15 @@ def _model_configuration(configuration_id: str) -> dict[str, object]:
             "cache_write_multiplier": "1",
         },
     }
+
+
+def test_model_configuration_accepts_json_object_output_mode() -> None:
+    payload = _model_configuration("M-0017")
+    payload["structured_output_mode"] = "json_object"
+
+    configuration = ModelConfigurationSnapshot.model_validate(payload)
+
+    assert configuration.structured_output_mode == "json_object"
 
 
 def _distribution(value: int) -> dict[str, object]:
@@ -2292,6 +2302,9 @@ def test_homepage_and_method_share_one_typed_illustrative_round() -> None:
     assert "<IllustrativeRoundExample />" in homepage
     assert "<IllustrativeRoundExample />" in method
     assert 'from "@/lib/illustrative-round"' not in story
+    assert "23 August 2026" in story
+    assert "OpenRouter’s Ox Alpha (high) tested." in story
+    assert "17.6 questions, placing 12th of 15." in story
     assert "15 August 2026" in story
     assert "17 August 2026" in story
     assert "Gemini 3.7 Flash (high) added." in story

@@ -36,6 +36,11 @@ class ReasoningControl(StrEnum):
     GENERIC = "generic"
 
 
+class StructuredOutputMode(StrEnum):
+    STRICT_JSON_SCHEMA = "strict_json_schema"
+    JSON_OBJECT = "json_object"
+
+
 class PromptCacheConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, str_strip_whitespace=True)
 
@@ -63,6 +68,10 @@ class ModelConfig(BaseModel):
     reasoning_control: ReasoningControl = Field(
         default=ReasoningControl.EFFORT,
         exclude_if=lambda value: value is ReasoningControl.EFFORT,
+    )
+    structured_output_mode: StructuredOutputMode = Field(
+        default=StructuredOutputMode.STRICT_JSON_SCHEMA,
+        exclude_if=lambda value: value is StructuredOutputMode.STRICT_JSON_SCHEMA,
     )
     allow_fallbacks: bool = False
     max_output_tokens: int = Field(default=4_096, ge=128, le=65_536)

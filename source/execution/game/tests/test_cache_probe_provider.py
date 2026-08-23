@@ -14,7 +14,12 @@ from deep20_game.cache_probe import (
     run_cache_probe,
     write_cache_probe,
 )
-from deep20_game.config import CacheControl, CachePolicy, ReasoningControl
+from deep20_game.config import (
+    CacheControl,
+    CachePolicy,
+    ReasoningControl,
+    StructuredOutputMode,
+)
 from deep20_game.errors import GameAuditError, GameProviderError
 from deep20_game.models import (
     GameProviderRequest,
@@ -324,6 +329,29 @@ def test_openrouter_seeded_payload_requires_parameter_support(model_config) -> N
     assert payload["provider"]["require_parameters"] is True
     assert payload["max_tokens"] == model_config.max_output_tokens
     assert "max_completion_tokens" not in payload
+
+
+def test_openrouter_json_object_payload_keeps_local_contract_boundary(
+    model_config,
+) -> None:
+    provider = OpenRouterGameProvider.__new__(OpenRouterGameProvider)
+    provider.config = model_config.model_copy(
+        update={"structured_output_mode": StructuredOutputMode.JSON_OBJECT}
+    )
+    request = GameProviderRequest(
+        messages=({"role": "user", "content": "BEGIN"},),
+        output_schema=guesser_action_output_schema(),
+        schema_name="guesser_action",
+        session_id="episode-session",
+        prompt_cache_key="guesser-config-prompt-v1",
+    )
+
+    payload = provider._request_payload(request)
+
+    assert payload["response_format"] == {"type": "json_object"}
+    assert payload["provider"]["require_parameters"] is True
+    assert payload["messages"] == [{"role": "user", "content": "BEGIN"}]
+    assert "json_schema" not in json.dumps(payload)
 
 
 def test_openrouter_non_reasoning_payload_omits_unsupported_effort(

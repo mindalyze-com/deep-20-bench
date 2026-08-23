@@ -1,0 +1,234 @@
+{
+  "document_type": "episode",
+  "schema_version": 2,
+  "execution_id": "BX-20260823-official-M0017-018",
+  "target_id": "T-0007",
+  "trial_id": "trial-002",
+  "episode": {
+    "episode_run_id": "BR-4a5b39a738a3f233557366dea8078ea06abf6621",
+    "episode_id": "EP-01a02d51a67974d8a09331d36612d571",
+    "subject_name": "Mario",
+    "subject_description": "Mario, the fictional Nintendo video-game character created by Shigeru Miyamoto and protagonist of the Mario franchise, identified by Wikidata entity Q12379.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Mario",
+    "started_at": "2026-08-23T06:32:00.889733Z",
+    "completed_at": "2026-08-23T06:33:58.464573Z",
+    "duration_ms": 117575,
+    "success": true,
+    "terminal_reason": "success",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 7,
+    "counted_questions": 6,
+    "ask_count": 5,
+    "guess_count": 1,
+    "rejected_guess_count": 0,
+    "oracle_unknown_count": 0,
+    "cache_status": "compliant",
+    "total_cost_usd": "0.07559657",
+    "total_tokens": 68161,
+    "contract": {
+      "evaluated_outputs": 7,
+      "valid_outputs": 6,
+      "violations": 1,
+      "counted_penalties": 1,
+      "affected_trials": 1,
+      "compliance_rate": "0.8571428571428571428571428571",
+      "status": "breached"
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"video_game_character\",\"event\":\"BEGIN\",\"variation_token\":\"BKXG3AZI\"}",
+      "required_formats": {
+        "ask": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"<non-empty yes-or-no property question>\"}}",
+        "guess": "{\"result\":{\"action\":\"GUESS\",\"description\":\"<non-empty identifying description>\",\"name\":\"<non-empty candidate name>\",\"question\":null}}"
+      },
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 7,
+        "cost_usd": "0",
+        "latency_ms": 50356,
+        "total_tokens": 5481,
+        "input_tokens": 5124,
+        "cached_input_tokens": 1600,
+        "cache_write_tokens": 0,
+        "output_tokens": 357,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0000"
+      },
+      "oracle": {
+        "calls": 5,
+        "cost_usd": "0.07547917",
+        "latency_ms": 66122,
+        "total_tokens": 62268,
+        "input_tokens": 59728,
+        "cached_input_tokens": 38511,
+        "cache_write_tokens": 0,
+        "output_tokens": 2540,
+        "reasoning_tokens": 1454,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 1,
+        "cost_usd": "0.0001174",
+        "latency_ms": 935,
+        "total_tokens": 412,
+        "input_tokens": 377,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 35,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 1,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 1,
+        "rejected_outputs": [
+          {
+            "attempt_number": 1,
+            "finish_reason": "stop",
+            "text": "{\"action\":\"ASK\",\"question\":\"Is this character human?\"}"
+          }
+        ]
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is the character human?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://waypoint.vice.com/en_us/article/gyp383/nintendo-finally-answers-is-mario-human",
+            "excerpt": "Mario is human.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character human?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Does the character appear in a franchise owned by Nintendo?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.nintendo.com/au/legal/nintendo-intellectual-property",
+            "excerpt": "Some of Nintendo's most widely recognized trademarks include ... Super Mario Bros.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://mario.nintendo.com/characters/",
+            "excerpt": "The official home of Super Mario™ – Characters - Nintendo",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character appear in a franchise owned by Nintendo?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is the character the main protagonist of their game series?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://mario.nintendo.com/characters/",
+            "excerpt": "Mario — The main hero of the Mushroom Kingdom.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character the main protagonist of their game series?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Does the character primarily use a sword as their weapon?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://mario.nintendo.com/characters/",
+            "excerpt": "He uses his masterful jumping ability and a variety of power-ups to take on his archrival, Bowser.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nintendo.com/us/store/products/super-mario-galaxy-plus-super-mario-galaxy-2-switch",
+            "excerpt": "Fire Mario: Blast powerful fireballs for a limited time.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Does the character primarily use a sword as their weapon?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is the character a plumber?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://mario.nintendo.com/characters/",
+            "excerpt": "He's a plumber by profession but is really a jack of all trades.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is the character a plumber?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Mario",
+        "guess_description": "Nintendo's iconic plumber protagonist of the Super Mario series, who rescues Princess Peach and uses power-ups like mushrooms and fire flowers",
+        "adjudicator": "guess_validator",
+        "answer": "YES",
+        "validator_explanation": "The proposal identifies Mario, the same Nintendo video-game character described in the trusted subject.",
+        "counted": false,
+        "counted_questions": 6,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"Nintendo's iconic plumber protagonist of the Super Mario series, who rescues Princess Peach and uses power-ups like mushrooms and fire flowers\",\"name\":\"Mario\",\"question\":null}}"
+      }
+    ]
+  }
+}

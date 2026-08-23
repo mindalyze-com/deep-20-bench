@@ -342,6 +342,10 @@ class ModelConfigurationSnapshot(FrozenModel):
         default="effort",
         exclude_if=lambda value: value == "effort",
     )
+    structured_output_mode: Literal["strict_json_schema", "json_object"] = Field(
+        default="strict_json_schema",
+        exclude_if=lambda value: value == "strict_json_schema",
+    )
     allow_fallbacks: bool
     max_output_tokens: int = Field(ge=1)
     timeout_seconds: int = Field(ge=1)

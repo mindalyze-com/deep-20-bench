@@ -1,0 +1,1230 @@
+{
+  "document_type": "episode",
+  "schema_version": 2,
+  "execution_id": "BX-20260823-official-M0017-018",
+  "target_id": "T-0002",
+  "trial_id": "trial-003",
+  "episode": {
+    "episode_run_id": "BR-78f15a4b6fa3d943baac722d68c83b2f46e58977",
+    "episode_id": "EP-01a02c5f41227411a239b58b2ba03162",
+    "subject_name": "Albert Schweitzer",
+    "subject_description": "Albert Schweitzer, the Alsatian physician, theologian, philosopher, organist, and 1952 Nobel Peace Prize laureate known for founding a hospital at Lambaréné, identified by Wikidata entity Q49325.",
+    "subject_reference_url": "https://en.wikipedia.org/wiki/Albert_Schweitzer",
+    "started_at": "2026-08-23T02:07:15.234144Z",
+    "completed_at": "2026-08-23T02:35:36.326869Z",
+    "duration_ms": 1701093,
+    "success": false,
+    "terminal_reason": "guesser_protocol_failure",
+    "scoring_eligible": true,
+    "publication_eligible": true,
+    "total_turns": 51,
+    "counted_questions": 50,
+    "ask_count": 44,
+    "guess_count": 3,
+    "rejected_guess_count": 3,
+    "oracle_unknown_count": 5,
+    "cache_status": "noncompliant",
+    "total_cost_usd": "1.130766759999999973",
+    "total_tokens": 979688,
+    "contract": {
+      "evaluated_outputs": 51,
+      "valid_outputs": 48,
+      "violations": 3,
+      "counted_penalties": 3,
+      "affected_trials": 1,
+      "compliance_rate": "0.9411764705882352941176470588",
+      "status": "breached"
+    },
+    "guesser_disclosure": {
+      "system_message": "You are the Guesser being evaluated in a Twenty Questions benchmark.\n\nOne subject is hidden. The initial BEGIN message provides its broad category as trusted game\nmetadata. Identify the subject using as few counted questions as possible. ASK is only for\nlearning a property that helps distinguish possible candidates. Never use ASK to confirm a\nnamed candidate or ask whether the subject is a specific identity. When you are ready to name\na candidate, use GUESS immediately. A correct GUESS costs zero counted questions; an incorrect\nGUESS costs exactly one, the same as ASK. A GUESS must provide both a name and a short\nidentifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN is a valid answer\nmeaning the factual adjudication system could not determine the proposition under its evidence\npolicy. Questions requiring proof of absence, exclusivity, completeness, exact counts, or\nsubjective classification are more likely to return UNKNOWN. Prefer direct, positively\nverifiable properties when possible.\n\nThe initial BEGIN event includes an opaque variation_token that contains no information about\nthe hidden subject. Do not interpret, repeat, mention, or derive meaning from it. After BEGIN,\neach user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed FORMAT_ERROR\nevent. FORMAT_ERROR means your immediately preceding response did not match the required\nstructured-action contract, was not semantically adjudicated, and consumed one counted turn.\nUse the formats in that event and try again. Never infer that the attempted question or\nguess was right or wrong.\n\nAt most 50 questions or rejected guesses are counted. After that limit you receive\none final guess-only opportunity. Format errors also consume counted turns. The provider wire\nresponse is an object with exactly one `result` action. On the final opportunity ASK is\nforbidden. Return only the required structured response. Do not include analysis, hidden\nreasoning, or additional fields.\n",
+      "begin_message": "{\"category\":\"person\",\"event\":\"BEGIN\",\"variation_token\":\"AMZAISLM\"}",
+      "required_formats": {
+        "ask": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"<non-empty yes-or-no property question>\"}}",
+        "guess": "{\"result\":{\"action\":\"GUESS\",\"description\":\"<non-empty identifying description>\",\"name\":\"<non-empty candidate name>\",\"question\":null}}"
+      },
+      "output_storage": "canonical_structured_action"
+    },
+    "telemetry": {
+      "guesser": {
+        "calls": 51,
+        "cost_usd": "0",
+        "latency_ms": 845641,
+        "total_tokens": 87220,
+        "input_tokens": 77658,
+        "cached_input_tokens": 67392,
+        "cache_write_tokens": 0,
+        "output_tokens": 9562,
+        "reasoning_tokens": 0,
+        "estimated_cache_savings_usd": "0.0000"
+      },
+      "oracle": {
+        "calls": 44,
+        "cost_usd": "1.130350359999999973",
+        "latency_ms": 850580,
+        "total_tokens": 891106,
+        "input_tokens": 845931,
+        "cached_input_tokens": 571188,
+        "cache_write_tokens": 0,
+        "output_tokens": 45175,
+        "reasoning_tokens": 30150,
+        "estimated_cache_savings_usd": "0"
+      },
+      "validator": {
+        "calls": 3,
+        "cost_usd": "0.0004164",
+        "latency_ms": 3926,
+        "total_tokens": 1362,
+        "input_tokens": 1218,
+        "cached_input_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 144,
+        "reasoning_tokens": 33,
+        "estimated_cache_savings_usd": "0E-8"
+      }
+    },
+    "turns": [
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 1,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 1,
+        "rejected_outputs": [
+          {
+            "attempt_number": 1,
+            "finish_reason": "stop",
+            "text": "{\"action\":\"ASK\",\"question\":\"Is this person still alive?\"}"
+          }
+        ]
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 2,
+        "action": "ASK",
+        "question": "Is this person still alive?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 2,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Died: 4 September 1965, Lambaréné, Gabon",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person still alive?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 3,
+        "action": "ASK",
+        "question": "Was this person famous primarily for work in science or technology?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 3,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Role: Missionary surgeon; Founder of Lambaréné. Prize motivation: “for his altruism, reverence for life, and tireless humanitarian work.”",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person famous primarily for work in science or technology?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 4,
+        "action": "ASK",
+        "question": "Is this person known primarily as a performer, such as an actor, musician, or singer?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 4,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical",
+            "excerpt": "Much of his fame as a theological scholar rests on The Quest of the Historical Jesus; meanwhile he continued with a distinguished musical career as an internationally known concert organist.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person known primarily as a performer, such as an actor, musician, or singer?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 5,
+        "action": "ASK",
+        "question": "Was this person primarily involved in politics or government?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 5,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts/",
+            "excerpt": "Role: Missionary surgeon; Founder of Lambaréné. The prize was awarded for his altruism and tireless humanitarian work.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Schweitzer",
+            "excerpt": "Albert Schweitzer — Alsatian-German theologian and physician.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily involved in politics or government?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 6,
+        "action": "ASK",
+        "question": "Is this person known for sports?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 6,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "Much of his fame as a theological scholar rests on his 1906 book; he was also internationally known as a concert organist.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Schweitzer",
+            "excerpt": "Albert Schweitzer was an Alsatian-German theologian and physician who developed the philosophy of “reverence for life.”",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person known for sports?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 7,
+        "action": "ASK",
+        "question": "Is this person known for literature, such as a writer or poet?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 7,
+        "evidence": [
+          {
+            "source_url": "https://academic.oup.com/book/9266/chapter/162607150",
+            "excerpt": "Schweitzer in all of his facets, from theologian and philosopher to musician and physician, husband, writer, and political activist.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person known for literature, such as a writer or poet?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 8,
+        "action": "ASK",
+        "question": "Did this person die before 1900?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 8,
+        "evidence": [
+          {
+            "source_url": "https://peaceprizelaureates.nobelpeacecenter.org/en/laureate/1952-albert-schweitzer",
+            "excerpt": "Died: September 4, 1965, Lambaréné, Gabon",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person die before 1900?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 9,
+        "action": "ASK",
+        "question": "Is this person male?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 9,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Albert Schweitzer ... studied medicine. Together with his wife, who was a nurse, he built and ran a hospital at the mission station Lambarene in Gabon.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person male?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 10,
+        "action": "ASK",
+        "question": "Was this person American?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 10,
+        "evidence": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Albert_Schweitzer",
+            "excerpt": "At this time Schweitzer, born a German citizen, had his parents' former pre-1871 French citizenship reinstated, and became a French citizen.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Schweitzer",
+            "excerpt": "He was an Alsatian-German theologian, philosopher, organist, and mission doctor in equatorial Africa.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person American?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 11,
+        "action": "ASK",
+        "question": "Did this person die after 1950?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 11,
+        "evidence": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/en:Albert_Schweitzer",
+            "excerpt": "Albert Schweitzer; 4 September 1965 (1965-09-04) (aged 90).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person die after 1950?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 12,
+        "action": "ASK",
+        "question": "Was this person European?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 12,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Schweitzer",
+            "excerpt": "Albert Schweitzer, an Alsatian-German theologian, philosopher, organist, and mission doctor.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Albert Schweitzer, born on January 14, 1875 in Alsace, Germany (now a part of France).",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person European?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 13,
+        "action": "ASK",
+        "question": "Did this person win the Nobel Prize in Literature?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 13,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/page/3/?np-year=1952",
+            "excerpt": "Nobel Prize in Literature 1952: François Mauriac; Nobel Peace Prize 1952: Albert Schweitzer.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts/",
+            "excerpt": "Albert Schweitzer — Nobel Peace Prize 1952.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person win the Nobel Prize in Literature?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 14,
+        "action": "ASK",
+        "question": "Is this person best known for writing fantasy fiction?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 14,
+        "evidence": [
+          {
+            "source_url": "https://peaceprizelaureates.nobelpeacecenter.org/en/laureate/1952-albert-schweitzer",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of \"reverence for life\" and tireless humanitarian work.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for writing fantasy fiction?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 15,
+        "action": "ASK",
+        "question": "Is this person best known for writing novels?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 15,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "The Quest of the Historical Jesus, a book on which much of his fame as a theological scholar rests; he was also recognized as an internationally known concert organist.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Schweitzer",
+            "excerpt": "Albert Schweitzer was an Alsatian-German theologian, philosopher, organist, and mission doctor in equatorial Africa; he received the 1952 Nobel Prize for Peace.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for writing novels?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 16,
+        "action": "ASK",
+        "question": "Is this person best known for writing poetry?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 16,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "The Quest of the Historical Jesus was a book on which much of his fame as a theological scholar rests; he was also internationally known as a concert organist.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for writing poetry?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 17,
+        "action": "ASK",
+        "question": "Is this person best known for writing plays or drama?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 17,
+        "evidence": [
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "At Lambaréné, Schweitzer was doctor and surgeon in the hospital, pastor of a congregation, administrator of a village, writer of scholarly books, and musician. The Nobel Peace Prize for 1952 was given to him.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for writing plays or drama?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 18,
+        "action": "ASK",
+        "question": "Is this person best known for philosophical writing?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 18,
+        "evidence": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Albert_Schweitzer",
+            "excerpt": "His philosophy was expressed in many ways, but most famously in founding and sustaining the Hôpital Albert Schweitzer in Lambaréné.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "In 1906 he published The Quest of the Historical Jesus, a book on which much of his fame as a theological scholar rests.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for philosophical writing?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 19,
+        "action": "ASK",
+        "question": "Is this person best known for writing children's literature?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 19,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Schweitzer",
+            "excerpt": "He is renowned for his theological work, became a medical doctor, and established a hospital in Lambaréné, Gabon.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "His fame as a theological scholar rests on The Quest of the Historical Jesus; he was also internationally known as a concert organist.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for writing children's literature?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 20,
+        "action": "ASK",
+        "question": "Is this person best known for writing short stories?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 20,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "His fame as a theological scholar rests on his 1906 book The Quest of the Historical Jesus.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for writing short stories?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 21,
+        "action": "ASK",
+        "question": "Is this person best known for nonfiction such as essays, history, or journalism?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 21,
+        "evidence": [
+          {
+            "source_url": "https://www.encyclopedia.com/people/philosophy-and-religion/protestant-christianity-biographies/albert-schweitzer",
+            "excerpt": "Schweitzer became one of the best-known figures in the world, a pioneer in a form of humanitarianism... Lambaréné... left a much bigger stamp on the religious world than did anything Schweitzer was to write or say.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/",
+            "excerpt": "The hospital in Lambaréné became his life's work.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for nonfiction such as essays, history, or journalism?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 22,
+        "action": "ASK",
+        "question": "Is this person best known for creating comic strips or graphic novels?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 22,
+        "evidence": [
+          {
+            "source_url": "https://libraryguides.quinnipiac.edu/c.php?g=541256&p=3707883",
+            "excerpt": "He is best known for his work as a medical missionary in Africa, where he founded the Albert Schweitzer Hospital in Lambaréné, Gabon.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "His fame rested on his work as a theological scholar, and he was internationally known as a concert organist.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for creating comic strips or graphic novels?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 23,
+        "action": "ASK",
+        "question": "Is this person best known for writing science fiction?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 23,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for writing science fiction?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 24,
+        "action": "ASK",
+        "question": "Did this person write primarily in a language other than English?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 24,
+        "evidence": [
+          {
+            "source_url": "https://www.ebsco.com/research-starters/history/albert-schweitzer",
+            "excerpt": "He spoke both French and German fluently. He studied and wrote in both languages.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "Schweitzer wrote a biography of Bach in 1905 in French ... and rewrote the Bach book in German in 1908.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person write primarily in a language other than English?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 25,
+        "action": "ASK",
+        "question": "Is this person best known for writing for film, such as screenplays or scripts?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 25,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "The Quest of the Historical Jesus was a book on which much of his fame as a theological scholar rests; he was also internationally known as a concert organist.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for writing for film, such as screenplays or scripts?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 26,
+        "action": "ASK",
+        "question": "Is this person's single most famous work a novel?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 26,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person's single most famous work a novel?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 27,
+        "action": "ASK",
+        "question": "Was this person born before 1900?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 27,
+        "evidence": [
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Albert Schweitzer, born on January 14, 1875 in Alsace, Germany (now a part of France).",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.history.com/this-day-in-history/january-14/albert-schweitzer-born",
+            "excerpt": "The theologian, musician, philosopher and Nobel Prize-winning physician Albert Schweitzer is born on January 14, 1875.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person born before 1900?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 28,
+        "action": "ASK",
+        "question": "Was this person French?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 28,
+        "evidence": [
+          {
+            "source_url": "https://www.mayoclinicproceedings.org/article/S0025-6196%2819%2930465-3/fulltext",
+            "excerpt": "After the end of the war they were released from the camp and the Schweitzers returned home to Alsace and formally changed their nationality to French.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person French?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 29,
+        "action": "ASK",
+        "question": "Is this person associated with the surrealist movement?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 29,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person associated with the surrealist movement?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 30,
+        "action": "ASK",
+        "question": "Did this person die before 1950?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 30,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "Albert Schweitzer (January 14, 1875-September 4, 1965) Albert Schweitzer died on September 4, 1965.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person die before 1950?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 31,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "André Breton",
+        "guess_description": "French writer and poet, founder and central figure of the surrealist movement (1896-1966)",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The trusted subject is Albert Schweitzer, while the proposed identity is André Breton, a different person.",
+        "counted": true,
+        "counted_questions": 31,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French writer and poet, founder and central figure of the surrealist movement (1896-1966)\",\"name\":\"André Breton\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 32,
+        "action": "ASK",
+        "question": "Was this person also notably involved in cinema or filmmaking?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 32,
+        "evidence": [
+          {
+            "source_url": "https://en.wikipedia.org/wiki/Albert_Schweitzer_%28film%29",
+            "excerpt": "Albert Schweitzer is credited as a writer of the 1957 film Albert Schweitzer.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.imdb.com/title/tt0050109/",
+            "excerpt": "He was actively involved in making this film.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person also notably involved in cinema or filmmaking?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 33,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Jean Cocteau",
+        "guess_description": "French writer, poet, artist, and filmmaker known for works like 'Les Enfants Terribles' and the film 'Beauty and the Beast'",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Jean Cocteau, a different person from Albert Schweitzer.",
+        "counted": true,
+        "counted_questions": 33,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French writer, poet, artist, and filmmaker known for works like 'Les Enfants Terribles' and the film 'Beauty and the Beast'\",\"name\":\"Jean Cocteau\",\"question\":null}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 34,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 34,
+        "rejected_outputs": [
+          {
+            "attempt_number": 1,
+            "finish_reason": "stop",
+            "text": "{\"result\":{\"action\":\"ASK\",\"description\":\"French writer, artist, and intellectual known for 'Nadja' and surrealist works\",\"name\":null,\"question\":\"Is this person best known for a single famous novel published before 1940?\"}}"
+          }
+        ]
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 35,
+        "action": "GUESS",
+        "question": null,
+        "guess_name": "Marcel Pagnol",
+        "guess_description": "French novelist, playwright, and filmmaker (1895-1974), member of the Académie française, known for the Marseille trilogy 'Fanny' and 'Manon des Sources'",
+        "adjudicator": "guess_validator",
+        "answer": "NO",
+        "validator_explanation": "The proposal identifies Marcel Pagnol, while the trusted subject is Albert Schweitzer.",
+        "counted": true,
+        "counted_questions": 35,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"GUESS\",\"description\":\"French novelist, playwright, and filmmaker (1895-1974), member of the Académie française, known for the Marseille trilogy 'Fanny' and 'Manon des Sources'\",\"name\":\"Marcel Pagnol\",\"question\":null}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 36,
+        "action": "ASK",
+        "question": "Is this person best known as a poet?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 36,
+        "evidence": [
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.encyclopedia.com/people/philosophy-and-religion/protestant-christianity-biographies/albert-schweitzer",
+            "excerpt": "Schweitzer became one of the best-known figures in the world, a pioneer in a form of humanitarianism.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known as a poet?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 37,
+        "action": "ASK",
+        "question": "Was this person primarily known as a novelist?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 37,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts/",
+            "excerpt": "Schweitzer studied theology and became a priest, studied medicine, built and ran a hospital at Lambarene, and was also a gifted musician and interpreter of Bach.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "His fame as a theological scholar rested particularly on his 1906 book The Quest of the Historical Jesus; he was also internationally known as a concert organist.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known as a novelist?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 38,
+        "action": "ASK",
+        "question": "Was this person primarily known as a playwright?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 38,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Schweitzer",
+            "excerpt": "Albert Schweitzer was an Alsatian-German theologian, philosopher, organist, and mission doctor in equatorial Africa; he received the 1952 Nobel Prize for Peace.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.ebsco.com/research-starters/history/schweitzer-awarded-nobel-peace-prize",
+            "excerpt": "The award to Albert Schweitzer of the Nobel Peace Prize symbolized the near-universal admiration he attained through his life of devotion as a medical missionary in Africa.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person primarily known as a playwright?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 39,
+        "action": "ASK",
+        "question": "Did this person write song lyrics or texts for songs?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 39,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person write song lyrics or texts for songs?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 40,
+        "action": "ASK",
+        "question": "Is this person primarily known as an essayist or critic?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 40,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/",
+            "excerpt": "Albert Schweitzer was awarded the Nobel Peace Prize for his philosophy of “reverence for life” and tireless humanitarian work.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958/",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known as an essayist or critic?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 41,
+        "action": "ASK",
+        "question": "Is this person primarily known as a diarist or letter writer?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 41,
+        "evidence": [
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "At Lambaréné, Schweitzer was doctor and surgeon in the hospital, pastor of a congregation, administrator of a village, writer of scholarly books, commentator on contemporary history, musician.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person primarily known as a diarist or letter writer?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 42,
+        "action": "ASK",
+        "question": "Did this person hold high political office, such as serving as a government minister?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 42,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person hold high political office, such as serving as a government minister?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 43,
+        "action": "ASK",
+        "question": "Is this person best known for a single famous book?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 43,
+        "evidence": [
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Schweitzer",
+            "excerpt": "Gained international recognition for his multifaceted work as a theologian, philosopher, organist, and mission doctor.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "The Nobel Peace Prize recognized his altruism, reverence for life, and tireless humanitarian work; his role was missionary surgeon and founder of Lambaréné.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.britannica.com/biography/Albert-Schweitzer",
+            "excerpt": "His book The Quest of the Historical Jesus established him as a world figure in theological studies, while he also established a hospital in Lambaréné and developed the philosophy of reverence for life.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for a single famous book?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 44,
+        "action": "ASK",
+        "question": "Was this person also a visual artist or painter?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "UNKNOWN",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 44,
+        "evidence": [],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person also a visual artist or painter?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 45,
+        "action": "ASK",
+        "question": "Was this person born in Paris?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 45,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/facts",
+            "excerpt": "Born: 14 January 1875, Kaysersberg, Germany (now France)",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person born in Paris?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 46,
+        "action": "ASK",
+        "question": "Was this person a member of the Académie française?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 46,
+        "evidence": [
+          {
+            "source_url": "https://centreschweitzer.org/qui-sommes-nous/albert-schweitzer/biographie/",
+            "excerpt": "Membre de l'Académie française des sciences morales et politiques en 1951.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://fr.wikipedia.org/wiki/Albert_Schweitzer",
+            "excerpt": "Catégorie : Candidat à l'Académie française.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Was this person a member of the Académie française?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 47,
+        "action": "ASK",
+        "question": "Did this person write in the 20th century?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "YES",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 47,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "Schweitzer, Albert, The Quest of the Historical Jesus... (Tübingen... 1906.) Translated by W. Montgomery. London... 1910.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Did this person write in the 20th century?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 48,
+        "action": "ASK",
+        "question": "Is this person best known for autobiographical writing?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 48,
+        "evidence": [
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/speedread/",
+            "excerpt": "The hospital in Lambaréné became his life’s work.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://en.wikipedia.org/wiki/en:Albert_Schweitzer",
+            "excerpt": "He was a theologian, organist, musicologist, writer, humanitarian, most famously in founding and sustaining the Hôpital Albert Schweitzer in Lambaréné.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for autobiographical writing?\"}}"
+      },
+      {
+        "turn_type": "action",
+        "turn_number": 49,
+        "action": "ASK",
+        "question": "Is this person best known for travel writing?",
+        "guess_name": null,
+        "guess_description": null,
+        "adjudicator": "oracle",
+        "answer": "NO",
+        "validator_explanation": null,
+        "counted": true,
+        "counted_questions": 49,
+        "evidence": [
+          {
+            "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4291958",
+            "excerpt": "Musician, theologian and physician, Albert Schweitzer was above all, a true humanitarian.",
+            "validation": "model_reported"
+          },
+          {
+            "source_url": "https://www.nobelprize.org/prizes/peace/1952/schweitzer/biographical/",
+            "excerpt": "He was recognized as a concert organist, internationally known; much of his fame as a theological scholar rests on The Quest of the Historical Jesus.",
+            "validation": "model_reported"
+          }
+        ],
+        "recorded_output": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":null,\"question\":\"Is this person best known for travel writing?\"}}"
+      },
+      {
+        "turn_type": "contract_violation",
+        "turn_number": 50,
+        "violation_code": "invalid_guesser_output",
+        "violation_kind": "invalid_action",
+        "feedback_event": "FORMAT_ERROR",
+        "counted": true,
+        "counted_questions": 50,
+        "rejected_outputs": [
+          {
+            "attempt_number": 1,
+            "finish_reason": "stop",
+            "text": "{\"result\":{\"action\":\"ASK\",\"description\":null,\"name\":\"null\",\"question\":\"Did this person die in the 1960s?\"}}"
+          }
+        ]
+      }
+    ]
+  }
+}

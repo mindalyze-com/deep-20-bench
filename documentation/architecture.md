@@ -134,6 +134,13 @@ The Guesser returns one strict object with a stable schema:
 - `ASK` has a non-empty `question` and null identity fields.
 - `GUESS` has a `name` and identifying `description` and a null question.
 
+The immutable model configuration also fixes provider-side output enforcement. The default
+`strict_json_schema` mode sends the complete action schema to OpenRouter. An explicitly
+registered `json_object` route requests JSON-object formatting when its provider does not
+support strict JSON Schema enforcement. Both modes use the same model-visible instructions and
+the same strict local action validation. JSON-object output receives no repair or response
+healing; any mismatch follows the normal scored `FORMAT_ERROR` path.
+
 The Guesser initially receives the trusted entity type as a broad category. Its later
 conversation contains only its canonically serialized valid actions and the corresponding
 `YES`, `NO`, or `UNKNOWN` values, plus the one fixed `FORMAT_ERROR` event immediately after
@@ -251,7 +258,7 @@ Fact-Builder approach.
 Questions, web content, excerpts, annotations, and model responses are untrusted. The system:
 
 - Separates fixed policy from encoded subject/question data.
-- Uses strict structured output and forbids additional fields.
+- Uses strict local structured-action validation and forbids additional fields.
 - Validates URLs, string lengths, evidence counts, and cross-field invariants.
 - Keeps Oracle and Reviewer answers out of the blind Reviewer/Judge request projections.
 - JSON-escapes all persisted and console-rendered untrusted strings.
@@ -453,12 +460,15 @@ Every controlled
 terminal path produces an episode event. A started event stream with no terminal event is
 recognized as interrupted and is never resumed.
 
-The Guesser's provider schema uses action-discriminated branches. An `ASK` branch permits only
-a string question plus null identity fields; a `GUESS` branch permits only null question plus
-string identity fields. This keeps provider-side structured generation aligned with domain
-validation without parsing repairs. A failed validation is counted and the next turn is a
-normal scored model call, not a hidden retry. The schema contains no subject or adjudicator
-data, and changing it also changes the Guesser prompt-contract version and cache namespace.
+The Guesser action schema uses action-discriminated branches. An `ASK` branch permits only a
+string question plus null identity fields; a `GUESS` branch permits only null question plus
+string identity fields. Strict-schema routes enforce those branches at the provider.
+Explicitly registered JSON-object routes receive the same schema in their fixed instructions
+but only request JSON-object formatting from the provider. Both are validated against the same
+local contract without parsing repairs or response healing. A failed validation is counted and
+the next turn is a normal scored model call, not a hidden retry. The schema contains no subject
+or adjudicator data, and changing it also changes the Guesser prompt-contract version and cache
+namespace.
 
 Each registered reasoning route also freezes an output ceiling and timeout with enough room
 for provider reasoning tokens plus the structured action. A Guesser `length` finish is not
@@ -497,15 +507,17 @@ adjudicator messages remain the exact protocol tokens `YES`, `NO`, or `UNKNOWN`,
 non-adjudicator exception is the canonical `FORMAT_ERROR` after malformed output. Keeping the
 value out of the system prompt preserves the largest stable prompt-cache prefix.
 
-Model configurations declare whether their exact route supports `seed`. Supported OpenRouter
-requests include the derived value; unsupported routes omit it and use the prompt variation
-token alone. All Guesser requests set `provider.require_parameters` because strict branch-aware
-structured output is mandatory. The same base seed produces the same variation schedule, but
-providers expose only best-effort deterministic sampling and may still change outputs when
-their backend changes.
+Model configurations declare whether their exact route supports `seed` and whether it uses
+strict JSON Schema or JSON-object output. Supported OpenRouter seed requests include the
+derived value; unsupported routes omit it and use the prompt variation token alone. All
+Guesser requests set `provider.require_parameters`. Strict-schema routes require both response
+formatting and structured-output support; JSON-object routes require response formatting and
+depend on the unchanged local contract validator for the exact action shape. The same base seed
+produces the same variation schedule, but providers expose only best-effort deterministic
+sampling and may still change outputs when their backend changes.
 
 `openai/gpt-5.6-luna` is currently declared unsupported for deterministic provider seeding. Its
-requests omit `seed` but still require the strict structured-output parameters; the immutable
+requests omit `seed` but still require their configured output-format parameters; the immutable
 model snapshot records the seed limitation.
 
 Only the opaque variation token enters the initial Guesser event. The base seed, trial and turn

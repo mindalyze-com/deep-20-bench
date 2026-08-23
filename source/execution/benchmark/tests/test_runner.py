@@ -1114,6 +1114,9 @@ def test_result_integrity_uses_validated_raw_payload_across_schema_defaults(
     path = tmp_path / "runs/M-0001/BX-result-schema-evolution-001/result.yml"
     payload = yaml.safe_load(path.read_text(encoding="utf-8"))
     payload["run"]["model"]["configuration"]["reasoning_control"] = "effort"
+    payload["run"]["model"]["configuration"]["structured_output_mode"] = (
+        "strict_json_schema"
+    )
     unsigned = dict(payload)
     unsigned.pop("integrity_hash")
     unsigned["artifacts"] = dict(unsigned["artifacts"])
@@ -1132,6 +1135,10 @@ def test_result_integrity_uses_validated_raw_payload_across_schema_defaults(
     assert loaded is not None
     assert loaded.integrity_hash == integrity_hash
     assert loaded.run.model.configuration.reasoning_control == "effort"
+    assert (
+        loaded.run.model.configuration.structured_output_mode
+        == "strict_json_schema"
+    )
 
 
 def test_runner_records_failure_and_continues(tmp_path: Path) -> None:
