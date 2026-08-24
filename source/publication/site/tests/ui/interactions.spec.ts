@@ -82,7 +82,7 @@ test("official cost and time rows open the selected run", { tag: ["@interactions
   }
 });
 
-test("mobile score plots leave touch gestures to page scrolling", { tag: ["@interactions", "@both", "@smoke"] }, async ({
+test("mobile score plots preserve vertical pan and open model runs", { tag: ["@interactions", "@both", "@smoke"] }, async ({
   page,
 }, testInfo) => {
   for (const routePath of ["", "results/"]) {
@@ -93,10 +93,69 @@ test("mobile score plots leave touch gestures to page scrolling", { tag: ["@inte
     await expect(scoreCanvases).toHaveCount(2);
 
     if (testInfo.project.name.startsWith("mobile")) {
-      await expect(scoreCanvases.first()).toHaveCSS("pointer-events", "none");
+      await expect(scoreCanvases.first()).toHaveCSS("pointer-events", "auto");
       await expect(scoreCanvases.first()).toHaveCSS("touch-action", "pan-y");
-      await expect(scoreCanvases.last()).toHaveCSS("pointer-events", "none");
+      await expect(scoreCanvases.last()).toHaveCSS("pointer-events", "auto");
       await expect(scoreCanvases.last()).toHaveCSS("touch-action", "pan-y");
+
+      await scoreCanvases.first().scrollIntoViewIfNeeded();
+      const chartBounds = await scoreCanvases.first().boundingBox();
+      const viewport = page.viewportSize();
+      expect(chartBounds).not.toBeNull();
+      expect(viewport).not.toBeNull();
+      const touchX = (chartBounds?.x ?? 0) + (chartBounds?.width ?? 0) - 24;
+      const touchStartY = Math.min(
+        (chartBounds?.y ?? 0) + (chartBounds?.height ?? 0) - 32,
+        (viewport?.height ?? 0) - 32,
+      );
+      const touchEndY = Math.max((chartBounds?.y ?? 0) + 32, touchStartY - 240);
+      expect(touchStartY - touchEndY).toBeGreaterThan(80);
+      const urlBeforePan = page.url();
+      const scrollBeforePan = await page.evaluate(() => window.scrollY);
+      const browserSession = await page.context().newCDPSession(page);
+      await browserSession.send("Input.dispatchTouchEvent", {
+        type: "touchStart",
+        touchPoints: [{ x: touchX, y: touchStartY }],
+      });
+      for (let step = 1; step <= 4; step += 1) {
+        await browserSession.send("Input.dispatchTouchEvent", {
+          type: "touchMove",
+          touchPoints: [
+            {
+              x: touchX,
+              y: touchStartY + ((touchEndY - touchStartY) * step) / 4,
+            },
+          ],
+        });
+      }
+      await browserSession.send("Input.dispatchTouchEvent", {
+        type: "touchEnd",
+        touchPoints: [],
+      });
+      await browserSession.detach();
+      await expect
+        .poll(async () =>
+          Math.abs((await page.evaluate(() => window.scrollY)) - scrollBeforePan),
+        )
+        .toBeGreaterThan(20);
+      await expect(page).toHaveURL(urlBeforePan);
+
+      const runLink = page
+        .locator('ol[aria-label$="question scores"] a')
+        .first();
+      const href = await runLink.getAttribute("href");
+      const linkLabel = await runLink.textContent();
+      expect(href).not.toBeNull();
+      expect(linkLabel).not.toBeNull();
+      const modelName = splitModelName(
+        linkLabel?.replace("View full run for ", "") ?? "",
+      ).displayName;
+
+      await scoreCanvases
+        .first()
+        .getByText(modelName, { exact: true })
+        .tap();
+      await expect(page).toHaveURL(new RegExp(`${href?.replaceAll("/", "\\/")}$`));
     } else {
       await expect(scoreCanvases.first()).toHaveCSS("pointer-events", "auto");
       await expect(scoreCanvases.last()).toHaveCSS("pointer-events", "auto");
