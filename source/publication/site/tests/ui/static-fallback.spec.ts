@@ -3,167 +3,166 @@ import path from "node:path";
 
 import { expect, test } from "@playwright/test";
 
-import { splitModelName } from "../../src/lib/model-name";
-import { siteResourceLinks } from "../../src/lib/site-resources";
-import {
-  contractExampleEpisodePath,
-  contractExampleHref,
-  contractExampleRunPath,
-  contractExampleSubjectPath,
-  docsRoot,
-  episodePath,
-  expectMinimumSize,
-  expectNoViewportOverflow,
-  expectVerticalGap,
-  firstTraversalTrialId,
-  lastTraversalTrialId,
-  nextTraversalSubjectId,
-  previousTraversalSubjectId,
-  runDocument,
-  runPath,
-  staticPaths,
-  subjectPath,
-  targetId,
-  traversalSubjectId,
-  trialId,
-  unknownExampleEpisodePath,
-  waitForPublication,
-} from "./support/publication";
+import { docsRoot, staticPaths } from "./support/publication";
 
-test("homepage remains useful without JavaScript", { tag: ["@static-fallback", "@both"] }, async ({ browser }, testInfo) => {
-  const mobile = testInfo.project.name.startsWith("mobile");
-  const context = await browser.newContext({
-    javaScriptEnabled: false,
-    viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 720 },
-  });
-  const page = await context.newPage();
-  await page.goto("http://127.0.0.1:4173/deep-20-bench/");
+interface OfficialRunReference {
+  execution_id: string;
+}
 
-  const staticHome = page.locator("main.static-home");
-  await expect(staticHome).toBeVisible();
-  await expect(staticHome).toHaveCSS("background-color", "rgb(243, 240, 232)");
-  await expect(page.locator(".static-header")).toHaveCSS(
-    "background-color",
-    "rgb(12, 17, 27)",
-  );
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "How well can AI models play Twenty Questions?",
-  );
-  await expect(staticHome).toContainText(
-    "Deep20Bench tests how well AI models play the guessing game",
-  );
-  await expect(staticHome).toContainText(
-    "Each question, wrong guess, or reply that does not follow the required format adds one point.",
-  );
-  await expect(staticHome).toContainText(
-    "50 questions - more than the traditional twenty, giving models more room to finish a round.",
-  );
-  await expect(staticHome).toContainText(
-    "The concept works and the first step is complete. Expanding the pilot is straightforward; cost is the main constraint.",
-  );
-  await expect(staticHome).not.toContainText("small first step");
-  await expect(staticHome).not.toContainText("not a definitive ranking");
-  await expect(staticHome).toContainText(
-    "The Guesser asks. Three roles determine the answer.",
-  );
-  await expect(staticHome).toContainText(
-    "An Oracle searches the live web and cites evidence.",
-  );
-  await expect(page.getByText("What this pilot tests", { exact: true })).toBeVisible();
-  await expect(page.getByText("What it does not claim", { exact: true })).toBeVisible();
-  const staticDiscussionLink = page.getByRole("link", {
-    name: "Join discussion (opens in a new tab)",
-  });
-  await expect(staticDiscussionLink).toHaveAttribute(
-    "href",
-    "https://github.com/mindalyze-com/deep-20-bench/discussions",
-  );
-  await expect(staticDiscussionLink).toHaveAttribute("target", "_blank");
-  const staticSupportLink = page.getByRole("link", {
-    name: "Support future benchmark runs (opens in a new tab)",
-  });
-  await expect(staticSupportLink).toHaveAttribute("href", "https://ko-fi.com/mindalyze");
-  await expect(staticSupportLink).toHaveAttribute("target", "_blank");
-  await expect(page.getByText("Deep20Bench needs JavaScript")).toHaveCount(0);
-  const staticFooter = page.locator(".static-footer");
-  await expect(staticFooter).toBeVisible();
-  for (const link of siteResourceLinks) {
-    await expect(staticFooter.getByRole("link", { name: link.label })).toHaveAttribute(
-      "href",
-      link.href,
-    );
-  }
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
-  const structuredData = await page
-    .locator('script[type="application/ld+json"]')
-    .textContent();
-  expect(structuredData).not.toBeNull();
-  const dataset = JSON.parse(structuredData!) as {
-    alternateName?: string[];
-    keywords?: string[];
+interface ManifestFixture {
+  official_runs: OfficialRunReference[];
+}
+
+interface RunFixture {
+  run: {
+    contract: { status: "clean" | "breached" | "not_evaluable" };
+    model_name: string;
   };
-  expect(dataset.alternateName).toEqual(["Deep20 Bench", "D20B"]);
-  expect(dataset.keywords).toEqual(
-    expect.arrayContaining(["Deep20Bench", "Deep20 Bench", "LLM benchmark"]),
-  );
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "https://mindalyze-com.github.io/deep-20-bench/",
-  );
-  const viewport = await page.evaluate(() => ({
-    client: document.documentElement.clientWidth,
-    scroll: document.documentElement.scrollWidth,
-  }));
-  expect(viewport.scroll).toBeLessThanOrEqual(viewport.client + 1);
+  subjects: Array<{ target_id: string }>;
+}
 
-  await context.close();
-});
+const staticBase = "http://127.0.0.1:4174/deep-20-bench/";
+const manifest = JSON.parse(
+  readFileSync(path.join(docsRoot, "data", "manifest.json"), "utf8"),
+) as ManifestFixture;
+const representative = manifest.official_runs
+  .map((reference) => ({
+    executionId: reference.execution_id,
+    run: JSON.parse(
+      readFileSync(
+        path.join(docsRoot, "data", "runs", `${reference.execution_id}.json`),
+        "utf8",
+      ),
+    ) as RunFixture,
+  }))
+  .find(({ run }) => run.run.contract.status === "clean");
+if (representative === undefined) {
+  throw new Error("The publication needs an official run for static rendering tests.");
+}
+const representativeExecutionId = representative.executionId;
+const representativeRun = representative.run;
 
-test("sitemap pages remain useful without JavaScript", { tag: ["@static-fallback", "@desktop"] }, async ({ browser }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false });
-  const page = await context.newPage();
+test(
+  "homepage remains complete without JavaScript",
+  { tag: ["@static-fallback", "@both"] },
+  async ({ browser }, testInfo) => {
+    const mobile = testInfo.project.name.startsWith("mobile");
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 720 },
+    });
+    const page = await context.newPage();
+    await page.goto(staticBase);
 
-  for (const routePath of staticPaths.slice(1)) {
-    await page.setContent(
-      readFileSync(path.join(docsRoot, routePath, "index.html"), "utf8"),
+    const content = page.locator("#route-content.home-page");
+    await expect(content).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "How well can AI models play Twenty Questions?",
     );
-    const fallback = page.locator("main.static-route-fallback--editorial");
-    await expect(fallback).toBeVisible();
-    await expect(fallback.getByRole("heading", { level: 1 })).not.toHaveText(
-      "This detailed view uses JavaScript.",
+    await expect(content).toContainText("What this pilot tests");
+    await expect(content).toContainText("How to read the pilot");
+    await expect(content).toContainText("Comparable runs, limited conclusions.");
+    await expect(page.locator(".site-footer")).toBeVisible();
+    await expect(page.locator(".static-home, .static-route-fallback")).toHaveCount(0);
+    await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      "https://mindalyze-com.github.io/deep-20-bench/",
     );
-  }
 
-  await page.setContent(
-    readFileSync(path.join(docsRoot, "results", "index.html"), "utf8"),
-  );
-  await expect(page.getByText("The current leader has a question score of")).toBeVisible();
-  await expect(page.getByRole("list", { name: "Top three official model results" })).toBeVisible();
+    await context.close();
+  },
+);
 
-  await context.close();
-});
+test(
+  "every editorial page has readable initial HTML and ordinary links",
+  { tag: ["@static-fallback", "@desktop"] },
+  async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
 
-test("JavaScript users do not see the static page while the app loads", { tag: ["@static-fallback", "@desktop", "@smoke"] }, async ({
-  page,
-}) => {
-  let releaseEntry = (): void => undefined;
-  const entryGate = new Promise<void>((resolve) => {
-    releaseEntry = resolve;
-  });
-  await page.route("**/src/main.ts", async (route) => {
-    await entryGate;
-    await route.continue();
-  });
+    for (const routePath of staticPaths.slice(1)) {
+      await page.goto(new URL(routePath, staticBase).href);
+      await expect(page.locator("#route-content")).toBeVisible();
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+    }
 
-  const navigation = page.goto("");
-  const staticHome = page.locator("main.static-home");
-  await staticHome.waitFor({ state: "attached" });
-  await expect(staticHome).toBeHidden();
-  await expect(page.locator("html")).toHaveClass(/app-loading/);
+    await page.goto(new URL("results/", staticBase).href);
+    for (const reference of manifest.official_runs) {
+      await expect(
+        page.locator(`a[href="/deep-20-bench/runs/${reference.execution_id}/"]`).first(),
+      ).toBeAttached();
+    }
+    for (const routePath of staticPaths.filter((value) => value.startsWith("results/"))) {
+      await expect(
+        page.locator(`a[href="/deep-20-bench/${routePath}"]`).first(),
+      ).toBeAttached();
+    }
 
-  releaseEntry();
-  await navigation;
-  await waitForPublication(page);
-  await expect(staticHome).toHaveCount(0);
-  await expect(page.locator("html")).not.toHaveClass(/app-loading/);
-});
+    await context.close();
+  },
+);
+
+test(
+  "official run summary is complete without JavaScript",
+  { tag: ["@static-fallback", "@desktop"] },
+  async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto(new URL(`runs/${representativeExecutionId}/`, staticBase).href);
+
+    const overview = page.locator(".run-overview-pane");
+    await expect(overview).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(
+      representativeRun.run.model_name.replace(/ \([^)]+\)$/, ""),
+    );
+    await expect(overview).toContainText("Question score");
+    await expect(overview).toContainText("95% CI");
+    await expect(overview).toContainText("Success");
+    await expect(overview).toContainText("Contract compliance");
+    await expect(overview).toContainText("Guesser cost");
+    await expect(overview).toContainText("Wall-clock runtime");
+    await expect(overview).toContainText(
+      representativeRun.run.contract.status === "clean"
+        ? "Output contract clean."
+        : "Output contract breached.",
+    );
+    for (const subject of representativeRun.subjects) {
+      await expect(
+        page.locator(
+          `a[href="/deep-20-bench/runs/${representativeExecutionId}/subjects/${subject.target_id}/"]`,
+        ).first(),
+      ).toBeAttached();
+    }
+
+    await context.close();
+  },
+);
+
+test(
+  "prerendered run hydrates once without an initial data refetch",
+  { tag: ["@static-fallback", "@desktop", "@smoke"] },
+  async ({ page }) => {
+    const hydrationMessages: string[] = [];
+    const dataRequests: string[] = [];
+    page.on("console", (message) => {
+      if (/hydration|mismatch/i.test(message.text())) hydrationMessages.push(message.text());
+    });
+    page.on("request", (request) => {
+      if (request.url().includes("/deep-20-bench/data/")) {
+        dataRequests.push(request.url());
+      }
+    });
+
+    await page.goto(new URL(`runs/${representativeExecutionId}/`, staticBase).href);
+    await page.locator("#route-content").waitFor();
+    await page.locator(".run-overview-pane").waitFor();
+
+    await expect(page.locator("#route-content")).toHaveCount(1);
+    await expect(page.locator(".static-home, .static-route-fallback")).toHaveCount(0);
+    await expect(page.locator("html")).toHaveAttribute("data-prerendered", "true");
+    expect(hydrationMessages).toEqual([]);
+    expect(dataRequests).toEqual([]);
+  },
+);

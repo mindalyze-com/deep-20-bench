@@ -61,8 +61,8 @@ const props = withDefaults(
 
 const figureElement = ref<HTMLElement | null>(null);
 const chartWidth = ref(0);
-const viewportWidth = ref(window.innerWidth);
-const viewportHeight = ref(window.innerHeight);
+const viewportWidth = ref(typeof window === "undefined" ? 1280 : window.innerWidth);
+const viewportHeight = ref(typeof window === "undefined" ? 720 : window.innerHeight);
 let figureResizeObserver: ResizeObserver | null = null;
 
 const updateViewport = (): void => {

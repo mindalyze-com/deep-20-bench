@@ -35,8 +35,10 @@ export interface ChartValueDomain {
 }
 
 const readTypographyToken = (name: string, fallback: string): string =>
-  window.getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
-  fallback;
+  typeof window === "undefined" || typeof document === "undefined"
+    ? fallback
+    : window.getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+      fallback;
 
 const readTypographyWeight = (name: string, fallback: number): number => {
   const value = Number.parseInt(readTypographyToken(name, String(fallback)), 10);
@@ -101,6 +103,7 @@ export const chartValueDomain = (
 };
 
 export const chartAnimationEnabled = (): boolean =>
+  typeof window !== "undefined" &&
   !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
   !window.matchMedia("(max-width: 760px)").matches;
 
@@ -110,6 +113,9 @@ export const chartTextSize = (
   desktopSize: number,
 ): number => {
   if (width < 620) return mobileSize;
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return desktopSize;
+  }
   const rootSize = Number.parseFloat(
     window.getComputedStyle(document.documentElement).fontSize,
   );

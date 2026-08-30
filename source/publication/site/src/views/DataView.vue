@@ -3,14 +3,15 @@ import { ref } from "vue";
 
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
-import { getManifest, publicDownloadUrl } from "@/lib/api";
-import { date } from "@/lib/format";
+import PublicationTime from "@/components/PublicationTime.vue";
+import { getManifest, peekManifest, publicDownloadUrl } from "@/lib/api";
 import { usePageRouteContext } from "@/lib/route-context";
 import { citationResource, dataLicenseResource } from "@/lib/site-resources";
 import type { ManifestDocument } from "@/lib/types";
 import { usePublicationLoad } from "@/lib/use-publication-load";
 
-const manifest = ref<ManifestDocument | null>(null);
+const initialManifest = peekManifest();
+const manifest = ref<ManifestDocument | null>(initialManifest);
 usePageRouteContext({
   title: "Data",
   description:
@@ -18,7 +19,7 @@ usePageRouteContext({
 });
 const { loading, error } = usePublicationLoad(async () => {
   manifest.value = await getManifest();
-}, "Publication data is unavailable.");
+}, "Publication data is unavailable.", initialManifest !== null);
 </script>
 
 <template>
@@ -168,7 +169,14 @@ const { loading, error } = usePublicationLoad(async () => {
             </div>
             <div>
               <dt>Latest completion</dt>
-              <dd>{{ date(manifest.provenance.latest_completed_at) }}</dd>
+              <dd>
+                <PublicationTime
+                  v-if="manifest.provenance.latest_completed_at !== null"
+                  :value="manifest.provenance.latest_completed_at"
+                  date-only
+                />
+                <template v-else>-</template>
+              </dd>
             </div>
             <div>
               <dt>Active cohort</dt>

@@ -10,7 +10,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run check && vite build",
+    "preview": "vite preview",
+    "build": "npm run check && vite build && vite build --ssr src/entry-server.ts && node scripts/prerender.mjs",
     "check": "vue-tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && vue-tsc --noEmit -p tsconfig.vitest.json",
     "test:unit": "vitest run --config vitest.config.ts",
     "test:unit:watch": "vitest --config vitest.config.ts",
@@ -27,6 +28,7 @@
   "dependencies": {
     "@fontsource-variable/inter-tight": "^5.3.0",
     "@fontsource-variable/newsreader": "^5.3.0",
+    "@vue/server-renderer": "3.5.41",
     "echarts": "6.1.0",
     "vue": "3.5.41",
     "vue-router": "5.2.0"

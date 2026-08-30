@@ -1,0 +1,204 @@
+payload:
+  status: infrastructure_failed
+  identity:
+    execution_id: BX-20260824-official-M0018-020
+    model_id: M-0018
+    target_id: T-0003
+    trial_id: trial-004
+    trial_number: 4
+    episode_run_id: BR-f1c164f981dfd84fcb00bfe65b656eb655af3381
+  attempt_number: 1
+  failure:
+    code: invalid_structured_output
+    type: OracleProtocolError
+    message: provider output did not match the oracle result schema (attempted_queries:too_long)
+    call_id: OC-01a036a5301f7529bd4d8182f81dc56f
+    diagnostics:
+      causes:
+      - exception_type: OracleProtocolError
+        module: deep20_oracle.errors
+        message: provider output did not match the oracle result schema (attempted_queries:too_long)
+      - exception_type: ValidationError
+        module: pydantic_core._pydantic_core
+        message: validation failed
+      frames:
+      - exception_index: 0
+        module: deep20_game.engine
+        function: play
+        line: 770
+      - exception_index: 0
+        module: deep20_oracle.service
+        function: ask
+        line: 179
+      - exception_index: 0
+        module: deep20_oracle.service
+        function: _complete_structured_result
+        line: 622
+      - exception_index: 1
+        module: deep20_oracle.service
+        function: _complete_structured_result
+        line: 611
+      - exception_index: 1
+        module: deep20_oracle.service
+        function: parse
+        line: 564
+      - exception_index: 1
+        module: pydantic.main
+        function: model_validate_json
+        line: 766
+      provider:
+        http_status_code: 200
+        error_type: null
+        error_code: null
+        message: null
+        requested_model: openai/gpt-5.6-luna
+        resolved_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_provider: OpenAI
+        fallback_occurred: false
+        response_id: gen-1787623239-hN64VQ4doc4ixVN3TIyi
+        response_cache_status: null
+        finish_reason: stop
+        request_attempts: 2
+        retry_after_ms: null
+        recovery:
+          request_attempts: 2
+          retried_calls: 1
+          recovered_calls: 0
+          exhausted_retries: 1
+          reasons:
+          - reason: invalid_oracle_output
+            count: 1
+          retry_usage:
+            input_tokens: 100370
+            cached_input_tokens: 85636
+            cache_write_tokens: 0
+            output_tokens: 1771
+            reasoning_tokens: 1215
+            search_count: 11
+            cost_usd: '0.05751991999999999'
+            cache_discount_usd: null
+          retry_latency_ms: 48889
+        latency_ms: 98109
+        usage:
+          input_tokens: 196154
+          cached_input_tokens: 167377
+          cache_write_tokens: 0
+          output_tokens: 3647
+          reasoning_tokens: 2569
+          search_count: 22
+          cost_usd: '0.11491518999999999'
+          cache_discount_usd: null
+      metadata:
+        component: oracle
+        validation_errors:
+        - type: too_long
+          loc:
+          - attempted_queries
+          msg: Tuple should have at most 8 items after validation, not 9
+          ctx:
+            field_type: Tuple
+            max_length: 8
+            actual_length: 9
+          url: https://errors.pydantic.dev/2.12/v/too_long
+        oracle_role_traces:
+        - role: oracle
+          provider:
+            completed_at: '2026-08-25T02:01:28.672731+00:00'
+            latency_ms: 98109
+            http_status_code: 200
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              retried_calls: 1
+              recovered_calls: 0
+              exhausted_retries: 1
+              reasons:
+              - truncated: true
+              retry_usage:
+                input_tokens:
+                  truncated: true
+                cached_input_tokens:
+                  truncated: true
+                cache_write_tokens:
+                  truncated: true
+                output_tokens:
+                  truncated: true
+                reasoning_tokens:
+                  truncated: true
+                search_count:
+                  truncated: true
+                cost_usd:
+                  truncated: true
+                cache_discount_usd:
+                  truncated: true
+              retry_latency_ms: 48889
+            resolved_model: openai/gpt-5.6-luna
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            discarded_error_outputs:
+            - attempt_number:
+                truncated: true
+              finish_reason:
+                truncated: true
+              output:
+                truncated: true
+  partial_metrics:
+    counted_questions: 44
+    guesser_cost_usd: '0.997360'
+    oracle_cost_usd: '0.7477868899999999879'
+    reviewer_cost_usd: '0.0427973'
+    judge_cost_usd: '0.066630'
+    validator_cost_usd: '0.0004862'
+    cost_usd: '1.7456330899999999879'
+    tokens: 800779
+    cached_input_tokens: 439762
+    cache_write_tokens: 0
+    estimated_cache_savings_usd: 0E-8
+    latency_ms: 1323381
+    duration_ms: 1324500
+    recovery:
+      request_attempts: 131
+      retried_calls: 1
+      recovered_calls: 0
+      exhausted_retries: 1
+      reasons:
+      - reason: invalid_oracle_output
+        count: 1
+      retry_usage:
+        input_tokens: 100370
+        cached_input_tokens: 85636
+        cache_write_tokens: 0
+        output_tokens: 1771
+        reasoning_tokens: 1215
+        search_count: 11
+        cost_usd: '0.05751991999999999'
+        cache_discount_usd: null
+      retry_latency_ms: 48889
+  error_output_preview:
+    component: oracle
+    attempt_number: 2
+    finish_reason: stop
+    text: '{"answer":"UNKNOWN","evidence":[],"research_outcome":"open_world_not_provable","attempted_queries":["Stephen
+      King appeared television show movie about teaching teacher film television appearance","Stephen
+      King filmography acting role teacher school t'
+    original_characters: 801
+    trailing_whitespace_characters: 0
+    truncated: true
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0018/BX-20260824-official-M0018-020/subjects/T-0003/trials/trial-004/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs:
+      relative_path: runs/M-0018/BX-20260824-official-M0018-020/subjects/T-0003/trials/trial-004/error-outputs.jsonl
+      record_count: 2
+      integrity_hash: 14d7f9592149e913411523579b951cf0275e53384f4b56aa316d281575259ed7
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: ade38208ac3da0240d8ae6e11b424f2ad52cd809bca62eb48ff293109f6bd514

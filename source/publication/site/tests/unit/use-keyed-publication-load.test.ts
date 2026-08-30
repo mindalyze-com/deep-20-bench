@@ -1,5 +1,5 @@
 import { effectScope, nextTick, ref } from "vue";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { useKeyedPublicationLoad } from "@/lib/use-keyed-publication-load";
 
@@ -17,6 +17,38 @@ const deferred = <Value>(): Deferred<Value> => {
 };
 
 describe("useKeyedPublicationLoad", () => {
+  it("waits until every publication key part is available", async () => {
+    const executionId = ref("");
+    const targetId = ref("");
+    const load = vi.fn(async (run: string, target: string) => `${run}/${target}`);
+    const scope = effectScope();
+    const state = scope.run(() =>
+      useKeyedPublicationLoad({
+        parameters: (): [string, string] => [
+          executionId.value,
+          targetId.value,
+        ],
+        load,
+        fallbackError: "load failed",
+      }),
+    );
+    if (state === undefined) throw new Error("load state was not created");
+
+    await nextTick();
+    expect(load).not.toHaveBeenCalled();
+
+    executionId.value = "run-1";
+    await nextTick();
+    expect(load).not.toHaveBeenCalled();
+
+    targetId.value = "subject-1";
+    await nextTick();
+    await nextTick();
+    expect(load).toHaveBeenCalledOnce();
+    expect(state.document.value).toBe("run-1/subject-1");
+    scope.stop();
+  });
+
   it("ignores a stale response after the requested key changes", async () => {
     const first = deferred<string>();
     const second = deferred<string>();

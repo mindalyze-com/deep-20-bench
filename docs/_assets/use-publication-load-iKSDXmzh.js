@@ -1,0 +1,1 @@
+import{I as e,L as t}from"./_plugin-vue_export-helper-DBF8SxJp.js";var n=`Publication data could not be loaded.`,r=(r,i=n,a=!1)=>{let o=t(!a),s=t(null),c=async()=>{o.value=!0,s.value=null;try{await r()}catch(e){s.value=e instanceof Error?e.message:i}finally{o.value=!1}};return a||c(),{loading:e(o),error:e(s),reload:c}};export{r as t};

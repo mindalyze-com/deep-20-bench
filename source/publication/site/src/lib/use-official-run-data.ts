@@ -1,7 +1,12 @@
 import { ref, type Ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { getLeaderboard, getOfficialRuns } from "./api";
+import {
+  getLeaderboard,
+  getOfficialRuns,
+  peekLeaderboard,
+  peekOfficialRuns,
+} from "./api";
 import { runRoute } from "./route-location";
 import type { LeaderboardRow, PublicRunSummary, RunDocument } from "./types";
 import { usePublicationLoad } from "./use-publication-load";
@@ -17,8 +22,10 @@ export interface OfficialRunData {
 
 export const useOfficialRunData = (): OfficialRunData => {
   const router = useRouter();
-  const documents = ref<RunDocument[]>([]);
-  const leaderboard = ref<LeaderboardRow[]>([]);
+  const initialDocuments = peekOfficialRuns();
+  const initialLeaderboard = peekLeaderboard();
+  const documents = ref<RunDocument[]>(initialDocuments ?? []);
+  const leaderboard = ref<LeaderboardRow[]>(initialLeaderboard?.leaderboard ?? []);
   const { loading, error } = usePublicationLoad(async () => {
     const [runDocuments, leaderboardDocument] = await Promise.all([
       getOfficialRuns(),
@@ -26,7 +33,7 @@ export const useOfficialRunData = (): OfficialRunData => {
     ]);
     documents.value = runDocuments;
     leaderboard.value = leaderboardDocument.leaderboard;
-  });
+  }, undefined, initialDocuments !== null && initialLeaderboard !== null);
 
   const providerFor = (modelId: string): string =>
     leaderboard.value.find((row) => row.model.model_id === modelId)?.model.provider ??

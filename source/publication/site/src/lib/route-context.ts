@@ -28,7 +28,7 @@ export interface PageRouteContext {
 }
 
 const defaultDescription =
-  "Deep20Bench is a small, public Twenty Questions prototype for comparing how AI models ask questions, track answers, and identify a hidden subject.";
+  "The Deep20 benchmark is a small, public Twenty Questions prototype for comparing how AI models ask questions, track answers, and identify a hidden subject.";
 
 const state = reactive<RouteContext>({
   title: "Deep20Bench",

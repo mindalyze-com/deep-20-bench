@@ -1,0 +1,1 @@
+import{T as e,_ as t,d as n,u as r}from"./_plugin-vue_export-helper-DBF8SxJp.js";var i={key:0,class:`workspace-progress`,"aria-hidden":`true`},a=t({__name:`WorkspaceProgress`,props:{active:{type:Boolean}},setup(t){return(a,o)=>t.active?(e(),n(`div`,i)):r(``,!0)}});export{a as t};

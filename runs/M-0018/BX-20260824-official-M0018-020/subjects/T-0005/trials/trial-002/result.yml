@@ -1,0 +1,141 @@
+payload:
+  status: infrastructure_failed
+  identity:
+    execution_id: BX-20260824-official-M0018-020
+    model_id: M-0018
+    target_id: T-0005
+    trial_id: trial-002
+    trial_number: 2
+    episode_run_id: BR-dbd8ab0117d4230ab3d9ead87d81435aa18b5af5
+  attempt_number: 1
+  failure:
+    code: provider_payment_required
+    type: GameProviderError
+    message: OpenRouter request failed
+    call_id: GC-01a03759d4d573d9845cf65274fdde93
+    diagnostics:
+      causes:
+      - exception_type: GameProviderError
+        module: deep20_game.errors
+        message: OpenRouter request failed
+      - exception_type: PaymentRequiredResponseError
+        module: openrouter.errors.paymentrequiredresponse_error
+        message: This request would exceed your available credits given your current
+          in-flight requests. Retry after in-flight requests settle, or add credits.
+      frames:
+      - exception_index: 0
+        module: deep20_game.engine
+        function: play
+        line: 548
+      - exception_index: 0
+        module: deep20_game.guesser
+        function: next_action
+        line: 92
+      - exception_index: 0
+        module: deep20_game.guesser
+        function: _complete_action
+        line: 166
+      - exception_index: 0
+        module: deep20_game.openrouter_provider
+        function: complete
+        line: 126
+      - exception_index: 0
+        module: deep20_game.openrouter_provider
+        function: complete
+        line: 266
+      - exception_index: 1
+        module: deep20_game.openrouter_provider
+        function: complete
+        line: 150
+      - exception_index: 1
+        module: openrouter.chat
+        function: send
+        line: 882
+      provider:
+        http_status_code: 402
+        error_type: null
+        error_code: '402'
+        message: This request would exceed your available credits given your current
+          in-flight requests. Retry after in-flight requests settle, or add credits.
+        requested_model: anthropic/claude-opus-4.6
+        resolved_model: null
+        requested_provider: anthropic
+        resolved_provider: null
+        fallback_occurred: false
+        response_id: null
+        response_cache_status: null
+        finish_reason: null
+        request_attempts: 1
+        retry_after_ms: 120000
+        recovery:
+          request_attempts: 1
+          retried_calls: 0
+          recovered_calls: 0
+          exhausted_retries: 0
+          reasons: []
+          retry_usage:
+            input_tokens: 0
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 0
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: null
+            cache_discount_usd: null
+          retry_latency_ms: 0
+        latency_ms: 103
+        usage:
+          input_tokens: 0
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 0
+          reasoning_tokens: 0
+          search_count: 0
+          cost_usd: null
+          cache_discount_usd: null
+      metadata:
+        exception_type: PaymentRequiredResponseError
+  partial_metrics:
+    counted_questions: 0
+    guesser_cost_usd: '0'
+    oracle_cost_usd: '0'
+    reviewer_cost_usd: '0'
+    judge_cost_usd: '0'
+    validator_cost_usd: '0'
+    cost_usd: '0'
+    tokens: 0
+    cached_input_tokens: 0
+    cache_write_tokens: 0
+    estimated_cache_savings_usd: 0E-8
+    latency_ms: 103
+    duration_ms: 106
+    recovery:
+      request_attempts: 1
+      retried_calls: 0
+      recovered_calls: 0
+      exhausted_retries: 0
+      reasons: []
+      retry_usage:
+        input_tokens: 0
+        cached_input_tokens: 0
+        cache_write_tokens: 0
+        output_tokens: 0
+        reasoning_tokens: 0
+        search_count: 0
+        cost_usd: null
+        cache_discount_usd: null
+      retry_latency_ms: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0018/BX-20260824-official-M0018-020/subjects/T-0005/trials/trial-002/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 3b2b2bd235ebb3312dc1fdfd2a2ec4176442fc1c6f5e162cc63b28c945a202aa

@@ -33,13 +33,16 @@ export interface ChartTheme {
 }
 
 const customProperty = (
-  styles: CSSStyleDeclaration,
+  styles: CSSStyleDeclaration | null,
   name: string,
   fallback: string,
-): string => styles.getPropertyValue(name).trim() || fallback;
+): string => styles?.getPropertyValue(name).trim() || fallback;
 
 export const readChartTheme = (): ChartTheme => {
-  const styles = window.getComputedStyle(document.documentElement);
+  const styles =
+    typeof window === "undefined" || typeof document === "undefined"
+      ? null
+      : window.getComputedStyle(document.documentElement);
   return {
     ink: customProperty(styles, "--text-primary", "#0c111b"),
     inkSoft: customProperty(styles, "--ink-soft", "#272b33"),

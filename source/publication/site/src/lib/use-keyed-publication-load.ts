@@ -11,6 +11,7 @@ interface KeyedPublicationLoadOptions<
   onBeforeLoad?: () => void;
   onLoaded?: (document: Document) => void;
   onSettled?: () => void;
+  initial?: () => Document | null;
 }
 
 export interface KeyedPublicationLoadState<Document> {
@@ -26,8 +27,9 @@ export const useKeyedPublicationLoad = <
 >(
   options: KeyedPublicationLoadOptions<Parameters, Document>,
 ): KeyedPublicationLoadState<Document> => {
-  const document = shallowRef<Document | null>(null);
-  const loading = shallowRef(true);
+  const initial = options.initial?.() ?? null;
+  const document = shallowRef<Document | null>(initial);
+  const loading = shallowRef(initial === null);
   const error = shallowRef<string | null>(null);
 
   const isCurrent = (requested: Parameters): boolean => {
@@ -40,6 +42,7 @@ export const useKeyedPublicationLoad = <
 
   const reload = async (): Promise<void> => {
     const requested = [...options.parameters()] as unknown as Parameters;
+    if (requested.some((parameter) => parameter.length === 0)) return;
     loading.value = true;
     error.value = null;
     if (options.clearBeforeLoad === true) document.value = null;
@@ -62,6 +65,6 @@ export const useKeyedPublicationLoad = <
     }
   };
 
-  watch(options.parameters, () => void reload(), { immediate: true });
+  watch(options.parameters, () => void reload(), { immediate: initial === null });
   return { document, loading, error, reload };
 };

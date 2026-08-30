@@ -5,6 +5,9 @@ import { useRoute } from "vue-router";
 import ResultsNav from "@/components/ResultsNav.vue";
 
 const route = useRoute();
+const isResultsWorkspaceRoute = computed(() =>
+  route.matched.some((record) => record.path === "/results/"),
+);
 const resetResultsScroll = async (): Promise<void> => {
   await nextTick();
   window.scrollTo({ top: 0, left: 0 });
@@ -86,7 +89,7 @@ const copy = computed(() => {
     </header>
 
     <div class="results-workspace-body">
-      <RouterView v-slot="{ Component }">
+      <RouterView v-if="isResultsWorkspaceRoute" v-slot="{ Component }">
         <KeepAlive>
           <component :is="Component" />
         </KeepAlive>

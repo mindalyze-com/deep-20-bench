@@ -256,7 +256,7 @@ confidence interval width; it does not define a combined rank.
 
 ## Public website
 
-The site is a focused static Vue publication with route entry shells:
+The site is a focused Vue publication with build-time static rendering and hydration:
 
 - Homepage with question-score winner, leaderboard, methodology summary, and limitations.
 - A dedicated Story & prior work page that records the benchmark's human origin, credits its
@@ -283,6 +283,35 @@ The site is a focused static Vue publication with route entry shells:
 Vue renders tables and explanations from the generated static JSON. Apache ECharts adds
 responsive SVG charts and tooltips. Every chart has an ARIA description and equivalent
 structured text or table data; meaning never depends on color or pointer hover alone.
+
+The build has separate browser and static-rendering entry points. Static rendering uses a
+memory-history router. The browser uses web history and hydrates the existing markup. A
+versioned embedded page-state document contains only the existing public manifest,
+leaderboard, run, and related result documents needed for the initial route. Browser-only
+charts and interactions start after hydration.
+
+The homepage, eight editorial and result pages, and each selected official run summary are
+rendered as complete HTML. Run pages include model identity, provider, reasoning effort, rank,
+question score and confidence interval, success and output-contract results, cost and timing,
+and links to every subject. All result navigation and run links are ordinary `a` elements in
+the generated HTML. Vue intercepts internal navigation only after hydration.
+
+The sitemap contains the homepage, every editorial URL, and every selected official run URL.
+The route manifest determines the count, so a cohort change cannot leave the sitemap contract or
+its tests tied to an old model count. Every listed page uses unique metadata and a
+self-referencing canonical URL. Successful publication pages omit robots meta tags, so search
+engines use their default `index, follow` behavior. Subject and episode evidence and the
+`/story/` alias stay outside the sitemap but are not blocked from indexing. Only the generated
+404 page emits `noindex`.
+
+GitHub Pages hosts this repository as the `/deep-20-bench/` project path. Search engines require
+`robots.txt` at the host root, `https://mindalyze-com.github.io/robots.txt`; a file generated
+below the project path would not control crawling or advertise the sitemap. This repository
+therefore generates no `robots.txt`. Crawling remains allowed by default. After deployment,
+submit `https://mindalyze-com.github.io/deep-20-bench/sitemap.xml` through Google Search Console,
+unless the separately managed host-root `robots.txt` already advertises that absolute URL. See
+Google's [robots.txt location rules](https://developers.google.com/crawling/docs/robots-txt/create-robots-txt)
+and [sitemap submission guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap).
 
 Result views use a fixed accent mapping: score is blue, Stability is violet, cost is coral,
 time is lime, and Efficiency is teal. The active tab, section labels, summary accent, and
@@ -349,11 +378,10 @@ Public JSON is written to a temporary Vite public directory during the build. It
 under `source/publication/site/`. The development server reads committed public data from
 `docs/`.
 
-The Vite build uses the configured GitHub Pages base path. The publisher then writes static
-entry shells for every run, subject, episode, and result route so direct navigation and refresh
-work under GitHub Pages. Local verification uses an HTTP origin because the Vue application
-loads route data with `fetch`; opening `docs/index.html` directly explains how to start the
-preview server.
+The Vite build uses the configured GitHub Pages base path. The publisher writes full prerendered
+HTML for indexable routes and entry shells for subject and episode routes, so direct navigation
+and refresh work under GitHub Pages. Local verification uses an HTTP origin because clean
+history routes and later route-data requests do not support direct `file://` navigation.
 
 GitHub Pages is configured to publish from `main` and `/docs`. Pushing the reviewed generated
 directory is the publication approval. GitHub does not run the benchmark or regenerate the
@@ -403,7 +431,10 @@ Implemented Python tests cover:
 The static build performs strict Vue and TypeScript checks. Browser validation covers:
 
 - Base-path-safe links for the `/deep-20-bench/` project site.
-- Generated routes, data downloads, and internal navigation.
+- Complete no-JavaScript content for editorial pages and official run summaries.
+- Generated routes, static links, hydration, data downloads, and internal navigation.
+- Unique index metadata, self-referencing canonicals, sitemap membership, and the absence of
+  robots blocks on successful routes.
 - Desktop and mobile layouts.
 - Data-backed tables and responsive SVG charts.
 - Keyboard navigation and accessible chart descriptions.

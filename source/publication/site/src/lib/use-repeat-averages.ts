@@ -1,6 +1,6 @@
 import { ref, type Ref } from "vue";
 
-import { getRepeatAverages } from "@/lib/api";
+import { getRepeatAverages, peekRepeatAverages } from "@/lib/api";
 import type { PublicRepeatAverage } from "@/lib/types";
 
 interface RepeatAverageState {
@@ -11,7 +11,8 @@ interface RepeatAverageState {
 }
 
 export const useRepeatAverages = (): RepeatAverageState => {
-  const averages = ref<PublicRepeatAverage[] | null>(null);
+  const initial = peekRepeatAverages();
+  const averages = ref<PublicRepeatAverage[] | null>(initial?.averages ?? null);
   const loading = ref(false);
   const error = ref<string | null>(null);
 

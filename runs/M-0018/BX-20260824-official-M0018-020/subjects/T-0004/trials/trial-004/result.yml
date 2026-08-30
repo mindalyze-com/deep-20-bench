@@ -1,0 +1,185 @@
+payload:
+  status: infrastructure_failed
+  identity:
+    execution_id: BX-20260824-official-M0018-020
+    model_id: M-0018
+    target_id: T-0004
+    trial_id: trial-004
+    trial_number: 4
+    episode_run_id: BR-a4414c2e3b30e491951409b421dd4ceb5a26d68f
+  attempt_number: 1
+  failure:
+    code: provider_payment_required
+    type: OracleProviderError
+    message: OpenRouter request failed
+    call_id: OC-01a03759ce3072bcb999030692539fff
+    diagnostics:
+      causes:
+      - exception_type: OracleProviderError
+        module: deep20_oracle.errors
+        message: OpenRouter request failed
+      - exception_type: PaymentRequiredResponseError
+        module: openrouter.errors.paymentrequiredresponse_error
+        message: This request would exceed your available credits given your current
+          in-flight requests. Retry after in-flight requests settle, or add credits.
+      frames:
+      - exception_index: 0
+        module: deep20_game.engine
+        function: play
+        line: 770
+      - exception_index: 0
+        module: deep20_oracle.service
+        function: ask
+        line: 179
+      - exception_index: 0
+        module: deep20_oracle.service
+        function: _complete_structured_result
+        line: 568
+      - exception_index: 0
+        module: deep20_oracle.openrouter_provider
+        function: complete
+        line: 270
+      - exception_index: 1
+        module: deep20_oracle.openrouter_provider
+        function: complete
+        line: 159
+      - exception_index: 1
+        module: openrouter.chat
+        function: send
+        line: 882
+      provider:
+        http_status_code: 402
+        error_type: null
+        error_code: '402'
+        message: This request would exceed your available credits given your current
+          in-flight requests. Retry after in-flight requests settle, or add credits.
+        requested_model: openai/gpt-5.6-luna
+        resolved_model: null
+        requested_provider: openai
+        resolved_provider: null
+        fallback_occurred: false
+        response_id: null
+        response_cache_status: null
+        finish_reason: null
+        request_attempts: 1
+        retry_after_ms: null
+        recovery:
+          request_attempts: 1
+          retried_calls: 0
+          recovered_calls: 0
+          exhausted_retries: 0
+          reasons: []
+          retry_usage:
+            input_tokens: 0
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 0
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: null
+            cache_discount_usd: null
+          retry_latency_ms: 0
+        latency_ms: 744
+        usage:
+          input_tokens: 0
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 0
+          reasoning_tokens: 0
+          search_count: 0
+          cost_usd: null
+          cache_discount_usd: null
+      metadata:
+        exception_type: PaymentRequiredResponseError
+        oracle_role_traces:
+        - role: oracle
+          provider:
+            completed_at: '2026-08-25T05:17:08.250277+00:00'
+            latency_ms: 744
+            http_status_code: 402
+            finish_reason: null
+            retry_after_ms: null
+            recovery:
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens:
+                  truncated: true
+                cached_input_tokens:
+                  truncated: true
+                cache_write_tokens:
+                  truncated: true
+                output_tokens:
+                  truncated: true
+                reasoning_tokens:
+                  truncated: true
+                search_count:
+                  truncated: true
+                cost_usd:
+                  truncated: true
+                cache_discount_usd:
+                  truncated: true
+              retry_latency_ms: 0
+            resolved_model: null
+            resolved_provider: null
+            fallback_occurred: false
+            discarded_error_outputs: []
+  partial_metrics:
+    counted_questions: 46
+    guesser_cost_usd: '4.152290'
+    oracle_cost_usd: '0.9087118500000000120'
+    reviewer_cost_usd: '0.0288880'
+    judge_cost_usd: '0.014435'
+    validator_cost_usd: '0.0012060'
+    cost_usd: '5.0622078500000000120'
+    tokens: 1151888
+    cached_input_tokens: 650880
+    cache_write_tokens: 0
+    estimated_cache_savings_usd: 0E-8
+    latency_ms: 3912764
+    duration_ms: 3913841
+    recovery:
+      request_attempts: 127
+      retried_calls: 1
+      recovered_calls: 1
+      exhausted_retries: 0
+      reasons:
+      - reason: invalid_oracle_output
+        count: 1
+      retry_usage:
+        input_tokens: 86157
+        cached_input_tokens: 71481
+        cache_write_tokens: 0
+        output_tokens: 1924
+        reasoning_tokens: 1256
+        search_count: 11
+        cost_usd: '0.062405920000000004'
+        cache_discount_usd: null
+      retry_latency_ms: 50983
+  error_output_preview:
+    component: guesser
+    attempt_number: 1
+    finish_reason: stop
+    text: '{"result":{"action":"ASK","question":"","name":null,"description":null}}'
+    original_characters: 72
+    trailing_whitespace_characters: 0
+    truncated: false
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0018/BX-20260824-official-M0018-020/subjects/T-0004/trials/trial-004/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs:
+      relative_path: runs/M-0018/BX-20260824-official-M0018-020/subjects/T-0004/trials/trial-004/error-outputs.jsonl
+      record_count: 3
+      integrity_hash: fd22eb106b9fa268e27c849639cab8d52370939fb7f149e3063e6f751d9cfd3e
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 3a6cd3516012ea379645eeb4e672503eb43a74e4154803ecdd01385ccdc2716b

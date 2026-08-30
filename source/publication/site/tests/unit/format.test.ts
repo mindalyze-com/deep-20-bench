@@ -5,6 +5,7 @@ import {
   formatCount,
   moneyEpisode,
   reasoningEffortLabel,
+  staticDateTimeLabel,
 } from "../../src/lib/format";
 import { splitModelName } from "../../src/lib/model-name";
 
@@ -29,5 +30,11 @@ describe("publication formatting", () => {
       displayName: "Model without suffix",
       reasoningEffort: null,
     });
+  });
+
+  test("renders publication timestamps consistently across server and browser time zones", () => {
+    expect(staticDateTimeLabel("2026-08-05T18:13:13.469638Z")).toBe(
+      "Aug 5, 2026, 6:13:13 PM",
+    );
   });
 });

@@ -11,7 +11,12 @@ import ModelRunLink from "@/components/ModelRunLink.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import ReasoningEffort from "@/components/ReasoningEffort.vue";
 import ScoreDotPlot from "@/components/ScoreDotPlot.vue";
-import { getLeaderboard, getManifest } from "@/lib/api";
+import {
+  getLeaderboard,
+  getManifest,
+  peekLeaderboard,
+  peekManifest,
+} from "@/lib/api";
 import {
   confidenceIntervalLabel,
   contractPercent,
@@ -36,8 +41,8 @@ import type {
   ManifestDocument,
 } from "@/lib/types";
 
-const manifest = ref<ManifestDocument | null>(null);
-const leaderboard = ref<LeaderboardDocument | null>(null);
+const manifest = ref<ManifestDocument | null>(peekManifest());
+const leaderboard = ref<LeaderboardDocument | null>(peekLeaderboard());
 const error = ref<string | null>(null);
 const router = useRouter();
 const {
@@ -52,7 +57,7 @@ const applyRouteContext = (): void => {
     title: "Deep20Bench",
     description:
       manifest.value?.site.description ??
-      "Deep20Bench is a small, public Twenty Questions prototype for comparing how AI models ask questions, track answers, and identify a hidden subject.",
+      "The Deep20 benchmark is a small, public Twenty Questions prototype for comparing how AI models ask questions, track answers, and identify a hidden subject.",
     level: null,
     position: null,
     crumbs: [],
@@ -75,7 +80,7 @@ const load = async (): Promise<void> => {
   }
 };
 
-void load();
+if (manifest.value === null || leaderboard.value === null) void load();
 
 const evaluated = computed(() =>
   (leaderboard.value?.leaderboard ?? []).filter((row) => row.status === "evaluated"),

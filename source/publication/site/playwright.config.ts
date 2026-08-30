@@ -67,10 +67,19 @@ export default defineConfig({
       },
     },
   ],
-  webServer: {
-    command: "npm run dev -- --host 127.0.0.1 --port 4173",
-    url: baseURL,
-    reuseExistingServer: true,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: "npm run dev -- --host 127.0.0.1 --port 4173",
+      url: baseURL,
+      reuseExistingServer: true,
+      timeout: 120_000,
+    },
+    {
+      command:
+        "DEEP20_OUTPUT_DIR=../../../docs npm run preview -- --host 127.0.0.1 --port 4174",
+      url: "http://127.0.0.1:4174/deep-20-bench/",
+      reuseExistingServer: true,
+      timeout: 120_000,
+    },
+  ],
 });

@@ -1299,10 +1299,6 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
         for suffix in ("*.py", "*.ts", "*.vue")
         for path in sorted(source_root.rglob(suffix))
     )
-    static_home_source = (
-        REPOSITORY / "source" / "publication" / "site" / "static-home.ts"
-    ).read_text(encoding="utf-8")
-    source = f"{source}\n{static_home_source}"
 
     assert "deep20_game" not in source
     assert "deep20_oracle" not in source
@@ -1330,7 +1326,6 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
         for suffix in ("*.ts", "*.vue")
         for path in sorted((REPOSITORY / "source" / "publication" / "site" / "src").rglob(suffix))
     )
-    report_source = f"{report_source}\n{static_home_source}"
     assert "guesser_conversation" not in report_source
     assert "subject_snapshot" not in report_source
     assert "results-reliability" in report_source
@@ -1349,9 +1344,12 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
     ).read_text(encoding="utf-8")
     assert "Awaiting official run" not in report_source
     assert "Earlier official runs" not in report_source
-    assert "manifest.json" in static_home_source
-    assert "leaderboard.json" in static_home_source
-    assert "deep20bench-v9.json" in static_home_source
+    static_render_source = (
+        REPOSITORY / "source" / "publication" / "site" / "scripts" / "prerender.mjs"
+    ).read_text(encoding="utf-8")
+    assert "manifest.json" in static_render_source
+    assert "leaderboard.json" in static_render_source
+    assert "deep20bench-v9.json" in static_render_source
     for private_source in (
         "guesser_conversation",
         "subject_snapshot",
@@ -1361,7 +1359,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
         "error-outputs.jsonl",
         "private/",
     ):
-        assert private_source not in static_home_source
+        assert private_source not in static_render_source
     route_source = "\n".join(
         path.read_text(encoding="utf-8")
         for path in (
@@ -1426,9 +1424,9 @@ def test_published_contract_violations_include_only_sanitized_guesser_text() -> 
     )
     retained = tuple(output for turn in violations for output in turn.rejected_outputs)
 
-    assert len(violations) == 90
-    assert len(retained) == 41
-    assert sum(not turn.rejected_outputs for turn in violations) == 49
+    assert len(violations) == 137
+    assert len(retained) == 85
+    assert sum(not turn.rejected_outputs for turn in violations) == 52
     assert all(output.text for output in retained)
     assert all(
         trial.episode.guesser_disclosure is not None
@@ -1527,6 +1525,18 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     site_footer = (
         REPOSITORY / "source" / "publication" / "site" / "src" / "components" / "SiteFooter.vue"
     ).read_text(encoding="utf-8")
+    result_chart = (
+        REPOSITORY / "source" / "publication" / "site" / "src" / "lib" / "result-chart.ts"
+    ).read_text(encoding="utf-8")
+    publication_time = (
+        REPOSITORY
+        / "source"
+        / "publication"
+        / "site"
+        / "src"
+        / "components"
+        / "PublicationTime.vue"
+    ).read_text(encoding="utf-8")
     site_resources = (
         REPOSITORY / "source" / "publication" / "site" / "src" / "lib" / "site-resources.ts"
     ).read_text(encoding="utf-8")
@@ -1615,16 +1625,17 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "Only complete, comparable runs enter the leaderboard." in methodology
     assert "Publication happens after play is finished." in methodology
     assert "Published data never returns to the Guesser." in methodology
-    assert "companion plot shows each exact" in homepage
-    assert "three bands divide the displayed width scale" in homepage
+    assert "questionScoreChartSummary" in homepage
+    assert "companion plot shows each exact" in result_chart
+    assert "three bands divide the displayed width scale" in result_chart
     assert 'class="protocol-flow"' not in homepage
     assert "Homepage built" not in homepage
     assert "home-build-note" not in homepage
     assert "Publication updated" in site_footer
     assert "App built" not in site_footer
     assert "getAppBuild" not in site_footer
-    assert ':datetime="publicationUpdatedAt"' in site_footer
-    assert "dateTime(publicationUpdatedAt)" in site_footer
+    assert ':datetime="value"' in publication_time
+    assert '<PublicationTime :value="publicationUpdatedAt" />' in site_footer
     assert "site-resources" in site_footer
     assert "How to cite" in site_resources
     assert "Report an error" in site_resources
@@ -1793,6 +1804,7 @@ def test_generated_efficiency_distance_is_reproducible_from_public_decimals() ->
         "Grok 4.5 (high)",
         "Claude Sonnet 5 (high)",
         "GPT-5 Nano (medium)",
+        "Gemini 3.7 Flash (high)",
         "Grok 4.6 (high)",
         "GPT-5.6 Luna (high)",
         "Claude Fable 5 (high)",
@@ -1808,6 +1820,7 @@ def test_generated_efficiency_distance_is_reproducible_from_public_decimals() ->
         "0.162",
         "0.167",
         "0.170",
+        "0.171",
         "0.179",
         "0.283",
         "0.420",
@@ -1880,6 +1893,21 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     responsive_runtime = (source_root / "lib" / "use-responsive-echart.ts").read_text(
         encoding="utf-8"
     )
+    chart_registration = (source_root / "lib" / "chart-registration.ts").read_text(
+        encoding="utf-8"
+    )
+    chart_axis = (source_root / "lib" / "chart-axis.ts").read_text(encoding="utf-8")
+    chart_series = (source_root / "lib" / "chart-series.ts").read_text(encoding="utf-8")
+    chart_tooltip = (source_root / "lib" / "chart-tooltip.ts").read_text(encoding="utf-8")
+    use_linked_echart = (source_root / "lib" / "use-linked-echart.ts").read_text(
+        encoding="utf-8"
+    )
+    chart_model_key = (source_root / "components" / "ChartModelKey.vue").read_text(
+        encoding="utf-8"
+    )
+    chart_accessible_data = (
+        source_root / "components" / "ChartAccessibleData.vue"
+    ).read_text(encoding="utf-8")
     cost_donut = (source_root / "components" / "CostDonut.vue").read_text(encoding="utf-8")
     info_popover = (source_root / "components" / "InfoPopover.vue").read_text(encoding="utf-8")
     question_score = (source_root / "components" / "QuestionScore.vue").read_text(encoding="utf-8")
@@ -1899,10 +1927,11 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     )
 
     assert '"echarts": "6.1.0"' in package
-    assert 'from "echarts/core"' in component
+    assert 'from "echarts/core"' in chart_registration
     assert "BarChart" in component
-    assert "SVGRenderer" in component
-    assert 'renderer: "svg"' in component
+    assert "SVGRenderer" in chart_registration
+    assert "standardChartComponents" in component
+    assert 'renderer: "svg"' in responsive_runtime
     assert "xAxis:" in component
     assert "chartValueDomain" in responsive_runtime
     assert "chartValueDomain" not in component
@@ -1943,19 +1972,20 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "no other model is both cheaper and better" in efficiency_marker_legend
     assert "props.expanded ? 720 : 620" in efficiency_scatter
     assert "props.expanded ? 80 : 96" in efficiency_scatter
-    assert ".efficiency-scatter--expanded .mobile-model-key" in efficiency_scatter
+    assert 'v-if="!expanded"' in efficiency_scatter
+    assert "<ChartModelKey" in efficiency_scatter
     assert "desktopChartHeight" in efficiency_scatter
     assert "figureResizeObserver" in efficiency_scatter
     assert "plotSize + (props.expanded ? 48 : 76)" in efficiency_scatter
     assert 'type: "log"' not in efficiency_scatter
-    assert 'type: "value"' in efficiency_scatter
+    assert 'type: "value"' in chart_axis
     assert 'name: "Models"' in efficiency_scatter
     assert "clip: false" in efficiency_scatter
-    assert "color: theme.results.efficiency" in efficiency_scatter
-    assert "show: !mobile" in efficiency_scatter
-    assert "hideOverlap: true" in efficiency_scatter
-    assert 'moveOverlap: "shiftY"' in efficiency_scatter
-    assert "mobile-model-key" in efficiency_scatter
+    assert "theme.results.efficiency" in efficiency_scatter
+    assert "show: !mobile" in chart_series
+    assert "hideOverlap" in chart_series
+    assert 'moveOverlap: "shiftY"' in chart_series
+    assert "chart-model-key" in chart_model_key
     assert "distanceGuideData" in efficiency_scatter
     assert "width: plotSize" in efficiency_scatter
     assert "height: plotSize" in efficiency_scatter
@@ -1983,10 +2013,14 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     for linked_model_chart in (
         component,
         stacked_costs,
-        efficiency_scatter,
         score_dot_plot,
     ):
         assert "View full run" in linked_model_chart
+    assert "chartTooltipRunLink" in efficiency_scatter
+    assert "useLinkedEChart" in efficiency_scatter
+    assert "View full run" in chart_tooltip
+    assert "View full run" in chart_accessible_data
+    assert "router.push" in use_linked_echart
     for chart_source in (
         component,
         cost_donut,
@@ -1995,7 +2029,7 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
         score_dot_plot,
     ):
         assert "aria:" in chart_source
-        assert 'renderer: "svg"' in chart_source
+    assert 'renderer: "svg"' in responsive_runtime
     assert "chartValueDomain" in score_dot_plot
     assert "scale: true" in score_dot_plot
     assert "Question score · lower is better" in score_dot_plot
@@ -2060,6 +2094,16 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     comparison_ranking_table = (
         source_root / "components" / "ComparisonRankingTable.vue"
     ).read_text(encoding="utf-8")
+    ranking_table = (source_root / "components" / "RankingTable.vue").read_text(
+        encoding="utf-8"
+    )
+    official_run_ranking_row = (
+        source_root / "components" / "OfficialRunRankingRow.vue"
+    ).read_text(encoding="utf-8")
+    official_run_data = (source_root / "lib" / "use-official-run-data.ts").read_text(
+        encoding="utf-8"
+    )
+    result_chart = (source_root / "lib" / "result-chart.ts").read_text(encoding="utf-8")
 
     assert '{ label: "Score", name: "results" }' in results_nav
     assert '{ label: "Stability", name: "results-reliability" }' in results_nav
@@ -2106,10 +2150,17 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "min-height: 2.75rem;" in mobile_result_card
     assert "Explore full run · questions, answers & evidence" in mobile_result_card
     assert "translateX(0.2rem)" in mobile_result_card
-    for table_source in (overview, cost, time, efficiency, reliability):
+    for table_source in (overview, efficiency, reliability):
         assert "result-row--clickable" in table_source
         assert "result-row--navigable" in table_source
-        assert "<ModelRunLink" in table_source
+    assert "<ModelRunLink" in overview
+    for table_source in (efficiency, reliability):
+        assert "<RankingDataRow" in table_source
+    for table_source in (cost, time):
+        assert "<OfficialRunRankingRow" in table_source
+    assert "result-row--clickable" in official_run_ranking_row
+    assert "result-row--navigable" in official_run_ranking_row
+    for table_source in (overview, cost, time, efficiency, reliability):
         assert "<RunTableAction" not in table_source
         assert "<MobileResultCard" in table_source
         assert "mobile-result-list" in table_source
@@ -2117,9 +2168,10 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
         assert "result-chart-panel" in table_source
     assert "ranking-table-wrap" in comparison_ranking_table
     assert '"ranking-table"' in comparison_ranking_table
+    assert "ranking-table-wrap" in ranking_table
+    assert 'ranking-table results-table' in ranking_table
     for table_source in (cost, time, efficiency, reliability):
-        assert "ranking-table-wrap" in table_source
-        assert "ranking-table" in table_source
+        assert "<RankingTable" in table_source
     assert overview.count("<ResultHelp") == 1
     assert reliability.count("<ResultHelp") == 1
     assert cost.count("<ResultHelp") == 1
@@ -2127,7 +2179,9 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert efficiency.count("<ResultHelp") == 2
     for table_source in (cost, time):
         assert "providerFor" in table_source
-        assert "getLeaderboard()" in table_source
+        assert "useOfficialRunData" in table_source
+    assert "getLeaderboard()" in official_run_data
+    assert "getOfficialRuns()" in official_run_data
     assert "Model time / episode" in overview
     assert 'label="Question score"' in overview
     assert 'label="CI width"' in overview
@@ -2219,12 +2273,13 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert 'label="Score and stability"' in reliability
     assert "smaller CI width" in " ".join(reliability.split())
     assert "Question score." in overview
-    assert "companion plot shows each exact" in overview
+    assert "questionScoreChartSummary" in overview
+    assert "companion plot shows each exact" in result_chart
     assert "visual guide, not fixed quality thresholds" in overview
-    assert 'name: "CI width · lower is better"' in reliability_scatter
-    assert 'name: "Question score"' in reliability_scatter
+    assert '"CI width · lower is better"' in reliability_scatter
+    assert '"Question score"' in reliability_scatter
     assert "value: [item.intervalWidth, item.score]" in reliability_scatter
-    assert "color: theme.results.stability" in reliability_scatter
+    assert "theme.results.stability" in reliability_scatter
     assert "Lower-left is better" in reliability_scatter
     assert 'class="result-help"' in result_help
     assert "<slot />" in result_help

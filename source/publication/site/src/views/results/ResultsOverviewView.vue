@@ -11,7 +11,12 @@ import QuestionScore from "@/components/QuestionScore.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
 import ResultsContent from "@/components/ResultsContent.vue";
 import ScoreDotPlot from "@/components/ScoreDotPlot.vue";
-import { getLeaderboard, getManifest } from "@/lib/api";
+import {
+  getLeaderboard,
+  getManifest,
+  peekLeaderboard,
+  peekManifest,
+} from "@/lib/api";
 import {
   confidenceIntervalLabel,
   contractPercent,
@@ -32,8 +37,10 @@ import type { LeaderboardRow, ManifestDocument } from "@/lib/types";
 import { usePublicationLoad } from "@/lib/use-publication-load";
 import { useRepeatAverages } from "@/lib/use-repeat-averages";
 
-const leaderboard = ref<LeaderboardRow[]>([]);
-const manifest = ref<ManifestDocument | null>(null);
+const initialLeaderboard = peekLeaderboard();
+const initialManifest = peekManifest();
+const leaderboard = ref<LeaderboardRow[]>(initialLeaderboard?.leaderboard ?? []);
+const manifest = ref<ManifestDocument | null>(initialManifest);
 const router = useRouter();
 const {
   averages: repeatAverages,
@@ -106,12 +113,12 @@ const openRun = (row: LeaderboardRow): void => {
 
 const { loading, error } = usePublicationLoad(async () => {
   const [leaderboardDocument, manifestDocument] = await Promise.all([
-      getLeaderboard(),
-      getManifest(),
+    getLeaderboard(),
+    getManifest(),
   ]);
   leaderboard.value = leaderboardDocument.leaderboard;
   manifest.value = manifestDocument;
-});
+}, undefined, initialLeaderboard !== null && initialManifest !== null);
 </script>
 
 <template>

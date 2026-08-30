@@ -1,7 +1,8 @@
 import {
   createRouter,
-  createWebHistory,
   type RouteComponent,
+  type Router,
+  type RouterHistory,
   type RouteRecordRaw,
 } from "vue-router";
 
@@ -95,7 +96,12 @@ const routes: RouteRecordRaw[] = [
     alias: "/story/",
     name: "about",
     component: () => import("@/views/StoryView.vue"),
-    meta: { depth: 1, nav: "About", title: "About" },
+    meta: {
+      canonicalPath: "/about/",
+      depth: 1,
+      nav: "About",
+      title: "About",
+    },
   },
   {
     path: "/data/",
@@ -151,12 +157,12 @@ const routes: RouteRecordRaw[] = [
   },
 ];
 
-export const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
-});
-
-router.afterEach((to) => {
-  const title = typeof to.meta.title === "string" ? to.meta.title : "Deep20Bench";
-  document.title = title === "Overview" ? "Deep20Bench" : `${title} · Deep20Bench`;
-});
+export const createPublicationRouter = (history: RouterHistory): Router => {
+  const router = createRouter({ history, routes });
+  router.afterEach((to) => {
+    if (typeof document === "undefined") return;
+    const title = typeof to.meta.title === "string" ? to.meta.title : "Deep20Bench";
+    document.title = title === "Overview" ? "Deep20Bench" : `${title} · Deep20Bench`;
+  });
+  return router;
+};

@@ -5,33 +5,57 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-08-30",
+    displayDate: "30 August 2026",
+    title: "Behind Deep20Bench: the hard part wasn’t the game.",
+    summary:
+      "A first-person account of the Oracle errors, blind review, format failures, and design choices behind the benchmark.",
+    link: {
+      type: "external",
+      href: "https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8",
+      label: "Read article",
+    },
+  },
+  {
     date: "2026-08-23",
     displayDate: "23 August 2026",
     title: "OpenRouter’s Ox Alpha (high) tested.",
     summary:
       "The Stealth-routed model won 32 of 35 trials and scored 17.6 questions, placing 12th of 15.",
-    executionId: "BX-20260823-official-M0017-018",
+    link: {
+      type: "run",
+      executionId: "BX-20260823-official-M0017-018",
+    },
   },
   {
     date: "2026-08-17",
     displayDate: "17 August 2026",
     title: "Gemini 3.7 Flash (high) added.",
     summary: "It scored 14.0 questions with 34 of 35 successful trials.",
-    executionId: "BX-20260817-official-M0016-015",
+    link: {
+      type: "run",
+      executionId: "BX-20260817-official-M0016-015",
+    },
   },
   {
     date: "2026-08-15",
     displayDate: "15 August 2026",
     title: "Grok 4.6 (high) added.",
     summary: "It scored 14.3 questions with 35 of 35 successful trials.",
-    executionId: "BX-20260814-official-M0015-013",
+    link: {
+      type: "run",
+      executionId: "BX-20260814-official-M0015-013",
+    },
   },
   {
     date: "2026-08-05",
     displayDate: "5 August 2026",
     title: "Claude Fable 5 (high) added.",
     summary: "We added Claude Fable 5 (high) to the official Deep20Bench results.",
-    executionId: "BX-20260805-official-M0014-011",
+    link: {
+      type: "run",
+      executionId: "BX-20260805-official-M0014-011",
+    },
   },
 ] as const;
 
@@ -124,12 +148,12 @@ onActivated(applyRouteContext);
             <p class="eyebrow">Updates</p>
             <h2 id="news-title">Project news.</h2>
           </div>
-          <p>Dated changes to the official publication.</p>
+          <p>Project updates, releases, and notes.</p>
         </header>
         <div class="news-list">
           <article
             v-for="entry in newsEntries"
-            :key="entry.executionId"
+            :key="`${entry.date}-${entry.title}`"
             class="news-entry"
           >
             <time :datetime="entry.date">{{ entry.displayDate }}</time>
@@ -137,11 +161,22 @@ onActivated(applyRouteContext);
               <h3>{{ entry.title }}</h3>
               <p>{{ entry.summary }}</p>
             </div>
+            <a
+              v-if="entry.link.type === 'external'"
+              class="news-link"
+              :href="entry.link.href"
+              target="_blank"
+              rel="noreferrer"
+              :aria-label="`${entry.link.label} (opens in a new tab)`"
+            >
+              {{ entry.link.label }} ↗
+            </a>
             <RouterLink
+              v-else
               class="news-link"
               :to="{
                 name: 'run',
-                params: { executionId: entry.executionId },
+                params: { executionId: entry.link.executionId },
               }"
             >
               View run →

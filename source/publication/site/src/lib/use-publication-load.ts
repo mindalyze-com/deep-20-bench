@@ -11,8 +11,9 @@ const defaultError = "Publication data could not be loaded.";
 export const usePublicationLoad = (
   task: () => Promise<void>,
   fallbackError = defaultError,
+  initiallyLoaded = false,
 ): PublicationLoadState => {
-  const loading = ref(true);
+  const loading = ref(!initiallyLoaded);
   const error = ref<string | null>(null);
 
   const reload = async (): Promise<void> => {
@@ -27,6 +28,6 @@ export const usePublicationLoad = (
     }
   };
 
-  void reload();
+  if (!initiallyLoaded) void reload();
   return { loading: readonly(loading), error: readonly(error), reload };
 };

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import PublicationTime from "@/components/PublicationTime.vue";
 import SubjectReferenceLink from "@/components/SubjectReferenceLink.vue";
 import {
-  dateTime,
   integer,
   money,
   moneyEpisode,
@@ -156,8 +156,8 @@ const telemetryRows = computed<TelemetryRow[]>(() => [
           <div><dt>Episode run</dt><dd><code>{{ episode.episode_run_id }}</code></dd></div>
           <div><dt>Episode</dt><dd><code>{{ episode.episode_id }}</code></dd></div>
           <div><dt>Trial</dt><dd><code>{{ trial.trial_id }}</code></dd></div>
-          <div><dt>Started</dt><dd>{{ dateTime(episode.started_at) }}</dd></div>
-          <div><dt>Completed</dt><dd>{{ dateTime(episode.completed_at) }}</dd></div>
+          <div><dt>Started</dt><dd><PublicationTime :value="episode.started_at" /></dd></div>
+          <div><dt>Completed</dt><dd><PublicationTime :value="episode.completed_at" /></dd></div>
           <div><dt>Git commit</dt><dd><code>{{ run.git_commit }}</code></dd></div>
           <div><dt>Cache status</dt><dd>{{ statusLabel(episode.cache_status) }}</dd></div>
           <div><dt>Total tokens</dt><dd>{{ integer(episode.total_tokens) }}</dd></div>

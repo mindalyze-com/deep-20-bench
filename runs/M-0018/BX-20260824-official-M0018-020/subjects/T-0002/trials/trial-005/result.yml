@@ -1,0 +1,239 @@
+payload:
+  status: infrastructure_failed
+  identity:
+    execution_id: BX-20260824-official-M0018-020
+    model_id: M-0018
+    target_id: T-0002
+    trial_id: trial-005
+    trial_number: 5
+    episode_run_id: BR-564825639177906a7295ec91513a0a970992e654
+  attempt_number: 1
+  failure:
+    code: provider_request_failed
+    type: GameProviderError
+    message: OpenRouter request failed
+    call_id: GC-01a036784263779f90fcacffa19a127c
+    diagnostics:
+      causes:
+      - exception_type: GameProviderError
+        module: deep20_game.errors
+        message: OpenRouter request failed
+      - exception_type: ReadTimeout
+        module: httpx
+        message: provider logical call exceeded its 1019.9999039169634-second hard
+          deadline
+      - exception_type: ReadTimeout
+        module: httpcore
+        message: provider logical call exceeded its 1019.9999039169634-second hard
+          deadline
+      - exception_type: ProviderDeadlineExceeded
+        module: deep20_oracle.openrouter_retry
+        message: provider logical call exceeded its 1019.9999039169634-second hard
+          deadline
+      frames:
+      - exception_index: 0
+        module: deep20_game.engine
+        function: play
+        line: 548
+      - exception_index: 0
+        module: deep20_game.guesser
+        function: next_action
+        line: 92
+      - exception_index: 0
+        module: deep20_game.guesser
+        function: _complete_action
+        line: 166
+      - exception_index: 0
+        module: deep20_game.openrouter_provider
+        function: complete
+        line: 126
+      - exception_index: 0
+        module: deep20_game.openrouter_provider
+        function: complete
+        line: 266
+      - exception_index: 1
+        module: deep20_game.openrouter_provider
+        function: complete
+        line: 150
+      - exception_index: 1
+        module: openrouter.chat
+        function: send
+        line: 830
+      - exception_index: 1
+        module: openrouter.basesdk
+        function: do_request
+        line: 291
+      - exception_index: 1
+        module: openrouter.utils.retries
+        function: retry
+        line: 231
+      - exception_index: 1
+        module: openrouter.basesdk
+        function: do
+        line: 274
+      - exception_index: 1
+        module: openrouter.basesdk
+        function: do
+        line: 269
+      - exception_index: 1
+        module: deep20_game.openrouter_provider
+        function: send
+        line: 76
+      - exception_index: 1
+        module: httpx._client
+        function: send
+        line: 928
+      - exception_index: 1
+        module: httpx._client
+        function: send
+        line: 922
+      - exception_index: 1
+        module: httpx._models
+        function: read
+        line: 881
+      - exception_index: 1
+        module: httpx._models
+        function: iter_bytes
+        line: 897
+      - exception_index: 1
+        module: httpx._models
+        function: iter_raw
+        line: 951
+      - exception_index: 1
+        module: httpx._client
+        function: __iter__
+        line: 153
+      - exception_index: 1
+        module: httpx._transports.default
+        function: __iter__
+        line: 126
+      - exception_index: 1
+        module: contextlib
+        function: __exit__
+        line: 162
+      - exception_index: 1
+        module: httpx._transports.default
+        function: map_httpcore_exceptions
+        line: 118
+      - exception_index: 2
+        module: httpx._transports.default
+        function: map_httpcore_exceptions
+        line: 101
+      - exception_index: 2
+        module: httpx._transports.default
+        function: __iter__
+        line: 127
+      - exception_index: 2
+        module: httpcore._sync.connection_pool
+        function: __iter__
+        line: 407
+      provider:
+        http_status_code: null
+        error_type: null
+        error_code: null
+        message: null
+        requested_model: anthropic/claude-opus-4.6
+        resolved_model: null
+        requested_provider: anthropic
+        resolved_provider: null
+        fallback_occurred: false
+        response_id: null
+        response_cache_status: null
+        finish_reason: null
+        request_attempts: 2
+        retry_after_ms: null
+        recovery:
+          request_attempts: 2
+          retried_calls: 1
+          recovered_calls: 0
+          exhausted_retries: 1
+          reasons:
+          - reason: provider_empty_response
+            count: 1
+          - reason: provider_transport_error
+            count: 1
+          retry_usage:
+            input_tokens: 3323
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 22798
+            reasoning_tokens: 22795
+            search_count: 0
+            cost_usd: '0.586565'
+            cache_discount_usd: null
+          retry_latency_ms: 578901
+        latency_ms: 1020002
+        usage:
+          input_tokens: 3323
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 22798
+          reasoning_tokens: 22795
+          search_count: 0
+          cost_usd: '0.586565'
+          cache_discount_usd: null
+      metadata:
+        exception_type: ReadTimeout
+  partial_metrics:
+    counted_questions: 48
+    guesser_cost_usd: '9.262415'
+    oracle_cost_usd: '1.1402937300000000080'
+    reviewer_cost_usd: '0.0708654'
+    judge_cost_usd: '0.221610'
+    validator_cost_usd: '0'
+    cost_usd: '10.4027087300000000080'
+    tokens: 1262862
+    cached_input_tokens: 461499
+    cache_write_tokens: 0
+    estimated_cache_savings_usd: 0E-8
+    latency_ms: 8554705
+    duration_ms: 8555626
+    recovery:
+      request_attempts: 160
+      retried_calls: 3
+      recovered_calls: 2
+      exhausted_retries: 4
+      reasons:
+      - reason: provider_empty_response
+        count: 2
+      - reason: provider_http_503
+        count: 1
+      - reason: provider_output_limit_exceeded
+        count: 3
+      - reason: provider_transport_error
+        count: 1
+      retry_usage:
+        input_tokens: 6567
+        cached_input_tokens: 0
+        cache_write_tokens: 0
+        output_tokens: 41444
+        reasoning_tokens: 41438
+        search_count: 0
+        cost_usd: '1.068935'
+        cache_discount_usd: null
+      retry_latency_ms: 1129250
+  error_output_preview:
+    component: guesser
+    attempt_number: 1
+    finish_reason: stop
+    text: '{"result":{"action":"ASK","question":"","name":null,"description":null}}'
+    original_characters: 72
+    trailing_whitespace_characters: 0
+    truncated: false
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0018/BX-20260824-official-M0018-020/subjects/T-0002/trials/trial-005/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs:
+      relative_path: runs/M-0018/BX-20260824-official-M0018-020/subjects/T-0002/trials/trial-005/error-outputs.jsonl
+      record_count: 2
+      integrity_hash: 53b047f12e46f9770d8f063327c37024a931124fd77b127f2e87ca504f6a1ba6
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 7a36cc5d16933fd63e745c1e9dc1c52a1c6bbc3be6458a112e8e4ee9fdef58c0

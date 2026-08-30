@@ -2143,3 +2143,39 @@ class PublicationDataBundle(FrozenModel):
         if set(episode_documents) != expected_episodes:
             raise ValueError("publication episode documents differ from subject documents")
         return self
+
+
+class StaticRouteEntry(FrozenModel):
+    route: str
+    kind: Literal["home", "editorial", "run", "alias", "subject", "episode"]
+    sitemap_included: bool
+    canonical_route: str
+    browser_title: str = Field(min_length=1, max_length=200)
+    description: str = Field(min_length=1, max_length=500)
+    execution_id: str | None = Field(default=None, pattern=EXECUTION_ID_PATTERN)
+
+    @model_validator(mode="after")
+    def route_shape_matches_kind(self) -> StaticRouteEntry:
+        if self.route.startswith("/") or self.route.endswith("/"):
+            raise ValueError("static routes must omit leading and trailing slashes")
+        if self.canonical_route.startswith("/") or self.canonical_route.endswith("/"):
+            raise ValueError("canonical static routes must omit leading and trailing slashes")
+        if self.kind == "run" and self.execution_id is None:
+            raise ValueError("static run routes require an execution ID")
+        if self.kind != "run" and self.execution_id is not None:
+            raise ValueError("only static run routes may carry an execution ID")
+        if self.sitemap_included and self.route != self.canonical_route:
+            raise ValueError("sitemap routes must be self-canonical")
+        return self
+
+
+class StaticRouteManifest(FrozenModel):
+    schema_version: Literal[1] = 1
+    routes: tuple[StaticRouteEntry, ...]
+
+    @model_validator(mode="after")
+    def unique_routes(self) -> StaticRouteManifest:
+        routes = tuple(route.route for route in self.routes)
+        if len(routes) != len(set(routes)):
+            raise ValueError("static route manifest routes must be unique")
+        return self

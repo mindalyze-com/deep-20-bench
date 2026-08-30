@@ -1,19 +1,16 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 from xml.etree import ElementTree
 
 from deep20_publication.cli import (
     _application_build_document,
-    _canonical_route_url,
     _publication_build_time,
-    _route_shells,
-    _sitemap_routes,
+    _static_route_manifest,
     _write_public_data,
-    _write_route_shells,
-    _write_search_files,
 )
 from deep20_publication.models import PublicationAppBuildDocument, PublishedDataset
 from deep20_publication.split import split_publication
@@ -29,12 +26,10 @@ def test_generated_data_is_not_stored_in_site_source() -> None:
     assert (REPOSITORY / "docs" / "data" / "manifest.json").is_file()
 
 
-def test_search_files_are_generated_from_the_editorial_route_policy(
-    tmp_path: Path,
-) -> None:
-    _write_search_files(tmp_path, CANONICAL_URL)
-
-    sitemap = tmp_path / "sitemap.xml"
+def test_search_files_follow_the_static_route_manifest() -> None:
+    bundle = split_publication(_published_dataset())
+    route_manifest = _static_route_manifest(bundle)
+    sitemap = REPOSITORY / "docs" / "sitemap.xml"
     document = ElementTree.parse(sitemap)
     locations = tuple(
         element.text
@@ -42,22 +37,45 @@ def test_search_files_are_generated_from_the_editorial_route_policy(
             ".//{http://www.sitemaps.org/schemas/sitemap/0.9}loc"
         )
     )
-    assert locations == tuple(
-        _canonical_route_url(CANONICAL_URL, route) for route in _sitemap_routes()
+    expected = tuple(
+        CANONICAL_URL if route.canonical_route == "" else (
+            f"{CANONICAL_URL}{route.canonical_route}/"
+        )
+        for route in route_manifest.routes
+        if route.sitemap_included
     )
-    assert all("/runs/" not in location for location in locations if location is not None)
-    assert (tmp_path / "robots.txt").read_text(encoding="utf-8") == (
-        "User-agent: *\n"
-        "Allow: /\n\n"
-        f"Sitemap: {CANONICAL_URL}sitemap.xml\n"
-    )
+    assert locations == expected
+    assert len(locations) == len(expected)
+    assert sum(
+        "/runs/" in location for location in locations if location is not None
+    ) == len(bundle.runs)
+    assert not (REPOSITORY / "docs" / "robots.txt").exists()
+
+
+def test_sitemap_contains_editorial_and_official_run_routes() -> None:
+    bundle = split_publication(_published_dataset())
+    routes = _static_route_manifest(bundle).routes
+    sitemap_routes = {entry.route for entry in routes if entry.sitemap_included}
+    editorial_routes = {
+        entry.route for entry in routes if entry.kind in {"home", "editorial"}
+    }
+    run_routes = {
+        f"runs/{run.run.execution_id}" for run in bundle.runs
+    }
+
+    assert sitemap_routes == editorial_routes | run_routes
+    assert len(sitemap_routes) == len(editorial_routes) + len(bundle.runs)
 
 
 def test_search_files_are_not_handwritten_site_assets() -> None:
     public = REPOSITORY / "source" / "publication" / "site" / "public"
+    prerender = (
+        REPOSITORY / "source" / "publication" / "site" / "scripts" / "prerender.mjs"
+    ).read_text(encoding="utf-8")
 
     assert not (public / "sitemap.xml").exists()
     assert not (public / "robots.txt").exists()
+    assert 'join(outputRoot, "robots.txt")' not in prerender
 
 
 def test_execution_components_do_not_import_publication_outputs() -> None:
@@ -93,22 +111,23 @@ def test_application_build_time_is_fresh_or_reused_for_verification() -> None:
     assert committed == document
 
 
-def test_file_scheme_entry_explains_how_to_start_the_preview() -> None:
+def test_source_entry_has_no_production_preview_or_duplicate_fallback() -> None:
     entry = (REPOSITORY / "source" / "publication" / "site" / "index.html").read_text(
         encoding="utf-8"
     )
 
-    assert 'window.location.protocol === "file:"' in entry
-    assert "Open this publication through HTTP." in entry
-    assert "npm run --prefix source/publication/site dev" in entry
-    assert "http://127.0.0.1:4173/deep-20-bench/" in entry
+    assert '<div id="app"></div>' in entry
+    assert "Local preview" not in entry
+    assert "app-loading" not in entry
+    assert "static-home" not in entry
 
 
-def test_generated_homepage_has_a_static_executive_summary() -> None:
+def test_generated_homepage_has_prerendered_vue_content() -> None:
     entry = (REPOSITORY / "docs" / "index.html").read_text(encoding="utf-8")
     entry_copy = " ".join(entry.split())
 
-    assert '<main class="static-home" id="static-home">' in entry
+    assert '<html lang="en" data-prerendered="true">' in entry
+    assert 'id="route-content" class="page home-page"' in entry
     assert 'content="https://mindalyze-com.github.io/deep-20-bench/og.webp"' in entry
     assert "og.png" not in entry
     assert "How well can AI models play Twenty Questions?" in entry
@@ -120,17 +139,19 @@ def test_generated_homepage_has_a_static_executive_summary() -> None:
     assert "not a definitive ranking" not in entry
     assert "https://github.com/mindalyze-com/deep-20-bench/discussions" in entry
     assert "Join discussion" in entry
-    assert "What it does not claim" in entry
-    assert "The model under test sees only the game." in entry
+    assert "How to read the pilot" in entry
+    assert "Comparable runs, limited conclusions." in entry
+    assert "The Guesser is isolated from this process" in entry
     assert "Deep20Bench needs JavaScript" not in entry
     assert '<script type="application/ld+json">' in entry
     assert '"alternateName":["Deep20 Bench","D20B"]' in entry
-    assert '"keywords":["Deep20Bench","Deep20 Bench"' in entry
+    assert '"keywords":["Deep20Bench","Deep20 Bench","Deep20 benchmark"' in entry
     assert 'rel="canonical" href="https://mindalyze-com.github.io/deep-20-bench/"' in entry
     assert "deep20-static-home" not in entry
     assert "deep20-structured-data" not in entry
-    assert 'classList.add("app-loading")' in entry
-    assert 'classList.remove("app-loading")' in entry
+    assert 'id="deep20-page-state" type="application/json"' in entry
+    assert "app-loading" not in entry
+    assert "Local preview" not in entry
 
 
 def _published_dataset() -> PublishedDataset:
@@ -138,95 +159,133 @@ def _published_dataset() -> PublishedDataset:
     return PublishedDataset.model_validate_json(source.read_text(encoding="utf-8"))
 
 
-def test_route_shells_cover_every_known_static_route(tmp_path: Path) -> None:
+def test_static_route_manifest_covers_sitemap_and_evidence_routes() -> None:
     bundle = split_publication(_published_dataset())
-    output = tmp_path / "docs"
-    output.mkdir()
-    entry = '<!doctype html><div id="app"></div>'
-    (output / "index.html").write_text(entry, encoding="utf-8")
+    manifest = _static_route_manifest(bundle)
+    routes = {entry.route: entry for entry in manifest.routes}
+    editorial_routes = {
+        entry.route
+        for entry in manifest.routes
+        if entry.kind in {"home", "editorial"}
+    }
+    run_routes = {
+        f"runs/{run.run.execution_id}" for run in bundle.runs
+    }
 
-    _write_route_shells(output, bundle, CANONICAL_URL)
-
-    routes = _route_shells(bundle)
-    assert "results" in routes
-    assert "results/reliability" in routes
-    assert "results/efficiency" in routes
-    assert "methodology" in routes
-    assert "story" in routes
-    assert len(routes) == (9 + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes))
-    assert set(_sitemap_routes()[1:]).issubset(routes)
-    for route in routes:
-        assert (output / route / "index.html").read_text(encoding="utf-8") == entry
-    assert (output / "404.html").read_text(encoding="utf-8") == entry
-
-
-def test_route_shells_do_not_duplicate_the_static_homepage(tmp_path: Path) -> None:
-    bundle = split_publication(_published_dataset())
-    output = tmp_path / "docs"
-    output.mkdir()
-    entry = """<!doctype html>
-<head>
-  <title>Deep20Bench · Twenty Questions Benchmark for LLMs</title>
-  <meta name="description" content="Deep20Bench benchmark publication." />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
-  <meta property="og:title" content="Deep20Bench" />
-  <meta property="og:description" content="Deep20Bench benchmark publication." />
-  <meta property="og:url" content="https://mindalyze-com.github.io/deep-20-bench/" />
-  <meta name="twitter:title" content="Deep20Bench" />
-  <meta name="twitter:description" content="Deep20Bench benchmark publication." />
-  <link rel="canonical" href="https://mindalyze-com.github.io/deep-20-bench/" />
-  <script type="application/ld+json">{"@type":"Dataset"}</script>
-</head>
-<div id="app">
-  <main class="static-home" id="static-home"><h1>Executive summary</h1></main>
-</div>
-"""
-    (output / "index.html").write_text(entry, encoding="utf-8")
-
-    _write_route_shells(output, bundle, CANONICAL_URL)
-
-    assert (output / "index.html").read_text(encoding="utf-8") == entry
-    route = (output / "results" / "index.html").read_text(encoding="utf-8")
-    assert 'class="static-home"' not in route
-    assert 'class="static-route-fallback static-route-fallback--editorial"' in route
-    assert "Deep20Bench results." in route
-    assert "This detailed view uses JavaScript." not in route
-    assert "The current leader has a question score of" in route
-    assert "Top three official model results" in route
-    assert bundle.manifest.winner is not None
-    assert bundle.manifest.winner.display_names[0] in route
-    assert f'href="{bundle.manifest.site.base_path}"' in route
-    assert f'href="{bundle.manifest.site.base_path}data/"' in route
-    assert f'rel="canonical" href="{CANONICAL_URL}results/"' in route
-    assert f'property="og:url" content="{CANONICAL_URL}results/"' in route
-    assert "<title>Results · Deep20Bench</title>" in route
-    assert 'name="description" content="Compare official model scores' in route
-    assert 'name="robots" content="index, follow, max-image-preview:large"' in route
-    assert 'type="application/ld+json"' not in route
-    method_route = (output / "methodology" / "index.html").read_text(encoding="utf-8")
-    assert "From one round to a comparable score." in method_route
-    assert (
-        "Follow one Twenty Questions round through answer checks, repeated trials, "
-        "scoring, official comparison, and publication."
-    ) in method_route
-    about_route = (output / "about" / "index.html").read_text(encoding="utf-8")
-    assert "A shared idea, built into a benchmark." in about_route
-    assert (
-        "Read how Deep20Bench began, see project news, and review related research."
-        in about_route
+    assert len(routes) == (10 + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes))
+    assert {
+        entry.route for entry in routes.values() if entry.sitemap_included
+    } == editorial_routes | run_routes
+    assert all(routes[page].sitemap_included for page in (
+        "", "results", "results/reliability", "results/cost", "results/time",
+        "results/efficiency", "methodology", "about", "data",
+    ))
+    assert all(
+        routes[f"runs/{run.run.execution_id}"].sitemap_included
+        for run in bundle.runs
     )
-    story_route = (output / "story" / "index.html").read_text(encoding="utf-8")
-    assert "A shared idea, built into a benchmark." in story_route
-    assert f'rel="canonical" href="{CANONICAL_URL}about/"' in story_route
-    assert 'name="robots" content="noindex, follow"' in story_route
-    run_route = next(route for route in _route_shells(bundle) if route.startswith("runs/"))
-    run_shell = (output / run_route / "index.html").read_text(encoding="utf-8")
-    assert "This detailed view uses JavaScript." in run_shell
-    assert f'rel="canonical" href="{CANONICAL_URL}{run_route}/"' in run_shell
-    assert 'name="robots" content="noindex, follow"' in run_shell
-    not_found = (output / "404.html").read_text(encoding="utf-8")
+    assert routes["story"].canonical_route == "about"
+    assert not routes["story"].sitemap_included
+    assert all(
+        not entry.sitemap_included
+        for entry in routes.values()
+        if entry.kind in {"subject", "episode"}
+    )
+    assert len({entry.browser_title for entry in routes.values() if entry.kind == "run"}) == len(
+        bundle.runs
+    )
+    assert len({entry.description for entry in routes.values() if entry.kind == "run"}) == len(
+        bundle.runs
+    )
+
+
+def test_generated_run_is_prerendered_and_evidence_has_no_robots_block() -> None:
+    bundle = split_publication(_published_dataset())
+    run = bundle.runs[0]
+    run_route = f"runs/{run.run.execution_id}"
+    entry = (REPOSITORY / "docs" / run_route / "index.html").read_text(encoding="utf-8")
+
+    assert '<html lang="en" data-prerendered="true">' in entry
+    assert 'class="run-overview-pane pane-scroll"' in entry
+    assert run.run.model_name in entry
+    assert "Question score" in entry
+    assert "95% CI" in entry
+    assert "Success" in entry
+    assert "Contract compliance" in entry
+    assert "Guesser cost" in entry
+    assert "Wall-clock runtime" in entry
+    assert 'name="robots"' not in entry
+    for subject_summary in run.subjects:
+        assert (
+            f'href="/deep-20-bench/{run_route}/subjects/{subject_summary.target_id}/"'
+            in entry
+        )
+
+    subject_document = bundle.subjects[0]
+    subject_route = (
+        f"runs/{subject_document.execution_id}/subjects/{subject_document.target_id}"
+    )
+    subject_entry = (REPOSITORY / "docs" / subject_route / "index.html").read_text(
+        encoding="utf-8"
+    )
+    assert 'name="robots"' not in subject_entry
+    assert 'data-prerendered="true"' not in subject_entry
+    assert f"{CANONICAL_URL}{subject_route}/" not in {
+        element.text
+        for element in ElementTree.parse(REPOSITORY / "docs" / "sitemap.xml").findall(
+            ".//{http://www.sitemaps.org/schemas/sitemap/0.9}loc"
+        )
+    }
+
+    not_found = (REPOSITORY / "docs" / "404.html").read_text(encoding="utf-8")
     assert 'rel="canonical"' not in not_found
     assert 'name="robots" content="noindex, follow"' in not_found
+
+
+def test_all_sitemap_pages_have_unique_metadata_and_a_static_referrer() -> None:
+    manifest = _static_route_manifest(split_publication(_published_dataset()))
+    sitemap_routes = tuple(
+        entry for entry in manifest.routes if entry.sitemap_included
+    )
+    html_by_route = {
+        entry.route: (
+            REPOSITORY / "docs" / entry.route / "index.html"
+            if entry.route
+            else REPOSITORY / "docs" / "index.html"
+        ).read_text(encoding="utf-8")
+        for entry in sitemap_routes
+    }
+    titles: list[str] = []
+    descriptions: list[str] = []
+    canonicals: list[str] = []
+
+    for entry in sitemap_routes:
+        html = html_by_route[entry.route]
+        title = re.search(r"<title>(.*?)</title>", html)
+        description = re.search(r'<meta name="description" content="([^"]+)" />', html)
+        canonical = re.search(r'<link rel="canonical" href="([^"]+)" />', html)
+        assert title is not None
+        assert description is not None
+        assert canonical is not None
+        titles.append(title.group(1))
+        descriptions.append(description.group(1))
+        canonicals.append(canonical.group(1))
+        expected_url = CANONICAL_URL if entry.route == "" else f"{CANONICAL_URL}{entry.route}/"
+        expected_href = (
+            "/deep-20-bench/" if entry.route == "" else f"/deep-20-bench/{entry.route}/"
+        )
+        assert canonical.group(1) == expected_url
+        assert 'name="robots"' not in html
+        assert 'id="route-content"' in html
+        assert any(
+            f'href="{expected_href}"' in referring_html
+            for route, referring_html in html_by_route.items()
+            if route != entry.route
+        )
+
+    assert len(titles) == len(set(titles)) == len(sitemap_routes)
+    assert len(descriptions) == len(set(descriptions)) == len(sitemap_routes)
+    assert len(canonicals) == len(set(canonicals)) == len(sitemap_routes)
 
 
 def test_split_public_data_is_complete_and_removes_stale_files(

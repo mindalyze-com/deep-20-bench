@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import type { RouteLocationRaw } from "vue-router";
 
 import ContractStatusCard from "@/components/ContractStatusCard.vue";
 import CostDonut, { type CostDonutItem } from "@/components/CostDonut.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import ModelName from "@/components/ModelName.vue";
+import PublicationTime from "@/components/PublicationTime.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
+import ReasoningEffort from "@/components/ReasoningEffort.vue";
 import RunModelsSection from "@/components/run/RunModelsSection.vue";
-import { getSubject } from "@/lib/api";
+import { getLeaderboard, getSubject, peekLeaderboard } from "@/lib/api";
 import { readChartTheme } from "@/lib/chart-theme";
 import {
   contractExampleRoute,
@@ -16,7 +18,6 @@ import {
 } from "@/lib/contract-example";
 import {
   contractPercent,
-  dateTime,
   duration,
   integer,
   money,
@@ -25,10 +26,28 @@ import {
 } from "@/lib/format";
 import { runRoleCopy, runRoleOrder } from "@/lib/run-roles";
 import { useRunWorkspace } from "@/lib/workspace-context";
+import type { LeaderboardRow } from "@/lib/types";
 
 const { run, subjects } = useRunWorkspace();
+const leaderboard = ref<LeaderboardRow[]>(peekLeaderboard()?.leaderboard ?? []);
 const exampleTo = ref<RouteLocationRaw | null>(null);
 let exampleRequest = 0;
+
+onMounted(async () => {
+  if (leaderboard.value.length > 0) return;
+  try {
+    leaderboard.value = (await getLeaderboard()).leaderboard;
+  } catch {
+    leaderboard.value = [];
+  }
+});
+
+const leaderboardRow = computed(() =>
+  leaderboard.value.find((row) => row.execution_id === run.value?.execution_id),
+);
+const evaluatedCount = computed(
+  () => leaderboard.value.filter((row) => row.status === "evaluated").length,
+);
 
 watch(
   [run, subjects],
@@ -151,6 +170,13 @@ const roleGuide = runRoleOrder.map((role) => ({
           {{ run.terminal_trials }} scored episodes = {{ subjects.length }} subjects ×
           {{ run.iterations }} trials. Choose a subject to inspect its attempts.
         </p>
+        <p v-if="leaderboardRow" class="run-search-facts">
+          <span v-if="leaderboardRow.rank !== null">
+            Rank {{ leaderboardRow.rank }} of {{ evaluatedCount }}
+          </span>
+          <span>{{ leaderboardRow.model.provider }}</span>
+          <ReasoningEffort :effort="leaderboardRow.model.reasoning_effort" compact />
+        </p>
       </div>
       <QuestionScore
         class="run-primary-score"
@@ -218,7 +244,7 @@ const roleGuide = runRoleOrder.map((role) => ({
             </div>
             <div>
               <dt>Completed</dt>
-              <dd>{{ dateTime(run.completed_at) }}</dd>
+              <dd><PublicationTime :value="run.completed_at" /></dd>
             </div>
           </dl>
         </section>
@@ -332,6 +358,20 @@ const roleGuide = runRoleOrder.map((role) => ({
   color: var(--muted);
   font-size: 1rem;
   line-height: 1.65;
+}
+
+.run-search-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+  align-items: center;
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+
+.run-search-facts > span:not(.reasoning-effort) {
+  font-weight: var(--font-weight-semibold);
 }
 
 .run-primary-score {

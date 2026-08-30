@@ -50,8 +50,8 @@ The build:
 4. records separate UTC publication and application build times in typed public metadata;
 5. writes the complete `deep20bench-v9.json`, its generated JSON Schema, and
    `leaderboard.csv`, plus typed, split JSON documents for the SPA;
-6. builds the Vue application and writes static entry shells for every execution, subject, and
-   episode route;
+6. builds the Vue application, statically renders the homepage, eight editorial pages, and all
+   selected official run summaries, and writes entry shells for subject and episode routes;
 7. uses the configured base path for clean direct URLs on GitHub Pages and normal static HTTP
    hosts;
 8. runs strict Vue/TypeScript checks and the static build;
@@ -91,27 +91,37 @@ npm run --prefix source/publication/site check
 No credential or network access is needed once the locked Python and Node dependencies are
 installed.
 
-The SPA loads `manifest.json` and `leaderboard.json` first. It fetches one small run, subject,
-or episode document only when that route needs it. The complete version 9 JSON remains a
-download and is not imported into the application bundle. Browser promise caching applies only
-to these immutable public reporting files. It is application caching, not provider prompt
-caching, and it cannot affect model requests, benchmark execution, or Guesser-visible state.
+The browser uses typed public documents embedded in each statically rendered page for its first
+hydration. It fetches one small run, subject, or episode document only when later navigation
+needs it. The complete version 9 JSON remains a download and is not imported into the
+application bundle. Browser promise caching applies only to immutable public reporting files.
+It cannot affect model requests, benchmark execution, or Guesser-visible state.
 
-The generated entry HTML contains a complete static executive summary. The build derives its
-current result and cohort facts from the same validated manifest and leaderboard used by the
-SPA. It also generates a concise static summary for each editorial route in the sitemap. The
-results summary includes the current official leader and top three model scores. Browsers and
-crawlers without JavaScript receive the benchmark purpose, scope, result, method, limitations,
-and data links. The Vue application replaces each static summary after it starts. The build also
-emits route-specific titles, descriptions, canonical URLs, Dataset structured data for the
-homepage, `robots.txt`, and a sitemap generated from the explicit public editorial-route policy.
-Run, subject, episode, error, and download URLs are excluded from the sitemap. Dynamic HTML
-detail routes retain the generic JavaScript fallback and use `noindex, follow`.
+The build uses Vue server rendering with a memory-history router, then hydrates the same tree
+with a web-history router in the browser. The homepage, eight editorial and result pages, and
+every selected official run summary contain their real content and ordinary links in the
+initial HTML. Charts and interactive controls start after hydration. There is no separate
+fallback content tree or content-hiding script.
 
-The app uses clean history routes. Generated route shells make direct reloads work on static
-HTTP hosts. Direct `file://` navigation is not supported because clean history paths require an
-HTTP origin. Opening `docs/index.html` directly shows the local preview command instead of a
-blank page.
+The generated pages have route-specific titles, descriptions, social metadata, and canonical
+URLs. The homepage retains Dataset structured data. `sitemap.xml` contains the homepage,
+editorial URLs, and every selected official run URL. Successful publication pages do not emit a
+robots meta tag, so search engines use their default `index, follow` behavior. Subject, episode,
+alias, error, and download URLs remain outside the sitemap, but only the generated 404 page emits
+`noindex`.
+
+This repository publishes a GitHub Pages project site below `/deep-20-bench/`. A valid
+`robots.txt` for that host must instead live at `https://mindalyze-com.github.io/robots.txt`,
+which this project repository cannot publish. The build therefore does not generate a
+misleading project-path `robots.txt`; crawling remains allowed by default. After deployment,
+submit `https://mindalyze-com.github.io/deep-20-bench/sitemap.xml` in Google Search Console.
+Alternatively, the separately managed host-root `robots.txt` can advertise that absolute URL.
+See Google's guidance for [robots.txt location](https://developers.google.com/crawling/docs/robots-txt/create-robots-txt)
+and [sitemap submission](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap).
+
+The app uses clean history routes. Generated route directories make direct reloads work on
+static HTTP hosts. Direct `file://` navigation is not supported because clean history paths and
+route data require an HTTP origin.
 
 Start the Vue development server from the repository root:
 

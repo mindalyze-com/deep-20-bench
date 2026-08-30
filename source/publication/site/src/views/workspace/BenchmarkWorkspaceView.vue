@@ -12,7 +12,7 @@ import LoadingState from "@/components/LoadingState.vue";
 import ModelName from "@/components/ModelName.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
-import { getRun, getSubject } from "@/lib/api";
+import { getRun, getSubject, peekRun } from "@/lib/api";
 import { number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import type { ContractReliability } from "@/lib/types";
@@ -27,6 +27,7 @@ const executionId = computed(() => String(route.params.executionId ?? ""));
 const { document, loading, error } = useKeyedPublicationLoad({
   parameters: (): [string] => [executionId.value],
   load: getRun,
+  initial: () => peekRun(executionId.value),
   fallbackError: "The run could not be loaded.",
   onLoaded: () => applyRunContext(),
 });
@@ -49,7 +50,7 @@ const applyRunContext = (): void => {
   if (current === null || route.name !== "run") return;
   setRouteContext({
     title: current.model_name,
-    description: `Official Deep20Bench run ${current.execution_id}.`,
+    description: `Official Deep20Bench results for ${current.model_name}: ${number(current.question_score)} question score across ${current.terminal_trials} episodes with ${percent(current.success_rate)} success.`,
     level: "Run workspace",
     position: `${subjects.value.length} subjects`,
     crumbs: [

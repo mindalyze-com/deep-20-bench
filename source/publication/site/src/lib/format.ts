@@ -26,6 +26,17 @@ const userDateTime = new Intl.DateTimeFormat(undefined, {
   timeStyle: "medium",
 });
 
+const staticDate = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "medium",
+  timeZone: "UTC",
+});
+
+const staticDateAndTime = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "medium",
+  timeStyle: "medium",
+  timeZone: "UTC",
+});
+
 export const number = (
   value: string | number | null | undefined,
   digits = 2,
@@ -103,6 +114,12 @@ export const date = (value: string | null): string =>
 
 export const dateTime = (value: string): string =>
   userDateTime.format(new Date(value));
+
+export const staticDateLabel = (value: string): string =>
+  staticDate.format(new Date(value));
+
+export const staticDateTimeLabel = (value: string): string =>
+  staticDateAndTime.format(new Date(value));
 
 export const isoDateTime = (value: string): string =>
   new Date(value).toISOString().replace(/\.\d{3}Z$/, "Z");

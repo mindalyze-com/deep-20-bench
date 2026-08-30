@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 
-import { getManifest } from "@/lib/api";
-import { dateTime } from "@/lib/format";
+import PublicationTime from "@/components/PublicationTime.vue";
+import { getManifest, peekManifest } from "@/lib/api";
 import { citeAndReuseLinks, contributionLinks } from "@/lib/site-resources";
 
-const publicationUpdatedAt = ref<string | null>(null);
+const publicationUpdatedAt = ref<string | null>(peekManifest()?.provenance.built_at ?? null);
 
 onMounted(async () => {
+  if (publicationUpdatedAt.value !== null) return;
   try {
     const manifest = await getManifest();
     publicationUpdatedAt.value = manifest.provenance.built_at;
@@ -59,7 +60,7 @@ onMounted(async () => {
     >
       <span>
         Publication updated
-        <time :datetime="publicationUpdatedAt">{{ dateTime(publicationUpdatedAt) }}</time>
+        <PublicationTime :value="publicationUpdatedAt" />
       </span>
     </div>
   </footer>

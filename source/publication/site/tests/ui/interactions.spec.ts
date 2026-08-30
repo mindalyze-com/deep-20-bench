@@ -184,6 +184,31 @@ test("primary and result navigation use distinct section names", { tag: ["@inter
   await expect(aboutLink).toHaveAttribute("aria-current", "page");
 });
 
+test("canonical URL resolves aliases and follows client navigation", { tag: ["@interactions", "@desktop"] }, async ({ page }) => {
+  const canonical = page.locator('link[rel="canonical"]');
+
+  await page.goto("story/");
+  await waitForPublication(page);
+  await expect(canonical).toHaveAttribute(
+    "href",
+    "https://mindalyze-com.github.io/deep-20-bench/about/",
+  );
+
+  await page.locator(".primary-navigation a").filter({ hasText: "Results" }).click();
+  await expect(page).toHaveURL(/\/deep-20-bench\/results\/$/);
+  await expect(canonical).toHaveAttribute(
+    "href",
+    "https://mindalyze-com.github.io/deep-20-bench/results/",
+  );
+
+  await page.locator(".primary-navigation a").filter({ hasText: "About" }).click();
+  await expect(page).toHaveURL(/\/deep-20-bench\/about\/$/);
+  await expect(canonical).toHaveAttribute(
+    "href",
+    "https://mindalyze-com.github.io/deep-20-bench/about/",
+  );
+});
+
 test("leaderboard links and headers remain clear while scrolling", { tag: ["@interactions", "@desktop"] }, async ({
   page,
 }, testInfo) => {
@@ -286,6 +311,49 @@ test("workspaces preload the next drilldown view before it is clicked", { tag: [
   await expect
     .poll(() => requested.has("episode"))
     .toBe(true);
+});
+
+test("cached workspace transitions keep route identities scoped to their workspace", { tag: ["@interactions", "@both", "@smoke"] }, async ({
+  page,
+}, testInfo) => {
+  const invalidDataRequests: string[] = [];
+  const browserErrors: string[] = [];
+  page.on("request", (request) => {
+    const path = new URL(request.url()).pathname;
+    if (/(?:runs|subjects|episodes)\/\.json$/.test(path)) {
+      invalidDataRequests.push(path);
+    }
+  });
+  page.on("pageerror", (error) => browserErrors.push(error.message));
+
+  await page.goto("results/");
+  await waitForPublication(page);
+  await page.locator(`a[href$="/${runPath}"]:visible`).last().click();
+  await expect(page).toHaveURL(new RegExp(`${runPath}$`));
+  await page.locator(`a[href$="/${subjectPath}"]:visible`).first().click();
+  await expect(page).toHaveURL(new RegExp(`${subjectPath}$`));
+  await page.locator(`a[href$="/${episodePath}"]:visible`).first().click();
+  await expect(page).toHaveURL(new RegExp(`${episodePath}$`));
+  await page.locator(`a[href$="/${subjectPath}"]:visible`).last().click();
+  await expect(page).toHaveURL(new RegExp(`${subjectPath}$`));
+  await page.locator(`a[href$="/${runPath}"]:visible`).first().click();
+  await expect(page).toHaveURL(new RegExp(`${runPath}$`));
+
+  if (testInfo.project.name.startsWith("mobile")) {
+    const mobileMenu = page.locator(".mobile-navigation");
+    await mobileMenu.locator("summary").click();
+    await mobileMenu.getByRole("link", { name: "Results", exact: true }).click();
+  } else {
+    await page.locator(".primary-navigation").getByRole("link", {
+      name: "Results",
+      exact: true,
+    }).click();
+  }
+  await expect(page).toHaveURL(/\/results\/$/);
+  await page.waitForTimeout(100);
+
+  expect(invalidDataRequests).toEqual([]);
+  expect(browserErrors).toEqual([]);
 });
 
 test("a slow route module still acknowledges the click", { tag: ["@interactions", "@desktop"] }, async ({ page }) => {

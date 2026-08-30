@@ -22,6 +22,11 @@ Read and follow the relevant detailed specification before changing these areas:
 - `deep20-publication build` regenerates the tracked GitHub Pages site in `docs/`. Any commit
   that changes publication source or generated output must include the complete regenerated
   `docs/` tree.
+- Treat `docs/data/deep20bench-v9.json` as a long-lived external compatibility URL. If a newer
+  publication schema becomes primary, keep publishing this path and update it with all current
+  data that can be represented by the v9 contract; do not leave it frozen, rename it, or remove
+  it merely because v10 or a later schema exists. Keep its companion v9 schema available and
+  document any data that cannot be represented in v9.
 - Unless the user explicitly requests it in the current request, do not commit, push, tag,
   release, open a pull request, or publish externally. Treat requests to run or publish the
   publication as local `docs/` generation. Never push feature or development branches; when

@@ -4,12 +4,13 @@ import { computed, ref } from "vue";
 import ErrorState from "@/components/ErrorState.vue";
 import IllustrativeRoundExample from "@/components/IllustrativeRoundExample.vue";
 import LoadingState from "@/components/LoadingState.vue";
-import { getManifest } from "@/lib/api";
+import { getManifest, peekManifest } from "@/lib/api";
 import { usePageRouteContext } from "@/lib/route-context";
 import type { ManifestDocument } from "@/lib/types";
 import { usePublicationLoad } from "@/lib/use-publication-load";
 
-const manifest = ref<ManifestDocument | null>(null);
+const initialManifest = peekManifest();
+const manifest = ref<ManifestDocument | null>(initialManifest);
 usePageRouteContext({
   title: "Method",
   description:
@@ -17,7 +18,7 @@ usePageRouteContext({
 });
 const { loading, error } = usePublicationLoad(async () => {
   manifest.value = await getManifest();
-}, "Method data is unavailable.");
+}, "Method data is unavailable.", initialManifest !== null);
 
 const penalty = computed(() => {
   const value = manifest.value;
@@ -60,6 +61,28 @@ const totalTrials = computed(() => {
           <a href="#publication">07 · Publication</a>
         </nav>
       </div>
+
+      <aside class="build-story-shell site-boundary-shell" aria-labelledby="build-story-title">
+        <div class="build-story-panel site-boundary">
+          <div>
+            <p class="eyebrow">Build notes · Medium</p>
+            <h2 id="build-story-title">What went wrong while building Deep20Bench.</h2>
+          </div>
+          <p>
+            Read the first-person account of contradictory Oracle answers, blind review, format
+            failures, and the fixes that shaped the final benchmark.
+          </p>
+          <a
+            class="button build-story-link"
+            href="https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Read the build story on Medium (opens in a new tab)"
+          >
+            Read the build story on Medium ↗
+          </a>
+        </div>
+      </aside>
 
       <section id="game" class="content-section game-section">
         <div class="content-inner editorial-copy">
@@ -176,6 +199,16 @@ const totalTrials = computed(() => {
                 “born before 1800?” while citing 1875. A full run asks hundreds of questions, so
                 even rare errors add up. Reviewer and Judge use different model families and
                 providers to reduce correlated mistakes.
+              </p>
+              <p>
+                <a
+                  href="https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Read the development story behind the adjudication system and structured-output
+                  recovery ↗
+                </a>
               </p>
             </aside>
           </div>
@@ -568,6 +601,49 @@ const totalTrials = computed(() => {
   border-right: 0;
 }
 
+.build-story-shell {
+  padding-block: clamp(1.25rem, 3vw, 2.25rem);
+  border-bottom: var(--rule-default);
+  background: var(--paper-bright);
+}
+
+.build-story-panel {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.8fr) minmax(18rem, 1fr) auto;
+  align-items: end;
+  gap: clamp(1.25rem, 3vw, 3rem);
+  padding: clamp(1.4rem, 3vw, 2.4rem);
+  border: var(--rule-strong);
+  background: var(--acid);
+}
+
+.build-story-panel .eyebrow {
+  margin-bottom: 0.55rem;
+}
+
+.build-story-panel h2 {
+  max-width: 15ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.2vw, 3rem);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.build-story-panel > p {
+  max-width: 35rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.build-story-link {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: white;
+  white-space: nowrap;
+}
+
 .section-note {
   color: var(--muted);
   font-size: var(--text-small);
@@ -752,6 +828,10 @@ const totalTrials = computed(() => {
 .rationale-note {
   padding-top: 1.5rem;
   border-top: var(--rule-strong);
+}
+
+.rationale-note p + p {
+  margin-top: 0.8rem;
 }
 
 .repetition-section {
@@ -993,6 +1073,16 @@ const totalTrials = computed(() => {
     grid-column: 1 / -1;
     border-right: 0;
     border-bottom: 0;
+  }
+
+  .build-story-panel {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .build-story-link {
+    justify-self: start;
+    white-space: normal;
   }
 
   .answer-roles,

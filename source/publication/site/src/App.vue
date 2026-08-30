@@ -21,9 +21,11 @@ const scrollPositions = new Map<string, number>();
 const contextCache = new Map<string, Omit<RouteContext, "version">>();
 let scrollRestoreVersion = 0;
 let navigationFeedbackTimer = 0;
+const browser = typeof window !== "undefined" && typeof document !== "undefined";
 
 // A route component still being fetched delays the whole navigation, so acknowledge the click.
 const startNavigationFeedback = (): void => {
+  if (!browser) return;
   window.clearTimeout(navigationFeedbackTimer);
   navigationFeedbackTimer = window.setTimeout(() => {
     navigating.value = true;
@@ -31,12 +33,15 @@ const startNavigationFeedback = (): void => {
 };
 
 const stopNavigationFeedback = (): void => {
+  if (!browser) return;
   window.clearTimeout(navigationFeedbackTimer);
   navigating.value = false;
 };
 
 const usesDocumentScroll = (): boolean =>
-  route.meta.workspace !== true || window.matchMedia("(max-width: 760px)").matches;
+  !browser ||
+  route.meta.workspace !== true ||
+  window.matchMedia("(max-width: 760px)").matches;
 
 const readScrollTop = (element: HTMLElement): number =>
   usesDocumentScroll() ? window.scrollY : element.scrollTop;
@@ -54,12 +59,14 @@ const maximumScrollTop = (element: HTMLElement): number => {
 };
 
 const focusRouteContent = async (): Promise<void> => {
+  if (!browser) return;
   await nextTick();
   const target = document.getElementById("route-content");
   target?.focus({ preventScroll: true });
 };
 
 const restoreScroll = async (): Promise<void> => {
+  if (!browser) return;
   const version = ++scrollRestoreVersion;
   await nextTick();
   if (version !== scrollRestoreVersion) return;
@@ -88,6 +95,7 @@ const restoreScroll = async (): Promise<void> => {
 };
 
 router.beforeEach((to, from) => {
+  if (!browser) return;
   startNavigationFeedback();
   const element = viewport.value;
   if (element !== null && from.meta.workspace !== true) {
@@ -114,6 +122,7 @@ router.beforeEach((to, from) => {
 });
 
 router.afterEach((to, from) => {
+  if (!browser) return;
   stopNavigationFeedback();
   if (from.name !== undefined && to.path !== from.path) {
     void focusRouteContent();
@@ -123,25 +132,38 @@ router.afterEach((to, from) => {
 
 router.onError(stopNavigationFeedback);
 
-const canonicalUrl = computed(
-  () => new URL(route.path.replace(/^\//, ""), __DEEP20_CANONICAL_URL__).href,
-);
+const canonicalUrl = computed(() => {
+  const path =
+    typeof route.meta.canonicalPath === "string"
+      ? route.meta.canonicalPath
+      : route.path;
+  return new URL(path.replace(/^\//, ""), __DEEP20_CANONICAL_URL__).href;
+});
 
 watch(
-  () => [routeContext.title, routeContext.description, routeContext.version] as const,
-  ([title, description]) => {
-    document.title = title === "Deep20Bench" ? title : `${title} · Deep20Bench`;
-    const descriptionMeta = document.querySelector<HTMLMetaElement>(
-      'meta[name="description"]',
-    );
-    descriptionMeta?.setAttribute("content", description);
+  canonicalUrl,
+  (url) => {
+    if (!browser) return;
     let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (canonical === null) {
       canonical = document.createElement("link");
       canonical.rel = "canonical";
       document.head.append(canonical);
     }
-    canonical.href = canonicalUrl.value;
+    canonical.href = url;
+  },
+  { immediate: true },
+);
+
+watch(
+  () => [routeContext.title, routeContext.description, routeContext.version] as const,
+  ([title, description]) => {
+    if (!browser) return;
+    document.title = title === "Deep20Bench" ? title : `${title} · Deep20Bench`;
+    const descriptionMeta = document.querySelector<HTMLMetaElement>(
+      'meta[name="description"]',
+    );
+    descriptionMeta?.setAttribute("content", description);
     void restoreScroll();
   },
 );

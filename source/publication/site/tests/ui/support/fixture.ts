@@ -7,6 +7,9 @@ const dataRoot = path.resolve(
   process.cwd(),
   "tests/fixtures/publication/data",
 );
+const publicationBasePath = "/deep-20-bench/";
+const embeddedPageState =
+  /<script\b(?=[^>]*\bid=["']deep20-page-state["'])[^>]*>[\s\S]*?<\/script>\s*/;
 
 export const test = base.extend({
   page: async ({ page }, use) => {
@@ -48,6 +51,28 @@ export const test = base.extend({
         throw error;
       }
     });
+    await page.route(
+      (url) => url.pathname.startsWith(publicationBasePath),
+      async (route) => {
+        if (route.request().resourceType() !== "document") {
+          await route.fallback();
+          return;
+        }
+        let response = await route.fetch();
+        if (response.status() === 404) {
+          response = await route.fetch({
+            url: new URL(publicationBasePath, route.request().url()).href,
+          });
+        }
+        const contentType = response.headers()["content-type"] ?? "";
+        if (!contentType.includes("text/html")) {
+          await route.fulfill({ response });
+          return;
+        }
+        const body = (await response.text()).replace(embeddedPageState, "");
+        await route.fulfill({ response, body });
+      },
+    );
     await use(page);
   },
 });
