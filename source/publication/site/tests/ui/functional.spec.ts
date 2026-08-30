@@ -74,7 +74,7 @@ test("illustrative round connects the correct guess to its trial score", { tag: 
 
   const hero = page.locator(".hero-copy");
   await expect(hero).toContainText(
-    "Deep20Bench tests how well AI models play the guessing game",
+    "Deep20Bench is a public benchmark for large language models (LLMs)",
   );
   const details = page.locator(".hero-details");
   await expect(details).toContainText(
@@ -771,9 +771,12 @@ test("run overview explains its totals and keeps every subject row available", {
   await expect(page.locator(".run-workspace-hero")).toContainText("Official run");
   await expect(page.locator(".run-workspace-hero")).not.toContainText("Certified");
   await expect(page.locator(".run-deck")).toContainText(
-    `${runDocument.subjects.length} subjects ×`,
+    `across ${runDocument.subjects.length} subjects`,
   );
-  await expect(page.locator(".run-deck")).toContainText("scored episodes =");
+  await expect(page.locator(".run-deck")).toContainText(
+    "In this Twenty Questions LLM benchmark",
+  );
+  await expect(page.locator(".run-deck")).toContainText("scored episodes");
 
   const roleGuide = page.locator(".role-guide");
   await expect(roleGuide.locator("dt")).toHaveText([

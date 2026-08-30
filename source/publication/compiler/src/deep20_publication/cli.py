@@ -67,46 +67,67 @@ class _EditorialPage:
 _EDITORIAL_PAGES = (
     _EditorialPage(
         route="results",
-        browser_title="Results · Deep20Bench",
-        description="Compare official model scores, outcomes, costs, time, and stability.",
+        browser_title="LLM Benchmark Results and Leaderboard | Deep20Bench",
+        description=(
+            "Compare official Twenty Questions LLM benchmark scores, outcomes, costs, "
+            "runtime, and repeated-trial stability."
+        ),
     ),
     _EditorialPage(
         route="results/reliability",
-        browser_title="Stability results · Deep20Bench",
-        description="Compare repeated-trial stability and contract compliance by model.",
+        browser_title="LLM Benchmark Stability and Reliability | Deep20Bench",
+        description=(
+            "Compare repeated-trial stability, confidence-interval width, and output-contract "
+            "compliance across tested LLMs."
+        ),
     ),
     _EditorialPage(
         route="results/cost",
-        browser_title="Cost results · Deep20Bench",
-        description="Compare recorded benchmark costs by model and component.",
+        browser_title="LLM Benchmark Cost Comparison | Deep20Bench",
+        description=(
+            "Compare recorded LLM benchmark costs by tested model, support component, run, "
+            "and episode."
+        ),
     ),
     _EditorialPage(
         route="results/time",
-        browser_title="Time results · Deep20Bench",
-        description="Compare tested-model response time and end-to-end benchmark runtime.",
+        browser_title="LLM Benchmark Runtime and Response Time | Deep20Bench",
+        description=(
+            "Compare tested-model response time, latency per call, and end-to-end LLM "
+            "benchmark runtime."
+        ),
     ),
     _EditorialPage(
         route="results/efficiency",
-        browser_title="Efficiency results · Deep20Bench",
-        description="Compare question score and recorded Guesser cost across official runs.",
+        browser_title="LLM Benchmark Cost Efficiency | Deep20Bench",
+        description=(
+            "Compare question score and recorded tested-model cost across official "
+            "Twenty Questions LLM benchmark runs."
+        ),
     ),
     _EditorialPage(
         route="methodology",
-        browser_title="Method · Deep20Bench",
+        browser_title="Twenty Questions LLM Benchmark Method | Deep20Bench",
         description=(
-            "Follow one Twenty Questions round through answer checks, repeated trials, "
-            "scoring, official comparison, and publication."
+            "Follow the Deep20Bench LLM benchmark method through answer checks, repeated "
+            "Twenty Questions trials, scoring, and publication."
         ),
     ),
     _EditorialPage(
         route="about",
-        browser_title="About · Deep20Bench",
-        description="Read how Deep20Bench began, see project news, and review related research.",
+        browser_title="Deep20Bench Origin and Related LLM Research",
+        description=(
+            "Read how the Deep20Bench LLM benchmark began, see project news, and review "
+            "related Twenty Questions research."
+        ),
     ),
     _EditorialPage(
         route="data",
-        browser_title="Data · Deep20Bench",
-        description="Download the public dataset and inspect its contents and citation details.",
+        browser_title="Deep20Bench Dataset, Results and Transcripts",
+        description=(
+            "Download the public Deep20Bench dataset, leaderboard results, trial transcripts, "
+            "schema, and citation details."
+        ),
     ),
 )
 _EDITORIAL_ALIASES: dict[str, str] = {"story": "about"}
@@ -489,22 +510,34 @@ def _percent_text(value: Decimal) -> str:
 
 
 def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest:
+    last_modified = bundle.manifest.provenance.built_at
+    evaluated_count = sum(
+        row.status == "evaluated" for row in bundle.leaderboard.leaderboard
+    )
     home = StaticRouteEntry(
         route="",
         kind="home",
+        indexable=True,
         sitemap_included=True,
         canonical_route="",
-        browser_title="Deep20Bench · Twenty Questions AI Pilot",
-        description=bundle.manifest.site.description,
+        browser_title="Deep20Bench: A Twenty Questions LLM Benchmark",
+        description=(
+            f"Compare {evaluated_count} AI models in a public Twenty Questions LLM benchmark "
+            "measuring question strategy, multi-turn reasoning, state tracking, reliability, "
+            "cost, and runtime."
+        ),
+        last_modified=last_modified,
     )
     editorial = tuple(
         StaticRouteEntry(
             route=page.route,
             kind="editorial",
+            indexable=True,
             sitemap_included=True,
             canonical_route=page.route,
             browser_title=page.browser_title,
             description=page.description,
+            last_modified=last_modified,
         )
         for page in _EDITORIAL_PAGES
     )
@@ -512,10 +545,12 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
         StaticRouteEntry(
             route=route,
             kind="alias",
+            indexable=True,
             sitemap_included=False,
             canonical_route=canonical_route,
             browser_title="About · Deep20Bench",
             description="Read how Deep20Bench began, see project news, and review related research.",
+            last_modified=last_modified,
         )
         for route, canonical_route in _EDITORIAL_ALIASES.items()
     )
@@ -525,8 +560,8 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
         if row.execution_id is not None
     }
     runs: list[StaticRouteEntry] = []
-    for document in bundle.runs:
-        run = document.run
+    for run_document in bundle.runs:
+        run = run_document.run
         row = leaderboard_by_execution.get(run.execution_id)
         score = (
             _decimal_text(run.question_score)
@@ -543,45 +578,85 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
             StaticRouteEntry(
                 route=f"runs/{run.execution_id}",
                 kind="run",
+                indexable=True,
                 sitemap_included=True,
                 canonical_route=f"runs/{run.execution_id}",
-                browser_title=f"{run.model_name} · Deep20Bench",
+                browser_title=f"{run.model_name} Benchmark Results | Deep20Bench",
                 description=(
-                    f"Official Deep20Bench results for {run.model_name}: {rank}"
+                    f"Official Twenty Questions LLM benchmark results for {run.model_name}: "
+                    f"{rank}"
                     f"{score} question score across {run.terminal_trials} episodes with "
                     f"{success} success."
                 ),
+                last_modified=last_modified,
                 execution_id=run.execution_id,
             )
         )
-    run_names = {document.run.execution_id: document.run.model_name for document in bundle.runs}
-    subjects = tuple(
-        StaticRouteEntry(
-            route=f"runs/{document.execution_id}/subjects/{document.target_id}",
-            kind="subject",
-            sitemap_included=False,
-            canonical_route=f"runs/{document.execution_id}/subjects/{document.target_id}",
-            browser_title=f"Subject evidence · {run_names[document.execution_id]} · Deep20Bench",
-            description="Inspect subject-level Deep20Bench trial results and evidence.",
+    runs_by_execution = {document.run.execution_id: document for document in bundle.runs}
+    subjects: list[StaticRouteEntry] = []
+    for subject_document in bundle.subjects:
+        run_document = runs_by_execution[subject_document.execution_id]
+        run = run_document.run
+        subject = next(
+            summary
+            for summary in run_document.subjects
+            if summary.target_id == subject_document.target_id
         )
-        for document in bundle.subjects
-    )
+        score = (
+            _decimal_text(subject.average_questions)
+            if subject.average_questions is not None
+            else "unavailable"
+        )
+        route = (
+            f"runs/{subject_document.execution_id}/subjects/{subject_document.target_id}"
+        )
+        subjects.append(
+            StaticRouteEntry(
+                route=route,
+                kind="subject",
+                indexable=True,
+                sitemap_included=True,
+                canonical_route=route,
+                browser_title=(
+                    f"{run.model_name} on {subject.display_name} - Twenty Questions Results "
+                    "| Deep20Bench"
+                ),
+                description=(
+                    f"{run.model_name} scored {score} questions on {subject.display_name} "
+                    f"across {len(subject_document.trials)} Deep20Bench trials, solving "
+                    f"{subject.successful} of {len(subject_document.trials)}. "
+                    "Inspect results and evidence."
+                ),
+                last_modified=last_modified,
+                execution_id=subject_document.execution_id,
+                target_id=subject_document.target_id,
+            )
+        )
     episodes = tuple(
         StaticRouteEntry(
             route=(
-                f"runs/{document.execution_id}/subjects/{document.target_id}/"
-                f"episodes/{document.trial_id}"
+                f"runs/{episode_document.execution_id}/subjects/{episode_document.target_id}/"
+                f"episodes/{episode_document.trial_id}"
             ),
             kind="episode",
+            indexable=False,
             sitemap_included=False,
             canonical_route=(
-                f"runs/{document.execution_id}/subjects/{document.target_id}/"
-                f"episodes/{document.trial_id}"
+                f"runs/{episode_document.execution_id}/subjects/{episode_document.target_id}/"
+                f"episodes/{episode_document.trial_id}"
             ),
-            browser_title=f"Episode evidence · {run_names[document.execution_id]} · Deep20Bench",
+            browser_title=(
+                f"Episode evidence · "
+                f"{runs_by_execution[episode_document.execution_id].run.model_name} · "
+                "Deep20Bench"
+            ),
             description="Inspect one public Deep20Bench episode transcript and its evidence.",
+            last_modified=last_modified,
+            execution_id=episode_document.execution_id,
+            target_id=episode_document.target_id,
+            trial_id=episode_document.trial_id,
         )
-        for document in bundle.episodes
+        for episode_document in bundle.episodes
     )
     return StaticRouteManifest(
         routes=(home, *editorial, *runs, *aliases, *subjects, *episodes),

@@ -37,6 +37,12 @@ def test_search_files_follow_the_static_route_manifest() -> None:
             ".//{http://www.sitemaps.org/schemas/sitemap/0.9}loc"
         )
     )
+    last_modified = tuple(
+        element.text
+        for element in document.findall(
+            ".//{http://www.sitemaps.org/schemas/sitemap/0.9}lastmod"
+        )
+    )
     expected = tuple(
         CANONICAL_URL if route.canonical_route == "" else (
             f"{CANONICAL_URL}{route.canonical_route}/"
@@ -46,13 +52,22 @@ def test_search_files_follow_the_static_route_manifest() -> None:
     )
     assert locations == expected
     assert len(locations) == len(expected)
+    assert tuple(
+        datetime.fromisoformat(value)
+        for value in last_modified
+        if value is not None
+    ) == tuple(
+        route.last_modified
+        for route in route_manifest.routes
+        if route.sitemap_included
+    )
     assert sum(
         "/runs/" in location for location in locations if location is not None
-    ) == len(bundle.runs)
+    ) == len(bundle.runs) + len(bundle.subjects)
     assert not (REPOSITORY / "docs" / "robots.txt").exists()
 
 
-def test_sitemap_contains_editorial_and_official_run_routes() -> None:
+def test_sitemap_contains_editorial_run_and_subject_routes() -> None:
     bundle = split_publication(_published_dataset())
     routes = _static_route_manifest(bundle).routes
     sitemap_routes = {entry.route for entry in routes if entry.sitemap_included}
@@ -62,9 +77,15 @@ def test_sitemap_contains_editorial_and_official_run_routes() -> None:
     run_routes = {
         f"runs/{run.run.execution_id}" for run in bundle.runs
     }
+    subject_routes = {
+        f"runs/{subject.execution_id}/subjects/{subject.target_id}"
+        for subject in bundle.subjects
+    }
 
-    assert sitemap_routes == editorial_routes | run_routes
-    assert len(sitemap_routes) == len(editorial_routes) + len(bundle.runs)
+    assert sitemap_routes == editorial_routes | run_routes | subject_routes
+    assert len(sitemap_routes) == (
+        len(editorial_routes) + len(bundle.runs) + len(bundle.subjects)
+    )
 
 
 def test_search_files_are_not_handwritten_site_assets() -> None:
@@ -131,6 +152,7 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
     assert 'content="https://mindalyze-com.github.io/deep-20-bench/og.webp"' in entry
     assert "og.png" not in entry
     assert "How well can AI models play Twenty Questions?" in entry
+    assert "public benchmark for large language models (LLMs)" in entry
     assert "What this pilot tests" in entry
     assert "more than the traditional twenty" in entry_copy
     assert "The concept works and the first step is complete." in entry_copy
@@ -171,11 +193,15 @@ def test_static_route_manifest_covers_sitemap_and_evidence_routes() -> None:
     run_routes = {
         f"runs/{run.run.execution_id}" for run in bundle.runs
     }
+    subject_routes = {
+        f"runs/{subject.execution_id}/subjects/{subject.target_id}"
+        for subject in bundle.subjects
+    }
 
     assert len(routes) == (10 + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes))
     assert {
         entry.route for entry in routes.values() if entry.sitemap_included
-    } == editorial_routes | run_routes
+    } == editorial_routes | run_routes | subject_routes
     assert all(routes[page].sitemap_included for page in (
         "", "results", "results/reliability", "results/cost", "results/time",
         "results/efficiency", "methodology", "about", "data",
@@ -184,22 +210,31 @@ def test_static_route_manifest_covers_sitemap_and_evidence_routes() -> None:
         routes[f"runs/{run.run.execution_id}"].sitemap_included
         for run in bundle.runs
     )
+    assert all(routes[route].sitemap_included for route in subject_routes)
     assert routes["story"].canonical_route == "about"
     assert not routes["story"].sitemap_included
     assert all(
         not entry.sitemap_included
         for entry in routes.values()
-        if entry.kind in {"subject", "episode"}
+        if entry.kind == "episode"
     )
+    assert all(entry.indexable for entry in routes.values() if entry.kind == "subject")
+    assert all(not entry.indexable for entry in routes.values() if entry.kind == "episode")
     assert len({entry.browser_title for entry in routes.values() if entry.kind == "run"}) == len(
         bundle.runs
     )
     assert len({entry.description for entry in routes.values() if entry.kind == "run"}) == len(
         bundle.runs
     )
+    assert len(
+        {entry.browser_title for entry in routes.values() if entry.kind == "subject"}
+    ) == len(bundle.subjects)
+    assert len(
+        {entry.description for entry in routes.values() if entry.kind == "subject"}
+    ) == len(bundle.subjects)
 
 
-def test_generated_run_is_prerendered_and_evidence_has_no_robots_block() -> None:
+def test_generated_run_and_subject_are_prerendered_and_episode_is_noindex() -> None:
     bundle = split_publication(_published_dataset())
     run = bundle.runs[0]
     run_route = f"runs/{run.run.execution_id}"
@@ -229,13 +264,31 @@ def test_generated_run_is_prerendered_and_evidence_has_no_robots_block() -> None
         encoding="utf-8"
     )
     assert 'name="robots"' not in subject_entry
-    assert 'data-prerendered="true"' not in subject_entry
-    assert f"{CANONICAL_URL}{subject_route}/" not in {
+    assert 'data-prerendered="true"' in subject_entry
+    assert 'class="subject-overview-pane"' in subject_entry
+    assert subject_document.profile.subject_name in subject_entry
+    assert "Average questions" in subject_entry
+    assert f"{CANONICAL_URL}{subject_route}/" in {
         element.text
         for element in ElementTree.parse(REPOSITORY / "docs" / "sitemap.xml").findall(
             ".//{http://www.sitemaps.org/schemas/sitemap/0.9}loc"
         )
     }
+
+    episode_document = next(
+        episode
+        for episode in bundle.episodes
+        if episode.execution_id == subject_document.execution_id
+        and episode.target_id == subject_document.target_id
+    )
+    episode_route = (
+        f"{subject_route}/episodes/{episode_document.trial_id}"
+    )
+    episode_entry = (REPOSITORY / "docs" / episode_route / "index.html").read_text(
+        encoding="utf-8"
+    )
+    assert 'data-prerendered="true"' not in episode_entry
+    assert 'name="robots" content="noindex, follow"' in episode_entry
 
     not_found = (REPOSITORY / "docs" / "404.html").read_text(encoding="utf-8")
     assert 'rel="canonical"' not in not_found

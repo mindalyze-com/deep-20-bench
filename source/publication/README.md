@@ -50,8 +50,9 @@ The build:
 4. records separate UTC publication and application build times in typed public metadata;
 5. writes the complete `deep20bench-v9.json`, its generated JSON Schema, and
    `leaderboard.csv`, plus typed, split JSON documents for the SPA;
-6. builds the Vue application, statically renders the homepage, eight editorial pages, and all
-   selected official run summaries, and writes entry shells for subject and episode routes;
+6. builds the Vue application, statically renders the homepage, eight editorial pages, every
+   selected official run summary, and every subject summary, and writes entry shells for episode
+   routes;
 7. uses the configured base path for clean direct URLs on GitHub Pages and normal static HTTP
    hosts;
 8. runs strict Vue/TypeScript checks and the static build;
@@ -93,7 +94,9 @@ installed.
 
 The browser uses typed public documents embedded in each statically rendered page for its first
 hydration. It fetches one small run, subject, or episode document only when later navigation
-needs it. The complete version 9 JSON remains a download and is not imported into the
+needs it. Subject pages embed their run and subject documents so their aggregate result and
+ordinary episode links exist in the initial HTML. The complete version 9 JSON remains a download
+and is not imported into the
 application bundle. Browser promise caching applies only to immutable public reporting files.
 It cannot affect model requests, benchmark execution, or Guesser-visible state.
 
@@ -103,12 +106,13 @@ every selected official run summary contain their real content and ordinary link
 initial HTML. Charts and interactive controls start after hydration. There is no separate
 fallback content tree or content-hiding script.
 
-The generated pages have route-specific titles, descriptions, social metadata, and canonical
-URLs. The homepage retains Dataset structured data. `sitemap.xml` contains the homepage,
-editorial URLs, and every selected official run URL. Successful publication pages do not emit a
-robots meta tag, so search engines use their default `index, follow` behavior. Subject, episode,
-alias, error, and download URLs remain outside the sitemap, but only the generated 404 page emits
-`noindex`.
+The generated pages have route-specific titles, descriptions, social metadata, canonical URLs,
+and accurate publication modification times in `sitemap.xml`. The homepage retains Dataset
+structured data. The sitemap contains the homepage, editorial URLs, every selected official run,
+and every subject summary. These pages do not emit a robots meta tag, so search engines use their
+default `index, follow` behavior. Episode evidence pages remain outside the sitemap and emit
+`noindex, follow`; aliases and downloads remain outside the sitemap. The generated 404 page also
+emits `noindex, follow`.
 
 This repository publishes a GitHub Pages project site below `/deep-20-bench/`. A valid
 `robots.txt` for that host must instead live at `https://mindalyze-com.github.io/robots.txt`,

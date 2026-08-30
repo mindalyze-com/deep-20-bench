@@ -2148,11 +2148,15 @@ class PublicationDataBundle(FrozenModel):
 class StaticRouteEntry(FrozenModel):
     route: str
     kind: Literal["home", "editorial", "run", "alias", "subject", "episode"]
+    indexable: bool
     sitemap_included: bool
     canonical_route: str
     browser_title: str = Field(min_length=1, max_length=200)
     description: str = Field(min_length=1, max_length=500)
+    last_modified: datetime
     execution_id: str | None = Field(default=None, pattern=EXECUTION_ID_PATTERN)
+    target_id: str | None = Field(default=None, pattern=TARGET_ID_PATTERN)
+    trial_id: str | None = Field(default=None, pattern=TRIAL_ID_PATTERN)
 
     @model_validator(mode="after")
     def route_shape_matches_kind(self) -> StaticRouteEntry:
@@ -2160,17 +2164,29 @@ class StaticRouteEntry(FrozenModel):
             raise ValueError("static routes must omit leading and trailing slashes")
         if self.canonical_route.startswith("/") or self.canonical_route.endswith("/"):
             raise ValueError("canonical static routes must omit leading and trailing slashes")
-        if self.kind == "run" and self.execution_id is None:
-            raise ValueError("static run routes require an execution ID")
-        if self.kind != "run" and self.execution_id is not None:
-            raise ValueError("only static run routes may carry an execution ID")
+        if self.last_modified.tzinfo is None or self.last_modified.utcoffset() is None:
+            raise ValueError("static route modification time must include a timezone")
+        if self.kind in {"run", "subject", "episode"} and self.execution_id is None:
+            raise ValueError("static evidence routes require an execution ID")
+        if self.kind not in {"run", "subject", "episode"} and self.execution_id is not None:
+            raise ValueError("only static evidence routes may carry an execution ID")
+        if self.kind in {"subject", "episode"} and self.target_id is None:
+            raise ValueError("static subject and episode routes require a target ID")
+        if self.kind not in {"subject", "episode"} and self.target_id is not None:
+            raise ValueError("only static subject and episode routes may carry a target ID")
+        if self.kind == "episode" and self.trial_id is None:
+            raise ValueError("static episode routes require a trial ID")
+        if self.kind != "episode" and self.trial_id is not None:
+            raise ValueError("only static episode routes may carry a trial ID")
+        if self.sitemap_included and not self.indexable:
+            raise ValueError("non-indexable static routes cannot enter the sitemap")
         if self.sitemap_included and self.route != self.canonical_route:
             raise ValueError("sitemap routes must be self-canonical")
         return self
 
 
 class StaticRouteManifest(FrozenModel):
-    schema_version: Literal[1] = 1
+    schema_version: Literal[2] = 2
     routes: tuple[StaticRouteEntry, ...]
 
     @model_validator(mode="after")

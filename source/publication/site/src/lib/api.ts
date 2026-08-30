@@ -117,6 +117,14 @@ export const peekRepeatAverages = (): RepeatAveragesDocument | null =>
 export const peekRun = (executionId: string): RunDocument | null =>
   peek<RunDocument>(`runs/${encodeURIComponent(executionId)}.json`);
 
+export const peekSubject = (
+  executionId: string,
+  targetId: string,
+): SubjectDocument | null =>
+  peek<SubjectDocument>(
+    `runs/${encodeURIComponent(executionId)}/subjects/${encodeURIComponent(targetId)}.json`,
+  );
+
 export const peekOfficialRuns = (): RunDocument[] | null => {
   const manifest = peekManifest();
   if (manifest === null) return null;

@@ -48,6 +48,22 @@ const leaderboardRow = computed(() =>
 const evaluatedCount = computed(
   () => leaderboard.value.filter((row) => row.status === "evaluated").length,
 );
+const runDeck = computed(() => {
+  const current = run.value;
+  const row = leaderboardRow.value;
+  if (current === null) return "";
+  const trialSummary =
+    `${current.terminal_trials} scored episodes across ${subjects.value.length} subjects ` +
+    `with ${current.iterations} trials per subject.`;
+  if (row?.rank === null || row?.rank === undefined) {
+    return `This Twenty Questions LLM benchmark run contains ${trialSummary}`;
+  }
+  return (
+    `In this Twenty Questions LLM benchmark, ${current.model_name} ranks ${row.rank} of ` +
+    `${evaluatedCount.value} with a ${number(current.question_score)} question score and ` +
+    `${percent(current.success_rate)} success. Lower is better. The run contains ${trialSummary}`
+  );
+});
 
 watch(
   [run, subjects],
@@ -167,8 +183,7 @@ const roleGuide = runRoleOrder.map((role) => ({
         <p class="eyebrow">Official run</p>
         <h1><ModelName :name="run.model_name" /></h1>
         <p class="run-deck">
-          {{ run.terminal_trials }} scored episodes = {{ subjects.length }} subjects ×
-          {{ run.iterations }} trials. Choose a subject to inspect its attempts.
+          {{ runDeck }} Choose a subject to inspect its attempts.
         </p>
         <p v-if="leaderboardRow" class="run-search-facts">
           <span v-if="leaderboardRow.rank !== null">

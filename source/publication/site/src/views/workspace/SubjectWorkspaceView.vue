@@ -12,7 +12,7 @@ import LoadingState from "@/components/LoadingState.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
 import SubjectReferenceLink from "@/components/SubjectReferenceLink.vue";
-import { getEpisode, getSubject } from "@/lib/api";
+import { getEpisode, getSubject, peekSubject } from "@/lib/api";
 import {
   contractPercent,
   duration,
@@ -40,6 +40,7 @@ const targetId = computed(() => String(route.params.targetId ?? ""));
 const { document, loading, error } = useKeyedPublicationLoad({
   parameters: (): [string, string] => [executionId.value, targetId.value],
   load: getSubject,
+  initial: () => peekSubject(executionId.value, targetId.value),
   fallbackError: "The subject could not be loaded.",
   onLoaded: () => applySubjectContext(),
 });

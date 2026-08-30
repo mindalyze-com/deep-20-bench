@@ -290,19 +290,20 @@ versioned embedded page-state document contains only the existing public manifes
 leaderboard, run, and related result documents needed for the initial route. Browser-only
 charts and interactions start after hydration.
 
-The homepage, eight editorial and result pages, and each selected official run summary are
-rendered as complete HTML. Run pages include model identity, provider, reasoning effort, rank,
-question score and confidence interval, success and output-contract results, cost and timing,
-and links to every subject. All result navigation and run links are ordinary `a` elements in
-the generated HTML. Vue intercepts internal navigation only after hydration.
+The homepage, eight editorial and result pages, each selected official run summary, and every
+subject summary are rendered as complete HTML. Run pages include model identity, provider,
+reasoning effort, rank, question score and confidence interval, success and output-contract
+results, cost and timing, and links to every subject. Subject pages include the model and subject
+identity, aggregate score, trial summaries, and ordinary episode links. Vue intercepts internal
+navigation only after hydration.
 
-The sitemap contains the homepage, every editorial URL, and every selected official run URL.
-The route manifest determines the count, so a cohort change cannot leave the sitemap contract or
-its tests tied to an old model count. Every listed page uses unique metadata and a
-self-referencing canonical URL. Successful publication pages omit robots meta tags, so search
-engines use their default `index, follow` behavior. Subject and episode evidence and the
-`/story/` alias stay outside the sitemap but are not blocked from indexing. Only the generated
-404 page emits `noindex`.
+The sitemap contains the homepage, every editorial URL, every selected official run URL, and
+every subject summary URL. The route manifest determines the count, so a cohort change cannot
+leave the sitemap contract or its tests tied to an old model count. Every listed page uses unique
+metadata, a self-referencing canonical URL, and the modification time of the generated
+publication. Listed pages omit robots meta tags, so search engines use their default `index,
+follow` behavior. Episode evidence and the `/story/` alias stay outside the sitemap. Episode
+pages and the generated 404 page emit `noindex, follow`.
 
 GitHub Pages hosts this repository as the `/deep-20-bench/` project path. Search engines require
 `robots.txt` at the host root, `https://mindalyze-com.github.io/robots.txt`; a file generated
@@ -379,9 +380,10 @@ under `source/publication/site/`. The development server reads committed public 
 `docs/`.
 
 The Vite build uses the configured GitHub Pages base path. The publisher writes full prerendered
-HTML for indexable routes and entry shells for subject and episode routes, so direct navigation
-and refresh work under GitHub Pages. Local verification uses an HTTP origin because clean
-history routes and later route-data requests do not support direct `file://` navigation.
+HTML for indexable homepage, editorial, run, and subject routes and entry shells for episode
+routes, so direct navigation and refresh work under GitHub Pages. Local verification uses an
+HTTP origin because clean history routes and later route-data requests do not support direct
+`file://` navigation.
 
 GitHub Pages is configured to publish from `main` and `/docs`. Pushing the reviewed generated
 directory is the publication approval. GitHub does not run the benchmark or regenerate the

@@ -39,11 +39,17 @@ const booleanValue = (value, label) => {
   if (typeof value !== "boolean") throw new Error(`${label} must be a boolean.`);
   return value;
 };
+const nullableStringValue = (value, label) => {
+  if (value !== null && typeof value !== "string") {
+    throw new Error(`${label} must be a string or null.`);
+  }
+  return value;
+};
 
 const parseRouteManifest = (value) => {
   const manifest = objectValue(value, "route manifest");
-  if (manifest.schema_version !== 1 || !Array.isArray(manifest.routes)) {
-    throw new Error("Static route manifest schema version 1 is required.");
+  if (manifest.schema_version !== 2 || !Array.isArray(manifest.routes)) {
+    throw new Error("Static route manifest schema version 2 is required.");
   }
   const supportedKinds = new Set([
     "home",
@@ -57,13 +63,10 @@ const parseRouteManifest = (value) => {
     const route = objectValue(candidate, `routes[${index}]`);
     const kind = stringValue(route.kind, `routes[${index}].kind`);
     if (!supportedKinds.has(kind)) throw new Error(`Unsupported route kind ${kind}.`);
-    const executionId = route.execution_id;
-    if (executionId !== null && typeof executionId !== "string") {
-      throw new Error(`routes[${index}].execution_id must be a string or null.`);
-    }
     return {
       route: stringValue(route.route, `routes[${index}].route`),
       kind,
+      indexable: booleanValue(route.indexable, `routes[${index}].indexable`),
       sitemapIncluded: booleanValue(
         route.sitemap_included,
         `routes[${index}].sitemap_included`,
@@ -77,7 +80,22 @@ const parseRouteManifest = (value) => {
         `routes[${index}].browser_title`,
       ),
       description: stringValue(route.description, `routes[${index}].description`),
-      executionId,
+      lastModified: stringValue(
+        route.last_modified,
+        `routes[${index}].last_modified`,
+      ),
+      executionId: nullableStringValue(
+        route.execution_id,
+        `routes[${index}].execution_id`,
+      ),
+      targetId: nullableStringValue(
+        route.target_id,
+        `routes[${index}].target_id`,
+      ),
+      trialId: nullableStringValue(
+        route.trial_id,
+        `routes[${index}].trial_id`,
+      ),
     };
   });
 };
@@ -93,6 +111,26 @@ const runDocuments = new Map(
     );
     return [reference.execution_id, document];
   }),
+);
+const subjectDocuments = new Map(
+  routes
+    .filter((route) => route.kind === "subject")
+    .map((route) => {
+      if (route.executionId === null || route.targetId === null) {
+        throw new Error(`Missing subject identity for ${route.route}.`);
+      }
+      const document = readJson(
+        join(
+          publicRoot,
+          "data",
+          "runs",
+          route.executionId,
+          "subjects",
+          `${route.targetId}.json`,
+        ),
+      );
+      return [`${route.executionId}/${route.targetId}`, document];
+    }),
 );
 
 const serverEntryPath = join(serverRoot, "entry-server.js");
@@ -194,12 +232,19 @@ const pageDocuments = (route) => {
     const run = runDocuments.get(route.executionId);
     if (run === undefined) throw new Error(`Missing run data for ${route.route}.`);
     documents.push(run);
+  } else if (route.kind === "subject") {
+    const run = runDocuments.get(route.executionId);
+    const subject = subjectDocuments.get(`${route.executionId}/${route.targetId}`);
+    if (run === undefined || subject === undefined) {
+      throw new Error(`Missing subject data for ${route.route}.`);
+    }
+    documents.push(run, subject);
   }
   return documents;
 };
 
 const renderable = (route) =>
-  ["home", "editorial", "run", "alias"].includes(route.kind);
+  ["home", "editorial", "run", "alias", "subject"].includes(route.kind);
 
 const metadataHtml = (template, route, appHtml, documents) => {
   const canonical = routeUrl(route.canonicalRoute);
@@ -265,6 +310,12 @@ const metadataHtml = (template, route, appHtml, documents) => {
     route.kind === "home" ? datasetStructuredData() : "",
     "structured-data marker",
   );
+  if (!route.indexable) {
+    html = html.replace(
+      "</head>",
+      '    <meta name="robots" content="noindex, follow" />\n  </head>',
+    );
+  }
   if (renderable(route)) {
     html = replaceUnique(
       html,
@@ -327,7 +378,7 @@ const sitemapLocations = routes
   .filter((route) => route.sitemapIncluded)
   .map(
     (route) =>
-      `  <url>\n    <loc>${escapeXml(routeUrl(route.canonicalRoute))}</loc>\n  </url>`,
+      `  <url>\n    <loc>${escapeXml(routeUrl(route.canonicalRoute))}</loc>\n    <lastmod>${escapeXml(route.lastModified)}</lastmod>\n  </url>`,
   )
   .join("\n");
 writeFileSync(

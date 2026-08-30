@@ -56,8 +56,7 @@ const applyRouteContext = (): void => {
   setRouteContext({
     title: "Deep20Bench",
     description:
-      manifest.value?.site.description ??
-      "The Deep20 benchmark is a small, public Twenty Questions prototype for comparing how AI models ask questions, track answers, and identify a hidden subject.",
+      "Compare AI models in a public Twenty Questions LLM benchmark measuring question strategy, multi-turn reasoning, state tracking, reliability, cost, and runtime.",
     level: null,
     position: null,
     crumbs: [],
@@ -125,9 +124,8 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <p class="eyebrow">Prototype · Twenty Questions for AI models</p>
             <h1>How well can AI models play Twenty Questions?</h1>
             <p class="hero-lead">
-              Deep20Bench tests how well AI models play the guessing game where one player thinks
-              of a person or character and the other has to narrow it down with yes-or-no
-              questions.
+              Deep20Bench is a public benchmark for large language models (LLMs). It measures how
+              efficiently they identify a hidden subject through adaptive yes-or-no questions.
             </p>
             <div class="hero-actions">
               <RouterLink class="button button-primary" :to="{ name: 'results' }">

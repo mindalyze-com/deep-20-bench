@@ -41,6 +41,10 @@ if (representative === undefined) {
 }
 const representativeExecutionId = representative.executionId;
 const representativeRun = representative.run;
+const representativeTargetId = representativeRun.subjects[0]?.target_id;
+if (representativeTargetId === undefined) {
+  throw new Error("The publication needs a subject for static rendering tests.");
+}
 
 test(
   "homepage remains complete without JavaScript",
@@ -164,5 +168,29 @@ test(
     await expect(page.locator("html")).toHaveAttribute("data-prerendered", "true");
     expect(hydrationMessages).toEqual([]);
     expect(dataRequests).toEqual([]);
+  },
+);
+
+test(
+  "subject summary is complete without JavaScript",
+  { tag: ["@static-fallback", "@desktop", "@smoke"] },
+  async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    const subjectPath =
+      `runs/${representativeExecutionId}/subjects/${representativeTargetId}/`;
+    await page.goto(new URL(subjectPath, staticBase).href);
+
+    const overview = page.locator(".subject-overview-pane");
+    await expect(overview).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(overview).toContainText("Average questions");
+    await expect(overview).toContainText("Episodes");
+    await expect(overview).toContainText("Successful");
+    await expect(page.locator(".episode-list a")).toHaveCount(5);
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+    await expect(page.locator("html")).toHaveAttribute("data-prerendered", "true");
+
+    await context.close();
   },
 );
