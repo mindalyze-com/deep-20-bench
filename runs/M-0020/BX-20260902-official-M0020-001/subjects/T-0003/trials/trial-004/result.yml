@@ -1,0 +1,4322 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260902-official-M0020-001
+    model_id: M-0020
+    target_id: T-0003
+    trial_id: trial-004
+    trial_number: 4
+    episode_run_id: BR-0d20ac4e3122fcbd963219dd5a1efb9ae352bde4
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-0d20ac4e3122fcbd963219dd5a1efb9ae352bde4
+      episode_id: EP-01a05fe0e1a4752eafeaae4de5f364d5
+      subject:
+        target_id: T-0003
+        canonical_name: Stephen King
+        aliases:
+        - Stephen Edwin King
+        - Steven King
+        - Richard Bachman
+        entity_type: person
+        description: Stephen King, the American author known for horror, supernatural
+          fiction, suspense, and novels including Carrie, The Shining, and It, identified
+          by Wikidata entity Q39829.
+        reference_url: https://en.wikipedia.org/wiki/Stephen_King
+      started_at: '2026-09-02T02:09:28.484998+00:00'
+      completed_at: '2026-09-02T02:12:56.965016+00:00'
+      duration_ms: 208480
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: true
+    summary:
+      total_turns: 13
+      counted_questions: 12
+      guesser_call_count: 13
+      ask_count: 12
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      oracle_quality:
+        reviewed_questions: 12
+        agreements: 10
+        disagreements: 2
+        judge_invocations: 2
+        oracle_answers_changed: 0
+        final_unknown_answers: 0
+        judge_yes_answers: 1
+        judge_no_answers: 1
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0125058'
+        judge_cost_usd: '0.022840'
+        quality_control_cost_usd: '0.0353458'
+        question_types:
+        - question_type: other
+          reviewed_questions: 12
+          disagreements: 2
+      contract:
+        evaluated_outputs: 13
+        valid_outputs: 13
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.09346525'
+        oracle: '0.174381880000000002'
+        validator: '0.0001226'
+        total: '0.267969730000000002'
+      tokens:
+        guesser: 22283
+        oracle: 124023
+        validator: 418
+        total: 146724
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0020
+        requested_model: anthropic/claude-fable-5.1
+        requested_provider: anthropic
+        resolved_models:
+        - anthropic/claude-fable-5.1
+        resolved_providers:
+        - Anthropic
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v10-unknown-evidence-guidance
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v8-classified-research
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v1
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the person currently alive?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe0eb0877d0bf3bfba4b3d6719b
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.usnews.com/news/entertainment/articles/2025-06-04/highlights-from-the-associated-press-interview-with-stephen-king
+          excerpt: Stephen King recently spoke to The Associated Press about the new
+            film adaptation “The Life of Chuck,” his latest book “Never Flinch” and
+            other topics.
+          validation: model_reported
+        - source_url: https://stephenking.com/index.html
+          excerpt: The official Stephen King website lists a new short story by Stephen
+            King and upcoming projects, including Other Worlds Than These.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-01a05fe0e1a576f0be25a55518064f0f
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the person primarily known for politics or government?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe122d5714fbfbb3b06def67085
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Stephen_King
+          excerpt: Stephen Edwin King is an American author. Dubbed the “King of Horror,”
+            he is widely known for his horror fiction.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is a prolific American novelist known for blending
+            horror, fantasy, science fiction, and the macabre.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'NO'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-01a05fe1180973c88e7d1aa985d2d9ef
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is the person primarily known for sports?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe15fe67620a83a270c26d869ef
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/summary/Stephen-King
+          excerpt: Stephen (Edwin) King ... U.S. writer of horror stories.
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Stephen_King
+          excerpt: He is an American author ... widely known for his horror fiction.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-01a05fe155af765181826fc01988a41d
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is the person primarily known for entertainment (acting, music,
+          film, or television)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe1939f745bb01353f4872baf1b
+        answer: 'NO'
+        evidence:
+        - source_url: https://stephenking.com/the-author/
+          excerpt: He has since published over 50 books and has become one of the
+            world's most successful writers.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is an American novelist known for blending horror,
+            macabre themes, fantasy, and science fiction.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-01a05fe188777474b6b1af9a8c32aabb
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is the person primarily known for business or technology entrepreneurship?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe1d9ea76ab898091e87bc7875b
+        answer: 'NO'
+        evidence:
+        - source_url: https://stephenking.com/the-author
+          excerpt: The Author — Stephen Edwin King
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is a prolific American novelist known for blending
+            horror, fantasy, science fiction, and the macabre.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-01a05fe1cfa970369c49033f4b857958
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is the person primarily known for science, mathematics, or academic
+          research?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe22f0271a18b6070649a02e3d7
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Stephen_King
+          excerpt: Dubbed the "King of Horror", he is widely known for his horror
+            fiction.
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is a prolific American novelist known for blending
+            horror, fantasy, science fiction, and the macabre.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-01a05fe21c567248883d1c84a01a3ba7
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is the person primarily known as a writer or author (books, poetry,
+          journalism)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe27ff97633bc78bca9f1b32f51
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is an American novelist and short-story writer whose
+            books are credited with reviving the horror fiction genre in the late
+            20th century.
+          validation: model_reported
+        - source_url: https://stephenking.com/the-author
+          excerpt: He made his first professional short story sale in 1967 ... Writing
+            in the evenings and on the weekends, he continued to produce short stories
+            and to work on novels.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-01a05fe26cd0719ebc091433be071ecd
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Is the person primarily known for writing fiction (novels or short
+          stories)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe2b50377229504bfcf46b0047e
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Stephen-King
+          excerpt: Stephen King is a prolific American novelist known for blending
+            horror, fantasy, science fiction, and the macabre.
+          validation: model_reported
+        - source_url: https://stephenking.com/the-author
+          excerpt: Best Fiction Writer of the Year
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            evidence_indices: []
+          judge:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-01a05fe2a6b1742884c14d5be441fac8
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Does the person write primarily in English?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe2f70e72afb30f778e29f2b581
+        answer: 'YES'
+        evidence:
+        - source_url: https://stephenking.com/the-author
+          excerpt: Writing in the evenings and on the weekends, he continued to produce
+            short stories and to work on novels.
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Stephen_King
+          excerpt: Stephen Edwin King ... is an American author.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: model_knowledge
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-01a05fe2ec7872f69cbac4da3c60bc72
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Is the person a woman?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe364cb77debbd14439dcc5484b
+        answer: 'NO'
+        evidence:
+        - source_url: https://stephenking.com/the-author
+          excerpt: Stephen King was born in Portland, Maine in 1947, the second son
+            of Donald and Nellie Ruth Pillsbury King.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-01a05fe359e77427b7ae6e1b03960c99
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Is the person American?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe39ea476a19ff5ed2a031571af
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Stephen_King
+          excerpt: Stephen Edwin King (born September 21, 1947) is an American author.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-01a05fe3892a73be92a6ea5f62251f85
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Is the person primarily known for writing horror fiction?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a05fe3d6d370d5800c078ea8d6e52f
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Stephen_King
+          excerpt: Dubbed the “King of Horror”, he is widely known for his horror
+            fiction.
+          validation: model_reported
+        - source_url: https://www.bloomsbury.com/us/stephen-king-9780313345722
+          excerpt: Now known worldwide for his horror creations in best-selling books
+            and popular film adaptations.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-01a05fe3b6ed73c18dcebc77c52d4385
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: GUESS
+        question: null
+        name: Stephen King
+        description: American author of horror novels such as The Shining, It, and
+          Carrie
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a05fe40b5d714bbb7ecfc2232c81a0
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity matches Stephen King, the American horror
+          author, and the description aligns with the trusted subject.
+        oracle_quality: null
+      counted: false
+      counted_questions: 12
+      guesser_call_id: GC-01a05fe3ffa3723683ef5b8ba9c16731
+    guesser_conversation:
+    - role: system
+      content: 'You are the Guesser being evaluated in a Twenty Questions benchmark.
+
+
+        One subject is hidden. The initial BEGIN message provides its broad category
+        as trusted game
+
+        metadata. Identify the subject using as few counted questions as possible.
+        ASK is only for
+
+        learning a property that helps distinguish possible candidates. Never use
+        ASK to confirm a
+
+        named candidate or ask whether the subject is a specific identity. When you
+        are ready to name
+
+        a candidate, use GUESS immediately. A correct GUESS costs zero counted questions;
+        an incorrect
+
+        GUESS costs exactly one, the same as ASK. A GUESS must provide both a name
+        and a short
+
+        identifying description. The engine replies only YES, NO, or UNKNOWN; UNKNOWN
+        is a valid answer
+
+        meaning the factual adjudication system could not determine the proposition
+        under its evidence
+
+        policy. Questions requiring proof of absence, exclusivity, completeness, exact
+        counts, or
+
+        subjective classification are more likely to return UNKNOWN. Prefer direct,
+        positively
+
+        verifiable properties when possible.
+
+
+        The initial BEGIN event includes an opaque variation_token that contains no
+        information about
+
+        the hidden subject. Do not interpret, repeat, mention, or derive meaning from
+        it. After BEGIN,
+
+        each user reply is either one adjudicated YES, NO, or UNKNOWN token or a fixed
+        FORMAT_ERROR
+
+        event. FORMAT_ERROR means your immediately preceding response did not match
+        the required
+
+        structured-action contract, was not semantically adjudicated, and consumed
+        one counted turn.
+
+        Use the formats in that event and try again. Never infer that the attempted
+        question or
+
+        guess was right or wrong.
+
+
+        At most 50 questions or rejected guesses are counted. After that limit you
+        receive
+
+        one final guess-only opportunity. Format errors also consume counted turns.
+        The provider wire
+
+        response is an object with exactly one `result` action. On the final opportunity
+        ASK is
+
+        forbidden. Return only the required structured response. Do not include analysis,
+        hidden
+
+        reasoning, or additional fields.
+
+        '
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"BYOMPCJW"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person currently alive?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for politics or government?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for sports?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for entertainment (acting, music, film, or television)?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for business or technology entrepreneurship?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for science, mathematics, or academic research?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known as a writer or author (books, poetry, journalism)?"}}'
+      turn_number: 7
+    - role: user
+      content: 'YES'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for writing fiction (novels or short stories)?"}}'
+      turn_number: 8
+    - role: user
+      content: 'YES'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        the person write primarily in English?"}}'
+      turn_number: 9
+    - role: user
+      content: 'YES'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person a woman?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person American?"}}'
+      turn_number: 11
+    - role: user
+      content: 'YES'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person primarily known for writing horror fiction?"}}'
+      turn_number: 12
+    - role: user
+      content: 'YES'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"American author of horror
+        novels such as The Shining, It, and Carrie","name":"Stephen King","question":null}}'
+      turn_number: 13
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0020
+          gateway: openrouter
+          model: anthropic/claude-fable-5.1
+          provider: anthropic
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 512
+            ttl_seconds: 300
+            input_usd_per_million: '10.00'
+            cached_input_usd_per_million: '0.25'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 13
+          cost_usd: '0.09346525'
+          latency_ms: 48741
+          total_tokens: 22283
+          input_tokens: 20998
+          cached_input_tokens: 19031
+          cache_write_tokens: 1915
+          output_tokens: 1285
+          reasoning_tokens: 687
+          estimated_cache_savings_usd: '0.18076475'
+          recovery:
+            request_attempts: 13
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Anthropic
+            calls: 13
+            cost_usd: '0.09346525'
+            latency_ms: 48741
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          parallel_search: true
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 12
+          cost_usd: '0.174381880000000002'
+          latency_ms: 158328
+          total_tokens: 124023
+          input_tokens: 116343
+          cached_input_tokens: 69469
+          cache_write_tokens: 0
+          output_tokens: 7680
+          reasoning_tokens: 4810
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 26
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 12
+              cost_usd: '0.139036080000000002'
+              latency_ms: 135580
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 12
+              cost_usd: '0.0125058'
+              latency_ms: 17107
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers:
+            - provider: Claude Platform on AWS
+              calls: 2
+              cost_usd: '0.022840'
+              latency_ms: 5641
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0001226'
+          latency_ms: 1183
+          total_tokens: 418
+          input_tokens: 379
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 39
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.0001226'
+            latency_ms: 1183
+          unreported_calls: 0
+          fallback_calls: 0
+    audit:
+      schema_version: 1
+      calls:
+      - component: guesser
+        call_id: GC-01a05fe0e1a576f0be25a55518064f0f
+        turn_number: 1
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 45ba27c8fa4839b86498a527b5c5d5e2f800b495415c61372cac01dae1f22224
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:09:28.485200+00:00'
+          completed_at: '2026-09-02T02:09:30.886138+00:00'
+          latency_ms: 2400
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1306
+            cached_input_tokens: 0
+            cache_write_tokens: 1302
+            output_tokens: 38
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.018215'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 102
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe0eb0877d0bf3bfba4b3d6719b
+        turn_number: 1
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: b07e1331cfcc25ef3611472315ec4e37a6da5024413abf708ca2929007caaf13
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:09:30.890239+00:00'
+            completed_at: '2026-09-02T02:09:41.787599+00:00'
+            latency_ms: 10897
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8117
+              cached_input_tokens: 4141
+              cache_write_tokens: 0
+              output_tokens: 285
+              reasoning_tokens: 45
+              search_count: 2
+              cost_usd: '0.01141837'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 782
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: temporal_status
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King current alive death date official biography 2026
+            - Stephen King alive 2026 recent interview official StephenKing.com 2025
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: b07e1331cfcc25ef3611472315ec4e37a6da5024413abf708ca2929007caaf13
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:09:30.890239+00:00'
+              completed_at: '2026-09-02T02:09:41.787599+00:00'
+              latency_ms: 10897
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8117
+                cached_input_tokens: 4141
+                cache_write_tokens: 0
+                output_tokens: 285
+                reasoning_tokens: 45
+                search_count: 2
+                cost_usd: '0.01141837'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 782
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 55bcd8530d62e43218a6d63c23ac09a59a58d7fdc67d0aa84bf4e793e801be1d
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:09:41.790044+00:00'
+            completed_at: '2026-09-02T02:09:42.400413+00:00'
+            latency_ms: 610
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 911
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 29
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0003458'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 77
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a05fe1180973c88e7d1aa985d2d9ef
+        turn_number: 2
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 34a94939fcb5fceaf222c73277385d59b0e0b2501655b70a91e3d4e01d0b7f70
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:09:42.409864+00:00'
+          completed_at: '2026-09-02T02:09:45.171163+00:00'
+          latency_ms: 2761
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1350
+            cached_input_tokens: 1302
+            cache_write_tokens: 44
+            output_tokens: 43
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.0030655'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 129
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe122d5714fbfbb3b06def67085
+        turn_number: 2
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 71c2331ac027534652831ea17c97791d537bdb4b25df745e852fda79949854eb
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:09:45.174972+00:00'
+            completed_at: '2026-09-02T02:09:52.213885+00:00'
+            latency_ms: 7038
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4057
+              cached_input_tokens: 2555
+              cache_write_tokens: 0
+              output_tokens: 264
+              reasoning_tokens: 95
+              search_count: 1
+              cost_usd: '0.0057431'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 610
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King primarily known as author horror fiction biography not
+              politics government
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 71c2331ac027534652831ea17c97791d537bdb4b25df745e852fda79949854eb
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:09:45.174972+00:00'
+              completed_at: '2026-09-02T02:09:52.213885+00:00'
+              latency_ms: 7038
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4057
+                cached_input_tokens: 2555
+                cache_write_tokens: 0
+                output_tokens: 264
+                reasoning_tokens: 95
+                search_count: 1
+                cost_usd: '0.0057431'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 610
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 1039673052361f65e975b06309e6a87c6aab19c21789efe15b73644d56d3ae51
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:09:52.216037+00:00'
+            completed_at: '2026-09-02T02:09:55.373658+00:00'
+            latency_ms: 3157
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 907
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 846
+              reasoning_tokens: 819
+              search_count: 0
+              cost_usd: '0.0023871'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 74
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge:
+          role: judge
+          prompt:
+            version: oracle-evidence-judge-v5-explicit-wire-format
+            hash: 0e599733bafafd3bcec034928dcce89eea70cd601479f06cb6e6c8d8a7f0be6b
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:09:55.375516+00:00'
+            completed_at: '2026-09-02T02:09:58.179282+00:00'
+            latency_ms: 2803
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: anthropic/claude-opus-5
+            resolved_model: anthropic/claude-opus-5
+            requested_provider: openrouter-auto
+            resolved_provider: Claude Platform on AWS
+            fallback_occurred: false
+            usage:
+              input_tokens: 2133
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 32
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.011465'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 59
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+      - component: guesser
+        call_id: GC-01a05fe155af765181826fc01988a41d
+        turn_number: 3
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 734e90a2431773f469b9e161a7e10cbf3a4694402131997124027e44cf8c9861
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:09:58.192024+00:00'
+          completed_at: '2026-09-02T02:10:00.805018+00:00'
+          latency_ms: 2612
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1399
+            cached_input_tokens: 1346
+            cache_write_tokens: 49
+            output_tokens: 41
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.003039'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 113
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe15fe67620a83a270c26d869ef
+        turn_number: 3
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 6d9b1c4b5057cac4051988d7149a68d5315431bd33ff1973cf196c69f536e04e
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:10:00.807443+00:00'
+            completed_at: '2026-09-02T02:10:10.606641+00:00'
+            latency_ms: 9799
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8389
+              cached_input_tokens: 5117
+              cache_write_tokens: 0
+              output_tokens: 299
+              reasoning_tokens: 112
+              search_count: 2
+              cost_usd: '0.011278690000000001'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 9
+            url_citation_count: 9
+            raw_output_present: true
+            raw_output_characters: 562
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King primarily known for author horror fiction biography sports
+            - Stephen King Britannica American author horror novels biography not
+              sports
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 6d9b1c4b5057cac4051988d7149a68d5315431bd33ff1973cf196c69f536e04e
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:10:00.807443+00:00'
+              completed_at: '2026-09-02T02:10:10.606641+00:00'
+              latency_ms: 9799
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8389
+                cached_input_tokens: 5117
+                cache_write_tokens: 0
+                output_tokens: 299
+                reasoning_tokens: 112
+                search_count: 2
+                cost_usd: '0.011278690000000001'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 9
+              url_citation_count: 9
+              raw_output_present: true
+              raw_output_characters: 562
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 54b8e9bc1475059b194236acbbb689d579d7a09ec4919916f9483abfbc3abc38
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:10:10.608832+00:00'
+            completed_at: '2026-09-02T02:10:11.180778+00:00'
+            latency_ms: 571
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 886
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 37
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0003583'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 85
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a05fe188777474b6b1af9a8c32aabb
+        turn_number: 4
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 30c64828b97bbe10bda8be93dbd3daf548263eae0a2bb9a982e00ddd857f8713
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:10:11.191996+00:00'
+          completed_at: '2026-09-02T02:10:14.045408+00:00'
+          latency_ms: 2853
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1446
+            cached_input_tokens: 1395
+            cache_write_tokens: 47
+            output_tokens: 54
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.00367625'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 157
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe1939f745bb01353f4872baf1b
+        turn_number: 4
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 8605b82f070372f65848c144d5befbd5ca587aac0d23341371ca2978af983c66
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:10:14.048855+00:00'
+            completed_at: '2026-09-02T02:10:28.786931+00:00'
+            latency_ms: 14738
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5728
+              cached_input_tokens: 4431
+              cache_write_tokens: 0
+              output_tokens: 453
+              reasoning_tokens: 244
+              search_count: 2
+              cost_usd: '0.01095602'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 668
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King primarily known for author novelist horror biography known
+              for writing official biography
+            - Stephen King known primarily as an author novelist not actor biography
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 8605b82f070372f65848c144d5befbd5ca587aac0d23341371ca2978af983c66
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:10:14.048855+00:00'
+              completed_at: '2026-09-02T02:10:28.786931+00:00'
+              latency_ms: 14738
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5728
+                cached_input_tokens: 4431
+                cache_write_tokens: 0
+                output_tokens: 453
+                reasoning_tokens: 244
+                search_count: 2
+                cost_usd: '0.01095602'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 668
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 5c1996c2c64977608d1dd2a5f9b8acbbe384ed7578da8765c05a863ef0bf858c
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:10:28.789295+00:00'
+            completed_at: '2026-09-02T02:10:29.409684+00:00'
+            latency_ms: 620
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 910
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 33
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0003555'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 78
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a05fe1cfa970369c49033f4b857958
+        turn_number: 5
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 601782f313d72805e41c6f1c7c8f7ff75e8ce7cda1593ea9b35adced6a794cb6
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:10:29.417577+00:00'
+          completed_at: '2026-09-02T02:10:32.039851+00:00'
+          latency_ms: 2622
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1506
+            cached_input_tokens: 1442
+            cache_write_tokens: 60
+            output_tokens: 50
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.0036505'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 146
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe1d9ea76ab898091e87bc7875b
+        turn_number: 5
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 6ff4299bf61c7742408f3d4ddb56d0a69ba914fb354c51a0688b2efa718218ef
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:10:32.043634+00:00'
+            completed_at: '2026-09-02T02:10:48.315977+00:00'
+            latency_ms: 16272
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 7068
+              cached_input_tokens: 5150
+              cache_write_tokens: 0
+              output_tokens: 394
+              reasoning_tokens: 205
+              search_count: 2
+              cost_usd: '0.011054850000000001'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 607
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King biography primarily known as author novelist horror writer
+              official biography
+            - Stephen King business technology entrepreneur biography novelist not
+              entrepreneur
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 6ff4299bf61c7742408f3d4ddb56d0a69ba914fb354c51a0688b2efa718218ef
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:10:32.043634+00:00'
+              completed_at: '2026-09-02T02:10:48.315977+00:00'
+              latency_ms: 16272
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 7068
+                cached_input_tokens: 5150
+                cache_write_tokens: 0
+                output_tokens: 394
+                reasoning_tokens: 205
+                search_count: 2
+                cost_usd: '0.011054850000000001'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 607
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 9ad90f7d72ac2b18a77be01d62e4ef781e64da919fb51b36a8953ab5bcbe8bc5
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:10:48.318217+00:00'
+            completed_at: '2026-09-02T02:10:49.038850+00:00'
+            latency_ms: 720
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 890
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 33
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0003495'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 78
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a05fe21c567248883d1c84a01a3ba7
+        turn_number: 6
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: d68a7deec22f10c32de3848646c27fbf0cf92b2fa7679f28af5412b8c1d2c454
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:10:49.046825+00:00'
+          completed_at: '2026-09-02T02:10:53.823964+00:00'
+          latency_ms: 4777
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1562
+            cached_input_tokens: 1502
+            cache_write_tokens: 56
+            output_tokens: 103
+            reasoning_tokens: 53
+            search_count: 0
+            cost_usd: '0.0062655'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 149
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe22f0271a18b6070649a02e3d7
+        turn_number: 6
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 0e59fc281016222e39cf68691c9afee25c0a2c3ec95acc8a258bacc8e57b2572
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:10:53.828114+00:00'
+            completed_at: '2026-09-02T02:11:07.606755+00:00'
+            latency_ms: 13778
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 7737
+              cached_input_tokens: 5391
+              cache_write_tokens: 0
+              output_tokens: 483
+              reasoning_tokens: 224
+              search_count: 2
+              cost_usd: '0.01127347'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 9
+            url_citation_count: 9
+            raw_output_present: true
+            raw_output_characters: 785
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King primarily known as author horror fiction biography science
+              mathematics academic research
+            - Stephen King biography "known for" author horror fiction not scientist
+              mathematician researcher
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 0e59fc281016222e39cf68691c9afee25c0a2c3ec95acc8a258bacc8e57b2572
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:10:53.828114+00:00'
+              completed_at: '2026-09-02T02:11:07.606755+00:00'
+              latency_ms: 13778
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 7737
+                cached_input_tokens: 5391
+                cache_write_tokens: 0
+                output_tokens: 483
+                reasoning_tokens: 224
+                search_count: 2
+                cost_usd: '0.01127347'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 9
+              url_citation_count: 9
+              raw_output_present: true
+              raw_output_characters: 785
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 4cea7cffbc5ea327fa65462eec7432874ee16ea937bc3bff555746ed01efde7c
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:11:07.609016+00:00'
+            completed_at: '2026-09-02T02:11:09.638590+00:00'
+            latency_ms: 2029
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 903
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 549
+              reasoning_tokens: 516
+              search_count: 0
+              cost_usd: '0.0016434'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 78
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a05fe26cd0719ebc091433be071ecd
+        turn_number: 7
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 969df214bb156f15d64bcc282d91d86a135ed85d45b1b1b27afd7b177c9e69e3
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:11:09.648740+00:00'
+          completed_at: '2026-09-02T02:11:14.551570+00:00'
+          latency_ms: 4902
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1618
+            cached_input_tokens: 1558
+            cache_write_tokens: 56
+            output_tokens: 122
+            reasoning_tokens: 67
+            search_count: 0
+            cost_usd: '0.0072295'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 152
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe27ff97633bc78bca9f1b32f51
+        turn_number: 7
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 4d4fdd016b4d1647dae65b85668508f940d93be8b960d66f65b0c78260fe0aa8
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:11:14.554720+00:00'
+            completed_at: '2026-09-02T02:11:23.161016+00:00'
+            latency_ms: 8606
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 6595
+              cached_input_tokens: 4838
+              cache_write_tokens: 0
+              output_tokens: 288
+              reasoning_tokens: 62
+              search_count: 2
+              cost_usd: '0.01088116'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 9
+            url_citation_count: 9
+            raw_output_present: true
+            raw_output_characters: 771
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King biography primarily known as author writer books official
+              biography
+            - Stephen King primarily known as writer author most famous official biography
+              novelist
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 4d4fdd016b4d1647dae65b85668508f940d93be8b960d66f65b0c78260fe0aa8
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:11:14.554720+00:00'
+              completed_at: '2026-09-02T02:11:23.161016+00:00'
+              latency_ms: 8606
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 6595
+                cached_input_tokens: 4838
+                cache_write_tokens: 0
+                output_tokens: 288
+                reasoning_tokens: 62
+                search_count: 2
+                cost_usd: '0.01088116'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 9
+              url_citation_count: 9
+              raw_output_present: true
+              raw_output_characters: 771
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 3799e6a1af5ecec6d3e3dfe5f7270359ff17b6ffaf07dc87a3182f6095217bfd
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:11:23.163146+00:00'
+            completed_at: '2026-09-02T02:11:24.455256+00:00'
+            latency_ms: 1292
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 933
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 268
+              reasoning_tokens: 235
+              search_count: 0
+              cost_usd: '0.0009499'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 79
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a05fe2a6b1742884c14d5be441fac8
+        turn_number: 8
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 006914de88bc1a39ffb222386110139b177aef42182faf2712c7b5469af25d1f
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:11:24.466005+00:00'
+          completed_at: '2026-09-02T02:11:28.129407+00:00'
+          latency_ms: 3663
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1679
+            cached_input_tokens: 1614
+            cache_write_tokens: 61
+            output_tokens: 86
+            reasoning_tokens: 34
+            search_count: 0
+            cost_usd: '0.005506'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 148
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe2b50377229504bfcf46b0047e
+        turn_number: 8
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 4080616870a48bdcfe80384ba6c6f9f7a0fa1e22a30e906382f11082e85d00e5
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:11:28.133255+00:00'
+            completed_at: '2026-09-02T02:11:36.279689+00:00'
+            latency_ms: 8146
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 6855
+              cached_input_tokens: 4685
+              cache_write_tokens: 0
+              output_tokens: 233
+              reasoning_tokens: 34
+              search_count: 2
+              cost_usd: '0.01091535'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 629
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King primarily known for writing fiction novels short stories
+              biography official author
+            - Stephen King author of novels and short stories official biography fiction
+              writer primarily known
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 4080616870a48bdcfe80384ba6c6f9f7a0fa1e22a30e906382f11082e85d00e5
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:11:28.133255+00:00'
+              completed_at: '2026-09-02T02:11:36.279689+00:00'
+              latency_ms: 8146
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 6855
+                cached_input_tokens: 4685
+                cache_write_tokens: 0
+                output_tokens: 233
+                reasoning_tokens: 34
+                search_count: 2
+                cost_usd: '0.01091535'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 629
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: df0d288b9ede3779e680b3ff7fb7575f8e7362d5cb961ee5f05cb7847bff9b54
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:11:36.281932+00:00'
+            completed_at: '2026-09-02T02:11:39.472582+00:00'
+            latency_ms: 3190
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 894
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 929
+              reasoning_tokens: 902
+              search_count: 0
+              cost_usd: '0.0025907'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 74
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge:
+          role: judge
+          prompt:
+            version: oracle-evidence-judge-v5-explicit-wire-format
+            hash: cce38ecd046786e2337c3f943ab1a1f78294498b154d509d936347e1ffed66fa
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:11:39.474428+00:00'
+            completed_at: '2026-09-02T02:11:42.312831+00:00'
+            latency_ms: 2838
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: anthropic/claude-opus-5
+            resolved_model: anthropic/claude-opus-5
+            requested_provider: openrouter-auto
+            resolved_provider: Claude Platform on AWS
+            fallback_occurred: false
+            usage:
+              input_tokens: 2115
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 32
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.011375'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 60
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+      - component: guesser
+        call_id: GC-01a05fe2ec7872f69cbac4da3c60bc72
+        turn_number: 9
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: be3772bf475e61b369efd8b660ea22bd1e952d2ef2ecc32fc20f492aab7625c7
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:11:42.328643+00:00'
+          completed_at: '2026-09-02T02:11:45.035749+00:00'
+          latency_ms: 2707
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1737
+            cached_input_tokens: 1675
+            cache_write_tokens: 58
+            output_tokens: 40
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.00318375'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 115
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe2f70e72afb30f778e29f2b581
+        turn_number: 9
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: cb67b6fe26ecda30193d01b8a9b33d25e2951cab5e348c2ae1001cc05842a2c8
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:11:45.039742+00:00'
+            completed_at: '2026-09-02T02:12:08.467497+00:00'
+            latency_ms: 23427
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 27077
+              cached_input_tokens: 20194
+              cache_write_tokens: 0
+              output_tokens: 530
+              reasoning_tokens: 237
+              search_count: 5
+              cost_usd: '0.02775973'
+              cache_discount_usd: null
+            web_search_requests: 5
+            annotation_count: 21
+            url_citation_count: 21
+            raw_output_present: true
+            raw_output_characters: 728
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King writes primarily in English language author biography official
+            - Stephen King English-language writer writes in English biography
+            - Stephen King works language English novels written in English source
+            - Stephen King bibliography language English written works English language
+              novels
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: cb67b6fe26ecda30193d01b8a9b33d25e2951cab5e348c2ae1001cc05842a2c8
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:11:45.039742+00:00'
+              completed_at: '2026-09-02T02:12:08.467497+00:00'
+              latency_ms: 23427
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 27077
+                cached_input_tokens: 20194
+                cache_write_tokens: 0
+                output_tokens: 530
+                reasoning_tokens: 237
+                search_count: 5
+                cost_usd: '0.02775973'
+                cache_discount_usd: null
+              web_search_requests: 5
+              annotation_count: 21
+              url_citation_count: 21
+              raw_output_present: true
+              raw_output_characters: 728
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: e8b0dd1144b44e10ef73ee5eb02c6a808160124d7a6e7e89b0101283578f7d48
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:12:08.470258+00:00'
+            completed_at: '2026-09-02T02:12:10.332121+00:00'
+            latency_ms: 1861
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 888
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 477
+              reasoning_tokens: 449
+              search_count: 0
+              cost_usd: '0.0014589'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 77
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a05fe359e77427b7ae6e1b03960c99
+        turn_number: 10
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 94816caecba6228a079db465eed1e7b30ef042a58dc48053befe9dfabf63ef0f
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:12:10.343389+00:00'
+          completed_at: '2026-09-02T02:12:13.129910+00:00'
+          latency_ms: 2786
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1783
+            cached_input_tokens: 1733
+            cache_write_tokens: 46
+            output_tokens: 37
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.00289825'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 94
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe364cb77debbd14439dcc5484b
+        turn_number: 10
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: bcafc53115807497dea50eb71a476f86c729b20353bde8c4394f83950f7ac9b9
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:12:13.133168+00:00'
+            completed_at: '2026-09-02T02:12:21.381817+00:00'
+            latency_ms: 8248
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 7792
+              cached_input_tokens: 5277
+              cache_write_tokens: 0
+              output_tokens: 247
+              reasoning_tokens: 94
+              search_count: 2
+              cost_usd: '0.01103024'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 400
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King biography male author he American author gender woman
+            - Stephen King "American male author" biography
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: bcafc53115807497dea50eb71a476f86c729b20353bde8c4394f83950f7ac9b9
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:12:13.133168+00:00'
+              completed_at: '2026-09-02T02:12:21.381817+00:00'
+              latency_ms: 8248
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 7792
+                cached_input_tokens: 5277
+                cache_write_tokens: 0
+                output_tokens: 247
+                reasoning_tokens: 94
+                search_count: 2
+                cost_usd: '0.01103024'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 400
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: 03584d46dee07df6c2e0788013723a31ce8ce27f9354a7983e56e2ba30538854
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:12:21.383486+00:00'
+            completed_at: '2026-09-02T02:12:22.433779+00:00'
+            latency_ms: 1050
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 876
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 141
+              reasoning_tokens: 108
+              search_count: 0
+              cost_usd: '0.0006153'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 78
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a05fe3892a73be92a6ea5f62251f85
+        turn_number: 11
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 00785ad6d44afb7dacae2153ba4f67f024202f54b829b388fda954af3d1b1503
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:12:22.442485+00:00'
+          completed_at: '2026-09-02T02:12:27.938515+00:00'
+          latency_ms: 5496
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1826
+            cached_input_tokens: 1779
+            cache_write_tokens: 43
+            output_tokens: 208
+            reasoning_tokens: 173
+            search_count: 0
+            cost_usd: '0.01142225'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 95
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe39ea476a19ff5ed2a031571af
+        turn_number: 11
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: 75341740a459727d45538e905d2697793cbf4d9d929e296fcbd7cf75722e4c7d
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:12:27.941438+00:00'
+            completed_at: '2026-09-02T02:12:33.332369+00:00'
+            latency_ms: 5390
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4072
+              cached_input_tokens: 2550
+              cache_write_tokens: 0
+              output_tokens: 114
+              reasoning_tokens: 13
+              search_count: 1
+              cost_usd: '0.005568'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 308
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King American author biography official source
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: 75341740a459727d45538e905d2697793cbf4d9d929e296fcbd7cf75722e4c7d
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:12:27.941438+00:00'
+              completed_at: '2026-09-02T02:12:33.332369+00:00'
+              latency_ms: 5390
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4072
+                cached_input_tokens: 2550
+                cache_write_tokens: 0
+                output_tokens: 114
+                reasoning_tokens: 13
+                search_count: 1
+                cost_usd: '0.005568'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 308
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: c16ef1f4c87708486637cde2563c6112bb789c386045a6d16bc16072e4f54af2
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:12:33.334472+00:00'
+            completed_at: '2026-09-02T02:12:34.149113+00:00'
+            latency_ms: 814
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 869
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 109
+              reasoning_tokens: 76
+              search_count: 0
+              cost_usd: '0.0005332'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 79
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a05fe3b6ed73c18dcebc77c52d4385
+        turn_number: 12
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: c3337b2a4aa8aa46e1b754c5b31c03c917be89fc2dff0d41cfb8629b49deb19f
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:12:34.158208+00:00'
+          completed_at: '2026-09-02T02:12:42.321845+00:00'
+          latency_ms: 8163
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1867
+            cached_input_tokens: 1822
+            cache_write_tokens: 41
+            output_tokens: 406
+            reasoning_tokens: 360
+            search_count: 0
+            cost_usd: '0.021308'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 129
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a05fe3d6d370d5800c078ea8d6e52f
+        turn_number: 12
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v8-classified-research
+            hash: deacc198a25c215e01b3e5a02addfc8dde33f59986d3bdab9ea7b1a46c87a4c4
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:12:42.325229+00:00'
+            completed_at: '2026-09-02T02:12:51.566349+00:00'
+            latency_ms: 9241
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 7847
+              cached_input_tokens: 5140
+              cache_write_tokens: 0
+              output_tokens: 315
+              reasoning_tokens: 117
+              search_count: 2
+              cost_usd: '0.0111571'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 629
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: primary_recognition
+          resolution: answered_primary
+          attempts:
+          - attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Stephen King primarily known for writing horror fiction biography authoritative
+              source
+            - Stephen King best known primarily horror fiction Britannica biography
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v8-classified-research
+              hash: deacc198a25c215e01b3e5a02addfc8dde33f59986d3bdab9ea7b1a46c87a4c4
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-02T02:12:42.325229+00:00'
+              completed_at: '2026-09-02T02:12:51.566349+00:00'
+              latency_ms: 9241
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 7847
+                cached_input_tokens: 5140
+                cache_write_tokens: 0
+                output_tokens: 315
+                reasoning_tokens: 117
+                search_count: 2
+                cost_usd: '0.0111571'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 629
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-evidence-reviewer-v4-explicit-wire-format
+            hash: c98c229a72cf62e7ebfaefd6221e76d1237937e598bd8cc7ba1bb91928a70382
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-02T02:12:51.568597+00:00'
+            completed_at: '2026-09-02T02:12:52.762010+00:00'
+            latency_ms: 1193
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 894
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 260
+              reasoning_tokens: 223
+              search_count: 0
+              cost_usd: '0.0009182'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 86
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a05fe3ffa3723683ef5b8ba9c16731
+        turn_number: 13
+        status: success
+        prompt:
+          version: stateful-category-guesser-v10-unknown-evidence-guidance
+          hash: 565f3cb92f1cd32f839adb1f6260d3ca4de354a1d9634ef7533f086bd2fcea94
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:12:52.772203+00:00'
+          completed_at: '2026-09-02T02:12:55.771315+00:00'
+          latency_ms: 2999
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1919
+            cached_input_tokens: 1863
+            cache_write_tokens: 52
+            output_tokens: 57
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.00400575'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 152
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a05fe40b5d714bbb7ecfc2232c81a0
+        turn_number: 13
+        status: success
+        prompt:
+          version: strict-guess-validator-v1
+          hash: 7c010418d6764e1a9e5ca1e601b8243121d14446fdb454580f7cbc647587b0c3
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-02T02:12:55.774590+00:00'
+          completed_at: '2026-09-02T02:12:56.957906+00:00'
+          latency_ms: 1183
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 379
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 39
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.0001226'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 157
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      unavailable_call_count: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0020/BX-20260902-official-M0020-001/subjects/T-0003/trials/trial-004/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 6cd1ae7457dc7e010128ef3f91b41529c5774efdf15da931fbff6604a1bca3e0

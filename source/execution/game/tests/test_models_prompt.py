@@ -287,6 +287,7 @@ def test_repository_model_catalog_has_expected_active_ids() -> None:
 
     assert tuple(catalog.models) == (
         *(f"M-{number:04d}" for number in range(1, 19)),
+        "M-0020",
         "M-0101",
         "M-0104",
     )
@@ -569,6 +570,19 @@ def test_ox_alpha_uses_json_object_output_mode() -> None:
             4_096,
         ),
         (
+            "M-0020",
+            "Claude Fable 5.1 (high)",
+            "anthropic/claude-fable-5.1",
+            "anthropic",
+            "high",
+            32_768,
+            300,
+            "unsupported",
+            Decimal("10.00"),
+            Decimal("0.25"),
+            512,
+        ),
+        (
             "M-0101",
             "GPT-5.6 Luna (medium)",
             "openai/gpt-5.6-luna",
@@ -640,7 +654,7 @@ def test_active_benchmark_model_routes_are_fully_pinned(
     )
     expected_cache_control = (
         "ephemeral_5m"
-        if model_id in {"M-0005", "M-0006", "M-0013", "M-0014", "M-0018"}
+        if model_id in {"M-0005", "M-0006", "M-0013", "M-0014", "M-0018", "M-0020"}
         else "automatic"
     )
     assert model.configuration.prompt_cache.control == expected_cache_control
@@ -667,6 +681,7 @@ def test_active_benchmark_model_routes_are_fully_pinned(
         "M-0016",
         "M-0017",
         "M-0018",
+        "M-0020",
         "M-0101",
         "M-0104",
     ],

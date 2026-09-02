@@ -5,6 +5,16 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-09-02",
+    displayDate: "2 September 2026",
+    title: "Claude Fable 5.1 (high) added.",
+    summary: "It scored 12.1 questions with 34 of 35 successful trials.",
+    link: {
+      type: "run",
+      executionId: "BX-20260902-official-M0020-001",
+    },
+  },
+  {
     date: "2026-08-30",
     displayDate: "30 August 2026",
     title: "Behind Deep20Bench: the hard part wasn’t the game.",

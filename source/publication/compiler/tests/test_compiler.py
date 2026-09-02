@@ -2357,6 +2357,9 @@ def test_homepage_and_method_share_one_typed_illustrative_round() -> None:
     assert "<IllustrativeRoundExample />" in homepage
     assert "<IllustrativeRoundExample />" in method
     assert 'from "@/lib/illustrative-round"' not in story
+    assert "2 September 2026" in story
+    assert "Claude Fable 5.1 (high) added." in story
+    assert "12.1 questions with 34 of 35 successful trials." in story
     assert "23 August 2026" in story
     assert "OpenRouter’s Ox Alpha (high) tested." in story
     assert "17.6 questions, placing 12th of 15." in story
