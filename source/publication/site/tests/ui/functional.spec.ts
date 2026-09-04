@@ -491,8 +491,9 @@ test("Data provides schema guidance, reuse terms, and next steps", { tag: ["@fun
 });
 
 test("question scores show repeated-trial confidence intervals", { tag: ["@functional", "@desktop", "@smoke"] }, async ({ page }) => {
-  await page.goto("");
+  await page.goto("", { waitUntil: "networkidle" });
   await waitForPublication(page);
+  await page.locator(".score-dot-plot-canvas").first().scrollIntoViewIfNeeded();
   await expect(page.locator(".score-dot-plot-canvas svg")).toHaveCount(2);
   await expect(page.locator(".score-dot-plot-caption")).toContainText(
     "Question score",
@@ -517,8 +518,9 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
   await expect(page.locator('ol[aria-label="Pilot question scores"]')).toHaveCount(1);
   await expect(page.locator('ol[aria-label="Official question scores"]')).toHaveCount(0);
 
-  await page.goto("results/");
+  await page.goto("results/", { waitUntil: "networkidle" });
   await waitForPublication(page);
+  await page.locator(".score-dot-plot-canvas").first().scrollIntoViewIfNeeded();
   await expect(page.locator(".score-dot-plot-canvas svg")).toHaveCount(2);
   await expect
     .poll(() => page.locator('.score-dot-plot-canvas path[fill="#4f5dff"]').count())
@@ -662,6 +664,7 @@ test("efficiency can be viewed by normalized distance from the ideal", { tag: ["
   }
 
   const inlineChart = page.locator(".tradeoff-visual .efficiency-scatter-canvas");
+  await inlineChart.scrollIntoViewIfNeeded();
   await expect(inlineChart.locator("svg")).toBeVisible();
   const inlineChartBox = await inlineChart.boundingBox();
   expect(inlineChartBox).not.toBeNull();

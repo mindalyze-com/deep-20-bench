@@ -3,6 +3,25 @@ const decimal = new Intl.NumberFormat("en", {
   maximumFractionDigits: 2,
 });
 
+const decimalFormats = new Map<number, Intl.NumberFormat>([[2, decimal]]);
+const decimalFormat = (digits: number): Intl.NumberFormat => {
+  let format = decimalFormats.get(digits);
+  if (format === undefined) {
+    format = new Intl.NumberFormat("en", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    });
+    decimalFormats.set(digits, format);
+  }
+  return format;
+};
+
+const wholeNumber = new Intl.NumberFormat("en", { maximumFractionDigits: 0 });
+const percentage = new Intl.NumberFormat("en", {
+  style: "percent",
+  maximumFractionDigits: 0,
+});
+
 const usd = new Intl.NumberFormat("en", {
   style: "currency",
   currency: "USD",
@@ -43,10 +62,7 @@ export const number = (
 ): string =>
   value === null || value === undefined
     ? "-"
-    : new Intl.NumberFormat("en", {
-        minimumFractionDigits: digits,
-        maximumFractionDigits: digits,
-      }).format(Number(value));
+    : decimalFormat(digits).format(Number(value));
 
 export interface ConfidenceIntervalBounds {
   lower: string | number;
@@ -62,15 +78,12 @@ export const confidenceIntervalLabel = (
     : `${number(interval.lower, digits)}–${number(interval.upper, digits)}`;
 
 export const integer = (value: number): string =>
-  new Intl.NumberFormat("en", { maximumFractionDigits: 0 }).format(value);
+  wholeNumber.format(value);
 
 export const percent = (value: string | null | undefined): string =>
   value === null || value === undefined
     ? "-"
-    : new Intl.NumberFormat("en", {
-        style: "percent",
-        maximumFractionDigits: 0,
-      }).format(Number(value));
+    : percentage.format(Number(value));
 
 export const contractPercent = (
   value: string | null | undefined,

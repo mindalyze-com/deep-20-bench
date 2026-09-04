@@ -616,6 +616,10 @@ test("question score and CI width plots align on desktop and stack on mobile", {
   await waitForPublication(page);
   const scoreCanvas = page.locator(".score-dot-plot-canvas--score");
   const widthCanvas = page.locator(".score-dot-plot-canvas--width");
+  await scoreCanvas.scrollIntoViewIfNeeded();
+  await expect(scoreCanvas.locator("svg")).toBeVisible();
+  await widthCanvas.scrollIntoViewIfNeeded();
+  await expect(widthCanvas.locator("svg")).toBeVisible();
   const scoreBox = await scoreCanvas.boundingBox();
   const widthBox = await widthCanvas.boundingBox();
   expect(scoreBox).not.toBeNull();
@@ -1078,6 +1082,7 @@ test("result charts remain contained across the mobile breakpoint", { tag: ["@la
     await page.setViewportSize({ width: 1000, height: 900 });
     await page.goto(routePath);
     await waitForPublication(page);
+    await page.locator(".result-chart-panel").first().scrollIntoViewIfNeeded();
     await expect(page.locator(".result-chart-panel svg").first()).toBeVisible();
 
     for (const width of [720, 840, 720]) {

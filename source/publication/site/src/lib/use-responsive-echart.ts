@@ -131,7 +131,13 @@ export const useResponsiveEChart = (
   const chartElement = ref<HTMLDivElement | null>(null);
   let chart: EChartsType | null = null;
   let resizeObserver: ResizeObserver | null = null;
+  let visibilityObserver: IntersectionObserver | null = null;
   let observedWidth = 0;
+  let observedHeight = 0;
+  let visible = false;
+  let active = true;
+  let disposed = false;
+  let optionDirty = true;
   let refreshPending = false;
 
   const updatePointerCursor = (parameters: ECElementEvent): void => {
@@ -148,65 +154,98 @@ export const useResponsiveEChart = (
 
   const render = (): void => {
     const element = chartElement.value;
-    if (element === null || chart === null || element.clientWidth < 1) return;
+    if (element === null || !active || disposed || (!visible && chart === null)) return;
     const width = element.clientWidth;
-    observedWidth = width;
-    chart.setOption(options.option(width), true);
-    chart.resize({ width, height: options.height.value });
-  };
+    const height = options.height.value;
+    if (width < 1 || height < 1) return;
+    const dimensionsChanged = width !== observedWidth || height !== observedHeight;
+    // Already-rendered SVGs must follow viewport resizes even when offscreen,
+    // otherwise their fixed pixel width can overflow the narrower container.
+    if (!visible && !dimensionsChanged) return;
 
-  const observe = (element: HTMLDivElement): void => {
-    if (resizeObserver !== null) return;
-    resizeObserver = new ResizeObserver(([entry]) => {
-      if (
-        entry === undefined ||
-        Math.abs(entry.contentRect.width - observedWidth) < 1
-      ) {
-        return;
-      }
-      render();
-    });
-    resizeObserver.observe(element);
-  };
-
-  const ensure = (): void => {
-    const element = chartElement.value;
-    if (element === null || element.clientWidth < 1 || element.clientHeight < 1) {
-      return;
-    }
     if (chart === null) {
-      chart = init(element, undefined, { renderer: "svg" });
+      // Explicit dimensions avoid another layout read inside ECharts initialization.
+      chart = init(element, undefined, { renderer: "svg", width, height });
       if (options.onClick !== undefined) chart.on("click", options.onClick);
       if (options.pointerCursor !== undefined) {
         chart.on("mouseover", updatePointerCursor);
         chart.on("mouseout", resetPointerCursor);
       }
+    } else if (dimensionsChanged) {
+      chart.resize({ width, height });
     }
-    observe(element);
+    if (width !== observedWidth) optionDirty = true;
+    observedWidth = width;
+    observedHeight = height;
+    if (optionDirty) {
+      chart.setOption(options.option(width), true);
+      optionDirty = false;
+    }
   };
 
-  const refresh = (): void => {
-    if (refreshPending) return;
+  const observe = (element: HTMLDivElement): void => {
+    if (visibilityObserver === null && typeof IntersectionObserver !== "undefined") {
+      // Keep below-the-fold chart layout out of hydration. The reserved container
+      // and static text remain present, and rendering starts before scrolling reaches it.
+      visibilityObserver = new IntersectionObserver(([entry]) => {
+        if (!active || disposed) return;
+        visible = entry?.isIntersecting === true;
+        if (visible) schedule();
+      }, { rootMargin: "300px" });
+      visibilityObserver.observe(element);
+    } else if (typeof IntersectionObserver === "undefined") {
+      visible = true;
+    }
+    if (resizeObserver === null) {
+      resizeObserver = new ResizeObserver(([entry]) => {
+        if (entry !== undefined && Math.abs(entry.contentRect.width - observedWidth) >= 1) {
+          schedule();
+        }
+      });
+      resizeObserver.observe(element);
+    }
+  };
+
+  const schedule = (): void => {
+    if (refreshPending || !active || disposed) return;
     refreshPending = true;
     void nextTick(() => {
       refreshPending = false;
-      ensure();
+      const element = chartElement.value;
+      if (element === null || !active || disposed) return;
+      observe(element);
       render();
     });
   };
 
+  const refresh = (): void => {
+    optionDirty = true;
+    schedule();
+  };
+
   onMounted(refresh);
-  onActivated(refresh);
+  onActivated(() => {
+    active = true;
+    schedule();
+  });
   watch(options.height, refresh);
 
-  onDeactivated(() => {
+  const disconnect = (): void => {
     resizeObserver?.disconnect();
     resizeObserver = null;
+    visibilityObserver?.disconnect();
+    visibilityObserver = null;
+    visible = false;
+  };
+
+  onDeactivated(() => {
+    active = false;
+    disconnect();
   });
 
   onBeforeUnmount(() => {
-    resizeObserver?.disconnect();
-    resizeObserver = null;
+    disposed = true;
+    disconnect();
     if (options.onClick !== undefined) chart?.off("click", options.onClick);
     if (options.pointerCursor !== undefined) {
       chart?.off("mouseover", updatePointerCursor);

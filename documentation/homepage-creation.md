@@ -288,7 +288,10 @@ The build has separate browser and static-rendering entry points. Static renderi
 memory-history router. The browser uses web history and hydrates the existing markup. A
 versioned embedded page-state document contains only the existing public manifest,
 leaderboard, run, and related result documents needed for the initial route. Browser-only
-charts and interactions start after hydration.
+charts and interactions start after hydration. SVG chart initialization waits until its reserved
+container approaches the viewport; prerendered text, tables, links, and container dimensions
+remain available immediately. Offscreen charts retain pending data updates. Chart refreshes
+resize only when dimensions change, and cached route activation resumes observation.
 
 The homepage, eight editorial and result pages, each selected official run summary, and every
 subject summary are rendered as complete HTML. Run pages include model identity, provider,

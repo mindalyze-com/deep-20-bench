@@ -513,6 +513,9 @@ test("result navigation, tables, and charts use the shared results layout", { ta
   }
 
   await page.goto("results/cost/");
+  await page.locator(".metric-chart-canvas").first().scrollIntoViewIfNeeded();
+  await expect(page.locator(".metric-chart-canvas svg").first()).toBeVisible();
+  await page.locator(".stacked-chart-canvas").scrollIntoViewIfNeeded();
   await expect(page.locator(".stacked-chart-canvas svg")).toBeVisible();
   const guesserCostAxisLabels = await page
     .locator(".metric-chart-canvas svg")
@@ -572,6 +575,7 @@ test("result navigation, tables, and charts use the shared results layout", { ta
   );
 
   await page.goto("results/time/");
+  await page.locator(".metric-chart-canvas").first().scrollIntoViewIfNeeded();
   await expect(page.locator(".metric-chart-canvas svg").first()).toBeVisible();
   await expect(page.locator(".time-panel + .runtime-ledger")).toHaveCount(1);
   await expect(page.locator(".time-panel .runtime-ledger")).toHaveCount(0);
@@ -582,9 +586,11 @@ test("result navigation, tables, and charts use the shared results layout", { ta
   );
 
   await page.goto("results/efficiency/");
+  await page.locator(".efficiency-scatter-canvas").scrollIntoViewIfNeeded();
   await expect(page.locator(".efficiency-scatter-canvas svg")).toBeVisible();
 
   await page.goto("results/reliability/");
+  await page.locator(".reliability-scatter-canvas").scrollIntoViewIfNeeded();
   await expect(page.locator(".reliability-scatter-canvas svg")).toBeVisible();
   await expect(page.locator(".reliability-comparison")).toHaveCount(0);
   await expect(page.locator(".ranking-table tbody tr").first()).toContainText(

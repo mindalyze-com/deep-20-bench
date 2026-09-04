@@ -4,12 +4,21 @@ import {
   contractPercent,
   formatCount,
   moneyEpisode,
+  number,
   reasoningEffortLabel,
   staticDateTimeLabel,
 } from "../../src/lib/format";
 import { splitModelName } from "../../src/lib/model-name";
 
 describe("publication formatting", () => {
+  test("keeps decimal precision independent across repeated formats", () => {
+    expect(number("1234.5678", 1)).toBe("1,234.6");
+    expect(number("1234.5678", 4)).toBe("1,234.5678");
+    expect(number("1234.5678", 1)).toBe("1,234.6");
+    expect(number("1234.5678")).toBe("1,234.57");
+    expect(number(null, 4)).toBe("-");
+  });
+
   test("keeps meaningful contract and episode precision", () => {
     expect(contractPercent("1", 0)).toBe("100%");
     expect(contractPercent("0.9984", 1)).toBe(">99%");

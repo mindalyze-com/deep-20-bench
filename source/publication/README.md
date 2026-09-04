@@ -104,7 +104,11 @@ The build uses Vue server rendering with a memory-history router, then hydrates 
 with a web-history router in the browser. The homepage, eight editorial and result pages, and
 every selected official run summary contain their real content and ordinary links in the
 initial HTML. Charts and interactive controls start after hydration. There is no separate
-fallback content tree or content-hiding script.
+fallback content tree or content-hiding script. Chart containers keep their declared height;
+SVG initialization waits until the container is within 300 pixels of the viewport. Offscreen
+data-only updates are retained until the chart returns; already-rendered SVGs still follow
+viewport resizes. Data refreshes do not resize an unchanged chart, and cached routes reconnect
+their observers when activated.
 
 The generated pages have route-specific titles, descriptions, social metadata, canonical URLs,
 and accurate publication modification times in `sitemap.xml`. Every page includes `og:site_name`
