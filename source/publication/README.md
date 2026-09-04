@@ -107,19 +107,24 @@ initial HTML. Charts and interactive controls start after hydration. There is no
 fallback content tree or content-hiding script.
 
 The generated pages have route-specific titles, descriptions, social metadata, canonical URLs,
-and accurate publication modification times in `sitemap.xml`. The homepage retains Dataset
-structured data. The sitemap contains the homepage, editorial URLs, every selected official run,
+and accurate publication modification times in `sitemap.xml`. Every page includes `og:site_name`
+from the configured site title. The homepage includes separate Dataset and WebSite JSON-LD
+nodes, using the configured site identity and canonical URL, `https://deep20bench.com/`.
+Hosting the homepage at this domain root supports Google's site-name requirements.
+The compiler's typed route manifest is also published as `data/routes.json`.
+Vite bundles its page metadata into the client, so initial HTML, hydration, and client navigation
+use the same titles, descriptions, social metadata, canonical URLs, and indexability rules
+without an extra metadata request. Short navigation labels never write document metadata.
+The sitemap contains the homepage, editorial URLs, every selected official run,
 and every subject summary. These pages do not emit a robots meta tag, so search engines use their
 default `index, follow` behavior. Episode evidence pages remain outside the sitemap and emit
 `noindex, follow`; aliases and downloads remain outside the sitemap. The generated 404 page also
 emits `noindex, follow`.
 
-This repository publishes a GitHub Pages project site below `/deep-20-bench/`. A valid
-`robots.txt` for that host must instead live at `https://mindalyze-com.github.io/robots.txt`,
-which this project repository cannot publish. The build therefore does not generate a
-misleading project-path `robots.txt`; crawling remains allowed by default. After deployment,
-submit `https://mindalyze-com.github.io/deep-20-bench/sitemap.xml` in Google Search Console.
-Alternatively, the separately managed host-root `robots.txt` can advertise that absolute URL.
+This repository publishes through GitHub Pages at `https://deep20bench.com/`, with base path `/`.
+The prerenderer derives `CNAME` and `robots.txt` from the canonical URL in every complete build.
+The root robots file allows crawling and advertises `https://deep20bench.com/sitemap.xml`.
+After deployment, submit that sitemap in Google Search Console.
 See Google's guidance for [robots.txt location](https://developers.google.com/crawling/docs/robots-txt/create-robots-txt)
 and [sitemap submission](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap).
 
@@ -133,7 +138,15 @@ Start the Vue development server from the repository root:
 npm run --prefix source/publication/site dev -- --host 127.0.0.1 --port 4173
 ```
 
-Then open <http://127.0.0.1:4173/deep-20-bench/>.
+Then open <http://127.0.0.1:4173/>. The browser fixture suite explicitly retains the historical
+project-path configuration; static-output tests exercise the production domain-root build.
+
+The original `https://mindalyze-com.github.io/deep-20-bench/data/deep20bench-v9.json`
+address remains an external compatibility endpoint. Keep the v9 JSON and schema current and
+verify the old address reaches valid current JSON after the custom-domain deployment. The v9
+site metadata now uses base path `/`; its schema accepts both root and project paths. Verify
+old page redirects individually, including run, subject, and episode routes. See
+`documentation/custom-domain-migration.md` for the deployment checks.
 
 ## Official eligibility
 

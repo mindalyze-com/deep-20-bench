@@ -21,7 +21,7 @@ interface RunFixture {
   subjects: Array<{ target_id: string }>;
 }
 
-const staticBase = "http://127.0.0.1:4174/deep-20-bench/";
+const staticBase = "http://127.0.0.1:4174/";
 const manifest = JSON.parse(
   readFileSync(path.join(docsRoot, "data", "manifest.json"), "utf8"),
 ) as ManifestFixture;
@@ -68,10 +68,10 @@ test(
     await expect(content).toContainText("Comparable runs, limited conclusions.");
     await expect(page.locator(".site-footer")).toBeVisible();
     await expect(page.locator(".static-home, .static-route-fallback")).toHaveCount(0);
-    await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+    await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(2);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
-      "https://mindalyze-com.github.io/deep-20-bench/",
+      "https://deep20bench.com/",
     );
 
     await context.close();
@@ -95,12 +95,12 @@ test(
     await page.goto(new URL("results/", staticBase).href);
     for (const reference of manifest.official_runs) {
       await expect(
-        page.locator(`a[href="/deep-20-bench/runs/${reference.execution_id}/"]`).first(),
+        page.locator(`a[href="/runs/${reference.execution_id}/"]`).first(),
       ).toBeAttached();
     }
     for (const routePath of staticPaths.filter((value) => value.startsWith("results/"))) {
       await expect(
-        page.locator(`a[href="/deep-20-bench/${routePath}"]`).first(),
+        page.locator(`a[href="/${routePath}"]`).first(),
       ).toBeAttached();
     }
 
@@ -135,7 +135,7 @@ test(
     for (const subject of representativeRun.subjects) {
       await expect(
         page.locator(
-          `a[href="/deep-20-bench/runs/${representativeExecutionId}/subjects/${subject.target_id}/"]`,
+          `a[href="/runs/${representativeExecutionId}/subjects/${subject.target_id}/"]`,
         ).first(),
       ).toBeAttached();
     }
@@ -154,7 +154,7 @@ test(
       if (/hydration|mismatch/i.test(message.text())) hydrationMessages.push(message.text());
     });
     page.on("request", (request) => {
-      if (request.url().includes("/deep-20-bench/data/")) {
+      if (request.url().includes("/data/")) {
         dataRequests.push(request.url());
       }
     });

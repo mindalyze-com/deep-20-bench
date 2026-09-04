@@ -180,7 +180,7 @@ test("primary and result navigation use distinct section names", { tag: ["@inter
 
   await page.goto("about/");
   await waitForPublication(page);
-  await expect(page).toHaveTitle("About · Deep20Bench");
+  await expect(page).toHaveTitle("Deep20Bench Origin and Related LLM Research");
   await expect(aboutLink).toHaveAttribute("aria-current", "page");
 });
 

@@ -1,0 +1,159 @@
+{
+  "schema_version": 3,
+  "request": {
+    "benchmark_id": "B-0001",
+    "execution_id": "BX-20260904-smoke-M0021-001",
+    "model_id": "M-0021",
+    "benchmark_mode": "experimental",
+    "target_ids": [
+      "T-0001"
+    ],
+    "iterations_override": 1,
+    "base_seed": 42
+  },
+  "definition": {
+    "benchmark_id": "B-0001",
+    "display_name": "Deep20Bench Core Subjects",
+    "subject_ids": [
+      "T-0001"
+    ],
+    "iterations": 1,
+    "game_policy": {
+      "version": 9,
+      "benchmark_mode": "experimental",
+      "max_questions": 50,
+      "max_consecutive_contract_violations": 5,
+      "reveal_entity_type": true,
+      "final_guess_after_limit": true,
+      "include_oracle_evidence": true,
+      "include_guesser_conversation": true
+    },
+    "oracle_configuration": {
+      "gateway": "openrouter",
+      "model": "openai/gpt-5.6-luna",
+      "provider": "openai",
+      "reasoning_effort": "medium",
+      "allow_fallbacks": false,
+      "max_output_tokens": 4096,
+      "timeout_seconds": 120,
+      "recovery": {
+        "max_elapsed_seconds": 300,
+        "max_request_attempts": 8,
+        "no_result_retries": 1,
+        "invalid_output_retries": 1,
+        "rate_limit_max_elapsed_seconds": 900,
+        "rate_limit_max_request_attempts": 20,
+        "retry_jitter_ms": 1000
+      },
+      "parallel_search": true,
+      "max_search_results": 5,
+      "reviewer": {
+        "gateway": "openrouter",
+        "model": "google/gemini-3.5-flash-lite",
+        "provider": "google-ai-studio",
+        "reasoning_effort": "medium",
+        "allow_fallbacks": false,
+        "token_limit_parameter": "max_tokens",
+        "max_output_tokens": 4096,
+        "timeout_seconds": 120,
+        "recovery": {
+          "max_elapsed_seconds": 300,
+          "max_request_attempts": 8,
+          "no_result_retries": 1,
+          "invalid_output_retries": 1,
+          "rate_limit_max_elapsed_seconds": 900,
+          "rate_limit_max_request_attempts": 20,
+          "retry_jitter_ms": 1000
+        }
+      },
+      "judge": {
+        "gateway": "openrouter",
+        "model": "anthropic/claude-opus-5",
+        "provider": "openrouter-auto",
+        "provider_routing": "automatic",
+        "reasoning_effort": "medium",
+        "allow_fallbacks": true,
+        "token_limit_parameter": "max_tokens",
+        "max_output_tokens": 4096,
+        "timeout_seconds": 120,
+        "recovery": {
+          "max_elapsed_seconds": 300,
+          "max_request_attempts": 8,
+          "no_result_retries": 1,
+          "invalid_output_retries": 1,
+          "rate_limit_max_elapsed_seconds": 900,
+          "rate_limit_max_request_attempts": 20,
+          "retry_jitter_ms": 1000
+        }
+      }
+    },
+    "validator_configuration": {
+      "configuration_id": "gpt-5.6-luna-validator",
+      "gateway": "openrouter",
+      "model": "openai/gpt-5.6-luna",
+      "provider": "openai",
+      "reasoning_effort": "medium",
+      "allow_fallbacks": false,
+      "max_output_tokens": 4096,
+      "timeout_seconds": 120,
+      "recovery": {
+        "max_elapsed_seconds": 300,
+        "max_request_attempts": 8,
+        "no_result_retries": 1,
+        "invalid_output_retries": 1,
+        "rate_limit_max_elapsed_seconds": 900,
+        "rate_limit_max_request_attempts": 20,
+        "retry_jitter_ms": 1000
+      },
+      "seed_capability": "unsupported",
+      "prompt_cache": {
+        "policy": "best_effort",
+        "control": "automatic",
+        "minimum_cacheable_tokens": 1024,
+        "ttl_seconds": 300,
+        "input_usd_per_million": "1.00",
+        "cached_input_usd_per_million": "0.10",
+        "cache_write_multiplier": "1.25"
+      }
+    },
+    "definition_hash": "9b07a151a18dc09598d58c414528d15b09602f86789b61fc311a41b75da2b4cd"
+  },
+  "model": {
+    "model_id": "M-0021",
+    "display_name": "Gemini 3.8 Flash (high)",
+    "configuration": {
+      "configuration_id": "M-0021",
+      "gateway": "openrouter",
+      "model": "google/gemini-3.8-flash",
+      "provider": "google-ai-studio",
+      "reasoning_effort": "high",
+      "allow_fallbacks": false,
+      "max_output_tokens": 32768,
+      "timeout_seconds": 120,
+      "recovery": {
+        "max_elapsed_seconds": 300,
+        "max_request_attempts": 8,
+        "no_result_retries": 1,
+        "invalid_output_retries": 1,
+        "rate_limit_max_elapsed_seconds": 900,
+        "rate_limit_max_request_attempts": 20,
+        "retry_jitter_ms": 1000
+      },
+      "seed_capability": "supported",
+      "prompt_cache": {
+        "policy": "best_effort",
+        "control": "automatic",
+        "minimum_cacheable_tokens": 4096,
+        "ttl_seconds": 300,
+        "input_usd_per_million": "0.75",
+        "cached_input_usd_per_million": "0.075",
+        "cache_write_multiplier": "1.00"
+      }
+    },
+    "configuration_hash": "7b885bd1c407fb815fa16e55345e8faca47faba25f6e9c3cea794dc7fdcf95e4"
+  },
+  "subject_catalog_hash": "2cb28dee2ab7639a755940e30525b011f5683d3971fcc0d70bcb7cdd29baea0a",
+  "git_commit": "2d9a7a4d5f99268ec40b5a8785b5f8ea00d412c9",
+  "created_at": "2026-09-04T07:34:48.424460+00:00",
+  "integrity_hash": "43acd083eccee3a3e2d5566a5d85e6e33873641164ce86a6291e17da7335b732"
+}

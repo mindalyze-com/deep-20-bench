@@ -6,6 +6,8 @@ import {
   type RouteRecordRaw,
 } from "vue-router";
 
+import { applyPageMetadata } from "@/lib/page-metadata";
+
 interface LazyView {
   (): Promise<{ default: RouteComponent }>;
   preload: () => void;
@@ -159,10 +161,13 @@ const routes: RouteRecordRaw[] = [
 
 export const createPublicationRouter = (history: RouterHistory): Router => {
   const router = createRouter({ history, routes });
-  router.afterEach((to) => {
-    if (typeof document === "undefined") return;
-    const title = typeof to.meta.title === "string" ? to.meta.title : "Deep20Bench";
-    document.title = title === "Overview" ? "Deep20Bench" : `${title} · Deep20Bench`;
+  const metadataByRoute = new Map(__DEEP20_ROUTE_METADATA__.map((entry) => [entry.route, entry]));
+  router.afterEach((to, _from, failure) => {
+    if (failure) return;
+    applyPageMetadata(
+      metadataByRoute.get(to.path.replace(/^\/+|\/+$/g, "")),
+      __DEEP20_CANONICAL_URL__,
+    );
   });
   return router;
 };

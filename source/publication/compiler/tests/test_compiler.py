@@ -1424,9 +1424,30 @@ def test_published_contract_violations_include_only_sanitized_guesser_text() -> 
     )
     retained = tuple(output for turn in violations for output in turn.rejected_outputs)
 
-    assert len(violations) == 137
-    assert len(retained) == 85
-    assert sum(not turn.rejected_outputs for turn in violations) == 52
+    snapshot_path = (
+        REPOSITORY / "source" / "publication" / "data" / "guesser-violation-outputs-v1.json"
+    )
+    snapshot = parse_guesser_violation_snapshot(_read_json(snapshot_path), str(snapshot_path))
+    selected_runs = {run.execution_id for run in dataset.official_runs}
+    expected = {
+        (record.execution_id, record.target_id, record.trial_id, record.turn_number): record
+        for record in snapshot.records
+        if record.execution_id in selected_runs
+    }
+    actual = {
+        (run.execution_id, subject.target_id, trial.trial_id, turn.turn_number): turn
+        for run in dataset.official_runs
+        for subject in run.subjects
+        for trial in subject.trials
+        if trial.episode is not None
+        for turn in trial.episode.turns
+        if turn.turn_type == "contract_violation"
+    }
+    assert actual.keys() == expected.keys()
+    assert len(violations) == sum(run.contract.violations for run in dataset.official_runs)
+    assert retained
+    for identity, turn in actual.items():
+        assert turn.rejected_outputs == expected[identity].rejected_outputs
     assert all(output.text for output in retained)
     assert all(
         trial.episode.guesser_disclosure is not None
@@ -1754,9 +1775,12 @@ def test_generated_question_scores_use_subject_averages_then_average() -> None:
     assert Decimal(opus_interval["upper"]) == pytest.approx(Decimal("13.2728992905099725"))
     assert opus_interval["subject_count"] == 7
     assert opus_interval["trial_count"] == 35
-    assert fable["rank"] == 1
-    assert opus["rank"] == 2
-    assert kimi["rank"] == 3
+    scored_rows = [row for row in dataset["leaderboard"] if row["question_score"] is not None]
+    for row in scored_rows:
+        assert row["rank"] == 1 + sum(
+            Decimal(other["question_score"]) < Decimal(row["question_score"])
+            for other in scored_rows
+        )
 
 
 def test_generated_efficiency_distance_is_reproducible_from_public_decimals() -> None:
@@ -1797,48 +1821,28 @@ def test_generated_efficiency_distance_is_reproducible_from_public_decimals() ->
         assert row.normalized_guesser_cost == normalized_cost
         assert row.ideal_distance_score == distance
 
-    ordered = sorted(rows, key=lambda row: row.ideal_distance_rank or 0)
-    assert tuple(row.model.display_name for row in ordered) == (
-        "gpt-oss-120B (high)",
-        "Claude Opus 5 (high)",
-        "Grok 4.5 (high)",
-        "Claude Sonnet 5 (high)",
-        "GPT-5 Nano (medium)",
-        "Gemini 3.7 Flash (high)",
-        "Grok 4.6 (high)",
-        "GPT-5.6 Luna (high)",
-        "Claude Fable 5 (high)",
-        "GPT-5.6 Sol (high)",
-        "Gemini 3.6 Flash (high)",
-        "Kimi K3 (high)",
-        "Llama 4 Maverick (non-thinking)",
-        "Mistral Medium 3.5 (high)",
-    )
-    assert tuple(format(row.ideal_distance_score, ".3f") for row in ordered) == (
-        "0.104",
-        "0.155",
-        "0.162",
-        "0.167",
-        "0.170",
-        "0.171",
-        "0.179",
-        "0.283",
-        "0.420",
-        "0.420",
-        "0.468",
-        "0.485",
-        "1.000",
-        "1.076",
-    )
-    assert {row.model.display_name for row in ordered if row.pareto_efficient} == {
-        "Llama 4 Maverick (non-thinking)",
-        "GPT-5 Nano (medium)",
-        "Grok 4.5 (high)",
-        "gpt-oss-120B (high)",
-        "Claude Opus 5 (high)",
-        "Claude Fable 5 (high)",
-    }
-    assert all(row.efficiency_rank == row.product_efficiency_rank for row in ordered)
+    for row in rows:
+        assert row.ideal_distance_score is not None
+        assert row.question_score is not None
+        assert row.guesser_cost_per_episode_usd is not None
+        assert row.ideal_distance_rank == 1 + sum(
+            other.ideal_distance_score < row.ideal_distance_score
+            for other in rows
+            if other.ideal_distance_score is not None
+        )
+        dominated = any(
+            other.question_score <= row.question_score
+            and other.guesser_cost_per_episode_usd <= row.guesser_cost_per_episode_usd
+            and (
+                other.question_score < row.question_score
+                or other.guesser_cost_per_episode_usd < row.guesser_cost_per_episode_usd
+            )
+            for other in rows
+            if other.question_score is not None
+            and other.guesser_cost_per_episode_usd is not None
+        )
+        assert row.pareto_efficient is not dominated
+        assert row.efficiency_rank == row.product_efficiency_rank
 
 
 def test_pre_question_score_run_compiles_without_migration() -> None:

@@ -5,6 +5,16 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-09-04",
+    displayDate: "4 September 2026",
+    title: "Gemini 3.8 Flash (high) added.",
+    summary: "It scored 13.1 questions with 35 of 35 successful trials.",
+    link: {
+      type: "run",
+      executionId: "BX-20260904-official-M0021-001",
+    },
+  },
+  {
     date: "2026-09-02",
     displayDate: "2 September 2026",
     title: "Claude Fable 5.1 (high) added.",

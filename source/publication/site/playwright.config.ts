@@ -69,7 +69,8 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: "npm run dev -- --host 127.0.0.1 --port 4173",
+      // Keep the historical subdirectory fixture covered alongside the production root build.
+      command: "DEEP20_BASE_PATH=/deep-20-bench/ DEEP20_CANONICAL_URL=https://mindalyze-com.github.io/deep-20-bench/ npm run dev -- --host 127.0.0.1 --port 4173",
       url: baseURL,
       reuseExistingServer: true,
       timeout: 120_000,
@@ -77,7 +78,7 @@ export default defineConfig({
     {
       command:
         "DEEP20_OUTPUT_DIR=../../../docs npm run preview -- --host 127.0.0.1 --port 4174",
-      url: "http://127.0.0.1:4174/deep-20-bench/",
+      url: "http://127.0.0.1:4174/",
       reuseExistingServer: true,
       timeout: 120_000,
     },

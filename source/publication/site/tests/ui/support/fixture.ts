@@ -12,7 +12,13 @@ const embeddedPageState =
   /<script\b(?=[^>]*\bid=["']deep20-page-state["'])[^>]*>[\s\S]*?<\/script>\s*/;
 
 export const test = base.extend({
-  page: async ({ page }, use) => {
+  page: async ({ page, browserName, baseURL }, use) => {
+    if (browserName === "chromium" && baseURL !== undefined) {
+      // Fulfilled fixture pages still connect to the local Vite development server.
+      await page.context().grantPermissions(["local-network-access"], {
+        origin: new URL(baseURL).origin,
+      });
+    }
     await page.route("**/deep-20-bench/data/**", async (route) => {
       const marker = "/deep-20-bench/data/";
       const pathname = new URL(route.request().url()).pathname;

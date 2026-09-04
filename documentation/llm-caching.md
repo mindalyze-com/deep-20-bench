@@ -132,6 +132,26 @@ and scored recovery remain unchanged. The endpoint advertised zero input and out
 did not advertise implicit prompt caching. Its configuration therefore keeps automatic caching
 as best effort, records any reported cache telemetry, and claims no cache savings.
 
+Gemini 3.8 Flash (`M-0021`) uses the Google AI Studio route with automatic best-effort
+prefix caching. On 4 September 2026, the
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/google/gemini-3.8-flash/endpoints)
+advertised implicit caching, $0.75 per million input tokens, $3.75 per million output tokens,
+and $0.075 per million cache-read tokens for that standard route. These introductory prices
+require reassessment after 31 December 2026. Google's
+[context-caching documentation](https://ai.google.dev/gemini-api/docs/caching) specifies a
+4,096-token minimum for this model. The configuration uses that threshold and a 300-second
+observation window; implicit retention varies and is not guaranteed. Automatic cache writes
+use the normal input rate without explicit cache storage. The existing fixed instructions and
+append-only visible transcript supply the shared prefix. Short games may stay below the
+threshold, so no padding or explicit cache breakpoint is added and no savings are assumed.
+Reported reads, writes, discounts, cost, and latency remain the evidence for actual reuse.
+
+The [4 September smoke run](../runs/M-0021/BX-20260904-smoke-M0021-001/summary.md)
+completed 13 Guesser calls on the pinned route with 423-821 input tokens per call, zero
+cache-read/write tokens, and no reported cache discount. Guesser cost was $0.04989225 and
+summed provider latency was 59.127 seconds. Every prompt stayed below the documented
+threshold, so this run verifies operation but does not establish cache reuse or savings.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input

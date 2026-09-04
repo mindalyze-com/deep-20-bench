@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { nextTick, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import DrilldownBar from "@/components/DrilldownBar.vue";
@@ -132,38 +132,10 @@ router.afterEach((to, from) => {
 
 router.onError(stopNavigationFeedback);
 
-const canonicalUrl = computed(() => {
-  const path =
-    typeof route.meta.canonicalPath === "string"
-      ? route.meta.canonicalPath
-      : route.path;
-  return new URL(path.replace(/^\//, ""), __DEEP20_CANONICAL_URL__).href;
-});
-
 watch(
-  canonicalUrl,
-  (url) => {
+  () => routeContext.version,
+  () => {
     if (!browser) return;
-    let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    if (canonical === null) {
-      canonical = document.createElement("link");
-      canonical.rel = "canonical";
-      document.head.append(canonical);
-    }
-    canonical.href = url;
-  },
-  { immediate: true },
-);
-
-watch(
-  () => [routeContext.title, routeContext.description, routeContext.version] as const,
-  ([title, description]) => {
-    if (!browser) return;
-    document.title = title === "Deep20Bench" ? title : `${title} · Deep20Bench`;
-    const descriptionMeta = document.querySelector<HTMLMetaElement>(
-      'meta[name="description"]',
-    );
-    descriptionMeta?.setAttribute("content", description);
     void restoreScroll();
   },
 );

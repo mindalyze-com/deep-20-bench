@@ -305,12 +305,11 @@ publication. Listed pages omit robots meta tags, so search engines use their def
 follow` behavior. Episode evidence and the `/story/` alias stay outside the sitemap. Episode
 pages and the generated 404 page emit `noindex, follow`.
 
-GitHub Pages hosts this repository as the `/deep-20-bench/` project path. Search engines require
-`robots.txt` at the host root, `https://mindalyze-com.github.io/robots.txt`; a file generated
-below the project path would not control crawling or advertise the sitemap. This repository
-therefore generates no `robots.txt`. Crawling remains allowed by default. After deployment,
-submit `https://mindalyze-com.github.io/deep-20-bench/sitemap.xml` through Google Search Console,
-unless the separately managed host-root `robots.txt` already advertises that absolute URL. See
+GitHub Pages hosts this repository at `https://deep20bench.com/`, with base path `/`.
+The prerenderer derives CNAME and robots files from the canonical URL on every rebuild. The root `robots.txt` allows
+crawling and advertises `https://deep20bench.com/sitemap.xml`. After deployment, submit that
+sitemap through Google Search Console. Preserve and verify the original GitHub Pages URL for
+`data/deep20bench-v9.json` and its schema through the domain migration. See
 Google's [robots.txt location rules](https://developers.google.com/crawling/docs/robots-txt/create-robots-txt)
 and [sitemap submission guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap).
 
@@ -379,7 +378,7 @@ Public JSON is written to a temporary Vite public directory during the build. It
 under `source/publication/site/`. The development server reads committed public data from
 `docs/`.
 
-The Vite build uses the configured GitHub Pages base path. The publisher writes full prerendered
+The Vite build uses the configured domain-root base path. The publisher writes full prerendered
 HTML for indexable homepage, editorial, run, and subject routes and entry shells for episode
 routes, so direct navigation and refresh work under GitHub Pages. Local verification uses an
 HTTP origin because clean history routes and later route-data requests do not support direct
@@ -430,13 +429,24 @@ Implemented Python tests cover:
 - A dependency-boundary check proving the package does not import benchmark, game, Oracle,
   Reviewer, Judge, or OpenRouter execution code.
 
+The typed static route manifest is the source of truth for document metadata. It is published
+as `data/routes.json`; Vite embeds its metadata projection in the client bundle. The router
+applies those exact values during hydration and navigation, including the full model and subject
+names. Navigation labels do not overwrite page titles or descriptions. Indexability and social
+metadata follow the destination route, including navigation back from an episode page.
+
+The site title also supplies `og:site_name` on every generated page. Homepage WebSite JSON-LD
+uses the configured title, short title, and canonical domain-root URL alongside the existing
+Dataset node. The domain root supports Google's site-name placement requirements.
+
 The static build performs strict Vue and TypeScript checks. Browser validation covers:
 
-- Base-path-safe links for the `/deep-20-bench/` project site.
+- Base-path-safe links for both the production domain root and historical project-path fixtures.
 - Complete no-JavaScript content for editorial pages and official run summaries.
 - Generated routes, static links, hydration, data downloads, and internal navigation.
 - Unique index metadata, self-referencing canonicals, sitemap membership, and the absence of
   robots blocks on successful routes.
+- Matching document metadata before and after hydration and during client navigation.
 - Desktop and mobile layouts.
 - Data-backed tables and responsive SVG charts.
 - Keyboard navigation and accessible chart descriptions.

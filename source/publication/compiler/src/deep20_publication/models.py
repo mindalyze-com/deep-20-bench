@@ -1414,7 +1414,7 @@ class SiteMetadata(FrozenModel):
     title: str = Field(min_length=1, max_length=100)
     short_title: str = Field(min_length=1, max_length=40)
     description: str = Field(min_length=1, max_length=300)
-    base_path: str = Field(pattern=r"^/[A-Za-z0-9._/-]*/$")
+    base_path: str = Field(pattern=r"^/(?:[A-Za-z0-9._/-]*/)?$")
     creator_name: str = Field(min_length=1, max_length=160)
     citation_label: str = Field(min_length=1, max_length=240)
 

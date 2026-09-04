@@ -288,6 +288,7 @@ def test_repository_model_catalog_has_expected_active_ids() -> None:
     assert tuple(catalog.models) == (
         *(f"M-{number:04d}" for number in range(1, 19)),
         "M-0020",
+        "M-0021",
         "M-0101",
         "M-0104",
     )
@@ -583,6 +584,19 @@ def test_ox_alpha_uses_json_object_output_mode() -> None:
             512,
         ),
         (
+            "M-0021",
+            "Gemini 3.8 Flash (high)",
+            "google/gemini-3.8-flash",
+            "google-ai-studio",
+            "high",
+            32_768,
+            300,
+            "supported",
+            Decimal("0.75"),
+            Decimal("0.075"),
+            4_096,
+        ),
+        (
             "M-0101",
             "GPT-5.6 Luna (medium)",
             "openai/gpt-5.6-luna",
@@ -682,6 +696,7 @@ def test_active_benchmark_model_routes_are_fully_pinned(
         "M-0017",
         "M-0018",
         "M-0020",
+        "M-0021",
         "M-0101",
         "M-0104",
     ],

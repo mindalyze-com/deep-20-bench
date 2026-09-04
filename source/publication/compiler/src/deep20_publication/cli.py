@@ -736,7 +736,7 @@ def build(
             )
             _write_public_data(public_root, dataset, app_build)
             candidate = staging_root / "docs"
-            route_manifest_path = staging_root / "routes.json"
+            route_manifest_path = public_root / "data" / "routes.json"
             route_manifest_path.write_text(
                 _static_route_manifest(bundle).model_dump_json(indent=2) + "\n",
                 encoding="utf-8",

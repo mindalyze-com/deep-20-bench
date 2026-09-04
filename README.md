@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://mindalyze-com.github.io/deep-20-bench/">
+  <a href="https://deep20bench.com/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="docs/og.webp">
       <source media="(prefers-color-scheme: light)" srcset="docs/og-light.webp">
@@ -17,13 +17,13 @@
 <p align="center">A public prototype for testing how AI models play Twenty Questions.</p>
 
 <h2 align="center">
-  <a href="https://mindalyze-com.github.io/deep-20-bench/">Open the homepage and pilot results →</a>
+  <a href="https://deep20bench.com/">Open the homepage and pilot results →</a>
 </h2>
 
 <p align="center">
-  <a href="https://mindalyze-com.github.io/deep-20-bench/results/">Results</a> ·
-  <a href="https://mindalyze-com.github.io/deep-20-bench/methodology/">Method</a> ·
-  <a href="https://mindalyze-com.github.io/deep-20-bench/data/">Data</a> ·
+  <a href="https://deep20bench.com/results/">Results</a> ·
+  <a href="https://deep20bench.com/methodology/">Method</a> ·
+  <a href="https://deep20bench.com/data/">Data</a> ·
   <a href="https://github.com/mindalyze-com/deep-20-bench/discussions">Discussions</a>
 </p>
 

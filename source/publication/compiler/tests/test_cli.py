@@ -12,11 +12,15 @@ from deep20_publication.cli import (
     _static_route_manifest,
     _write_public_data,
 )
-from deep20_publication.models import PublicationAppBuildDocument, PublishedDataset
+from deep20_publication.models import (
+    PublicationAppBuildDocument,
+    PublishedDataset,
+    StaticRouteManifest,
+)
 from deep20_publication.split import split_publication
 
 REPOSITORY = Path(__file__).resolve().parents[4]
-CANONICAL_URL = "https://mindalyze-com.github.io/deep-20-bench/"
+CANONICAL_URL = "https://deep20bench.com/"
 
 
 def test_generated_data_is_not_stored_in_site_source() -> None:
@@ -29,6 +33,10 @@ def test_generated_data_is_not_stored_in_site_source() -> None:
 def test_search_files_follow_the_static_route_manifest() -> None:
     bundle = split_publication(_published_dataset())
     route_manifest = _static_route_manifest(bundle)
+    published_routes = StaticRouteManifest.model_validate_json(
+        (REPOSITORY / "docs" / "data" / "routes.json").read_text(encoding="utf-8")
+    )
+    assert published_routes == route_manifest
     sitemap = REPOSITORY / "docs" / "sitemap.xml"
     document = ElementTree.parse(sitemap)
     locations = tuple(
@@ -64,7 +72,10 @@ def test_search_files_follow_the_static_route_manifest() -> None:
     assert sum(
         "/runs/" in location for location in locations if location is not None
     ) == len(bundle.runs) + len(bundle.subjects)
-    assert not (REPOSITORY / "docs" / "robots.txt").exists()
+    assert (REPOSITORY / "docs" / "robots.txt").read_text(encoding="utf-8") == (
+        f"User-agent: *\nAllow: /\n\nSitemap: {CANONICAL_URL}sitemap.xml\n"
+    )
+    assert (REPOSITORY / "docs" / "CNAME").read_text(encoding="utf-8") == "deep20bench.com\n"
 
 
 def test_sitemap_contains_editorial_run_and_subject_routes() -> None:
@@ -90,13 +101,9 @@ def test_sitemap_contains_editorial_run_and_subject_routes() -> None:
 
 def test_search_files_are_not_handwritten_site_assets() -> None:
     public = REPOSITORY / "source" / "publication" / "site" / "public"
-    prerender = (
-        REPOSITORY / "source" / "publication" / "site" / "scripts" / "prerender.mjs"
-    ).read_text(encoding="utf-8")
-
     assert not (public / "sitemap.xml").exists()
     assert not (public / "robots.txt").exists()
-    assert 'join(outputRoot, "robots.txt")' not in prerender
+    assert not (public / "CNAME").exists()
 
 
 def test_execution_components_do_not_import_publication_outputs() -> None:
@@ -149,7 +156,7 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
 
     assert '<html lang="en" data-prerendered="true">' in entry
     assert 'id="route-content" class="page home-page"' in entry
-    assert 'content="https://mindalyze-com.github.io/deep-20-bench/og.webp"' in entry
+    assert 'content="https://deep20bench.com/og.webp"' in entry
     assert "og.png" not in entry
     assert "How well can AI models play Twenty Questions?" in entry
     assert "public benchmark for large language models (LLMs)" in entry
@@ -166,9 +173,22 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
     assert "The Guesser is isolated from this process" in entry
     assert "Deep20Bench needs JavaScript" not in entry
     assert '<script type="application/ld+json">' in entry
+    structured_data = [
+        json.loads(document)
+        for document in re.findall(
+            r'<script type="application/ld\+json">(.*?)</script>', entry, re.DOTALL
+        )
+    ]
+    assert [document["@type"] for document in structured_data] == ["Dataset", "WebSite"]
+    website = structured_data[1]
+    site = _published_dataset().site
+    assert website["name"] == site.title
+    assert website["alternateName"] == site.short_title
+    assert website["url"] == CANONICAL_URL
+    assert website["@id"] == f"{CANONICAL_URL}#website"
     assert '"alternateName":["Deep20 Bench","D20B"]' in entry
     assert '"keywords":["Deep20Bench","Deep20 Bench","Deep20 benchmark"' in entry
-    assert 'rel="canonical" href="https://mindalyze-com.github.io/deep-20-bench/"' in entry
+    assert 'rel="canonical" href="https://deep20bench.com/"' in entry
     assert "deep20-static-home" not in entry
     assert "deep20-structured-data" not in entry
     assert 'id="deep20-page-state" type="application/json"' in entry
@@ -252,7 +272,7 @@ def test_generated_run_and_subject_are_prerendered_and_episode_is_noindex() -> N
     assert 'name="robots"' not in entry
     for subject_summary in run.subjects:
         assert (
-            f'href="/deep-20-bench/{run_route}/subjects/{subject_summary.target_id}/"'
+            f'href="/{run_route}/subjects/{subject_summary.target_id}/"'
             in entry
         )
 
@@ -314,6 +334,7 @@ def test_all_sitemap_pages_have_unique_metadata_and_a_static_referrer() -> None:
 
     for entry in sitemap_routes:
         html = html_by_route[entry.route]
+        assert html.count('<meta property="og:site_name" content="Deep20Bench" />') == 1
         title = re.search(r"<title>(.*?)</title>", html)
         description = re.search(r'<meta name="description" content="([^"]+)" />', html)
         canonical = re.search(r'<link rel="canonical" href="([^"]+)" />', html)
@@ -325,7 +346,7 @@ def test_all_sitemap_pages_have_unique_metadata_and_a_static_referrer() -> None:
         canonicals.append(canonical.group(1))
         expected_url = CANONICAL_URL if entry.route == "" else f"{CANONICAL_URL}{entry.route}/"
         expected_href = (
-            "/deep-20-bench/" if entry.route == "" else f"/deep-20-bench/{entry.route}/"
+            "/" if entry.route == "" else f"/{entry.route}/"
         )
         assert canonical.group(1) == expected_url
         assert 'name="robots"' not in html

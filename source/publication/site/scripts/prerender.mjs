@@ -101,7 +101,7 @@ const parseRouteManifest = (value) => {
 };
 
 const routes = parseRouteManifest(readJson(routeManifestPath));
-const clientTemplate = readFileSync(join(outputRoot, "index.html"), "utf8");
+const clientTemplateSource = readFileSync(join(outputRoot, "index.html"), "utf8");
 const manifestDocument = readJson(join(publicRoot, "data", "manifest.json"));
 const leaderboardDocument = readJson(join(publicRoot, "data", "leaderboard.json"));
 const runDocuments = new Map(
@@ -163,8 +163,27 @@ const replaceUnique = (html, pattern, replacement, label) => {
   return html.replace(pattern, replacement);
 };
 
+const clientTemplate = replaceUnique(
+  clientTemplateSource,
+  /<meta property="og:site_name" content="[^"]*" \/>/g,
+  `<meta property="og:site_name" content="${escapeHtml(manifestDocument.site.title)}" />`,
+  "Open Graph site name",
+);
+
 const routeUrl = (route) =>
   route.length === 0 ? canonicalUrl : `${canonicalUrl}${route}/`;
+
+const websiteStructuredData = () => {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": new URL("#website", canonicalUrl).href,
+    name: manifestDocument.site.title,
+    alternateName: manifestDocument.site.short_title,
+    url: canonicalUrl,
+  };
+  return `<script type="application/ld+json">${safeJson(data)}</script>`;
+};
 
 const datasetStructuredData = () => {
   const evaluated = leaderboardDocument.leaderboard.filter(
@@ -307,7 +326,9 @@ const metadataHtml = (template, route, appHtml, documents) => {
   html = replaceUnique(
     html,
     /<!-- deep20-structured-data -->/g,
-    route.kind === "home" ? datasetStructuredData() : "",
+    route.kind === "home"
+      ? `${datasetStructuredData()}\n    ${websiteStructuredData()}`
+      : "",
     "structured-data marker",
   );
   if (!route.indexable) {
@@ -386,4 +407,19 @@ writeFileSync(
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapLocations}\n</urlset>\n`,
   "utf8",
 );
+
+const canonicalAddress = new URL(canonicalUrl);
+if (canonicalAddress.pathname === "/") {
+  writeFileSync(
+    join(outputRoot, "robots.txt"),
+    `User-agent: *\nAllow: /\n\nSitemap: ${new URL("sitemap.xml", canonicalUrl).href}\n`,
+    "utf8",
+  );
+  if (
+    canonicalAddress.hostname !== "github.io" &&
+    !canonicalAddress.hostname.endsWith(".github.io")
+  ) {
+    writeFileSync(join(outputRoot, "CNAME"), `${canonicalAddress.hostname}\n`, "utf8");
+  }
+}
 rmSync(serverRoot, { recursive: true, force: true });

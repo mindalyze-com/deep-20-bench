@@ -1,0 +1,39 @@
+; GitHub Pages DNS zone for deep20bench.com
+; Adapted from the export dated 2026-09-04T08:51:55Z.
+$ORIGIN deep20bench.com.
+$TTL 7200
+
+@ IN SOA ns1.your-server.de. postmaster.your-server.de. 2026090410 86400 10800 3600000 3600
+
+; NS records
+@ IN NS ns.second-ns.com.
+@ IN NS ns1.your-server.de.
+@ IN NS ns3.second-ns.de.
+
+; GitHub Pages - apex IPv4
+@ IN A 185.199.108.153
+@ IN A 185.199.109.153
+@ IN A 185.199.110.153
+@ IN A 185.199.111.153
+
+; GitHub Pages - apex IPv6
+@ IN AAAA 2606:50c0:8000::153
+@ IN AAAA 2606:50c0:8001::153
+@ IN AAAA 2606:50c0:8002::153
+@ IN AAAA 2606:50c0:8003::153
+
+; GitHub Pages - www
+www IN CNAME mindalyze-com.github.io.
+
+; MX records
+@ IN MX 10 www4.your-server.de.
+
+; SRV records
+_autodiscover._tcp IN SRV 0 100 443 mail.your-server.de.
+_imaps._tcp IN SRV 0 100 993 mail.your-server.de.
+_pop3s._tcp IN SRV 0 100 995 mail.your-server.de.
+_submission._tcp IN SRV 0 100 587 mail.your-server.de.
+
+; TXT records
+@ IN TXT "v=spf1 +a +mx ?all"
+_github-pages-challenge-mindalyze-com IN TXT "0fb4200f6b4533dc36e32fb7cf2f66"
