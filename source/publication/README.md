@@ -105,15 +105,24 @@ with a web-history router in the browser. The homepage, eight editorial and resu
 every selected official run summary contain their real content and ordinary links in the
 initial HTML. Charts and interactive controls start after hydration. There is no separate
 fallback content tree or content-hiding script. Chart containers keep their declared height;
-SVG initialization waits until the container is within 300 pixels of the viewport. Offscreen
+the shared ECharts module downloads and SVG initialization starts only when a container is
+within 300 pixels of the viewport. Failed downloads show a reload notice while static results
+and links remain available. Offscreen
 data-only updates are retained until the chart returns; already-rendered SVGs still follow
 viewport resizes. Data refreshes do not resize an unchanged chart, and cached routes reconnect
-their observers when activated.
+their observers when activated. The document preloads the two locally bundled normal Latin
+fonts used above the fold; Vite resolves their content-hashed URLs for the configured base path.
+Delayed route scroll restoration stops when the visitor has already moved the page, so early
+scrolling can reveal and load charts without being reset by a later restoration attempt.
 
 The generated pages have route-specific titles, descriptions, social metadata, canonical URLs,
 and accurate publication modification times in `sitemap.xml`. Every page includes `og:site_name`
 from the configured site title. The homepage includes separate Dataset and WebSite JSON-LD
 nodes, using the configured site identity and canonical URL, `https://deep20bench.com/`.
+The Dataset node identifies its CC BY 4.0 license using the same canonical license URL as the
+Data page and footer. The Data page distinguishes reusable result data from source-available
+software. Subject titles use the full model name and setting followed by the subject, without
+repeating the generic results label. Their H1 includes both model and subject identity.
 Hosting the homepage at this domain root supports Google's site-name requirements.
 The compiler's typed route manifest is also published as `data/routes.json`.
 Vite bundles its page metadata into the client, so initial HTML, hydration, and client navigation

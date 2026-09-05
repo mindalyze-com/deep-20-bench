@@ -85,9 +85,19 @@ const restoreScroll = async (): Promise<void> => {
     }
   }
   const targetPosition = scrollPositions.get(route.path) ?? 0;
+  let lastAppliedPosition: number | null = null;
   const apply = (): void => {
     if (version !== scrollRestoreVersion) return;
+    // A scroll, focus change or touch gesture takes precedence over delayed restoration.
+    if (
+      lastAppliedPosition !== null &&
+      Math.abs(readScrollTop(element) - lastAppliedPosition) > 1
+    ) {
+      scrollRestoreVersion += 1;
+      return;
+    }
     writeScrollTop(element, Math.min(targetPosition, maximumScrollTop(element)));
+    lastAppliedPosition = readScrollTop(element);
   };
   apply();
   window.setTimeout(apply, 70);

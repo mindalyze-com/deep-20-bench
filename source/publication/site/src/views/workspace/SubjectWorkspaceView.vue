@@ -153,6 +153,7 @@ episodeView.preload();
             {{ subject.entity_type.replaceAll("_", " ") }}
           </p>
           <component :is="isSubjectOverview ? 'h1' : 'h2'">
+            <span v-if="isSubjectOverview" class="subject-heading-model">{{ run.model_name }} on </span>
             {{ subject.display_name }}
           </component>
           <p>{{ profile.subject_description }}</p>
@@ -301,6 +302,16 @@ episodeView.preload();
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.052em;
   line-height: var(--text-workspace-section-title--line-height);
+}
+
+.subject-heading-model {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: normal;
+  line-height: 1.5;
 }
 
 .episode-rail-heading > p:not(.eyebrow) {

@@ -288,10 +288,13 @@ The build has separate browser and static-rendering entry points. Static renderi
 memory-history router. The browser uses web history and hydrates the existing markup. A
 versioned embedded page-state document contains only the existing public manifest,
 leaderboard, run, and related result documents needed for the initial route. Browser-only
-charts and interactions start after hydration. SVG chart initialization waits until its reserved
-container approaches the viewport; prerendered text, tables, links, and container dimensions
-remain available immediately. Offscreen charts retain pending data updates. Chart refreshes
+charts and interactions start after hydration. The shared ECharts module download and SVG
+initialization wait until a reserved chart container approaches the viewport; prerendered text,
+tables, links, and container dimensions remain available immediately. A failed module download
+shows a reload notice without removing static results. Offscreen charts retain pending data updates. Chart refreshes
 resize only when dimensions change, and cached route activation resumes observation.
+The document preloads the locally bundled normal Latin display and body fonts. Build-time URL
+resolution preserves the configured base path and content-hashed asset names.
 
 The homepage, eight editorial and result pages, each selected official run summary, and every
 subject summary are rendered as complete HTML. Run pages include model identity, provider,
@@ -437,10 +440,14 @@ as `data/routes.json`; Vite embeds its metadata projection in the client bundle.
 applies those exact values during hydration and navigation, including the full model and subject
 names. Navigation labels do not overwrite page titles or descriptions. Indexability and social
 metadata follow the destination route, including navigation back from an episode page.
+Subject-page titles retain the full model name and reasoning setting, followed by the subject
+and site name. The main subject heading also includes model identity.
 
 The site title also supplies `og:site_name` on every generated page. Homepage WebSite JSON-LD
 uses the configured title, short title, and canonical domain-root URL alongside the existing
-Dataset node. The domain root supports Google's site-name placement requirements.
+Dataset node. That Dataset has a stable fragment ID and the canonical CC BY 4.0 license URL,
+shared with the Data page and footer. The Data page explains data reuse and distinguishes the
+software's source-available license. The domain root supports Google's site-name placement requirements.
 
 The static build performs strict Vue and TypeScript checks. Browser validation covers:
 

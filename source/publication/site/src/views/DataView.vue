@@ -6,7 +6,12 @@ import LoadingState from "@/components/LoadingState.vue";
 import PublicationTime from "@/components/PublicationTime.vue";
 import { getManifest, peekManifest, publicDownloadUrl } from "@/lib/api";
 import { usePageRouteContext } from "@/lib/route-context";
-import { citationResource, dataLicenseResource } from "@/lib/site-resources";
+import {
+  citationResource,
+  dataLicenseResource,
+  softwareLicenseDescription,
+  softwareLicenseResource,
+} from "@/lib/site-resources";
 import type { ManifestDocument } from "@/lib/types";
 import { usePublicationLoad } from "@/lib/use-publication-load";
 
@@ -40,6 +45,10 @@ const { loading, error } = usePublicationLoad(async () => {
             <p>
               Deep20Bench publishes the data behind its leaderboard, not only aggregate scores:
               runs, trials, transcripts, evidence, outcomes, cost, and timing.
+            </p>
+            <p>
+              Project-authored result data and documentation use
+              <a :href="dataLicenseResource.href">CC BY 4.0</a> and may be reused with attribution.
             </p>
             <ul aria-label="What the public data supports">
               <li>Trace each published result.</li>
@@ -232,6 +241,14 @@ const { loading, error } = usePublicationLoad(async () => {
               <p>Project-authored result data may be reused with attribution.</p>
               <a :href="dataLicenseResource.href" target="_blank" rel="noreferrer">
                 {{ dataLicenseResource.label }} ↗
+              </a>
+            </article>
+            <article class="card">
+              <p class="eyebrow">Software licence</p>
+              <h3>Source-available software</h3>
+              <p>{{ softwareLicenseDescription }}</p>
+              <a :href="softwareLicenseResource.href" target="_blank" rel="noreferrer">
+                {{ softwareLicenseResource.label }} ↗
               </a>
             </article>
           </div>
@@ -482,7 +499,7 @@ const { loading, error } = usePublicationLoad(async () => {
 }
 
 .reuse-panel {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .reuse-panel .card {

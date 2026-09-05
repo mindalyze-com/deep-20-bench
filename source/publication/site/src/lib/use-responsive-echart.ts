@@ -2,7 +2,6 @@ import type {
   ECElementEvent,
   EChartsOption,
 } from "echarts";
-import { init } from "echarts/core";
 import type { EChartsType } from "echarts/core";
 import {
   nextTick,
@@ -15,6 +14,8 @@ import {
   type Ref,
 } from "vue";
 
+import { loadChartRenderer, type ChartRenderer } from "./chart-loader";
+
 export { escapeHtml } from "./html";
 
 interface ResponsiveChartOptions {
@@ -26,6 +27,7 @@ interface ResponsiveChartOptions {
 
 export interface ResponsiveChart {
   chartElement: Ref<HTMLDivElement | null>;
+  loadError: Ref<boolean>;
   refresh: () => void;
 }
 
@@ -129,6 +131,9 @@ export const useResponsiveEChart = (
   options: ResponsiveChartOptions,
 ): ResponsiveChart => {
   const chartElement = ref<HTMLDivElement | null>(null);
+  const loadError = ref(false);
+  let renderer: ChartRenderer | null = null;
+  let rendererLoading = false;
   let chart: EChartsType | null = null;
   let resizeObserver: ResizeObserver | null = null;
   let visibilityObserver: IntersectionObserver | null = null;
@@ -164,8 +169,24 @@ export const useResponsiveEChart = (
     if (!visible && !dimensionsChanged) return;
 
     if (chart === null) {
+      if (renderer === null) {
+        if (!rendererLoading && !loadError.value) {
+          rendererLoading = true;
+          void loadChartRenderer().then((loaded) => {
+            rendererLoading = false;
+            if (disposed) return;
+            renderer = loaded;
+            // Read visibility, dimensions and data again after the download.
+            schedule();
+          }, () => {
+            rendererLoading = false;
+            if (!disposed) loadError.value = true;
+          });
+        }
+        return;
+      }
       // Explicit dimensions avoid another layout read inside ECharts initialization.
-      chart = init(element, undefined, { renderer: "svg", width, height });
+      chart = renderer(element, undefined, { renderer: "svg", width, height });
       if (options.onClick !== undefined) chart.on("click", options.onClick);
       if (options.pointerCursor !== undefined) {
         chart.on("mouseover", updatePointerCursor);
@@ -255,5 +276,5 @@ export const useResponsiveEChart = (
     chart = null;
   });
 
-  return { chartElement, refresh };
+  return { chartElement, loadError, refresh };
 };

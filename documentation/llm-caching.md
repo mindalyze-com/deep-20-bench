@@ -152,6 +152,24 @@ cache-read/write tokens, and no reported cache discount. Guesser cost was $0.049
 summed provider latency was 59.127 seconds. Every prompt stayed below the documented
 threshold, so this run verifies operation but does not establish cache reuse or savings.
 
+GPT-6 Astra (`M-0022`) uses `openai/gpt-6-astra` pinned to OpenAI with high reasoning
+and automatic best-effort prefix caching. On 4 September 2026, the
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/openai/gpt-6-astra/endpoints)
+advertised standard-route prices of $10 per million input tokens, $50 per million output
+tokens, $1 per million cache-read tokens, and $12.50 per million cache-write tokens.
+[OpenAI's caching documentation](https://developers.openai.com/api/docs/guides/prompt-caching)
+specifies a 1,024-token minimum and a 30-minute cache lifetime for GPT-5.6 and later.
+The configuration records that threshold, a 1,800-second observation window, and the 1.25
+write multiplier. OpenRouter's endpoint metadata marked implicit caching as unsupported,
+so actual route reuse remains unverified. The existing stable prefix is retained without
+padding or explicit breakpoints; no cache savings are assumed.
+
+The [4 September opening-turn smoke test](../reviews/gpt-6-astra-smoke-20260904/canary.json)
+passed the strict Guesser action contract on the expected model/provider with one request,
+588 input tokens, 99 output tokens, 6.035 seconds of latency, and $0.01083 cost. It reported
+zero cache-read/write tokens and no cache discount. This sub-threshold canary establishes
+route and output-contract operation only; it does not establish cache reuse or game performance.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input

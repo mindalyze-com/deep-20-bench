@@ -5,6 +5,16 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-09-05",
+    displayDate: "5 September 2026",
+    title: "GPT-6 Astra (high) added.",
+    summary: "It scored 15.1 questions with 33 of 35 successful trials.",
+    link: {
+      type: "run",
+      executionId: "BX-20260904-official-M0022-001",
+    },
+  },
+  {
     date: "2026-09-04",
     displayDate: "4 September 2026",
     title: "Gemini 3.8 Flash (high) added.",

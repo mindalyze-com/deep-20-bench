@@ -289,6 +289,7 @@ def test_repository_model_catalog_has_expected_active_ids() -> None:
         *(f"M-{number:04d}" for number in range(1, 19)),
         "M-0020",
         "M-0021",
+        "M-0022",
         "M-0101",
         "M-0104",
     )

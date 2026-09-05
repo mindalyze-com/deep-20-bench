@@ -5,6 +5,8 @@ import { resetPublicationData, seedPublicationData } from "./lib/api";
 import { clearRouteContext } from "./lib/route-context";
 import { createPublicationApp } from "./publication-app";
 
+export { dataLicenseResource } from "./lib/site-resources";
+
 export interface RenderedPublicationPage {
   appHtml: string;
 }

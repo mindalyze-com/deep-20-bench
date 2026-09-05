@@ -99,6 +99,7 @@ test("mobile score plots preserve vertical pan and open model runs", { tag: ["@i
       await expect(scoreCanvases.last()).toHaveCSS("touch-action", "pan-y");
 
       await scoreCanvases.first().scrollIntoViewIfNeeded();
+      await expect(scoreCanvases.first().locator("svg")).toBeVisible();
       const chartBounds = await scoreCanvases.first().boundingBox();
       const viewport = page.viewportSize();
       expect(chartBounds).not.toBeNull();

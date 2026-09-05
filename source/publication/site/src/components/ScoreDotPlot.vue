@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import { BarChart, CustomChart, ScatterChart } from "echarts/charts";
-import {
-  MarkAreaComponent,
-  MarkLineComponent,
-} from "echarts/components";
 import type {
   DefaultLabelFormatterCallbackParams as CallbackDataParams,
   CustomSeriesRenderItem,
@@ -13,7 +8,7 @@ import type {
 import { computed, ref, useId, watch } from "vue";
 import { useRouter } from "vue-router";
 
-import { echarts, standardChartComponents } from "@/lib/chart-registration";
+import ChartLoadNotice from "@/components/ChartLoadNotice.vue";
 import {
   chartTooltipStyle,
   readChartTheme,
@@ -44,15 +39,6 @@ import {
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
-
-echarts.use([
-  BarChart,
-  CustomChart,
-  ScatterChart,
-  MarkAreaComponent,
-  MarkLineComponent,
-  ...standardChartComponents,
-]);
 
 interface RepeatAverageGroup {
   modelId: string;
@@ -939,7 +925,7 @@ const handleWidthClick = (parameters: ECElementEvent): void => {
   if (item?.link !== undefined) void router.push(item.link);
 };
 
-const { chartElement: scoreChartElement, refresh: refreshScoreChart } =
+const { chartElement: scoreChartElement, loadError: scoreLoadError, refresh: refreshScoreChart } =
   useResponsiveEChart({
     height: chartHeight,
     option: scoreChartOption,
@@ -952,7 +938,7 @@ const { chartElement: scoreChartElement, refresh: refreshScoreChart } =
       ),
   });
 
-const { chartElement: widthChartElement, refresh: refreshWidthChart } =
+const { chartElement: widthChartElement, loadError: widthLoadError, refresh: refreshWidthChart } =
   useResponsiveEChart({
     height: chartHeight,
     option: widthChartOption,
@@ -1000,6 +986,7 @@ watch(
     <figcaption class="visually-hidden">
       Question score and confidence interval width comparison.
     </figcaption>
+    <ChartLoadNotice v-if="scoreLoadError || widthLoadError" />
     <p v-if="repeatAveragesError !== null" class="repeat-average-error" role="alert">
       {{ repeatAveragesError }}
     </p>

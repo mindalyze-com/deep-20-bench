@@ -1,0 +1,28 @@
+{
+  "checked_at_utc": "2026-09-05T11:54:23.183757+00:00",
+  "publication_compiler_tests": {
+    "command": "uv run --project source/publication/compiler pytest -q source/publication/compiler/tests",
+    "passed": 69
+  },
+  "frontend_unit_tests": {
+    "command": "npm run --prefix source/publication/site test:unit",
+    "passed": 21
+  },
+  "browser_tests": {
+    "command": "npm run test:ui:functional -- --workers=3",
+    "cwd": "source/publication/site",
+    "passed": 111,
+    "projects": [
+      "desktop-chromium",
+      "mobile-chromium"
+    ]
+  },
+  "strict_types": "Vue/TypeScript checks passed during the final build; mypy reported no issues in 16 source files.",
+  "lint": "ruff check source/publication/compiler passed",
+  "complete_build_check": {
+    "command": "uv run --project source/publication/compiler deep20-publication build --check",
+    "exit_code": 0
+  },
+  "external_mutations": [],
+  "publication_source_only": true
+}

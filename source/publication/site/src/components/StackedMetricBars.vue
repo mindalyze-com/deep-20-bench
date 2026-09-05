@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { BarChart } from "echarts/charts";
 import type {
   DefaultLabelFormatterCallbackParams as CallbackDataParams,
   EChartsOption,
@@ -7,7 +6,7 @@ import type {
 import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
-import { echarts, standardChartComponents } from "@/lib/chart-registration";
+import ChartLoadNotice from "@/components/ChartLoadNotice.vue";
 import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import {
   chartTooltipPrimary,
@@ -24,8 +23,6 @@ import {
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
-
-echarts.use([BarChart, ...standardChartComponents]);
 
 export interface StackedBarSegment {
   label: string;
@@ -239,7 +236,7 @@ const handleClick = (parameters: CallbackDataParams): void => {
   if (row?.link !== undefined) void router.push(row.link);
 };
 
-const { chartElement, refresh } = useResponsiveEChart({
+const { chartElement, loadError, refresh } = useResponsiveEChart({
   height: chartHeight,
   option: chartOption,
   onClick: handleClick,
@@ -275,6 +272,7 @@ watch(
         </li>
       </ul>
     </figcaption>
+    <ChartLoadNotice v-if="loadError" />
     <p class="chart-run-cue">Select a model row to view its full run.</p>
     <details v-if="breakdownLabels.length > 0" class="stacked-chart-breakdown">
       <summary>Exact adjudication breakdown</summary>

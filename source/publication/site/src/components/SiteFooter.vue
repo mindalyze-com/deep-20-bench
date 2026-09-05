@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue";
 
 import PublicationTime from "@/components/PublicationTime.vue";
 import { getManifest, peekManifest } from "@/lib/api";
-import { citeAndReuseLinks, contributionLinks } from "@/lib/site-resources";
+import { citeAndReuseLinks, contributionLinks, softwareLicenseDescription } from "@/lib/site-resources";
 
 const publicationUpdatedAt = ref<string | null>(peekManifest()?.provenance.built_at ?? null);
 
@@ -25,8 +25,7 @@ onMounted(async () => {
         <strong>Deep20Bench</strong>
         <p>A public record of a fixed Twenty Questions benchmark.</p>
         <p>
-          The software is source-available under a dual-license model: PolyForm Noncommercial
-          for noncommercial use, with separate commercial licenses available.
+          {{ softwareLicenseDescription }}
         </p>
       </div>
 

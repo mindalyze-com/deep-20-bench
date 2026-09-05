@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { PieChart } from "echarts/charts";
 import type {
   DefaultLabelFormatterCallbackParams as CallbackDataParams,
   EChartsOption,
 } from "echarts";
 import { computed, watch } from "vue";
 
-import { echarts, standardChartComponents } from "@/lib/chart-registration";
+import ChartLoadNotice from "@/components/ChartLoadNotice.vue";
 import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import {
   chartAnimationEnabled,
@@ -14,8 +13,6 @@ import {
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
-
-echarts.use([PieChart, ...standardChartComponents]);
 
 export interface CostDonutItem {
   label: string;
@@ -111,7 +108,7 @@ const chartOption = (): EChartsOption => {
   };
 };
 
-const { chartElement, refresh } = useResponsiveEChart({
+const { chartElement, loadError, refresh } = useResponsiveEChart({
   height: chartHeight,
   option: chartOption,
 });
@@ -135,6 +132,7 @@ watch(
       <strong>Cost composition.</strong>
       <span>{{ caption }}</span>
     </figcaption>
+    <ChartLoadNotice v-if="loadError" />
     <div class="cost-donut-layout">
       <div class="cost-donut-plot">
         <div

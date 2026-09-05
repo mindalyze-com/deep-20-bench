@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { BarChart } from "echarts/charts";
 import type {
   DefaultLabelFormatterCallbackParams as CallbackDataParams,
   EChartsOption,
@@ -7,7 +6,7 @@ import type {
 import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
-import { echarts, standardChartComponents } from "@/lib/chart-registration";
+import ChartLoadNotice from "@/components/ChartLoadNotice.vue";
 import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import {
   chartTooltipPrimary,
@@ -24,8 +23,6 @@ import {
   escapeHtml,
   useResponsiveEChart,
 } from "@/lib/use-responsive-echart";
-
-echarts.use([BarChart, ...standardChartComponents]);
 
 export interface MetricBar {
   label: string;
@@ -239,7 +236,7 @@ const handleChartClick = (parameters: CallbackDataParams): void => {
   if (item?.link !== undefined) void router.push(item.link);
 };
 
-const { chartElement, refresh } = useResponsiveEChart({
+const { chartElement, loadError, refresh } = useResponsiveEChart({
   height: chartHeight,
   option: chartOption,
   onClick: handleChartClick,
@@ -270,6 +267,7 @@ watch(
       <span>{{ directionLabel }}</span>
       <small><i aria-hidden="true"></i>Select a model row to view its full run</small>
     </figcaption>
+    <ChartLoadNotice v-if="loadError" />
     <div
       ref="chartElement"
       class="metric-chart-canvas"

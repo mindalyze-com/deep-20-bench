@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { LineChart, ScatterChart } from "echarts/charts";
 import type {
   DefaultLabelFormatterCallbackParams as CallbackDataParams,
   EChartsOption,
@@ -13,7 +12,7 @@ import ChartModelKey, {
   type ChartModelKeyItem,
 } from "@/components/ChartModelKey.vue";
 import { chartValueAxis } from "@/lib/chart-axis";
-import { echarts, standardChartComponents } from "@/lib/chart-registration";
+import ChartLoadNotice from "@/components/ChartLoadNotice.vue";
 import { scatterSeriesPresentation } from "@/lib/chart-series";
 import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import {
@@ -30,12 +29,6 @@ import {
   escapeHtml,
 } from "@/lib/use-responsive-echart";
 import { useLinkedEChart } from "@/lib/use-linked-echart";
-
-echarts.use([
-  LineChart,
-  ScatterChart,
-  ...standardChartComponents,
-]);
 
 export interface EfficiencyPoint {
   label: string;
@@ -307,7 +300,7 @@ const chartOption = (width: number): EChartsOption => {
   };
 };
 
-const { chartElement } = useLinkedEChart({
+const { chartElement, loadError } = useLinkedEChart({
   height: chartHeight,
   items: () => props.items,
   option: chartOption,
@@ -325,6 +318,7 @@ void chartElement;
       <span>Lower-left is better</span>
       <span>Curves show equal ideal distance</span>
     </figcaption>
+    <ChartLoadNotice v-if="loadError" />
     <div
       ref="chartElement"
       class="scatter-chart-canvas efficiency-scatter-canvas"

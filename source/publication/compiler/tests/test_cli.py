@@ -180,6 +180,8 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
         )
     ]
     assert [document["@type"] for document in structured_data] == ["Dataset", "WebSite"]
+    assert structured_data[0]["license"] == "https://creativecommons.org/licenses/by/4.0/"
+    assert structured_data[0]["@id"] == f"{CANONICAL_URL}#dataset"
     website = structured_data[1]
     site = _published_dataset().site
     assert website["name"] == site.title
@@ -194,6 +196,11 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
     assert 'id="deep20-page-state" type="application/json"' in entry
     assert "app-loading" not in entry
     assert "Local preview" not in entry
+    font_preloads = re.findall(r'<link\s+rel="preload"\s+href="([^"]+)"\s+as="font"', entry)
+    assert len(font_preloads) == 2
+    for font_url in font_preloads:
+        assert font_url.startswith("/_assets/")
+        assert (REPOSITORY / "docs" / font_url.lstrip("/")).is_file()
 
 
 def _published_dataset() -> PublishedDataset:
@@ -287,6 +294,13 @@ def test_generated_run_and_subject_are_prerendered_and_episode_is_noindex() -> N
     assert 'data-prerendered="true"' in subject_entry
     assert 'class="subject-overview-pane"' in subject_entry
     assert subject_document.profile.subject_name in subject_entry
+    subject_run = next(
+        item for item in bundle.runs if item.run.execution_id == subject_document.execution_id
+    )
+    subject_heading = re.search(r"<h1\b[^>]*>(.*?)</h1>", subject_entry, re.DOTALL)
+    assert subject_heading is not None
+    assert subject_run.run.model_name in subject_heading.group(1)
+    assert subject_document.profile.subject_name in subject_heading.group(1)
     assert "Average questions" in subject_entry
     assert f"{CANONICAL_URL}{subject_route}/" in {
         element.text

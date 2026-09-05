@@ -11,9 +11,13 @@ export const citationResource: SiteResourceLink = {
 };
 
 export const dataLicenseResource: SiteResourceLink = {
-  href: `${repository}/blob/main/LICENSES/CC-BY-4.0.txt`,
+  href: "https://creativecommons.org/licenses/by/4.0/",
   label: "CC BY 4.0 data licence",
 };
+
+export const softwareLicenseDescription =
+  "The software is source-available under a dual-license model: PolyForm Noncommercial " +
+  "for noncommercial use, with separate commercial licenses available.";
 
 export const softwareLicenseResource: SiteResourceLink = {
   href: `${repository}/blob/main/LICENSE.md`,

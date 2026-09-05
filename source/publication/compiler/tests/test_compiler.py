@@ -1662,7 +1662,8 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "Report an error" in site_resources
     assert "Support on Ko-fi" in site_resources
     assert "https://ko-fi.com/mindalyze" in site_resources
-    assert "source-available under a dual-license model" in site_footer
+    assert "softwareLicenseDescription" in site_footer
+    assert "source-available under a dual-license model" in site_resources
     assert "Software licensing - source-available" in site_resources
     assert "data-build-note" not in data_page
     assert "deep20bench-v9.schema.json" in data_page
@@ -1932,9 +1933,10 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
 
     assert '"echarts": "6.1.0"' in package
     assert 'from "echarts/core"' in chart_registration
-    assert "BarChart" in component
+    for chart_type in ("BarChart", "PieChart", "ScatterChart", "LineChart", "CustomChart"):
+        assert chart_type in chart_registration
     assert "SVGRenderer" in chart_registration
-    assert "standardChartComponents" in component
+    assert "loadChartRenderer" in responsive_runtime
     assert 'renderer: "svg"' in responsive_runtime
     assert "xAxis:" in component
     assert "chartValueDomain" in responsive_runtime
@@ -1950,14 +1952,12 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "Select a model row to view its full run" in component
     assert "ResizeObserver" in responsive_runtime
     assert 'chart.on("click", options.onClick)' in responsive_runtime
-    assert "PieChart" in cost_donut
     assert "<InfoPopover" in question_score
     assert 'event.key === "Escape"' in info_popover
     assert 'document.addEventListener("pointerdown"' in info_popover
     assert "position: absolute;" in info_popover
     assert "position: fixed;" in info_popover
     assert 'radius: ["58%", "83%"]' in cost_donut
-    assert "BarChart" in stacked_costs
     assert 'stack: "full-cost"' in stacked_costs
     assert 'name: "Adaptive axis offset"' not in stacked_costs
     assert "visibleValue" not in stacked_costs
@@ -1968,8 +1968,6 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "Exact adjudication breakdown" in stacked_costs
     assert "Exact adjudication costs by model" in stacked_costs
     assert 'scope="row"' in stacked_costs
-    assert "ScatterChart" in efficiency_scatter
-    assert "LineChart" in efficiency_scatter
     assert "Pareto-efficient" in efficiency_scatter
     assert "Diamond" in efficiency_marker_legend
     assert "Circle" in efficiency_marker_legend
@@ -1998,9 +1996,6 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "boundaryGap: [0, 0]" in efficiency_scatter
     assert 'name: "Distance labels"' in efficiency_scatter
     assert "distance > 1 ? 0.45 : 0.9" in efficiency_scatter
-    assert "ScatterChart" in score_dot_plot
-    assert "BarChart" in score_dot_plot
-    assert "CustomChart" in score_dot_plot
     assert 'type: "custom"' in score_dot_plot
     assert 'name: "95% CI of average"' in score_dot_plot
     assert "intentionally not exposed for now" in score_dot_plot

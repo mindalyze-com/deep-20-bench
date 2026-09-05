@@ -134,7 +134,7 @@ const subjectDocuments = new Map(
 );
 
 const serverEntryPath = join(serverRoot, "entry-server.js");
-const { renderPublicationPage } = await import(pathToFileURL(serverEntryPath).href);
+const { renderPublicationPage, dataLicenseResource } = await import(pathToFileURL(serverEntryPath).href);
 
 const escapeHtml = (value) =>
   value
@@ -192,6 +192,7 @@ const datasetStructuredData = () => {
   const data = {
     "@context": "https://schema.org",
     "@type": "Dataset",
+    "@id": new URL("#dataset", canonicalUrl).href,
     name: manifestDocument.site.title,
     alternateName: ["Deep20 Bench", "D20B"],
     description: manifestDocument.site.description,
@@ -202,6 +203,7 @@ const datasetStructuredData = () => {
     },
     dateModified: manifestDocument.provenance.built_at,
     isAccessibleForFree: true,
+    license: dataLicenseResource.href,
     keywords: [
       "Deep20Bench",
       "Deep20 Bench",

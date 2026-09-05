@@ -31,8 +31,9 @@ Deep20Bench tests how well AI models identify a hidden person or character with 
 questions. It uses the Twenty Questions format with a 50-question ceiling, giving models more
 room to finish a round.
 
-The current pilot compares 12 model versions and settings across seven subjects, with five rounds
-per subject. Lower scores are better. Results, transcripts, and scoring data are public.
+The pilot compares model versions and reasoning settings under a shared subject set and scoring
+policy. See the [current results](https://deep20bench.com/results/) for the tested models, trial
+counts, and scores. Lower scores are better. Results, transcripts, and scoring data are public.
 
 ## Run a local trial
 

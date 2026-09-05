@@ -618,8 +618,7 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
                 sitemap_included=True,
                 canonical_route=route,
                 browser_title=(
-                    f"{run.model_name} on {subject.display_name} - Twenty Questions Results "
-                    "| Deep20Bench"
+                    f"{run.model_name} on {subject.display_name} | Deep20Bench"
                 ),
                 description=(
                     f"{run.model_name} scored {score} questions on {subject.display_name} "
