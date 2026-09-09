@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { editionRoute } from "@/lib/route-location";
 import { nextTick, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -37,7 +38,7 @@ watch(
     <RouterLink
       v-for="link in links"
       :key="link.name"
-      :to="{ name: link.name }"
+      :to="editionRoute(link.name)"
       exact-active-class="active"
     >
       {{ link.label }}

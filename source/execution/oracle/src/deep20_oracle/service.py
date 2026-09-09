@@ -6,7 +6,7 @@ from typing import TypeVar
 
 from pydantic import ValidationError
 
-from .config import ModelRouteConfig, OracleConfig, ProviderRouting
+from .config import AdjudicationPolicy, ModelRouteConfig, OracleConfig, ProviderRouting
 from .diagnostics import diagnose_exception
 from .errors import OracleError, OracleProtocolError
 from .models import (
@@ -37,15 +37,15 @@ from .models import (
     StrictModel,
 )
 from .prompt import (
-    PROMPT_VERSION,
     evidence_review_prompt_version,
     prompt_hash,
     render_evidence_review_messages,
     render_messages,
     research_prompt_version,
 )
+from .protocol import answer_output_schema, validate_protocol_result
 from .provider import OracleProvider, ProviderRequest
-from .question_type import classify_oracle_question, classify_oracle_research_question
+from .question_type import classify_oracle_question
 from .recovery import (
     combine_recovery_metrics,
     combine_usage,
@@ -54,6 +54,7 @@ from .recovery import (
     mark_recovery_exhausted,
     merge_provider_traces,
 )
+from .request_variation import with_fresh_question_id
 from .sinks import AuditFailure, OracleAuditSink, OracleFailureRecord, OracleSuccessRecord
 from .util import (
     canonical_json,
@@ -76,10 +77,6 @@ _RETRIEVAL_FAILURE_OUTCOMES = {
     OracleResearchOutcome.IRRELEVANT_RESULTS,
     OracleResearchOutcome.INSUFFICIENT_COVERAGE,
 }
-_CLOSED_RESEARCH_CLASSES = {
-    OracleResearchQuestionClass.TEMPORAL_STATUS,
-    OracleResearchQuestionClass.CLOSED_FACT,
-}
 
 
 def validate_oracle_provider_trace(
@@ -94,10 +91,12 @@ def validate_oracle_provider_trace(
             code="response_cache_replay",
             details={"provider_trace": trace.model_dump(mode="json")},
         )
-    if role is OracleRole.ORACLE and trace.usage.search_count < 1:
+    if (role is OracleRole.ORACLE and isinstance(config, OracleConfig)
+        and config.adjudication_policy is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1
+        and trace.usage.search_count > config.research_search_limit):
         raise OracleProtocolError(
-            "Oracle returned an answer without recorded web search",
-            code="web_search_not_used",
+            "Oracle exceeded the configured research budget",
+            code="web_search_budget_exceeded",
             details={"provider_trace": trace.model_dump(mode="json")},
         )
     if role is not OracleRole.ORACLE and trace.usage.search_count != 0:
@@ -134,6 +133,13 @@ def validate_oracle_provider_trace(
             code="resolved_provider_mismatch",
             details={"provider_trace": trace.model_dump(mode="json")},
         )
+    # Route/cache/budget faults must not be hidden by missing-search recovery.
+    if role is OracleRole.ORACLE and trace.usage.search_count < 1:
+        raise OracleProtocolError(
+            "Oracle returned an answer without recorded web search",
+            code="web_search_not_used",
+            details={"provider_trace": trace.model_dump(mode="json")},
+        )
 
 
 class Oracle:
@@ -156,10 +162,16 @@ class Oracle:
     def ask(self, request: OracleRequest) -> OracleCall:
         call_id = f"OC-{uuid.uuid7().hex}"
         primary_strategy = OracleResearchStrategy.PRIMARY
-        oracle_messages = render_messages(request, strategy=primary_strategy)
+        profile = self.config.prompt_profile
+        policy = self.config.adjudication_policy
+        primary_prompt_version = research_prompt_version(primary_strategy, profile, policy=policy)
+        oracle_messages = render_messages(
+            request, strategy=primary_strategy, profile=profile, policy=policy,
+            research_query_target=self.config.research_query_target,
+        )
         active_role = OracleRole.ORACLE
         active_messages = oracle_messages
-        active_prompt_version = PROMPT_VERSION
+        active_prompt_version = primary_prompt_version
         active_trace: ProviderTrace | None = None
         role_traces: list[OracleProviderRoleTrace] = []
         research_attempts: list[OracleResearchAttemptAuditTrace] = []
@@ -174,7 +186,7 @@ class Oracle:
                 request=request,
                 strategy=primary_strategy,
                 messages=oracle_messages,
-                prompt_version=PROMPT_VERSION,
+                prompt_version=primary_prompt_version,
             )
             attempt_result, oracle_trace = self._complete_structured_result(
                 provider=self.provider,
@@ -194,24 +206,27 @@ class Oracle:
                 OracleResearchAttemptAuditTrace(
                     attempt_number=1,
                     strategy=primary_strategy,
-                    prompt_version=PROMPT_VERSION,
+                    prompt_version=primary_prompt_version,
                     prompt_hash=prompt_hash(oracle_messages),
                     messages=oracle_messages,
                     result=attempt_result,
                     provider=oracle_trace,
                 )
             )
-            question_class = classify_oracle_research_question(request.question)
             resolution: OracleResearchResolution
 
             if attempt_result.answer is not OracleAnswer.UNKNOWN:
                 resolution = OracleResearchResolution.ANSWERED_PRIMARY
+            elif policy is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1:
+                resolution = OracleResearchResolution.BOUNDED_UNKNOWN
             elif attempt_result.research_outcome in _RETRYABLE_RESEARCH_OUTCOMES:
                 recovery_strategy = OracleResearchStrategy.DIVERSIFIED_RECOVERY
-                active_prompt_version = research_prompt_version(recovery_strategy)
+                active_prompt_version = research_prompt_version(recovery_strategy, profile, policy=policy)
                 active_messages = render_messages(
                     request,
                     strategy=recovery_strategy,
+                    profile=profile,
+                    policy=policy,
                 )
                 recovery_provider_request = self._research_provider_request(
                     request=request,
@@ -257,23 +272,11 @@ class Oracle:
                 resolution = OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY
 
             research_audit = OracleResearchAuditTrace(
-                question_class=question_class,
+                # Preserve the audit field without inferring semantics from keywords.
+                question_class=OracleResearchQuestionClass.OTHER,
                 resolution=resolution,
                 attempts=tuple(research_attempts),
             )
-            if (
-                resolution is OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN
-                and question_class in _CLOSED_RESEARCH_CLASSES
-            ):
-                raise OracleProtocolError(
-                    "Oracle research could not retrieve usable evidence for a closed fact",
-                    code="oracle_research_exhausted",
-                    details={
-                        "provider_trace": active_trace.model_dump(mode="json"),
-                        "oracle_research": research_audit.summary().model_dump(mode="json"),
-                    },
-                )
-
             result = attempt_result.final_result()
             reviewer_audit: EvidenceReviewAuditTrace | None = None
             judge_audit: EvidenceReviewAuditTrace | None = None
@@ -295,10 +298,14 @@ class Oracle:
                     evidence=result.evidence,
                 )
                 active_role = OracleRole.REVIEWER
-                active_prompt_version = evidence_review_prompt_version(OracleRole.REVIEWER)
+                active_prompt_version = evidence_review_prompt_version(
+                    OracleRole.REVIEWER, profile, policy=self.config.adjudication_policy,
+                )
                 active_messages = render_evidence_review_messages(
                     review_request,
                     role=OracleRole.REVIEWER,
+                    profile=profile,
+                    policy=self.config.adjudication_policy,
                 )
                 reviewer_provider_request = self._review_provider_request(
                     request=request,
@@ -335,10 +342,14 @@ class Oracle:
                 judge_result: EvidenceReviewResult | None = None
                 if disagreement:
                     active_role = OracleRole.JUDGE
-                    active_prompt_version = evidence_review_prompt_version(OracleRole.JUDGE)
+                    active_prompt_version = evidence_review_prompt_version(
+                        OracleRole.JUDGE, profile, policy=self.config.adjudication_policy,
+                    )
                     active_messages = render_evidence_review_messages(
                         review_request,
                         role=OracleRole.JUDGE,
+                        profile=profile,
+                        policy=self.config.adjudication_policy,
                     )
                     judge_provider_request = self._review_provider_request(
                         request=request,
@@ -393,7 +404,7 @@ class Oracle:
                     )
 
             audit = OracleAuditTrace(
-                prompt_version=PROMPT_VERSION,
+                prompt_version=primary_prompt_version,
                 prompt_hash=prompt_hash(oracle_messages),
                 messages=oracle_messages,
                 evidence_validation="model_reported",
@@ -490,7 +501,13 @@ class Oracle:
         session_role = "primary" if strategy is OracleResearchStrategy.PRIMARY else "recovery"
         return ProviderRequest(
             messages=messages,
-            output_schema=OracleResearchAttemptResult.model_json_schema(),
+            output_schema=answer_output_schema(
+                OracleResearchAttemptResult, self.config.prompt_profile,
+                role=OracleRole.ORACLE, policy=self.config.adjudication_policy,
+                research_query_target=self.config.research_query_target,
+            ),
+            max_web_search_requests=(self.config.research_search_limit if self.config.adjudication_policy
+                is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1 else None),
             response_schema_name=f"oracle_{session_role}_research_result",
             session_id=(
                 f"deep20-oracle-{session_role}-{request.run_id}-{request.subject.target_id}"
@@ -515,7 +532,10 @@ class Oracle:
             raise ValueError("evidence review requests require Reviewer or Judge role")
         return ProviderRequest(
             messages=messages,
-            output_schema=EvidenceReviewResult.model_json_schema(),
+            output_schema=answer_output_schema(
+                EvidenceReviewResult, self.config.prompt_profile,
+                role=role, policy=self.config.adjudication_policy,
+            ),
             response_schema_name=f"{role.value}_result",
             session_id=(f"deep20-oracle-{role.value}-{request.run_id}-{request.subject.target_id}"),
             prompt_cache_key=self._prompt_cache_key(
@@ -562,15 +582,30 @@ class Oracle:
     ) -> tuple[ResultT, ProviderTrace]:
         def parse(raw_output: str) -> ResultT:
             parsed = result_model.model_validate_json(raw_output)
+            validate_protocol_result(
+                parsed, self.config.prompt_profile,
+                role=role, policy=self.config.adjudication_policy,
+                research_query_target=self.config.research_query_target,
+            )
             return validate(parsed) if validate is not None else parsed
 
+        vary_question_id = role in {OracleRole.ORACLE, OracleRole.REVIEWER}
+        if vary_question_id:
+            provider_request = with_fresh_question_id(provider_request)
         with logical_recovery_budget(config.recovery, config.timeout_seconds):
             exchange = provider.complete(provider_request)
             provider_trace = exchange.trace
-            validate_oracle_provider_trace(provider_trace, config=config, role=role)
             try:
+                validate_oracle_provider_trace(provider_trace, config=config, role=role)
                 return parse(exchange.raw_output), provider_trace
-            except (ValidationError, ValueError) as first_error:
+            except (ValidationError, ValueError, OracleProtocolError) as first_error:
+                if isinstance(first_error, OracleProtocolError) and not (
+                    first_error.code == "web_search_not_used"
+                    and self.config.adjudication_policy is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1
+                    and provider_request.max_web_search_requests is not None
+                    and self._has_explicit_zero_search_usage(provider_trace)
+                ):
+                    raise
                 budget = current_recovery_budget()
                 if (
                     config.recovery.invalid_output_retries == 0
@@ -583,8 +618,19 @@ class Oracle:
                         provider_trace,
                         role=role,
                     ) from first_error
+                retry_request = provider_request
+                if provider_request.max_web_search_requests is not None:
+                    remaining = provider_request.max_web_search_requests - provider_trace.usage.search_count
+                    if remaining < 1:
+                        provider_trace = mark_recovery_exhausted(provider_trace)
+                        raise self._invalid_output_error(first_error, provider_trace, role=role) from first_error
+                    retry_request = provider_request.model_copy(
+                        update={"max_web_search_requests": remaining},
+                    )
+                if vary_question_id:
+                    retry_request = with_fresh_question_id(retry_request)
                 try:
-                    retry_exchange = provider.complete(provider_request)
+                    retry_exchange = provider.complete(retry_request)
                 except Exception as retry_error:
                     retry_trace = self._trace_from_error(retry_error)
                     if retry_trace is not None:
@@ -606,10 +652,13 @@ class Oracle:
                     reason=self._invalid_output_reason(role),
                     recovered=True,
                 )
-                validate_oracle_provider_trace(provider_trace, config=config, role=role)
                 try:
+                    # Earlier discarded work cannot satisfy the successful reply's search check.
+                    if self.config.adjudication_policy is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1:
+                        validate_oracle_provider_trace(retry_exchange.trace, config=config, role=role)
+                    validate_oracle_provider_trace(provider_trace, config=config, role=role)
                     return parse(retry_exchange.raw_output), provider_trace
-                except (ValidationError, ValueError) as error:
+                except (ValidationError, ValueError, OracleProtocolError) as error:
                     provider_trace = mark_recovery_exhausted(
                         provider_trace.model_copy(
                             update={
@@ -714,12 +763,29 @@ class Oracle:
         }[role]
 
     @staticmethod
+    def _has_explicit_zero_search_usage(trace: ProviderTrace) -> bool:
+        if trace.http_status_code != 200 or trace.finish_reason != "stop":
+            return False
+        if trace.resolved_provider is None or trace.usage.search_count != 0:
+            return False
+        usage = trace.response.get("usage") if trace.response is not None else None
+        tools = usage.get("server_tool_use_details") if isinstance(usage, dict) else None
+        searches = tools.get("web_search_requests") if isinstance(tools, dict) else None
+        return type(searches) is int and searches == 0
+
+    @staticmethod
     def _invalid_output_error(
-        error: ValidationError | ValueError,
+        error: ValidationError | ValueError | OracleProtocolError,
         trace: ProviderTrace,
         *,
         role: OracleRole,
     ) -> OracleProtocolError:
+        if isinstance(error, OracleProtocolError):
+            return OracleProtocolError(
+                str(error), code=error.code,
+                details={**error.details, "component": role,
+                         "provider_trace": trace.model_dump(mode="json")},
+            )
         if isinstance(error, ValidationError):
             provider_validation_errors = error.errors(include_input=False)
             validation_errors = safe_json_value(provider_validation_errors)

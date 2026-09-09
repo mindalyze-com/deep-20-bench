@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { editionRoute } from "@/lib/route-location";
 import { computed, nextTick, onActivated, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -161,7 +162,7 @@ const applyRouteContext = (): void => {
     level: "Episode",
     position: `${index + 1} of ${episodeTrials.value.length}`,
     crumbs: [
-      { label: "Results", to: { name: "results" } },
+      { label: "Results", to: editionRoute('results') },
       {
         label: currentRun.model_name,
         to: runRoute(currentRun.execution_id),

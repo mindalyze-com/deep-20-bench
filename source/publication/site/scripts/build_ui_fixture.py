@@ -5,8 +5,12 @@ import shutil
 from pathlib import Path
 from typing import cast
 
+from deep20_publication.compiler import _rank, _rank_efficiency
 from deep20_publication.models import (
     PublicationAppBuildDocument,
+    PublicationEditionsDocument,
+    PublicationEditionReference,
+    EditionRunReference,
     PublicationDataBundle,
     PublishedDataset,
 )
@@ -26,7 +30,10 @@ RUN_IDS = (
 def _synthetic_bundle(dataset: PublishedDataset) -> PublicationDataBundle:
     runs_by_id = {run.execution_id: run for run in dataset.official_runs}
     selected_runs = tuple(runs_by_id[execution_id] for execution_id in RUN_IDS)
-    leaderboard = list(dataset.leaderboard)
+    # Keep this fixture stable as production adds more evaluated models.
+    models = dataset.models[:12]
+    model_ids = {model.model_id for model in models}
+    leaderboard = [row for row in dataset.leaderboard if row.model.model_id in model_ids]
     awaiting_index = next(
         index for index, row in enumerate(leaderboard) if row.model.model_id == "M-0012"
     )
@@ -62,7 +69,8 @@ def _synthetic_bundle(dataset: PublishedDataset) -> PublicationDataBundle:
     )
     subset = dataset.model_copy(
         update={
-            "leaderboard": tuple(leaderboard),
+            "leaderboard": _rank_efficiency(_rank(tuple(leaderboard))),
+            "models": models,
             "official_runs": selected_runs,
             "lab_runs": (),
         }
@@ -71,7 +79,7 @@ def _synthetic_bundle(dataset: PublishedDataset) -> PublicationDataBundle:
 
     model_names = {
         model.model_id: f"Synthetic Model {index:02d} ({model.reasoning_effort})"
-        for index, model in enumerate(dataset.models, start=1)
+        for index, model in enumerate(models, start=1)
     }
     model_names["M-0012"] = (
         "Synthetic Model 11 With An Intentionally Long Display Name (high)"
@@ -160,7 +168,7 @@ def _write_json(path: Path, value: str) -> None:
 
 
 def main() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "editions" / "1.0" / "deep20bench-v10.json"
     dataset = PublishedDataset.model_validate_json(dataset_path.read_text(encoding="utf-8"))
     bundle = _synthetic_bundle(dataset)
     if OUTPUT.exists():
@@ -172,6 +180,25 @@ def main() -> None:
             PublicationAppBuildDocument(built_at=dataset.provenance.built_at)
         ),
     )
+    index = PublicationEditionsDocument(
+        default_edition_id="1.0", built_at=dataset.provenance.built_at,
+        editions=(PublicationEditionReference(
+            edition_id="1.0", label="1", status="current",
+            manifest_path="editions/1.0/manifest.json",
+            leaderboard_path="editions/1.0/leaderboard.json",
+            repeat_averages_path="editions/1.0/repeat-averages.json",
+            runs=tuple(EditionRunReference(
+                execution_id=run.run.execution_id, model_id=run.run.model_id,
+                model_name=run.run.model_name, classification=run.run.classification,
+                target_ids=run.run.target_ids,
+            ) for run in bundle.runs),
+        ),),
+    )
+    _write_json(data / "editions.json", publication_document_json(index))
+    for name, document in (("manifest.json", bundle.manifest),
+                           ("leaderboard.json", bundle.leaderboard),
+                           ("repeat-averages.json", bundle.repeat_averages)):
+        _write_json(data / "editions" / "1.0" / name, publication_document_json(document))
     _write_json(data / "manifest.json", publication_document_json(bundle.manifest))
     _write_json(data / "leaderboard.json", publication_document_json(bundle.leaderboard))
     _write_json(

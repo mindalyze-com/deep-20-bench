@@ -7,8 +7,10 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from decimal import Decimal
 
+from deep20_game.config import BenchmarkMode
 from deep20_game.models import (
     ActionType,
+    CachedOracleMetrics,
     CallMetrics,
     ContractViolationProgress,
     EpisodeFinishedProgress,
@@ -20,7 +22,8 @@ from deep20_game.models import (
     TurnProgress,
 )
 from deep20_game.sinks import ExecutionObserver
-from deep20_oracle.catalog import SubjectCatalog
+from deep20_oracle.cache_contract import oracle_contract_hash
+from deep20_oracle.catalog import SubjectCatalog, SubjectStatus
 from deep20_oracle.diagnostics import diagnose_exception
 from deep20_oracle.models import OracleMetrics, RecoveryMetrics, RecoveryTotals
 from deep20_oracle.recovery import combine_recovery_totals
@@ -30,16 +33,19 @@ from .aggregation import aggregate_trials
 from .artifacts import (
     ArtifactIntegrityError,
     ArtifactStore,
+    ArtifactSubjectHistoryStore,
     BenchmarkTrialSink,
     signed_trial_manifest,
 )
 from .catalog import BenchmarkCatalog, ModelCatalog
+from .history_cache import LazyOracleHistoryCache
 from .logging import BLANK_LINE_BEFORE_ATTRIBUTE
 from .models import (
     BenchmarkContractViolationEvent,
     BenchmarkEventId,
     BenchmarkFailure,
     BenchmarkFinishedEvent,
+    BenchmarkManifest,
     BenchmarkModelId,
     BenchmarkOutcome,
     BenchmarkProgressEvent,
@@ -57,6 +63,7 @@ from .models import (
     InfrastructureCircuitBreaker,
     InfrastructureFailedTrialResult,
     ModelStartedEvent,
+    OracleContractRevision,
     PartialTrialMetrics,
     SubjectBenchmarkOutcome,
     SubjectBenchmarkResult,
@@ -168,7 +175,7 @@ class _MutablePartialMetrics:
     duration_ms: int = 0
     recovery: tuple[RecoveryMetrics | RecoveryTotals, ...] = ()
 
-    def add(self, metrics: CallMetrics | OracleMetrics, *, component: str) -> None:
+    def add(self, metrics: CallMetrics | OracleMetrics | CachedOracleMetrics, *, component: str) -> None:
         cost = metrics.cost_usd or Decimal(0)
         if component == "guesser":
             self.guesser_cost_usd += cost
@@ -423,6 +430,22 @@ class _TrialObserver(ExecutionObserver):
             ),
             state,
         )
+        source = event.turn.adjudication.cache_source
+        source_part = " answer_source=live"
+        if source is not None:
+            if source.policy != "same_episode_ask_v1":
+                scope = "historical" if source.policy == "historical_ask_v1" else "same_execution"
+                source_part = (
+                    f" answer_source={scope} source_execution={source.execution_id}"
+                    f" source_model={source.model_id} source_target={source.target_id}"
+                    f" source_trial={source.trial_id}"
+                )
+            else:
+                source_part = " answer_source=same_episode"
+            source_part += (
+                f" source_episode={source.episode_id} source_turn={source.turn_number}"
+                f" answered_at={source.answered_at}"
+            )
         action = event.turn.action
         if action.action is ActionType.ASK:
             action_part = f"question={json.dumps(action.question, ensure_ascii=False)}"
@@ -433,7 +456,7 @@ class _TrialObserver(ExecutionObserver):
         logger.info(
             "benchmark.turn turn=%d %s answer=%s guesser_ms=%d guesser_cost=%s "
             "%s_ms=%d %s_cost=%s searches=%d evidence=%d cache=%d/%d "
-            "attempts=%d recovered=%d exhausted=%d",
+            "attempts=%d recovered=%d exhausted=%d%s",
             event.turn.turn_number,
             action_part,
             event.turn.adjudication.answer,
@@ -459,7 +482,7 @@ class _TrialObserver(ExecutionObserver):
             ),
             (
                 event.guesser_metrics.recovery.request_attempts
-                + event.adjudicator_metrics.recovery.request_attempts
+                + (event.adjudicator_metrics.recovery.request_attempts if source is None else 0)
             ),
             (
                 event.guesser_metrics.recovery.recovered_calls
@@ -469,6 +492,7 @@ class _TrialObserver(ExecutionObserver):
                 event.guesser_metrics.recovery.exhausted_retries
                 + event.adjudicator_metrics.recovery.exhausted_retries
             ),
+            source_part,
         )
 
 
@@ -483,12 +507,14 @@ class BenchmarkRunner:
         benchmark_catalog: BenchmarkCatalog,
         subject_catalog: SubjectCatalog,
         executor: EpisodeExecutor,
+        oracle_cache: LazyOracleHistoryCache | None = None,
     ):
         self.store = store
         self.model_catalog = model_catalog
         self.benchmark_catalog = benchmark_catalog
         self.subject_catalog = subject_catalog
         self.executor = executor
+        self.oracle_cache = oracle_cache
         self.state: BenchmarkState
 
     def run(
@@ -512,13 +538,24 @@ class BenchmarkRunner:
         repair: TrialRepairPolicy | None,
         circuit_breaker: InfrastructureCircuitBreaker | None,
     ) -> BenchmarkResult:
-        request = self._resolve_request(request)
+        existing_manifest = self.store.load_manifest(request.model_id, request.execution_id)
+        if existing_manifest is not None and existing_manifest.oracle_cache is not None and self.oracle_cache is None:
+            raise ValueError("cannot disable Oracle history on an existing cached execution")
+        request = self._resolve_request(request, existing_manifest=existing_manifest)
         definition = self.benchmark_catalog.benchmark(
             request.benchmark_id,
             benchmark_mode=request.benchmark_mode,
             subject_ids=request.target_ids,
             iterations_override=request.iterations_override,
         )
+        current_definition_hash = definition.definition_hash
+        if existing_manifest is not None and (
+            definition.model_dump(exclude={"definition_hash"})
+            == existing_manifest.definition.model_dump(exclude={"definition_hash"})
+        ):
+            # Preserve the original schedule/configuration identity. A changed factual
+            # hash is accepted only by the explicit revision check below and recorded.
+            definition = existing_manifest.definition
         model = self.model_catalog.model(request.model_id)
         subjects = tuple(
             self.subject_catalog.subject(str(target_id)) for target_id in definition.subject_ids
@@ -551,13 +588,53 @@ class BenchmarkRunner:
             for trial_number in range(1, definition.iterations + 1)
         )
         created_at = timestamp()
+        revisions = tuple(
+            event.oracle_contract_revision
+            for event in self.store.load_events(request.model_id, request.execution_id)
+            if isinstance(event, ExecutionResumedEvent) and event.oracle_contract_revision is not None
+        ) if existing_manifest is not None else ()
+        previous_contract = (
+            revisions[-1].current_hash if revisions else
+            existing_manifest.oracle_contract_hash if existing_manifest else None
+        )
+        current_contract = oracle_contract_hash(definition.oracle_configuration)
+        contract_changed = (
+            previous_contract is not None and previous_contract != current_contract
+        )
+        if contract_changed and return_existing_result:
+            raise ValueError("completed execution does not match the benchmark request")
+        if contract_changed and not (
+            repair is not None and repair.allow_oracle_contract_change
+            and request.benchmark_mode is BenchmarkMode.EXPERIMENTAL
+        ):
+            raise ValueError(
+                "Oracle contract changed; use a new execution ID or explicitly allow an "
+                "experimental repair contract revision"
+            )
+        history_snapshot = (
+            self.oracle_cache.prepare(definition, execution_id=str(request.execution_id),
+                                      existing=existing_manifest,
+                                      existing_snapshot=revisions[-1].oracle_cache if revisions else None,
+                                      reset_for_contract_revision=contract_changed,
+                                      subject_history=ArtifactSubjectHistoryStore(
+                                          self.store, request, resumed=existing_manifest is not None))
+            if self.oracle_cache is not None and not return_existing_result else
+            existing_manifest.oracle_cache if existing_manifest is not None else None
+        )
         candidate_manifest = self.store.execution_manifest(
             request=request,
             definition=definition,
             model=model,
             subject_catalog_hash=self.subject_catalog.content_hash(),
+            oracle_cache=history_snapshot,
         )
-        existing_manifest = self.store.load_manifest(request.model_id, request.execution_id)
+        revision = (
+            OracleContractRevision(
+                previous_hash=previous_contract, current_hash=current_contract,
+                current_definition_hash=current_definition_hash,
+                oracle_cache=history_snapshot, recorded_at=created_at,
+            ) if contract_changed and previous_contract is not None else None
+        )
         manifest = existing_manifest or candidate_manifest
         if existing_manifest is not None:
             if (
@@ -621,6 +698,7 @@ class BenchmarkRunner:
                     operation="repair" if repair is not None else "resume",
                     git_commit=candidate_manifest.git_commit,
                     repair_policy=repair,
+                    oracle_contract_revision=revision,
                     recorded_at=resumed_at,
                 ),
                 self.state.model_copy(
@@ -681,13 +759,25 @@ class BenchmarkRunner:
             ),
         )
         subject_results: list[SubjectBenchmarkResult] = []
+        active_revision = revision or (revisions[-1] if revisions else None)
+        contract_since = active_revision.recorded_at if active_revision else None
         progress_trials: dict[str, TrialBenchmarkResult] = {}
         for scheduled_identity in scheduled_identities:
             progress_trial = self.store.load_trial_result(scheduled_identity)
             if progress_trial is not None:
                 progress_trials[str(scheduled_identity.episode_run_id)] = progress_trial
+                if self.oracle_cache is not None and isinstance(progress_trial, CompletedTrialResult):
+                    self.oracle_cache.remember_completed_trial(
+                        scheduled_identity, self.store.trial_root(scheduled_identity) / "result.yml",
+                        contract_since=contract_since,
+                    )
         consecutive_infrastructure_failures = 0
         for subject in subjects:
+            if (
+                self.oracle_cache is not None and history_snapshot is not None
+                and history_snapshot.discovery_policy is not None
+            ):
+                self.oracle_cache.load_subject(subject)
             self._persist_progress(
                 SubjectStartedEvent(
                     event_id=self._event_id(),
@@ -864,6 +954,10 @@ class BenchmarkRunner:
                     sink,
                     _TrialObserver(self, identity, attempt_number),
                 ).model_copy(update={"attempt_number": attempt_number})
+                if isinstance(trial, CompletedTrialResult) and repair is not None:
+                    trial = trial.model_copy(update={
+                        "oracle_judge_ignored_providers": repair.judge_ignored_providers,
+                    })
                 if (
                     isinstance(trial, InfrastructureFailedTrialResult)
                     and trial.partial_metrics == PartialTrialMetrics()
@@ -919,6 +1013,11 @@ class BenchmarkRunner:
                         }
                     )
                 self.store.write_trial_result(trial)
+                if self.oracle_cache is not None and isinstance(trial, CompletedTrialResult):
+                    self.oracle_cache.remember_completed_trial(
+                        identity, self.store.trial_root(identity) / "result.yml",
+                        contract_since=contract_since,
+                    )
                 trials.append(trial)
                 progress_trials[str(identity.episode_run_id)] = trial
                 finished_at = timestamp()
@@ -1144,6 +1243,9 @@ class BenchmarkRunner:
                 definition=definition,
                 model=model,
                 base_seed=request.base_seed,
+                oracle_cache=(self.oracle_cache.snapshot if self.oracle_cache else None),
+                oracle_cache_loads=(tuple(self.oracle_cache.loads) if self.oracle_cache else ()),
+                oracle_contract_revisions=(*revisions, *((revision,) if revision else ())),
                 git_commits=self.store.execution_git_commits(
                     model.model_id,
                     request.execution_id,
@@ -1157,6 +1259,7 @@ class BenchmarkRunner:
                 has_infrastructure_failures=has_infrastructure_failures,
                 publication_eligible=(
                     not has_infrastructure_failures
+                    and not revisions and revision is None
                     and all(
                         isinstance(trial, CompletedTrialResult)
                         and trial.result.publication_eligible
@@ -1569,12 +1672,23 @@ class BenchmarkRunner:
         self.state = state
         self.store.write_state(state)
 
-    def _resolve_request(self, request: BenchmarkRequest) -> BenchmarkRequest:
-        target_ids = request.target_ids or tuple(
-            SubjectId(subject.target_id) for subject in self.subject_catalog.subjects.values()
-        )
+    def _resolve_request(
+        self, request: BenchmarkRequest, *, existing_manifest: BenchmarkManifest | None,
+    ) -> BenchmarkRequest:
+        if existing_manifest is not None:
+            target_ids = request.target_ids or existing_manifest.request.target_ids
+        else:
+            target_ids = request.target_ids or tuple(
+                SubjectId(subject.target_id) for subject in self.subject_catalog.active_subjects()
+            )
+            for target_id in target_ids:
+                if self.subject_catalog.entry(str(target_id)).status is SubjectStatus.INACTIVE:
+                    raise ValueError(
+                        f"subject {target_id!s} is inactive; set its catalog status to active "
+                        "before selecting it for a new benchmark"
+                    )
         if not target_ids:
-            raise ValueError("the subject catalog does not register any targets")
+            raise ValueError("the subject catalog does not register any active targets")
         return request.model_copy(
             update={
                 "target_ids": target_ids,

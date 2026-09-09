@@ -2,11 +2,14 @@
 import { computed, nextTick, onActivated, watch } from "vue";
 import { useRoute } from "vue-router";
 
+import EmptyEditionResults from "@/components/EmptyEditionResults.vue";
+import { useEditionContext } from "@/lib/use-edition-context";
 import ResultsNav from "@/components/ResultsNav.vue";
 
 const route = useRoute();
+const { manifest, cohort, editionId } = useEditionContext();
 const isResultsWorkspaceRoute = computed(() =>
-  route.matched.some((record) => record.path === "/results/"),
+  route.matched.some((record) => record.path.endsWith("/results/")),
 );
 const resetResultsScroll = async (): Promise<void> => {
   await nextTick();
@@ -81,7 +84,7 @@ const copy = computed(() => {
       <div class="results-workspace-header-inner site-boundary">
         <div>
           <p class="eyebrow">{{ copy.label }}</p>
-          <h1>{{ copy.title }}</h1>
+          <h1>{{ copy.title }} <span class="results-edition">{{ cohort?.edition_label }}</span></h1>
         </div>
         <p>{{ copy.description }}</p>
         <ResultsNav />
@@ -89,9 +92,10 @@ const copy = computed(() => {
     </header>
 
     <div class="results-workspace-body">
-      <RouterView v-if="isResultsWorkspaceRoute" v-slot="{ Component }">
+      <div v-if="manifest?.official_runs.length === 0" class="site-boundary-shell edition-empty-container"><div class="site-boundary"><EmptyEditionResults /></div></div>
+      <RouterView v-else-if="isResultsWorkspaceRoute" v-slot="{ Component }">
         <KeepAlive>
-          <component :is="Component" />
+          <component :is="Component" :key="`${editionId}:${String(route.name)}`" />
         </KeepAlive>
       </RouterView>
     </div>
@@ -99,6 +103,7 @@ const copy = computed(() => {
 </template>
 
 <style scoped>
+.results-edition { font-family: var(--font-body); font-size: .45em; color: var(--text-secondary); letter-spacing: 0; }
 .results-workspace {
   --result-accent: var(--blue);
   --result-accent-ink: var(--blue-ink);
@@ -133,8 +138,7 @@ const copy = computed(() => {
 }
 
 .results-workspace-header {
-  min-height: 112px;
-  padding-top: 1.2rem;
+  padding-top: 1rem;
   border-bottom: var(--rule-default);
   background: var(--paper-bright);
 }
@@ -144,8 +148,10 @@ const copy = computed(() => {
   grid-template-columns: minmax(12rem, 0.45fr) minmax(16rem, 0.55fr) auto;
   gap: clamp(1.5rem, 4vw, 4rem);
   align-items: end;
-  min-height: calc(112px - 1.2rem - var(--border-width));
+
 }
+
+.results-workspace-header-inner > div { padding-bottom: .9rem; }
 
 .results-workspace-header .eyebrow {
   margin-bottom: 0.25rem;
@@ -167,7 +173,7 @@ const copy = computed(() => {
 
 .results-workspace-header-inner > p {
   max-width: 30rem;
-  margin: 0 0 1.15rem;
+  margin: 0 0 1rem;
   color: var(--muted);
   font-size: var(--text-small);
   line-height: 1.55;
@@ -183,8 +189,10 @@ const copy = computed(() => {
 .results-workspace-header :deep(.results-nav a) {
   display: inline-flex;
   align-items: end;
-  padding-bottom: 1.2rem;
+  padding-block: .8rem 1rem;
 }
+
+.edition-empty-container { padding-block: 1.5rem 3rem; }
 
 .results-workspace-body {
   min-height: 1px;
@@ -205,7 +213,7 @@ const copy = computed(() => {
 
   .results-workspace-header-inner {
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 1rem 2rem;
+    gap: .35rem 2rem;
     min-height: 0;
   }
 
@@ -215,7 +223,7 @@ const copy = computed(() => {
   }
 
   .results-workspace-header-inner > p {
-    margin-bottom: 0;
+    margin-bottom: .9rem;
   }
 }
 
@@ -232,6 +240,8 @@ const copy = computed(() => {
     grid-template-columns: 1fr;
     gap: 0.35rem;
   }
+
+  .results-workspace-header-inner > div { padding-bottom: .25rem; }
 
   .results-workspace-header h1 {
     font-size: 2.65rem;

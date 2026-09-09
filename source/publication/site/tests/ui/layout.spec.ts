@@ -89,7 +89,7 @@ test("public routes stay within the viewport", { tag: ["@layout", "@both", "@smo
     await expect(page.locator("h1").first()).toBeVisible();
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
-      `https://mindalyze-com.github.io/deep-20-bench/${routePath}`,
+      `https://mindalyze-com.github.io/deep-20-bench/${routePath === "about/" ? routePath : `editions/1.0/${routePath}`}`,
     );
     await expectNoViewportOverflow(page);
   }
@@ -102,7 +102,7 @@ test("data page keeps download, exploration, and reuse in one ordered flow", { t
   await waitForPublication(page);
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Download the public benchmark record.",
+    "Edition 1 data.",
   );
   await expect(page.locator(".data-lede")).toContainText(
     "Deep20Bench publishes the data behind its leaderboard",
@@ -130,7 +130,7 @@ test("data page keeps download, exploration, and reuse in one ordered flow", { t
   await expect(downloadCards).toHaveCount(3);
   await expect(downloadCards.first().getByRole("link")).toHaveAttribute(
     "href",
-    "/deep-20-bench/data/deep20bench-v9.json",
+    "/deep-20-bench/data/editions/1.0/deep20bench-v10.json",
   );
   if (testInfo.project.name.startsWith("desktop")) {
     const cardBoxes = await downloadCards.evaluateAll((elements) =>

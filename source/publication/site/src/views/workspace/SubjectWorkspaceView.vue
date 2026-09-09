@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { editionRoute } from "@/lib/route-location";
 import {
   computed,
   onActivated,
@@ -97,7 +98,7 @@ const applySubjectContext = (): void => {
     level: "Subject workspace",
     position: `${index + 1} of ${subjects.value.length}`,
     crumbs: [
-      { label: "Results", to: { name: "results" } },
+      { label: "Results", to: editionRoute('results') },
       {
         label: currentRun.model_name,
         to: runRoute(currentRun.execution_id),

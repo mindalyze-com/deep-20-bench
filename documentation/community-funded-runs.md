@@ -1,5 +1,9 @@
 # Crowdfunded Model Runs
 
+Status: proposal only. The site links to general Ko-fi support; it does not implement
+model-specific funding pots, a payment ledger, or automatic funded-run scheduling. The rules
+below describe a possible future system. Provider suitability was reviewed on 7 September 2026.
+
 ## What we want to achieve
 
 Deep20Bench should let its community propose additional models and collectively fund the cost of
@@ -12,7 +16,7 @@ The intended experience is:
 - People may contribute small amounts such as $5, $10, or $20.
 - Contributions from multiple people accumulate until the run is fully funded.
 - Everyone can see the current total and progress without the maintainer updating it manually.
-- Reaching the target schedules the exact preregistered model configuration for execution.
+- Reaching the target makes the exact preregistered configuration ready for a maintainer to run.
 - Every completed result is published, whether the model performs well or poorly.
 - Funding covers provider costs, transaction fees, and reasonable cost variance so the
   maintainer does not have to subsidize community-requested runs.
@@ -46,68 +50,45 @@ benchmark execution attempt, not for a particular outcome.
 For a run expected to cost $50, the initial funding target should be $60. The additional amount
 covers payment fees and normal cost variance.
 
-## Polar option
+## Provider assessment - 7 September 2026
 
-Polar is a potential payment provider because it supports:
+Polar is not an option for the funding model described here under its published policy.
+Its acceptable-use policy, effective 25 March 2026, prohibits donations, crowdfunding, and
+sponsorship. The earlier proposal to use Polar products and webhooks for model pots is
+withdrawn. Pay-what-you-want pricing does not establish permission for this use case.
+See [Polar's acceptable-use policy](https://polar.sh/legal/acceptable-use-policy).
 
-- One-time, pay-what-you-want products with a configurable minimum.
-- A separate product and checkout link for each approved model.
-- Swiss payouts.
-- Receipts and invoices.
-- International sales-tax handling as merchant of record.
-- APIs and webhooks that can support later automation.
+Open Collective Projects supports separate public budgets, contributions, expenses, goals,
+and updates. It is a possible platform to assess, not a selected host or an approved account.
+See [Open Collective's project features](https://documentation.opencollective.com/why-open-collective/features).
 
-### Important Polar restriction
+Open Source Collective is one fiscal host on that platform. Its application lists a 10% host
+fee, and payment-processor fees are separate. Its software-project eligibility requires an
+open-source license. Deep20Bench's PolyForm Noncommercial software licensing does not meet
+that requirement, so the earlier recommendation of this host is not suitable as written.
+Any future platform/host selection must fit the project's existing licensing and proposed
+activity. See [host fees](https://opencollective.com/opensource/apply/intro),
+[platform and processor pricing](https://documentation.opencollective.com/why-open-collective/pricing),
+and [host eligibility](https://docs.oscollective.org/interested-in-joining-osc/acceptance-criteria).
 
-Polar's public product and checkout pages do not currently provide a public cumulative donation
-total, funding goal, or progress display such as `$30 / $60`.
+Ko-fi currently supports one active goal per page. That can support general project funding,
+as linked from this site, but it does not provide the proposed several simultaneous model pots.
+See [Ko-fi goals](https://help.ko-fi.com/hc/en-us/articles/360004392158-Set-your-Ko-fi-Goal).
 
-The complete order history, revenue, and account balance are visible to the project owner in the
-private Polar dashboard. A supporter following a Polar checkout link can see the product and
-make a payment, but cannot see how much the community has already contributed toward that
-model's run.
+## Required funding records
 
-Consequently, a Polar link alone is not sufficient for transparent pooled funding. Do not
-describe Polar as providing public campaign totals or progress bars unless Polar adds and
-documents that capability.
+A future implementation needs an eligible payment provider or fiscal host and a stable ID for
+each model pot. Payment, refund, and dispute records must update that pot's public total
+automatically and idempotently. Show the exact model configuration, amount raised, target,
+status, and eventual result link. Close funding when its target is reached and retain an
+auditable record of any excess contribution.
 
-### Required public funding page
+If a custom service is needed, keep it separate from the static benchmark publication. GitHub
+is not the payment ledger. Provider credentials and webhook secrets stay server-side; expose
+only aggregate funding data. Supporter attribution requires explicit consent, and customer
+records, email addresses, invoices, payment IDs, tokens, and webhook payloads remain private.
 
-Using Polar for parallel funding pots requires a separate Deep20Bench funding page:
-
-1. Each approved model has a Polar product and stable internal funding-pot ID.
-2. Polar accepts the payments.
-3. A signed Polar webhook reports paid, refunded, and disputed orders to a small hosted service.
-4. The service aggregates only the amounts assigned to each funding pot.
-5. The public page displays the model, exact configuration, amount raised, target, percentage,
-   status, and eventual result link.
-6. Supporter names and payment details remain private unless a supporter explicitly opts into
-   attribution.
-7. When the target is reached, the product is archived or otherwise closed to new contributions
-   as soon as practical.
-
-This page must update automatically. The maintainer should not have to update GitHub after every
-contribution. GitHub may still be used for source code, model suggestions, and published results,
-but it is not the payment ledger.
-
-The Polar API token and webhook secret must remain server-side. The public page must expose only
-aggregated funding data and must never expose customer records, email addresses, invoices,
-payment identifiers, access tokens, or webhook payloads.
-
-### No-build alternative
-
-If Deep20Bench does not build the automated public funding page, Open Collective Projects is the
-preferred alternative. Open Collective provides public balances, contributions, goals, updates,
-and expenses for each project without a custom tracker.
-
-This convenience comes with higher costs and onboarding requirements. Open Source Collective
-currently charges a 10% host fee in addition to payment-processor fees and expects an eligible,
-properly licensed open-source project with suitable governance.
-
-Ko-fi is not suitable for several simultaneous model pots because it supports only one active
-goal and cannot reliably earmark individual payments among multiple goals.
-
-## Money rules
+## Proposed money rules
 
 - The minimum contribution is $5.
 - The interface should recommend $10 and $20 because fixed transaction fees make very small
@@ -152,10 +133,11 @@ Begin with no more than three simultaneous model pots.
 
 Before launch, verify:
 
-- Multiple supporters can contribute different amounts to the same Polar product.
+- The selected provider/host permits this activity and accepts the project.
+- Multiple supporters can contribute different amounts to the same model pot.
 - Payments cannot be attributed to the wrong funding pot.
 - Paid, refunded, and disputed webhook events update totals idempotently.
-- The public total reconciles with Polar orders while excluding taxes and clearly defining
+- The public total reconciles with the payment ledger while excluding taxes and clearly defining
   whether the displayed amount is gross or net of fees.
 - Replayed or forged webhooks cannot increase the public total.
 - Reaching a target closes the pot without losing or hiding any excess contribution.

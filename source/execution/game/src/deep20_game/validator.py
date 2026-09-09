@@ -4,6 +4,7 @@ import uuid
 
 from deep20_oracle.diagnostics import diagnose_exception
 from deep20_oracle.models import ProviderTrace, RecoveryReason, Subject
+from deep20_oracle.protocol import answer_output_schema
 from deep20_oracle.recovery import (
     current_recovery_budget,
     logical_recovery_budget,
@@ -76,7 +77,7 @@ class GuessValidator:
         try:
             provider_request = GameProviderRequest(
                 messages=messages,
-                output_schema=GuessValidationResult.model_json_schema(),
+                output_schema=answer_output_schema(GuessValidationResult),
                 schema_name="guess_validation_result",
                 session_id=session_id,
                 prompt_cache_key=cache_key,

@@ -1,0 +1,415 @@
+{
+  "document_type": "run",
+  "schema_version": 4,
+  "edition_id": "1.1",
+  "run": {
+    "execution_id": "BX-20260908-B-0003-experimental-M0002-001",
+    "model_id": "M-0002",
+    "model_name": "gpt-oss-120B (high)",
+    "benchmark_id": "B-0003",
+    "benchmark_name": "Deep20Bench Five Answer Experiment",
+    "classification": "official",
+    "reason_codes": [],
+    "completed_at": "2026-09-08T20:44:22.545790Z",
+    "created_at": "2026-09-08T17:51:24.166341Z",
+    "git_commit": "eceee31eef2eee309df803adf99bb6fa5bac3c87",
+    "benchmark_mode": "experimental",
+    "target_ids": [
+      "T-0001",
+      "T-0002",
+      "T-0004",
+      "T-0005",
+      "T-0006",
+      "T-0008",
+      "T-0009",
+      "T-0010",
+      "T-0011",
+      "T-0012"
+    ],
+    "iterations": 3,
+    "base_seed": 0,
+    "max_questions": 40,
+    "success_rate": "0.6667",
+    "question_score": "22.23333333333333333333333333",
+    "question_score_confidence_interval": {
+      "confidence_level": "0.95",
+      "method": "stratified-welch-t-v1",
+      "estimate": "22.23333333333333333333333333",
+      "lower": "19.57758548437866557924467768595931413822",
+      "upper": "24.88908118228800108742198897404068586178",
+      "standard_error": "1.054619467970424971436876386160032769569",
+      "degrees_of_freedom": "5.370053673686495293168730455194664251387",
+      "subject_count": 10,
+      "trial_count": 30
+    },
+    "total_cost_usd": "4.5693358200000000004",
+    "successful": 20,
+    "model_failed": 10,
+    "infrastructure_failed": 0,
+    "terminal_trials": 30,
+    "contract": {
+      "evaluated_outputs": 662,
+      "valid_outputs": 591,
+      "violations": 71,
+      "counted_penalties": 67,
+      "affected_trials": 13,
+      "compliance_rate": "0.8927492447129909365558912387",
+      "status": "breached"
+    },
+    "totals": {
+      "costs_usd": {
+        "guesser": "2.04451735",
+        "primary_oracle": "1.4795021700000000036",
+        "reviewer": "0.6606319",
+        "judge": "0.376985",
+        "validator": "0.0076994",
+        "total": "4.5693358200000000004"
+      },
+      "excluded_repair": {
+        "cost_usd": "0.4935720999999999996",
+        "superseded_attempts": 3,
+        "affected_trials": 3
+      },
+      "total_tokens": 8163531,
+      "runtime_ms": 10378379,
+      "guesser_think_time_ms": 1949996,
+      "guesser_calls": 662
+    },
+    "comparison": {
+      "guesser_cost_per_episode_usd": "0.06815057833333333333333333333",
+      "full_cost_per_episode_usd": "0.1523111940000000000133333333",
+      "support_cost_per_episode_usd": "0.08416061566666666668",
+      "support_cost_share": "0.5525569950339084510927842467",
+      "runtime_per_episode_ms": "345945.9666666666666666666667",
+      "guesser_think_time_per_episode_ms": "64999.86666666666666666666667",
+      "guesser_latency_per_call_ms": "2945.613293051359516616314199",
+      "cost_adjusted_question_score": "1.515214524944444444444444444",
+      "efficiency_status": "ranked"
+    },
+    "models": [
+      {
+        "role": "guesser",
+        "configuration_id": "M-0002",
+        "requested_model": "openai/gpt-oss-120b",
+        "requested_provider": "cerebras",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-oss-120b"
+        ],
+        "resolved_providers": [
+          "Cerebras"
+        ],
+        "reasoning_effort": "high",
+        "prompt_version": "stateful-category-guesser-v16-five-answer-category-guide",
+        "calls": 662,
+        "cost_usd": "2.04451735",
+        "providers": [
+          {
+            "provider": "Cerebras",
+            "calls": 662,
+            "cost_usd": "2.04451735",
+            "latency_ms": 1949996
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "oracle",
+        "configuration_id": null,
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "live-web-oracle-v17-labelled-source-context",
+        "calls": 535,
+        "cost_usd": "1.4795021700000000036",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 535,
+            "cost_usd": "1.4795021700000000036",
+            "latency_ms": 5277939
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "reviewer",
+        "configuration_id": null,
+        "requested_model": "google/gemini-3.5-flash-lite",
+        "requested_provider": "google-ai-studio",
+        "provider_routing": "exact",
+        "resolved_models": [],
+        "resolved_providers": [
+          "Google AI Studio"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": null,
+        "calls": 512,
+        "cost_usd": "0.6606319",
+        "providers": [
+          {
+            "provider": "Google AI Studio",
+            "calls": 512,
+            "cost_usd": "0.6606319",
+            "latency_ms": 850193
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "judge",
+        "configuration_id": null,
+        "requested_model": "anthropic/claude-opus-5",
+        "requested_provider": "openrouter-auto",
+        "provider_routing": "automatic",
+        "resolved_models": [],
+        "resolved_providers": [
+          "Claude Platform on AWS"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": null,
+        "calls": 18,
+        "cost_usd": "0.376985",
+        "providers": [
+          {
+            "provider": "Claude Platform on AWS",
+            "calls": 18,
+            "cost_usd": "0.376985",
+            "latency_ms": 112398
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      },
+      {
+        "role": "validator",
+        "configuration_id": "gpt-5.6-luna-validator",
+        "requested_model": "openai/gpt-5.6-luna",
+        "requested_provider": "openai",
+        "provider_routing": "exact",
+        "resolved_models": [
+          "openai/gpt-5.6-luna"
+        ],
+        "resolved_providers": [
+          "OpenAI"
+        ],
+        "reasoning_effort": "medium",
+        "prompt_version": "strict-guess-validator-v2-generic-kinds",
+        "calls": 38,
+        "cost_usd": "0.0076994",
+        "providers": [
+          {
+            "provider": "OpenAI",
+            "calls": 38,
+            "cost_usd": "0.0076994",
+            "latency_ms": 79181
+          }
+        ],
+        "unreported_calls": 0,
+        "fallback_calls": 0
+      }
+    ]
+  },
+  "subjects": [
+    {
+      "target_id": "T-0001",
+      "display_name": "Albert Einstein",
+      "entity_type": "person",
+      "success_rate": "1",
+      "average_questions": "4.666666666666666666666666667",
+      "successful": 3,
+      "model_failed": 0,
+      "infrastructure_failed": 0,
+      "contract": {
+        "evaluated_outputs": 17,
+        "valid_outputs": 17,
+        "violations": 0,
+        "counted_penalties": 0,
+        "affected_trials": 0,
+        "compliance_rate": "1",
+        "status": "clean"
+      }
+    },
+    {
+      "target_id": "T-0002",
+      "display_name": "Albert Schweitzer",
+      "entity_type": "person",
+      "success_rate": "1",
+      "average_questions": "22.66666666666666666666666667",
+      "successful": 3,
+      "model_failed": 0,
+      "infrastructure_failed": 0,
+      "contract": {
+        "evaluated_outputs": 71,
+        "valid_outputs": 67,
+        "violations": 4,
+        "counted_penalties": 4,
+        "affected_trials": 3,
+        "compliance_rate": "0.9436619718309859154929577465",
+        "status": "breached"
+      }
+    },
+    {
+      "target_id": "T-0004",
+      "display_name": "Garfield",
+      "entity_type": "fictional_character",
+      "success_rate": "1",
+      "average_questions": "10",
+      "successful": 3,
+      "model_failed": 0,
+      "infrastructure_failed": 0,
+      "contract": {
+        "evaluated_outputs": 33,
+        "valid_outputs": 33,
+        "violations": 0,
+        "counted_penalties": 0,
+        "affected_trials": 0,
+        "compliance_rate": "1",
+        "status": "clean"
+      }
+    },
+    {
+      "target_id": "T-0005",
+      "display_name": "Achilles",
+      "entity_type": "mythological_figure",
+      "success_rate": "1",
+      "average_questions": "7",
+      "successful": 3,
+      "model_failed": 0,
+      "infrastructure_failed": 0,
+      "contract": {
+        "evaluated_outputs": 24,
+        "valid_outputs": 24,
+        "violations": 0,
+        "counted_penalties": 0,
+        "affected_trials": 0,
+        "compliance_rate": "1",
+        "status": "clean"
+      }
+    },
+    {
+      "target_id": "T-0006",
+      "display_name": "Genghis Khan",
+      "entity_type": "person",
+      "success_rate": "1",
+      "average_questions": "16.33333333333333333333333333",
+      "successful": 3,
+      "model_failed": 0,
+      "infrastructure_failed": 0,
+      "contract": {
+        "evaluated_outputs": 52,
+        "valid_outputs": 52,
+        "violations": 0,
+        "counted_penalties": 0,
+        "affected_trials": 0,
+        "compliance_rate": "1",
+        "status": "clean"
+      }
+    },
+    {
+      "target_id": "T-0008",
+      "display_name": "Bike pump",
+      "entity_type": "thing",
+      "success_rate": "0",
+      "average_questions": "41",
+      "successful": 0,
+      "model_failed": 3,
+      "infrastructure_failed": 0,
+      "contract": {
+        "evaluated_outputs": 123,
+        "valid_outputs": 100,
+        "violations": 23,
+        "counted_penalties": 21,
+        "affected_trials": 3,
+        "compliance_rate": "0.8130081300813008130081300813",
+        "status": "breached"
+      }
+    },
+    {
+      "target_id": "T-0009",
+      "display_name": "Spider web",
+      "entity_type": "thing",
+      "success_rate": "0.3333",
+      "average_questions": "35.33333333333333333333333333",
+      "successful": 1,
+      "model_failed": 2,
+      "infrastructure_failed": 0,
+      "contract": {
+        "evaluated_outputs": 102,
+        "valid_outputs": 89,
+        "violations": 13,
+        "counted_penalties": 13,
+        "affected_trials": 2,
+        "compliance_rate": "0.8725490196078431372549019608",
+        "status": "breached"
+      }
+    },
+    {
+      "target_id": "T-0010",
+      "display_name": "Eyebrow",
+      "entity_type": "thing",
+      "success_rate": "0",
+      "average_questions": "41",
+      "successful": 0,
+      "model_failed": 3,
+      "infrastructure_failed": 0,
+      "contract": {
+        "evaluated_outputs": 114,
+        "valid_outputs": 95,
+        "violations": 19,
+        "counted_penalties": 17,
+        "affected_trials": 3,
+        "compliance_rate": "0.8333333333333333333333333333",
+        "status": "breached"
+      }
+    },
+    {
+      "target_id": "T-0011",
+      "display_name": "Moon",
+      "entity_type": "thing",
+      "success_rate": "1",
+      "average_questions": "11",
+      "successful": 3,
+      "model_failed": 0,
+      "infrastructure_failed": 0,
+      "contract": {
+        "evaluated_outputs": 36,
+        "valid_outputs": 36,
+        "violations": 0,
+        "counted_penalties": 0,
+        "affected_trials": 0,
+        "compliance_rate": "1",
+        "status": "clean"
+      }
+    },
+    {
+      "target_id": "T-0012",
+      "display_name": "Door handle",
+      "entity_type": "thing",
+      "success_rate": "0.3333",
+      "average_questions": "33.33333333333333333333333333",
+      "successful": 1,
+      "model_failed": 2,
+      "infrastructure_failed": 0,
+      "contract": {
+        "evaluated_outputs": 90,
+        "valid_outputs": 78,
+        "violations": 12,
+        "counted_penalties": 12,
+        "affected_trials": 2,
+        "compliance_rate": "0.8666666666666666666666666667",
+        "status": "breached"
+      }
+    }
+  ]
+}

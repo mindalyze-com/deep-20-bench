@@ -1,11 +1,18 @@
 # Guesser output-contract recovery and reliability
 
+B-0003 additionally permits RATHER_YES and RATHER_NO after ASK under the paired qualified_v1 profile. GUESS, FORMAT_ERROR, scoring, and all private-data boundaries are unchanged. See [Five-answer experiment](five-answer-experiment.md).
+
 ## Protocol rule
+
+The optional `concise_v1` Guesser prompt changes strategy guidance only. It uses this same
+action schema and canonical `FORMAT_ERROR`; selected prompt versions are recorded separately.
+See [Concise prompt experiment](concise-prompt-experiment.md).
 
 Game-policy version 9 retains the scored way for the model under test to recover from an output that
 fails the public structured-action contract. There is no invisible Guesser output
-retry. Version 9 extends the labelled, bounded stable-knowledge fallback to the Reviewer; that
-adjudication change does not alter the Guesser output wire format or visible information
+retry. Standard and concise profiles allow the labelled, bounded Reviewer/Judge knowledge
+fallback. Qualified profiles use the role permissions in the five-answer specification.
+Those adjudication policies do not alter the Guesser action wire format or visible information
 boundary.
 
 The provider wire response must match exactly one of these branches:
@@ -113,6 +120,7 @@ The following data is never placed in the next Guesser request:
 - Oracle, Reviewer, Judge, or Guess Validator input, output, evidence, decision, disagreement
   state, or explanation;
 - Oracle research-attempt class, strategy, outcome, query, trace, or recovery state;
+- Oracle or Reviewer random question IDs, including refreshed format-retry IDs;
 - subject identity or private state;
 - provider traces, costs, latency, cache telemetry, call IDs, or logs.
 
@@ -158,17 +166,27 @@ not the owner-only diagnostics. The snapshot and public report are never model o
 ## Caching and versions
 
 The fixed correction forms a deterministic appended prompt tail. It can reuse an unchanged
-provider prompt prefix, but it cannot reuse an earlier response. Application response caching
-and OpenRouter response caching remain prohibited.
+provider prompt prefix, but Guesser responses are always freshly generated. Provider response
+caching and Validator response reuse remain prohibited. The only application answer-reuse
+exceptions are benchmark ASK policies `historical_ask_v1`, `same_episode_ask_v1`, and
+`same_execution_ask_v1`, specified
+in [Historical Oracle answers](oracle-history-cache.md). They never cache Guesser actions or
+format corrections and expose only the final factual token to the Guesser.
 
 This is a clean artifact-contract break with no legacy loader:
 
 - game policy: version 9;
-- Guesser prompt: `stateful-category-guesser-v10-unknown-evidence-guidance`;
+- Guesser prompts: standard `stateful-category-guesser-v14-category-guide`, concise
+  `stateful-category-guesser-v15-concise-category-guide`, qualified
+  `stateful-category-guesser-v16-five-answer-category-guide`;
 - Guesser output schema: `guesser_action_v3`;
 - episode result: schema version 9;
-- benchmark summary/result/manifest: schema version 3; and
-- active protocol-9 public dataset: schema version 7.
+- benchmark summary/result/manifest: schema version 3;
+- public datasets: schema version 10 for each edition, with schema version 9 maintained for
+  the edition 1 compatibility download.
+
+Edition IDs 1.0 and 1.1 are separate from these schema versions. The split-document versions
+are listed in the [publication contract](../source/publication/README.md#edition-contracts).
 
 The independent publisher is pinned to protocol 9 and rejects older episode artifacts.
 

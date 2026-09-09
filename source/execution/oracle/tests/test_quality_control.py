@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 
 import pytest
-from conftest import FakeProvider, make_oracle, provider_trace, review_payload
 from deep20_oracle.audit import RunAuditWriter
+from deep20_oracle.config import AdjudicationPolicy, PromptProfile
 from deep20_oracle.errors import OracleProtocolError, OracleProviderError
 from deep20_oracle.models import (
     EvidenceDecisionBasis,
@@ -14,12 +14,14 @@ from deep20_oracle.models import (
     OracleRequest,
     OracleResearchQuestionClass,
     OracleResearchResolution,
+    OracleResearchStrategy,
+    OracleRole,
 )
+from deep20_oracle.prompt import evidence_review_prompt_version, research_prompt_version
 from deep20_oracle.provider import ProviderExchange, ProviderRequest
-from deep20_oracle.question_type import (
-    classify_oracle_question,
-    classify_oracle_research_question,
-)
+from deep20_oracle.question_type import classify_oracle_question
+
+from conftest import FakeProvider, make_oracle, provider_trace, review_payload
 
 
 def oracle_payload(
@@ -75,10 +77,13 @@ def decoded_review_payload(request: ProviderRequest) -> dict[str, object]:
     return json.loads(request.messages[1]["content"].split("\n", 1)[1])
 
 
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
 def test_agreement_returns_shared_answer_without_calling_judge(
+    profile: PromptProfile,
     oracle_request: OracleRequest,
     audit_writer: RunAuditWriter,
 ) -> None:
+    audit_writer.config = audit_writer.config.model_copy(update={"prompt_profile": profile})
     oracle_provider = FakeProvider(oracle_payload(OracleAnswer.YES))
     reviewer_provider = FakeProvider(
         review_payload(OracleAnswer.YES),
@@ -293,42 +298,13 @@ def test_question_type_classification_is_deterministic(
     assert classify_oracle_question(question) is expected
 
 
-@pytest.mark.parametrize(
-    ("question", "expected"),
-    [
-        (
-            "Is the person currently alive?",
-            OracleResearchQuestionClass.TEMPORAL_STATUS,
-        ),
-        (
-            "Was the person primarily known as an actor?",
-            OracleResearchQuestionClass.PRIMARY_RECOGNITION,
-        ),
-        (
-            "Did the person ever appear as an actor?",
-            OracleResearchQuestionClass.OPEN_WORLD_EVER,
-        ),
-        (
-            "Was the person an actor?",
-            OracleResearchQuestionClass.ROLE_OR_OCCUPATION,
-        ),
-        (
-            "Was the person born in Germany?",
-            OracleResearchQuestionClass.CLOSED_FACT,
-        ),
-    ],
-)
-def test_research_question_classification_selects_evidence_strategy(
-    question: str,
-    expected: OracleResearchQuestionClass,
-) -> None:
-    assert classify_oracle_research_question(question) is expected
-
-
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
 def test_reviewer_and_judge_are_blind_and_role_isolated(
+    profile: PromptProfile,
     oracle_request: OracleRequest,
     audit_writer: RunAuditWriter,
 ) -> None:
+    audit_writer.config = audit_writer.config.model_copy(update={"prompt_profile": profile})
     reviewer_provider = FakeProvider(
         review_payload(OracleAnswer.NO),
         search_count=0,
@@ -369,24 +345,30 @@ def test_reviewer_and_judge_are_blind_and_role_isolated(
     assert judge_request.session_id.startswith("deep20-oracle-judge-")
     assert "basis" in reviewer_request.output_schema["required"]
     assert "basis" in judge_request.output_schema["required"]
-    assert reviewer_request.output_schema["$defs"]["EvidenceDecisionBasis"]["enum"] == [
-        "evidence",
-        "model_knowledge",
-    ]
+    assert reviewer_request.output_schema["$defs"]["EvidenceDecisionBasis"]["enum"] == (
+        ["evidence"] if profile is PromptProfile.QUALIFIED_V1
+        else ["evidence", "model_knowledge"]
+    )
     assert (
         judge_request.output_schema["$defs"]["EvidenceDecisionBasis"]["enum"]
         == reviewer_request.output_schema["$defs"]["EvidenceDecisionBasis"]["enum"]
     )
     assert call.audit.reviewer is not None
     assert call.audit.judge is not None
+    assert call.audit.prompt_version == research_prompt_version(OracleResearchStrategy.PRIMARY, profile)
+    assert call.audit.reviewer.prompt_version == evidence_review_prompt_version(OracleRole.REVIEWER, profile)
+    assert call.audit.judge.prompt_version == evidence_review_prompt_version(OracleRole.JUDGE, profile)
     assert call.audit.reviewer.provider.usage.search_count == 0
     assert call.audit.judge.provider.usage.search_count == 0
 
 
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
 def test_oracle_unknown_bypasses_both_quality_control_models(
+    profile: PromptProfile,
     oracle_request: OracleRequest,
     audit_writer: RunAuditWriter,
 ) -> None:
+    audit_writer.config = audit_writer.config.model_copy(update={"prompt_profile": profile})
     reviewer_provider = FakeProvider(
         review_payload(OracleAnswer.YES),
         search_count=0,
@@ -415,10 +397,13 @@ def test_oracle_unknown_bypasses_both_quality_control_models(
     assert judge_provider.requests == []
 
 
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
 def test_retryable_unknown_uses_blind_diversified_recovery_then_review(
+    profile: PromptProfile,
     oracle_request: OracleRequest,
     audit_writer: RunAuditWriter,
 ) -> None:
+    audit_writer.config = audit_writer.config.model_copy(update={"prompt_profile": profile})
     first_query = "PRIVATE_FIRST_QUERY Albert Einstein alive"
     provider = SequenceProvider(
         [
@@ -451,73 +436,61 @@ def test_retryable_unknown_uses_blind_diversified_recovery_then_review(
     assert provider.requests[0].prompt_cache_key != provider.requests[1].prompt_cache_key
     assert first_query not in json.dumps(provider.requests[1].messages)
     assert call.audit.research is not None
-    assert call.audit.research.question_class is OracleResearchQuestionClass.TEMPORAL_STATUS
+    assert call.audit.research.question_class is OracleResearchQuestionClass.OTHER
     assert call.audit.research.resolution is OracleResearchResolution.ANSWERED_RECOVERY
     assert len(call.audit.research.attempts) == 2
+    assert call.audit.research.attempts[1].prompt_version == research_prompt_version(
+        OracleResearchStrategy.DIVERSIFIED_RECOVERY, profile,
+    )
     assert call.audit.research.summary().attempts[0].attempted_queries == (first_query,)
     assert call.metrics.oracle is not None
     assert call.metrics.oracle.search_count == 2
 
 
-def test_two_retrieval_failures_for_closed_fact_are_infrastructure_failure(
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
+@pytest.mark.parametrize("question", [
+    "Is it usually located indoors?",
+    "Is it usually found indoors?",
+    "Is this person currently alive?",
+    "Was this person born in Germany?",
+    "Was this person an actor?",
+])
+@pytest.mark.parametrize("outcome", ["no_results", "irrelevant_results", "insufficient_coverage"])
+def test_inconclusive_research_returns_unknown_regardless_of_question_words(
+    profile: PromptProfile,
+    question: str,
+    outcome: str,
     oracle_request: OracleRequest,
     audit_writer: RunAuditWriter,
 ) -> None:
-    provider = SequenceProvider(
-        [
-            oracle_payload(
-                OracleAnswer.UNKNOWN,
-                outcome="no_results",
-                query="Albert Einstein alive",
-            ),
-            oracle_payload(
-                OracleAnswer.UNKNOWN,
-                outcome="irrelevant_results",
-                query="Albert Einstein death date authoritative biography",
-            ),
-        ]
-    )
-    request = oracle_request.model_copy(update={"question": "Is this person currently alive?"})
+    audit_writer.config = audit_writer.config.model_copy(update={"prompt_profile": profile})
+    provider = SequenceProvider([
+        oracle_payload(OracleAnswer.UNKNOWN, outcome=outcome, query="PRIVATE_FIRST_QUERY"),
+        oracle_payload(OracleAnswer.UNKNOWN, outcome=outcome, query="PRIVATE_RECOVERY_QUERY"),
+    ])
+    reviewer = FakeProvider("must not run", search_count=0)
+    judge = FakeProvider("must not run", search_count=0)
+    request = oracle_request.model_copy(update={"question": question})
 
-    with pytest.raises(OracleProtocolError) as caught:
-        make_oracle(provider, audit_writer, audit_writer.config).ask(request)
-
-    assert caught.value.code == "oracle_research_exhausted"
-    assert len(provider.requests) == 2
-    research = caught.value.details["oracle_research"]
-    assert research["question_class"] == "temporal_status"
-    assert research["resolution"] == "retrieval_exhausted_unknown"
-    assert len(research["attempts"]) == 2
-
-
-def test_two_retrieval_failures_for_role_question_remain_classified_unknown(
-    oracle_request: OracleRequest,
-    audit_writer: RunAuditWriter,
-) -> None:
-    provider = SequenceProvider(
-        [
-            oracle_payload(
-                OracleAnswer.UNKNOWN,
-                outcome="no_results",
-                query="Albert Einstein actor profession",
-            ),
-            oracle_payload(
-                OracleAnswer.UNKNOWN,
-                outcome="insufficient_coverage",
-                query="Albert Einstein biography acting credits",
-            ),
-        ]
-    )
-    request = oracle_request.model_copy(update={"question": "Was this person an actor?"})
-
-    call = make_oracle(provider, audit_writer, audit_writer.config).ask(request)
+    call = make_oracle(
+        provider, audit_writer, audit_writer.config,
+        reviewer_provider=reviewer, judge_provider=judge,
+    ).ask(request)
 
     assert call.guesser_answer() is OracleAnswer.UNKNOWN
+    assert call.result.evidence == ()
     assert call.adjudication.decision_path is OracleDecisionPath.ORACLE_UNKNOWN
     assert call.audit.research is not None
-    assert call.audit.research.question_class is OracleResearchQuestionClass.ROLE_OR_OCCUPATION
+    assert call.audit.research.question_class is OracleResearchQuestionClass.OTHER
     assert call.audit.research.resolution is OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN
-    assert len(provider.requests) == 2
+    assert len(call.audit.research.attempts) == len(provider.requests) == 2
+    assert reviewer.requests == judge.requests == []
+    assert provider.requests[0].messages[1] == provider.requests[1].messages[1]
+    assert "PRIVATE_FIRST_QUERY" not in json.dumps(provider.requests[1].messages)
+    assert provider.requests[0].session_id != provider.requests[1].session_id
+    assert call.metrics.oracle is not None
+    assert call.metrics.oracle.search_count == 2
+    assert call.metrics.reviewer is call.metrics.judge is None
 
 
 @pytest.mark.parametrize(
@@ -566,10 +539,13 @@ class FailingQualityProvider:
         )
 
 
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
 def test_required_reviewer_failure_does_not_fall_back_to_oracle_answer(
+    profile: PromptProfile,
     oracle_request: OracleRequest,
     audit_writer: RunAuditWriter,
 ) -> None:
+    audit_writer.config = audit_writer.config.model_copy(update={"prompt_profile": profile})
     reviewer = FailingQualityProvider(model=audit_writer.config.reviewer.model)
     with pytest.raises(OracleProviderError, match="unavailable"):
         make_oracle(
@@ -592,10 +568,13 @@ def test_required_reviewer_failure_does_not_fall_back_to_oracle_answer(
     assert record["adjudication"] is None
 
 
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
 def test_required_judge_failure_does_not_fall_back_to_oracle_answer(
+    profile: PromptProfile,
     oracle_request: OracleRequest,
     audit_writer: RunAuditWriter,
 ) -> None:
+    audit_writer.config = audit_writer.config.model_copy(update={"prompt_profile": profile})
     judge = FailingQualityProvider(model=audit_writer.config.judge.model)
     with pytest.raises(OracleProviderError, match="unavailable"):
         make_oracle(
@@ -618,3 +597,62 @@ def test_required_judge_failure_does_not_fall_back_to_oracle_answer(
     ]
     assert record["result"] is None
     assert record["adjudication"] is None
+
+
+@pytest.mark.parametrize("primary", [answer for answer in OracleAnswer if answer is not OracleAnswer.UNKNOWN])
+@pytest.mark.parametrize("reviewed", tuple(OracleAnswer))
+def test_five_answer_review_uses_exact_token_agreement(
+    primary, reviewed, oracle_request, audit_writer,
+) -> None:
+    audit_writer.config = audit_writer.config.model_copy(
+        update={"prompt_profile": PromptProfile.QUALIFIED_V1},
+    )
+    oracle_provider = FakeProvider(oracle_payload(primary))
+    reviewer = FakeProvider(review_payload(reviewed), search_count=0,
+        model=audit_writer.config.reviewer.model)
+    judge_answer = OracleAnswer.RATHER_NO if reviewed is OracleAnswer.RATHER_YES else OracleAnswer.RATHER_YES
+    judge = FakeProvider(review_payload(judge_answer), search_count=0,
+        model=audit_writer.config.judge.model)
+    call = make_oracle(oracle_provider, audit_writer, audit_writer.config,
+        reviewer_provider=reviewer, judge_provider=judge).ask(oracle_request)
+    assert call.guesser_answer() is (primary if primary is reviewed else judge_answer)
+    assert len(judge.requests) == int(primary is not reviewed)
+    assert call.adjudication.judge_invoked is (primary is not reviewed)
+    assert call.metrics.reviewer is not None
+    assert oracle_provider.requests[0].output_schema["$defs"]["OracleAnswer"]["enum"] == [
+        answer.value for answer in OracleAnswer
+    ]
+    if judge.requests:
+        assert decoded_review_payload(judge.requests[0]) == decoded_review_payload(reviewer.requests[0])
+        assert "oracle_answer" not in decoded_review_payload(judge.requests[0])
+
+
+@pytest.mark.parametrize("profile", [PromptProfile.STANDARD, PromptProfile.CONCISE_V1])
+def test_three_answer_profiles_reject_qualified_provider_output(
+    profile, oracle_request, audit_writer,
+) -> None:
+    audit_writer.config = audit_writer.config.model_copy(update={"prompt_profile": profile})
+    provider = FakeProvider(oracle_payload(OracleAnswer.RATHER_YES))
+    with pytest.raises(OracleProtocolError, match="schema"):
+        make_oracle(provider, audit_writer, audit_writer.config).ask(oracle_request)
+    assert provider.requests[0].output_schema["$defs"]["OracleAnswer"]["enum"] == [
+        "YES", "NO", "UNKNOWN",
+    ]
+
+
+@pytest.mark.parametrize("adjudication_policy", tuple(AdjudicationPolicy))
+def test_five_answer_reviewer_cannot_bypass_judge_with_model_knowledge(
+    oracle_request, audit_writer, adjudication_policy,
+) -> None:
+    audit_writer.config = audit_writer.config.model_copy(
+        update={"prompt_profile": PromptProfile.QUALIFIED_V1,
+                "adjudication_policy": adjudication_policy},
+    )
+    reviewer = FakeProvider(json.dumps({"answer":"YES", "basis":"model_knowledge",
+        "evidence_indices":[]}), search_count=0, model=audit_writer.config.reviewer.model)
+    judge = FakeProvider(review_payload(OracleAnswer.YES), search_count=0,
+        model=audit_writer.config.judge.model)
+    with pytest.raises(OracleProtocolError, match="schema"):
+        make_oracle(FakeProvider(oracle_payload(OracleAnswer.YES)), audit_writer,
+            audit_writer.config, reviewer_provider=reviewer, judge_provider=judge).ask(oracle_request)
+    assert not judge.requests

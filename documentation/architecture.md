@@ -1,6 +1,64 @@
 # Deep20Bench architecture
 
+Concise research retains up to three evidence items and the existing 2,000-character allowance
+per item. `kind: quotation` identifies exact source text; `kind: source_summary` identifies a
+faithful account of retrieved source facts in the Oracle's own words. Omitted kind preserves
+the historical quotation meaning and serialization. Longer evidence is valid; there is no
+additional word-count limit. Summaries preserve dates, quantities, negation, qualifications and
+counterevidence, and must not include the Oracle's decision, reasoning or remembered facts.
+Exact quotations remain supported, especially when source wording matters.
+
+Blind Reviewer/Judge inputs retain only the subject, current question and numbered evidence.
+Source summaries carry their kind label alongside the evidence text; the label reveals no
+earlier decision. Review instructions distinguish summaries from exact quotations. Both remain
+model-reported and unverified. Guesser input and final token vocabulary are unchanged. The
+research/Reviewer/Judge prompt versions and factual contract isolate earlier evidence packages.
+
+Oracle-family provider responses ending in `content_filter` now report the distinct
+`provider_content_filtered` failure/recovery code. This records the provider's reported
+finish reason, not the underlying filter rule. Existing bounded no-result retries, required
+review, search accounting and technical-stop rules still apply. Incomplete answers never
+become unchecked answer tokens or synthetic UNKNOWN decisions.
+
+New B-0003 executions use `concise_knowledge_v1`: one research attempt requesting
+`research_query_target` queries (default 3), with an API ceiling calculated as the target plus
+two bonus calls. Valid completed answers within that ceiling retain normal independent
+evidence/knowledge decisions and private `evidence`/`other` basis plus a supporting statement. This policy permits source-free directional answers
+and retained UNKNOWN context; the earlier evidence/recovery rules below describe historical
+policies. See [the current policy](five-answer-experiment.md#concise-evidenceknowledge-policy).
+
+Under this concise policy, Reviewer/Judge UNKNOWN may retain valid evidence indices explaining
+uncertainty with either `evidence` or `other` basis and a private supporting statement. This
+does not change the decision token: Reviewer UNKNOWN invokes the blind Judge, and Judge
+UNKNOWN returns only UNKNOWN to the Guesser. Missing fields, invalid indices, and actual
+required-role failures remain errors. Earlier policies still require empty UNKNOWN indices.
+
+A completed concise Oracle reply with explicit zero search usage may use its existing
+bounded invalid-output retry. Route, response-cache and budget faults remain fatal; absent
+telemetry is not zero usage. The retry retains the blind input, changes only the existing
+question ID, and shares the original search/request/time limits. Its own reply must pass the
+search guard; earlier discarded searches cannot substitute for it. Failure after that retry
+remains `web_search_not_used`, with both calls and costs retained privately.
+
+
+B-0003 is a separate five-answer experiment. It extends ASK tokens only, preserves blind review and exact-token disagreement routing, and cannot enter the standard leaderboard. See [Five-answer experiment](five-answer-experiment.md).
+
+New B-0003 definitions select the explicit `judge_stable_knowledge_v1` adjudication policy.
+The Reviewer remains evidence-only. The Judge may use labelled stable knowledge only when
+missing factual coverage would otherwise force UNKNOWN and the evidence is not materially
+contradictory. It must first use any supported directional answer, including qualified ones.
+An omitted policy retains the historical evidence-only five-answer behavior. Role-specific
+schemas, local validation, saved configuration, and publication validation preserve this
+distinction. This changes neither blind inputs nor routing, and only the final answer token
+returns to the Guesser.
+
 ## Purpose and current boundary
+
+Standalone commands default to the standard profile. The three-token schemas and knowledge
+fallback descriptions below describe that profile unless qualified behavior is stated.
+`B-0002` enables an experimental concise prompt profile with the same information boundaries
+and adjudication flow. See
+[Concise prompt experiment](concise-prompt-experiment.md) for selection, versioning, and limits.
 
 Deep20Bench evaluates how effectively an LLM identifies a hidden subject through adaptive
 yes/no questions. Each benchmark run binds one registered model and schedules it across selected
@@ -16,16 +74,26 @@ The Oracle emits one final result after that internal research workflow. Every f
 only when the Oracle and Reviewer disagree. Both quality-control roles use evidence first and may use
 their own high-confidence knowledge only for stable closed facts, with an explicit
 decision-basis label. The Reviewer applies this fallback conservatively because agreement
-bypasses the Judge. Neither quality-control role receives either earlier answer. Deep20Bench
-does not build or retain a factual knowledge base, reuse earlier answers, or send game history
-to any adjudication role.
+bypasses the Judge. Neither quality-control role receives either earlier answer or game history.
+New benchmark executions support [historical, same-game and same-execution ASK reuse](oracle-history-cache.md).
+A compatible cache hit returns a previously fully adjudicated token with original evidence and
+provenance in reports, without a new adjudicator call. Standalone commands use fresh calls.
+
+New direct benchmarks discover completed games from other executions once per subject under
+`per_subject_history_v1`. The benchmark root saves each inventory before reuse and restores it
+on resume. Explicit cutoffs and older manifests retain frozen discovery. Only verified,
+fully adjudicated ASK answers qualify; the Guesser still receives only the final answer token.
+The [cache contract](oracle-history-cache.md#process-and-snapshot-behavior) defines persistence,
+concurrency, and comparison behavior. Provider requests and prompt-cache namespaces are unchanged.
 
 ```mermaid
 flowchart LR
     Catalogs["Model + benchmark + subject catalogs"] --> Benchmark["Benchmark control plane"]
     Benchmark --> Engine["One-game engine"]
     Guesser["Stateful visible Guesser transcript"] --> Engine
-    Engine --> Oracle["Primary live-web research"]
+    Engine --> Cache{"Compatible benchmark ASK cache hit?"}
+    Cache -->|"no or disabled"| Oracle["Primary live-web research"]
+    Cache -->|"yes: original adjudicated token"| Final["Final factual token"]
     Oracle --> Recovery{"Retryable retrieval UNKNOWN?"}
     Recovery -->|"yes"| RecoveryOracle["Blind diversified recovery research"]
     RecoveryOracle --> OracleResult["One final Oracle result"]
@@ -64,6 +132,12 @@ A `Subject` is trusted benchmark configuration:
 The entity type is shown to the Guesser as its broad category. The canonical name, aliases,
 description, and reference URL remain hidden; the description only disambiguates identity for
 the Oracle, Reviewer, Judge, and Guess Validator.
+
+Catalog entries additionally carry `status: active | inactive`, defaulting to `active`.
+This is scheduling metadata, not part of `Subject`. The catalog projects each entry to a
+plain `Subject` before any component call. Status is excluded from the subject identity hash,
+prompts, sessions, and caches; changing an identity field still changes that hash. The signed
+benchmark definition and request record the actual selected subject IDs.
 
 ### Oracle request
 
@@ -141,8 +215,13 @@ support strict JSON Schema enforcement. Both modes use the same model-visible in
 the same strict local action validation. JSON-object output receives no repair or response
 healing; any mismatch follows the normal scored `FORMAT_ERROR` path.
 
-The Guesser initially receives the trusted entity type as a broad category. Its later
-conversation contains only its canonically serialized valid actions and the corresponding
+The Guesser initially receives the trusted entity type as a broad category. All Guesser
+profiles include the same fixed category guide from `deep20_game.prompt.GUESSER_CATEGORY_GUIDE`.
+It explains person, fictional character, mythological figure, video-game character, and the
+broad scope of thing, including nature, living organisms, body parts, objects, phenomena, and
+concepts. The guide is identical for all subjects and includes no catalog identities, active
+status, or selected-subject examples. Only `BEGIN.category` selects the category for the game.
+Its later conversation contains only its canonically serialized valid actions and the corresponding
 `YES`, `NO`, or `UNKNOWN` values, plus the one fixed `FORMAT_ERROR` event immediately after
 its own invalid structured output. The raw output and validation details are never appended.
 The correction consumes one counted turn and does not reveal whether the attempted content was
@@ -154,15 +233,27 @@ metrics, and clean schema break are specified in
 
 Every `GUESS` is adjudicated by a separately configured, exact-route LLM without web search.
 The validator sees the trusted subject snapshot and proposed identity as untrusted JSON.
-`YES` means the same identity beyond reasonable doubt, `NO` means a different identity, and
-`UNKNOWN` means the proposal is too ambiguous or conflicting. Validator explanations remain
-audit-only.
+For a particular entity, `YES` requires the same identity beyond reasonable doubt. For a
+general kind, it also accepts a recognized subtype or design variant that preserves the
+defining kind/function and satisfies the subject's explicit restrictions. Extra shape,
+material, size, or design does not invalidate a match when the target leaves it unspecified.
+Broader classes, related objects, part/whole substitutions, and incompatible subtypes receive
+`NO`. `UNKNOWN` is reserved for unresolved, ambiguous, incomplete, or conflicting identity;
+accepted extra specificity alone is not ambiguity. The name and description are judged
+together. Validator explanations remain audit-only.
+
+This policy is `strict-guess-validator-v2-generic-kinds`. It changes only identity acceptance,
+not the Guesser input, ASK review path, or terminal/counting rules. A real Validator `UNKNOWN`
+still ends unsuccessfully; it is never converted automatically to `YES`. New evaluations use
+fresh execution IDs and record the Validator version. Preserve historical decisions and
+distinguish versions in comparisons. See the acceptance examples in
+[Game usage](../source/execution/game/Usage.md#identity-acceptance).
 
 ## Oracle execution
 
-For every question, the Oracle:
+For every fresh question request, the Oracle:
 
-1. Classifies the current question into a deterministic research family.
+1. Accepts the current question without application keyword classification.
 2. Renders a fixed versioned primary research policy as a system message.
 3. Encodes the subject and question separately as untrusted JSON data.
 4. Makes one Oracle provider request with web search and strict JSON-schema output.
@@ -172,9 +263,9 @@ For every question, the Oracle:
    with the same subject and question under a fixed diversified-search prompt. The recovery
    call receives no prior answer, evidence, query, result, trace, or history and uses a separate
    session and prompt-cache namespace.
-7. Treats ambiguity and unprovable open-world absence as genuine `UNKNOWN`. Two exhausted
-   retrieval attempts for a deterministically closed fact fail the Oracle operation as
-   infrastructure; other exhausted research remains a classified final `UNKNOWN`.
+7. Returns `UNKNOWN` when valid research remains inconclusive, including after the recovery
+   attempt. Question wording never converts missing evidence into an infrastructure failure.
+   Provider, schema, required-search, routing, and persistence failures remain exceptions.
 8. Returns a final Oracle `UNKNOWN` directly; otherwise, sends only the trusted subject, original
    question, and numbered evidence excerpts to a separately configured no-web Reviewer.
 9. Returns an Oracle–Reviewer agreement directly; otherwise, sends the same blind factual
@@ -187,6 +278,14 @@ For every question, the Oracle:
 The Oracle library does not choose paths, inspect run directories, configure handlers, or emit
 routine result lines. A standalone command or the benchmark composition root supplies those
 policies.
+
+The retired research keyword classifier no longer runs. New research audits retain
+`question_class: other` for artifact compatibility; historical labels remain readable.
+The separate comparison/negation question-shape labels are reporting-only and never control
+requests, recovery, answers, or scoring. The factual contract version
+`oracle-factual-answer-v2-inconclusive-unknown` separates the changed service behavior in
+benchmark definition hashes, standalone manifests, and historical ASK-cache eligibility.
+Use fresh execution IDs; historical results are not reclassified.
 
 The OpenRouter adapter does not enable `provider.require_parameters`: the live web-search server
 tool is implemented at OpenRouter's routing layer, and that endpoint-level filter rejects the
@@ -205,9 +304,12 @@ The episode result applies the same safe provider aggregation to Guesser and Gue
 calls, so post-run reporting can identify the concrete backend used by every LLM role without
 changing any model-visible request or message history.
 
-There is no answer cache, response cache, persisted knowledge state, or answer-correction
-prompt. The one research-recovery prompt changes evidence-acquisition strategy only; it is a
-new independent request, not an exact replay and not an adjudication retry.
+The Oracle service has no answer cache or answer-correction prompt. Benchmark-owned
+`historical_ask_v1`, `same_execution_ask_v1`, and engine-local `same_episode_ask_v1` lookups
+happen before calling it.
+Provider response caching remains prohibited. The one research-recovery prompt changes
+evidence-acquisition strategy only; it is a new independent request, not an exact replay
+and not an adjudication retry.
 The OpenRouter adapters share a typed recovery policy for transport failures and explicit
 408/429/500/502/503/504/524/529 responses, including transient provider errors embedded in an
 HTTP-200 SDK failure. They honor `Retry-After`, retry empty/incomplete responses
@@ -216,7 +318,28 @@ also retries an output-limited (`length`) response once; the game adapter fails 
 because an identical replay would deterministically exhaust the same output budget. Oracle,
 Reviewer, Judge, and Guess Validator services may retry invalid structured output under their
 pinned recovery policies.
-The Guesser never does: its completed invalid output becomes a scored contract-violation turn
+Oracle and Reviewer generations append a short random `question_id` in a separate final
+metadata message. The fixed instruction says to ignore it when answering. A format retry
+refreshes only this ID in the messages; the failed output, validation details, and prior decisions stay absent.
+For bounded research, the retry also reduces both provider search-limit fields by the searches
+already used. Trace merging permits exactly this remaining allowance, preserves all other
+request fields, and accounts for both attempts. An empty or incomplete bounded research response
+(including `content_filter` or `length`) can also receive the configured no-result retry when
+the intended model/provider and explicit search usage are known and allowance remains. This
+retry preserves every message, including the question ID, and reduces both API search caps.
+Missing usage is not treated as zero; an unknown transport outcome is not replayed with a fresh
+search budget. Explicit rate-limit rejections remain retryable. No-result and format retries
+share the same total search allowance, request limit, and deadline. Partial outputs remain
+private audit data and never enter later requests. Exhausted recovery remains an infrastructure
+failure; it does not produce an unchecked answer or a synthetic `UNKNOWN`.
+The ID is independent of subject, role, execution, and attempt number and never reaches the
+Guesser or another role. It changes input content, not the provider's sampling seed, and does
+not guarantee a different answer. Judge and Guess Validator format retries keep exact requests.
+The `question-id-v1` metadata policy is included in the `oracle-factual-answer-v4-bounded-format-retry`
+contract hash; older executions
+and ASK-cache contracts cannot be mixed with it. Logical prompt hashes retain the factual input
+without random metadata; privileged provider traces retain the actual request including its ID.
+The Guesser never retries completed invalid output internally: it becomes a scored contract-violation turn
 and, before the limit, the next call sees only the fixed `FORMAT_ERROR`. Every transport replay
 keeps the exact model, provider, request, session, cache key, schema, and seed unchanged; failed
 output is not added to later messages. Provider-side prompt-prefix caching may reuse
@@ -230,6 +353,17 @@ The retry budget is context-local and spans only one logical call. Independent c
 separate CLI processes never consume one another's attempt or elapsed-time allowance. Parallel
 benchmark CLIs use distinct immutable execution IDs so their artifact trees also remain
 independent.
+
+An explicitly authorized experimental repair may record an Oracle contract revision after
+a fix. It preserves the original signed manifest and scored trials, records old/new contract
+hashes in a signed resume event, clears historical answer sources, and retains failed-attempt
+costs. Revision metadata is control-plane data, never model input. Subsequent calls retain
+normal blind projections. The final mixed-contract result is not automatically publication
+eligible and cannot seed historical answer reuse. A separate user-authorized publication
+decision may accept an explicitly pinned recorded revision, as edition 1.1 does for the
+8 September 2026 results. This reporting decision does not change execution eligibility or
+answer-cache compatibility. Official executions and default repairs reject changed
+contracts; model/configuration/schedule changes still require a new execution ID.
 
 ## Evidence and truth model
 
@@ -293,9 +427,13 @@ before application logic uses it.
 
 Scheduling is deterministic. The request requires one registered Guesser ID and an explicit
 benchmark mode, either `official` or `experimental`; no mode is inferred. An omitted target list
-selects all registered subjects in subject-catalog order, and an explicit list preserves request
-order. Each subject runs three iterations by default, or the request's typed override, with
-trials numbered numerically. Infrastructure failures are recorded and scheduling continues.
+selects all active subjects in subject-catalog order for a new execution. An explicit list
+preserves request order and rejects inactive subjects for new executions. Resume and repair
+use the recorded subject selection when targets are omitted, including subjects later marked
+inactive. All other immutable-context checks still apply. Each subject runs three iterations
+by default, or the request's typed override, with
+trials numbered numerically. B-0002 retains its explicit five-repeat diagnostic default.
+Infrastructure failures are recorded and scheduling continues.
 Resume first validates the immutable execution context, skips terminal trials, and records a
 previously started nonterminal trial as interrupted rather than silently replacing it.
 
@@ -360,14 +498,26 @@ Aggregate publication precision is metric-aware: four decimal places for rates, 
 and two for count/token/time statistics, with redundant trailing zeroes removed. Provider
 telemetry, trial accounting, and intermediate `Decimal` calculations remain unrounded.
 
-A saved execution can be inspected, but a new live execution may differ because models, search
-indexes, and web pages can change. There is no application response or adjudication cache.
+A saved execution can be inspected, but fresh calls may differ because models, search indexes,
+and web pages can change. New benchmarks support the explicitly versioned
+[historical ASK cache](oracle-history-cache.md). The benchmark root owns its read-only source
+inventory and lazy subject loading. Under `same_episode_ask_v1`, the engine also stores live
+ASK results in private memory for repeats within one game; each repeat still counts as a
+question. The benchmark additionally retains eligible live answers after atomically persisting
+each scoring-eligible completed trial under `same_execution_ask_v1`. Later games reuse that
+shared subject map, which is restored from verified trial artifacts on resume. Active Oracle
+contract revisions exclude earlier-contract games; old manifests preserve their original scope.
+The engine-local map and each Guesser conversation reset for every game. Only final tokens cross into Guesser history; source
+provenance and original evidence remain in typed result/audit projections. Reuse is counted
+separately and incurs no new adjudicator calls or billing.
 
 ## Console observability
 
 The benchmark command configures handlers and component levels. At `INFO`, it emits:
 
 - One run context line containing the immutable benchmark and model context.
+- Cache inventory/subject loading lines, followed by counts and elapsed milliseconds.
+  Reused turn lines identify the original execution, trial, turn and answer time.
 - One `benchmark.trial_context` line before every executed trial, preceded by an empty visual
   separator and containing only the trial ID, target ID, and canonical subject name.
 - One condensed `benchmark.turn` line combining the answer, Guesser and adjudicator metrics,
@@ -400,9 +550,10 @@ events, so it does not affect prompt-prefix caching or introduce application res
 Normal protocol states are not treated as exceptions. A genuine Oracle `UNKNOWN`, Reviewer `UNKNOWN`,
 Judge `UNKNOWN`, Validator `NO` or `UNKNOWN`, an exhausted question limit, and a valid but
 unsuccessful game remain typed outcomes.
-A second retrieval failure for a deterministically closed factual question is an Oracle
-infrastructure failure with code `oracle_research_exhausted`; it is not returned to the Guesser
-as an epistemic `UNKNOWN`.
+Valid Oracle research that remains inconclusive after recovery returns the final `UNKNOWN`
+token, consumes the ordinary ASK turn, and leaves the game scoring-eligible. Missing evidence
+alone is not an infrastructure failure. Historical `oracle_research_exhausted` failures retain
+their recorded outcomes; new calls do not emit that code.
 A Guesser response that violates the structured-action schema - or a Guesser provider call
 that ends without a completed structured action (`length` finish, empty output, or another
 non-`stop` finish) - becomes a typed contract-violation turn attributed to the model under
@@ -444,10 +595,16 @@ instructions.
 
 ## Game execution
 
-The engine allows at most 50 counted questions. An ordinary `ASK`, validator `NO`, or
+The default game policy allows at most 40 counted questions. An ordinary `ASK`, validator `NO`, or
 pre-limit validator `UNKNOWN` consumes the budget; a correct guess does not. Validator
-`UNKNOWN` terminates unsuccessfully. After 50 counted questions, the Guesser receives one
+`UNKNOWN` terminates unsuccessfully. After 40 counted questions, the Guesser receives one
 additional guess-only call; an `ASK`, `NO`, or `UNKNOWN` ends unsuccessfully.
+
+The standalone default and B-0001/B-0002/B-0003 templates use this limit for new games.
+Historical runs retain their explicit 50-question policy. The limit already participates in
+the benchmark definition hash, rendered Guesser instructions, and Guesser prompt-cache key;
+this configuration change does not change the version-9 wire or artifact schema. Changed
+definitions require fresh execution IDs, and publication compares only matching question limits.
 
 Malformed or incomplete Guesser output before the limit consumes a counted turn and continues
 after a fixed, semantically neutral format correction, bounded by the policy's consecutive
@@ -487,8 +644,10 @@ transcript and supplies one stable `session_id` per episode for sticky routing. 
 configuration/prompt cache key and byte-stable appended messages maximize provider prompt
 cache reuse without adding conversational state.
 
-OpenRouter response caching and application answer caching are prohibited. Official Guesser
-configurations require a measured compatible cache probe. Runtime cache misses after an
+OpenRouter response caching and reuse of Guesser or Validator responses are prohibited.
+Benchmark-only ASK reuse follows the explicit policies above and never exposes source
+metadata to the Guesser. Official Guesser configurations require a measured compatible cache
+probe. Runtime cache misses after an
 eligible prefix are reporting-only and do not change gameplay, scoring, or publication
 eligibility.
 

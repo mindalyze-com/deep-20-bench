@@ -10,7 +10,7 @@ import typer
 from .artifacts import RunArtifactPolicy
 from .audit import RunAuditWriter
 from .catalog import load_subject_catalog
-from .config import OracleConfig, load_oracle_config
+from .config import OracleConfig, ParallelSearchMode, load_oracle_config
 from .console import configure_console_logging
 from .credentials import CredentialLoadError, load_openrouter_api_key
 from .diagnostics import diagnose_exception
@@ -105,6 +105,8 @@ def ask(
         }.items()
         if value is not None
     }
+    if parallel_search is False:
+        overrides["parallel_search_mode"] = ParallelSearchMode.BASIC
     config = OracleConfig.model_validate({**base_config.model_dump(mode="python"), **overrides})
     catalog = load_subject_catalog(catalog_file)
     try:

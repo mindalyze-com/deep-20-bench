@@ -11,15 +11,10 @@ from typing import Any, TextIO
 
 import yaml
 from deep20_oracle.artifacts import RESULT_ARTIFACT, RunArtifactPolicy
+from deep20_oracle.cache_contract import oracle_contract_hash
 from deep20_oracle.config import OracleConfig
-from deep20_oracle.models import PersistedRecord
-from deep20_oracle.prompt import (
-    JUDGE_PROMPT_VERSION,
-    REVIEWER_PROMPT_VERSION,
-)
-from deep20_oracle.prompt import (
-    PROMPT_VERSION as ORACLE_PROMPT_VERSION,
-)
+from deep20_oracle.models import OracleResearchStrategy, OracleRole, PersistedRecord
+from deep20_oracle.prompt import evidence_review_prompt_version, research_prompt_version
 from deep20_oracle.util import canonical_json, sha256_text, timestamp
 
 from .config import BenchmarkMode, CachePolicy, GamePolicy, ModelConfig
@@ -34,7 +29,7 @@ from .models import (
     ValidatorFailureRecord,
     ValidatorSuccessRecord,
 )
-from .prompt import GUESSER_PROMPT_VERSION, VALIDATOR_PROMPT_VERSION
+from .prompt import VALIDATOR_PROMPT_VERSION, guesser_prompt_version
 
 GAME_ARTIFACTS = (
     "oracle-calls.jsonl",
@@ -360,6 +355,7 @@ class GameRunAuditWriter:
             ),
             "oracle_config": oracle_snapshot,
             "oracle_config_hash": oracle_hash,
+            "oracle_contract_hash": context["oracle_contract_hash"],
             "subject_catalog_hash": self.subject_catalog_hash,
             "game_context": context,
             "game_context_hash": context_hash,
@@ -380,11 +376,21 @@ class GameRunAuditWriter:
                 self.guesser_config.configuration_id: self.guesser_config.model_dump(mode="json")
             },
             "guess_validator_config": self.validator_config.model_dump(mode="json"),
+            "oracle_contract_hash": oracle_contract_hash(self.oracle_config),
             "prompt_versions": {
-                "guesser": GUESSER_PROMPT_VERSION,
-                "oracle": ORACLE_PROMPT_VERSION,
-                "oracle_reviewer": REVIEWER_PROMPT_VERSION,
-                "oracle_judge": JUDGE_PROMPT_VERSION,
+                "guesser": guesser_prompt_version(self.game_policy.prompt_profile),
+                "oracle": research_prompt_version(
+                    OracleResearchStrategy.PRIMARY, self.oracle_config.prompt_profile,
+                    policy=self.oracle_config.adjudication_policy,
+                ),
+                "oracle_reviewer": evidence_review_prompt_version(
+                    OracleRole.REVIEWER, self.oracle_config.prompt_profile,
+                    policy=self.oracle_config.adjudication_policy,
+                ),
+                "oracle_judge": evidence_review_prompt_version(
+                    OracleRole.JUDGE, self.oracle_config.prompt_profile,
+                    policy=self.oracle_config.adjudication_policy,
+                ),
                 "guess_validator": VALIDATOR_PROMPT_VERSION,
             },
             "cache_probe": self.cache_probe_summary,

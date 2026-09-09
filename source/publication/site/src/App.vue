@@ -2,7 +2,9 @@
 import { nextTick, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { selectedEditionId } from "@/lib/api";
 import DrilldownBar from "@/components/DrilldownBar.vue";
+import EditionWarning from "@/components/EditionWarning.vue";
 import SiteFooter from "@/components/SiteFooter.vue";
 import SiteHeader from "@/components/SiteHeader.vue";
 import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
@@ -167,7 +169,7 @@ onMounted(() => {
       Skip to content
     </a>
     <WorkspaceProgress class="route-progress" :active="navigating" />
-    <SiteHeader />
+    <div class="app-navigation"><SiteHeader /><EditionWarning /></div>
     <DrilldownBar v-if="Number(route.meta.depth ?? 0) >= 2" />
     <main
       id="main"
@@ -178,7 +180,7 @@ onMounted(() => {
     >
       <RouterView v-slot="{ Component }">
         <KeepAlive :max="50">
-          <component :is="Component" />
+          <component :is="Component" :key="`${selectedEditionId}:${String(route.matched[0]?.path)}`" />
         </KeepAlive>
       </RouterView>
     </main>

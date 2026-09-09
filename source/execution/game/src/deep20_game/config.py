@@ -5,7 +5,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Literal
 
-from deep20_oracle.config import RecoveryPolicy
+from deep20_oracle.config import PromptProfile, RecoveryPolicy
 from deep20_oracle.util import load_yaml_unique
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -97,12 +97,25 @@ class GamePolicy(BaseModel):
 
     version: Literal[9] = 9
     benchmark_mode: BenchmarkMode = BenchmarkMode.EXPERIMENTAL
-    max_questions: int = Field(default=50, ge=1, le=100)
+    prompt_profile: PromptProfile = Field(
+        default=PromptProfile.STANDARD,
+        exclude_if=lambda value: value is PromptProfile.STANDARD,
+    )
+    max_questions: int = Field(default=40, ge=1, le=100)
     max_consecutive_contract_violations: int = Field(default=5, ge=1, le=100)
     reveal_entity_type: Literal[True] = True
     final_guess_after_limit: Literal[True] = True
     include_oracle_evidence: bool = True
     include_guesser_conversation: bool = True
+
+    @model_validator(mode="after")
+    def experimental_prompt_only(self) -> GamePolicy:
+        if (
+            self.prompt_profile is not PromptProfile.STANDARD
+            and self.benchmark_mode is BenchmarkMode.OFFICIAL
+        ):
+            raise ValueError("revised prompts require experimental benchmark mode")
+        return self
 
 
 def load_model_config(path: Path) -> ModelConfig:

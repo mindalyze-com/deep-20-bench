@@ -101,7 +101,7 @@ def play(
         catalog = load_subject_catalog(catalog_path or root / "config" / "subjects.yaml")
         subject = catalog.subject(target_id)
         probe = (
-            load_cache_probe(cache_probe_path, guesser_config)
+            load_cache_probe(cache_probe_path, guesser_config, policy.prompt_profile)
             if cache_probe_path is not None
             else None
         )

@@ -22,6 +22,7 @@ from .integrity import (
     parse_yaml_object,
     sha256_text,
 )
+from .legacy import legacy_dataset, legacy_dataset_schema_json
 from .loader import (
     parse_completed_episode,
     parse_diagnostic_error_outputs,
@@ -39,7 +40,9 @@ from .models import (
     LoadedEpisode,
     LoadedRun,
     PublicationAppBuildDocument,
+    PublicationConfig,
     PublicationDataBundle,
+    PublicationEditionsDocument,
     PublicationManifestDocument,
     PublicRejectedOutput,
     PublishedDataset,
@@ -52,7 +55,7 @@ from .serialize import (
     leaderboard_csv,
     publication_document_json,
 )
-from .split import split_publication
+from .split import edition_index, split_publication
 
 app = typer.Typer(help="Compile and render the independent Deep20Bench publication site.")
 
@@ -262,7 +265,7 @@ def _load_episode_details(
                     if not isinstance(turn, EpisodeActionTurn)
                 }
                 actual = {(record.turn_number, record.violation_kind) for record in disclosures}
-                if actual != expected:
+                if not actual.issubset(expected):
                     raise PublicationInputError(
                         f"{relative} Guesser violation disclosures do not match "
                         "its recorded contract violations"
@@ -411,94 +414,65 @@ def _write_public_data(
     public_directory: Path,
     dataset: PublishedDataset,
     app_build: PublicationAppBuildDocument,
+    *,
+    datasets: tuple[PublishedDataset, ...] | None = None,
+    editions: PublicationEditionsDocument | None = None,
 ) -> None:
     public_directory.mkdir(parents=True, exist_ok=True)
     data_directory = public_directory / "data"
-    bundle = split_publication(dataset)
-    staged_directory = Path(tempfile.mkdtemp(prefix=".deep20-data-", dir=public_directory))
-    backup_directory = public_directory / ".deep20-data-previous"
-    try:
-        # External indexes may retain this exact v9 URL. If a newer schema becomes primary,
-        # keep emitting an updated v9-compatible projection instead of freezing or removing it.
-        (staged_directory / "deep20bench-v9.json").write_text(
-            dataset_json(dataset),
-            encoding="utf-8",
-        )
-        (staged_directory / "deep20bench-v9.schema.json").write_text(
-            dataset_schema_json(),
-            encoding="utf-8",
-        )
-        (staged_directory / "leaderboard.csv").write_text(
-            leaderboard_csv(dataset),
-            encoding="utf-8",
-        )
-        (staged_directory / "manifest.json").write_text(
-            publication_document_json(bundle.manifest),
-            encoding="utf-8",
-        )
-        (staged_directory / "app-build.json").write_text(
-            publication_document_json(app_build),
-            encoding="utf-8",
-        )
-        (staged_directory / "leaderboard.json").write_text(
-            publication_document_json(bundle.leaderboard),
-            encoding="utf-8",
-        )
-        (staged_directory / "repeat-averages.json").write_text(
-            publication_document_json(bundle.repeat_averages),
-            encoding="utf-8",
-        )
-        for run_document in bundle.runs:
-            path = staged_directory / "runs" / f"{run_document.run.execution_id}.json"
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(
-                publication_document_json(run_document),
-                encoding="utf-8",
-            )
-        for subject_document in bundle.subjects:
-            path = (
-                staged_directory
-                / "runs"
-                / subject_document.execution_id
-                / "subjects"
-                / f"{subject_document.target_id}.json"
-            )
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(
-                publication_document_json(subject_document),
-                encoding="utf-8",
-            )
-        for episode_document in bundle.episodes:
-            path = (
-                staged_directory
-                / "runs"
-                / episode_document.execution_id
-                / "subjects"
-                / episode_document.target_id
-                / "episodes"
-                / f"{episode_document.trial_id}.json"
-            )
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(
-                publication_document_json(episode_document),
-                encoding="utf-8",
-            )
+    datasets = datasets or (dataset,)
+    staged = Path(tempfile.mkdtemp(prefix=".deep20-data-", dir=public_directory))
+    backup = public_directory / ".deep20-data-previous"
 
-        if backup_directory.exists():
-            shutil.rmtree(backup_directory)
+    def write(path: str, content: str) -> None:
+        destination = staged / path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(content, encoding="utf-8")
+
+    try:
+        historical = next(item for item in datasets if item.active_cohort.edition_id == "1.0")
+        write("deep20bench-v9.json", legacy_dataset(historical).model_dump_json(indent=2) + "\n")
+        write("deep20bench-v9.schema.json", legacy_dataset_schema_json())
+        # Unversioned data URLs retain the historical dataset's comparison meaning.
+        write("leaderboard.csv", leaderboard_csv(historical))
+        write("app-build.json", publication_document_json(app_build))
+        if editions is not None:
+            write("editions.json", publication_document_json(editions))
+        for item in datasets:
+            bundle = split_publication(item)
+            prefix = f"editions/{item.active_cohort.edition_id}/"
+            write(prefix + "deep20bench-v10.json", dataset_json(item))
+            write(prefix + "deep20bench-v10.schema.json", dataset_schema_json())
+            write(prefix + "leaderboard.csv", leaderboard_csv(item))
+            for filename, document in (("manifest.json", bundle.manifest),
+                                       ("leaderboard.json", bundle.leaderboard),
+                                       ("repeat-averages.json", bundle.repeat_averages)):
+                write(prefix + filename, publication_document_json(document))
+                if item.active_cohort.edition_id == "1.0":
+                    write(filename, publication_document_json(document))
+            for run in bundle.runs:
+                write(f"runs/{run.run.execution_id}.json", publication_document_json(run))
+            for subject in bundle.subjects:
+                write(f"runs/{subject.execution_id}/subjects/{subject.target_id}.json",
+                      publication_document_json(subject))
+            for episode in bundle.episodes:
+                write(f"runs/{episode.execution_id}/subjects/{episode.target_id}/episodes/"
+                      f"{episode.trial_id}.json", publication_document_json(episode))
+        if backup.exists():
+            shutil.rmtree(backup)
         if data_directory.exists():
-            data_directory.rename(backup_directory)
+            data_directory.rename(backup)
         try:
-            staged_directory.rename(data_directory)
+            staged.rename(data_directory)
         except BaseException:
-            if backup_directory.exists() and not data_directory.exists():
-                backup_directory.rename(data_directory)
+            if backup.exists() and not data_directory.exists():
+                backup.rename(data_directory)
             raise
-        if backup_directory.exists():
-            shutil.rmtree(backup_directory)
+        if backup.exists():
+            shutil.rmtree(backup)
     finally:
-        if staged_directory.exists():
-            shutil.rmtree(staged_directory)
+        if staged.exists():
+            shutil.rmtree(staged)
 
 
 def _decimal_text(value: Decimal) -> str:
@@ -541,16 +515,10 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
         )
         for page in _EDITORIAL_PAGES
     )
+    editorial_by_route = {entry.route: entry for entry in editorial}
     aliases = tuple(
-        StaticRouteEntry(
-            route=route,
-            kind="alias",
-            indexable=True,
-            sitemap_included=False,
-            canonical_route=canonical_route,
-            browser_title="About · Deep20Bench",
-            description="Read how Deep20Bench began, see project news, and review related research.",
-            last_modified=last_modified,
+        editorial_by_route[canonical_route].model_copy(
+            update={"route": route, "kind": "alias", "sitemap_included": False},
         )
         for route, canonical_route in _EDITORIAL_ALIASES.items()
     )
@@ -662,6 +630,43 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
     )
 
 
+def _edition_route_manifest(
+    config: PublicationConfig, datasets: tuple[PublishedDataset, ...],
+) -> StaticRouteManifest:
+    entries: list[StaticRouteEntry] = []
+    for dataset in datasets:
+        cohort = dataset.active_cohort
+        prefix = f"editions/{cohort.edition_id}"
+        for entry in _static_route_manifest(split_publication(dataset)).routes:
+            if entry.route in {"about", "story"}:
+                if cohort.edition_id == config.default_edition_id:
+                    entries.append(entry.model_copy(update={"edition_id": cohort.edition_id}))
+                if entry.route == "about":
+                    entries.append(entry.model_copy(update={
+                        "route": f"{prefix}/about",
+                        "canonical_route": "about",
+                        "sitemap_included": False,
+                        "edition_id": cohort.edition_id,
+                    }))
+                continue
+            scoped = entry.kind not in {"run", "subject", "episode"}
+            route = (prefix + (f"/{entry.route}" if entry.route else "")) if scoped else entry.route
+            canonical = route
+            updated = entry.model_copy(update={
+                "route": route,
+                "canonical_route": canonical,
+                "edition_id": cohort.edition_id,
+                "browser_title": f"{entry.browser_title} - Edition {cohort.edition_label}",
+                "description": f"Edition {cohort.edition_label}. {entry.description}",
+            })
+            entries.append(updated)
+            if scoped and cohort.edition_id == config.default_edition_id:
+                entries.append(updated.model_copy(update={
+                    "route": entry.route, "sitemap_included": False,
+                }))
+    return StaticRouteManifest(routes=tuple(entries))
+
+
 def _build_site(
     site_root: Path,
     public_root: Path,
@@ -715,14 +720,27 @@ def build(
         )
         runs = _discover_runs(root, violation_snapshot)
         built_at = _publication_build_time(root, check=check)
-        dataset = compile_publication(
-            runs=runs,
-            config=config,
-            subject_catalog=subjects,
-            subject_catalog_hash=subject_hash,
-            built_at=built_at,
+        datasets = tuple(
+            compile_publication(
+                runs=runs, config=config, cohort=cohort, subject_catalog=subjects,
+                subject_catalog_hash=subject_hash, built_at=built_at,
+            ) for cohort in config.cohorts
         )
-        bundle = split_publication(dataset)
+        dataset = next(item for item in datasets
+                       if item.active_cohort.edition_id == config.default_edition_id)
+        editions = edition_index(config, datasets)
+        selected_ids = {run.execution_id for item in datasets for run in item.official_runs}
+        for run in runs:
+            if run.summary.execution_id not in selected_ids:
+                continue
+            for episode in run.episodes:
+                expected = {turn.turn_number for turn in episode.result.turns
+                            if not isinstance(turn, EpisodeActionTurn)}
+                actual = {record.turn_number for record in episode.violation_disclosures}
+                if actual != expected:
+                    raise PublicationInputError(
+                        "selected runs require capture-guesser-outputs before publication"
+                    )
         _ensure_site_dependencies(site_root)
         app_build = _application_build_document(root, check=check)
         with tempfile.TemporaryDirectory(prefix="deep20-publication-") as temporary:
@@ -733,11 +751,11 @@ def build(
                 public_root,
                 ignore=shutil.ignore_patterns("data"),
             )
-            _write_public_data(public_root, dataset, app_build)
+            _write_public_data(public_root, dataset, app_build, datasets=datasets, editions=editions)
             candidate = staging_root / "docs"
             route_manifest_path = public_root / "data" / "routes.json"
             route_manifest_path.write_text(
-                _static_route_manifest(bundle).model_dump_json(indent=2) + "\n",
+                _edition_route_manifest(config, datasets).model_dump_json(indent=2) + "\n",
                 encoding="utf-8",
             )
             _build_site(
@@ -767,7 +785,7 @@ def build(
                     raise
         typer.echo(
             f"{_timestamp()} INFO publication.result runs={len(runs)} "
-            f"official={dataset.provenance.official_run_count} "
+            f"official={sum(item.provenance.official_run_count for item in datasets)} "
             f"lab={dataset.provenance.lab_run_count} output=docs"
         )
     except (OSError, PublicationInputError, subprocess.CalledProcessError, ValueError) as error:

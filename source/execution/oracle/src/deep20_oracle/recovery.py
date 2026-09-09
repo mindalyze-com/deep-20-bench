@@ -17,6 +17,10 @@ from .models import (
     RecoveryTotals,
 )
 from .provider_output import error_outputs_from_trace
+from .request_variation import (
+    requests_differ_only_in_question_id,
+    requests_match_bounded_research_retry,
+)
 
 _ACTIVE_RECOVERY_BUDGET: ContextVar[LogicalRecoveryBudget | None]
 
@@ -199,9 +203,19 @@ def merge_provider_traces(
     recovered: bool,
     exhausted: bool = False,
 ) -> ProviderTrace:
-    """Merge exact structured-output attempts and preserve failed completions for diagnosis."""
+    """Merge format attempts with only authorized metadata and search-allowance changes."""
 
-    if prior.request != current.request:
+    question_id_variation = reason in {
+        RecoveryReason.INVALID_ORACLE_OUTPUT,
+        RecoveryReason.INVALID_REVIEWER_OUTPUT,
+    } and requests_differ_only_in_question_id(prior.request, current.request)
+    bounded_search_retry = (
+        reason is RecoveryReason.INVALID_ORACLE_OUTPUT
+        and requests_match_bounded_research_retry(
+            prior.request, current.request, searches_used=prior.usage.search_count,
+        )
+    )
+    if prior.request != current.request and not (question_id_variation or bounded_search_retry):
         raise ValueError("recovery changed the provider request")
     reasons = [
         *expand_recovery_reasons(prior.recovery),

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from decimal import Decimal
 from pathlib import Path
 
@@ -22,6 +23,7 @@ from deep20_game.models import (
     parse_guesser_action_output,
 )
 from deep20_game.prompt import (
+    GUESSER_CATEGORY_GUIDE,
     GUESSER_PROMPT_VERSION,
     append_visible_action,
     append_visible_format_error,
@@ -29,7 +31,15 @@ from deep20_game.prompt import (
     format_error_message,
     guesser_system_prompt,
     initial_guesser_messages,
+    validator_messages,
 )
+from deep20_oracle.catalog import (
+    SubjectCatalog,
+    SubjectCatalogEntry,
+    SubjectStatus,
+    load_subject_catalog,
+)
+from deep20_oracle.config import PromptProfile
 from pydantic import ValidationError
 
 
@@ -68,6 +78,32 @@ def test_game_contract_rejects_retired_versions() -> None:
         GamePolicy(version=8)
     with pytest.raises(ValidationError, match="Input should be 2"):
         GuesserSuccessRecord.model_validate({"schema_version": 1})
+
+
+@pytest.mark.parametrize("profile", list(PromptProfile))
+def test_catalog_status_does_not_change_guesser_or_validator_messages(profile: PromptProfile) -> None:
+    entry = SubjectCatalogEntry(
+        target_id="T-0001",
+        canonical_name="PRIVATE_NAME",
+        aliases=("PRIVATE_ALIAS",),
+        entity_type="thing",
+        description="PRIVATE_DESCRIPTION",
+    )
+    active = SubjectCatalog(subjects={entry.target_id: entry}).subject(entry.target_id)
+    inactive_entry = entry.model_copy(update={"status": SubjectStatus.INACTIVE})
+    inactive = SubjectCatalog(subjects={entry.target_id: inactive_entry}).subject(entry.target_id)
+    messages = initial_guesser_messages(40, inactive.entity_type, "EAQCORIU", profile)
+    assert messages == initial_guesser_messages(40, active.entity_type, "EAQCORIU", profile)
+    assert json.loads(messages[1]["content"]) == {
+        "category": "thing", "event": "BEGIN", "variation_token": "EAQCORIU",
+    }
+    assert "PRIVATE_" not in json.dumps(messages)
+    guess = GuesserAction(
+        action="GUESS", question=None, name="An object", description="A candidate object.",
+    )
+    validation = validator_messages(inactive, guess)
+    assert validation == validator_messages(active, guess)
+    assert '"status"' not in json.dumps(validation)
 
 
 def test_action_output_schema_discriminates_inactive_null_fields() -> None:
@@ -211,13 +247,44 @@ def test_initial_messages_include_prompt_nonce_only_in_begin_event() -> None:
     }
 
 
+@pytest.mark.parametrize("profile", list(PromptProfile))
+def test_category_guide_is_fixed_for_every_registered_subject(profile: PromptProfile) -> None:
+    catalog = load_subject_catalog(Path(__file__).parents[4] / "config/subjects.yaml")
+    system_prompt = guesser_system_prompt(40, profile)
+    assert system_prompt.count(GUESSER_CATEGORY_GUIDE) == 1
+    for entry in catalog.subjects.values():
+        messages = initial_guesser_messages(40, entry.entity_type, "EAQCORIU", profile)
+        assert messages[0] == {"role": "system", "content": system_prompt}
+        assert json.loads(messages[1]["content"]) == {
+            "category": entry.entity_type, "event": "BEGIN", "variation_token": "EAQCORIU",
+        }
+        assert f"- {entry.entity_type}:" in system_prompt
+        for private_text in (entry.target_id, entry.canonical_name, *entry.aliases, entry.description):
+            assert private_text.casefold() not in system_prompt.casefold()
+    assert "EAQCORIU" not in system_prompt
+
+
+def test_thing_guidance_covers_nature_and_general_or_specific_targets() -> None:
+    guide = " ".join(GUESSER_CATEGORY_GUIDE.split())
+    assert "natural and human-made entities" in guide
+    assert "living or nonliving" in guide
+    assert "whole entities or parts of them" in guide
+    for area in (
+        "animals", "plants", "body parts", "natural structures", "geographical features",
+        "celestial bodies", "natural phenomena", "concepts",
+    ):
+        assert area in guide
+    assert "not exhaustive" in guide
+    assert "a general kind or one particular instance" in guide
+
+
 def test_guesser_prompt_uses_guess_for_named_identity_confirmation() -> None:
     prompt = guesser_system_prompt(50)
     normalized_prompt = " ".join(prompt.split())
 
     assert (
         GUESSER_PROMPT_VERSION
-        == "stateful-category-guesser-v10-unknown-evidence-guidance"
+        == "stateful-category-guesser-v14-category-guide"
     )
     assert "Never use ASK to confirm a named candidate" in normalized_prompt
     assert (
@@ -269,7 +336,8 @@ def test_repository_game_and_model_configurations_are_valid() -> None:
     root = Path(__file__).parents[4]
 
     game_policy = load_game_policy(root / "config/game.yaml")
-    assert game_policy.max_questions == 50
+    assert game_policy.max_questions == GamePolicy().max_questions == 40
+    assert GamePolicy.model_validate({"version": 9, "max_questions": 50}).max_questions == 50
     assert game_policy.include_oracle_evidence is True
     assert game_policy.include_guesser_conversation is True
     guesser = load_model_config(root / "config/guesser.yaml")
@@ -290,8 +358,11 @@ def test_repository_model_catalog_has_expected_active_ids() -> None:
         "M-0020",
         "M-0021",
         "M-0022",
+        "M-0023",
+        "M-0024",
         "M-0101",
         "M-0104",
+        "M-0026",
     )
 
 
@@ -700,6 +771,7 @@ def test_active_benchmark_model_routes_are_fully_pinned(
         "M-0021",
         "M-0101",
         "M-0104",
+        "M-0026",
     ],
 )
 def test_active_model_configuration_stays_out_of_guesser_visible_projection(
@@ -726,7 +798,8 @@ def test_active_model_configuration_stays_out_of_guesser_visible_projection(
         str(configuration.max_output_tokens),
         str(configuration.timeout_seconds),
     ):
-        assert private_control not in serialized_messages
+        # Match complete values: the provider "meta" is not the word "metadata".
+        assert re.search(rf"(?<!\w){re.escape(private_control)}(?!\w)", serialized_messages) is None
     assert "reasoning_effort" not in serialized_messages
     assert "reasoning_control" not in serialized_messages
     assert "structured_output_mode" not in serialized_messages

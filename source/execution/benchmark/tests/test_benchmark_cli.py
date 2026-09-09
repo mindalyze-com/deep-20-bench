@@ -6,8 +6,10 @@ from types import SimpleNamespace
 import pytest
 from deep20_benchmark import cli
 from deep20_benchmark.canary import LlmCanaryResult, StartupCanaryResult
+from deep20_benchmark.catalog import BenchmarkCatalog, load_benchmark_catalog
 from deep20_benchmark.cli import benchmark_app
 from deep20_benchmark.models import (
+    BenchmarkId,
     BenchmarkLlmRole,
     BenchmarkRequest,
     ExecutionStatus,
@@ -16,6 +18,27 @@ from deep20_benchmark.models import (
 from deep20_benchmark.runtime import LiveEpisodeExecutor
 from typer._click.utils import strip_ansi
 from typer.testing import CliRunner
+
+
+def _benchmark_catalog() -> BenchmarkCatalog:
+    return load_benchmark_catalog(Path(__file__).parents[4] / "config/benchmarks.yaml")
+
+
+def test_official_concise_profile_is_rejected_before_credentials_or_paid_calls(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(cli, "prevent_idle_system_sleep", nullcontext)
+    monkeypatch.setattr(
+        cli, "load_openrouter_api_key",
+        lambda _root: pytest.fail("experimental prompts must be rejected before credentials"),
+    )
+    result = CliRunner().invoke(
+        benchmark_app,
+        ["run", "B-0002", "--run-id", "BX-rejected-profile", "--model", "M-0022",
+         "--benchmark-mode", "official", "--no-canary"],
+    )
+    assert result.exit_code == 1
+    assert "revised prompts require experimental benchmark mode" in result.output
 
 
 def test_benchmark_mode_is_required_and_lists_every_choice() -> None:
@@ -80,7 +103,7 @@ def test_success_relies_on_concise_result_log_without_dumping_typed_result(
 
     monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
     monkeypatch.setattr(cli, "load_model_catalog", lambda _path: object())
-    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: _benchmark_catalog())
     monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
     monkeypatch.setattr(
@@ -124,7 +147,7 @@ def test_official_execution_with_no_canary_skips_route_probes(
 
     monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
     monkeypatch.setattr(cli, "load_model_catalog", lambda _path: object())
-    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: _benchmark_catalog())
     monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
     monkeypatch.setattr(
@@ -164,7 +187,7 @@ def test_official_execution_runs_paid_startup_canaries_by_default(
     command: str,
 ) -> None:
     selected_model = object()
-    selected_benchmark = object()
+    selected_benchmark = _benchmark_catalog().entry(BenchmarkId("B-0001"))
     canary_inputs: tuple[object, object, str, tuple[str, ...]] | None = None
 
     class FakeModels:
@@ -253,7 +276,7 @@ def test_completed_official_execution_skips_paid_canaries_and_keeps_runner_reque
 
     monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
     monkeypatch.setattr(cli, "load_model_catalog", lambda _path: object())
-    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: _benchmark_catalog())
     monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
     monkeypatch.setattr(cli, "ArtifactStore", lambda _root: FakeStore())
@@ -308,7 +331,7 @@ def test_repair_exits_nonzero_when_infrastructure_failures_remain(
 
     monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
     monkeypatch.setattr(cli, "load_model_catalog", lambda _path: object())
-    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: _benchmark_catalog())
     monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
     monkeypatch.setattr(
@@ -364,7 +387,7 @@ def test_repair_records_judge_provider_exclusion(
 
     monkeypatch.setattr(cli, "repository_root", lambda: tmp_path)
     monkeypatch.setattr(cli, "load_model_catalog", lambda _path: object())
-    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: object())
+    monkeypatch.setattr(cli, "load_benchmark_catalog", lambda _path: _benchmark_catalog())
     monkeypatch.setattr(cli, "load_subject_catalog", lambda _path: object())
     monkeypatch.setattr(cli, "load_openrouter_api_key", lambda _root: "unused")
     monkeypatch.setattr(
@@ -408,7 +431,7 @@ def test_failed_startup_canary_prevents_benchmark_artifacts_and_execution(
 
     class FakeBenchmarks:
         def entry(self, _benchmark_id: object) -> object:
-            return object()
+            return _benchmark_catalog().entry(BenchmarkId("B-0001"))
 
     def forbidden(*_args: object, **_kwargs: object) -> object:
         pytest.fail("failed startup canary must stop before benchmark construction")

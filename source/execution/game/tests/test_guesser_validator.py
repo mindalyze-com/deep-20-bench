@@ -3,16 +3,17 @@ from __future__ import annotations
 import json
 
 import pytest
-from deep20_game.config import BenchmarkMode, SeedCapability
+from deep20_game.config import BenchmarkMode, GamePolicy, SeedCapability
 from deep20_game.errors import GameConfigurationError, GuesserProtocolError
 from deep20_game.guesser import Guesser
 from deep20_game.models import (
     guesser_action_output_schema,
     parse_guesser_action_output,
 )
-from deep20_game.prompt import append_visible_turn, initial_guesser_messages
+from deep20_game.prompt import append_visible_turn, guesser_prompt_version, initial_guesser_messages
 from deep20_game.sampling import derive_guesser_prompt_nonce, guesser_sampling_decision
 from deep20_game.validator import GuessValidator
+from deep20_oracle.config import PromptProfile
 from deep20_oracle.models import OracleAnswer, RecoveryReason
 
 from .conftest import FakeGameProvider
@@ -55,12 +56,91 @@ def sampling(model_config, turn_number: int):
 
 def initial_messages(*, base_seed: int = 0, trial_number: int = 1):
     return initial_guesser_messages(
-        50,
+        GamePolicy().max_questions,
         "person",
         derive_guesser_prompt_nonce(
             base_seed=base_seed,
             trial_number=trial_number,
         ),
+    )
+
+
+def test_prompt_profiles_have_distinct_cache_keys_but_the_same_public_begin(
+    audit_writer, model_config, policy,
+) -> None:
+    keys: set[str] = set()
+    begins: set[str] = set()
+    for profile in PromptProfile:
+        selected = policy.model_copy(update={"prompt_profile": profile})
+        audit_writer.game_policy = selected
+        run_id = f"profile-{profile.value}"
+        audit_writer.prepare_run(run_id)
+        provider = FakeGameProvider(model_config, [ask_payload("Is it alive?")])
+        messages = initial_guesser_messages(
+            selected.max_questions, "person",
+            derive_guesser_prompt_nonce(base_seed=0, trial_number=1), profile,
+        )
+        call = Guesser(provider, audit_writer, model_config, selected).next_action(
+            run_id=run_id, episode_id="EP-" + "1" * 32,
+            messages=messages, sampling=sampling(model_config, 1),
+        )
+        assert call.audit.prompt_version == guesser_prompt_version(profile)
+        assert "Albert Einstein" not in str(provider.requests[0].messages)
+        keys.add(call.audit.prompt_cache_key)
+        begins.add(provider.requests[0].messages[1]["content"])
+    assert len(keys) == len(PromptProfile)
+    assert len(begins) == 1
+
+
+def test_mismatched_guesser_instructions_fail_before_provider_call(
+    audit_writer, model_config, policy,
+) -> None:
+    selected = policy.model_copy(update={"prompt_profile": PromptProfile.CONCISE_V1})
+    audit_writer.game_policy = selected
+    audit_writer.prepare_run("profile-mismatch")
+    provider = FakeGameProvider(model_config, [])
+    with pytest.raises(GameConfigurationError, match="prompt profile"):
+        Guesser(provider, audit_writer, model_config, selected).next_action(
+            run_id="profile-mismatch", episode_id="EP-" + "1" * 32,
+            messages=initial_messages(), sampling=sampling(model_config, 1),
+        )
+    assert provider.requests == []
+
+
+@pytest.mark.parametrize("profile", list(PromptProfile))
+def test_question_limit_changes_only_fixed_instructions_and_cache_namespace(
+    audit_writer, model_config, policy, profile,
+) -> None:
+    requests = []
+    for limit in (40, 50):
+        selected = policy.model_copy(update={"max_questions": limit, "prompt_profile": profile})
+        audit_writer.game_policy = selected
+        run_id = f"budget-{limit}-{profile.value}"
+        audit_writer.prepare_run(run_id)
+        provider = FakeGameProvider(model_config, [ask_payload("Is it alive?")])
+        messages = initial_guesser_messages(
+            limit, "person", derive_guesser_prompt_nonce(base_seed=0, trial_number=1), profile,
+        )
+        Guesser(provider, audit_writer, model_config, selected).next_action(
+            run_id=run_id, episode_id="EP-" + "1" * 32,
+            messages=messages, sampling=sampling(model_config, 1),
+        )
+        requests.append(provider.requests[0])
+
+    current, historical = requests
+    assert "40" in current.messages[0]["content"]
+    assert current.messages[0]["content"].replace("40", "50") == (
+        historical.messages[0]["content"]
+    )
+    assert current.messages[1:] == historical.messages[1:]
+    assert json.loads(current.messages[1]["content"]) == {
+        "category": "person",
+        "event": "BEGIN",
+        "variation_token": derive_guesser_prompt_nonce(base_seed=0, trial_number=1),
+    }
+    assert current.prompt_cache_key != historical.prompt_cache_key
+    assert current.model_dump(exclude={"messages", "prompt_cache_key"}) == (
+        historical.model_dump(exclude={"messages", "prompt_cache_key"})
     )
 
 
@@ -391,6 +471,13 @@ def test_validator_is_independent_and_keeps_explanation_out_of_guesser_history(
     sent = provider.requests[0]
     assert "tools" not in sent.model_dump(mode="json")
     assert subject.description in sent.messages[-1]["content"]
+    payload = json.loads(sent.messages[-1]["content"].split("\n", 1)[1])
+    assert payload == {
+        "trusted_subject": subject.model_dump(mode="json"),
+        "proposed_identity": guess.model_dump(mode="json"),
+    }
+    assert len(sent.messages) == 2
+    assert call.result.explanation not in json.dumps(sent.messages)
     assert call.result.explanation not in guess.model_dump_json()
     assert sent.session_id.startswith("deep20-validator-")
     assert caplog.records == []
@@ -432,3 +519,12 @@ def test_validator_retries_invalid_schema_once_with_exact_request(
         RecoveryReason.INVALID_VALIDATOR_OUTPUT
     )
     assert call.audit.provider.discarded_error_outputs[0].output == invalid
+
+
+@pytest.mark.parametrize("answer", [OracleAnswer.RATHER_YES, OracleAnswer.RATHER_NO])
+def test_qualified_answer_is_never_a_valid_identity_verdict(answer) -> None:
+    from deep20_game.models import GuessValidationResult
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError, match="identity validation"):
+        GuessValidationResult(answer=answer, explanation="Not an exact identity decision.")

@@ -35,13 +35,14 @@ deep20-oracle = { workspace = true }
 deep20-benchmark = { workspace = true }
 
 [tool.pytest.ini_options]
+addopts = "-m 'not integration'"
 testpaths = [
   "source/execution/benchmark/tests",
   "source/execution/game/tests",
   "source/execution/oracle/tests",
 ]
 markers = [
-  "integration: requires OPENROUTER_API_KEY and makes a paid live request",
+  "integration: paid live request; requires explicit --run-paid-tests and selection",
 ]
 
 [tool.ruff]

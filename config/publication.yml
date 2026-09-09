@@ -1,9 +1,8 @@
-version: 1
+version: 2
 site:
   title: Deep20Bench
   short_title: D20B
-  description: >-
-    The Deep20 benchmark is a small, public Twenty Questions prototype for comparing how AI
+  description: The Deep20 benchmark is a small, public Twenty Questions prototype for comparing how AI
     models ask questions, track answers, and identify a hidden subject.
   base_path: /
   canonical_url: https://deep20bench.com/
@@ -13,39 +12,257 @@ score:
   version: average-then-average-v1
   failure_penalty_offset: 1
 cohorts:
-  - cohort_id: core-v2
-    display_name: Core subjects · protocol v9
-    active: true
-    benchmark_id: B-0001
-    benchmark_version: 9
-    target_ids:
-      - T-0001
-      - T-0002
-      - T-0003
-      - T-0004
-      - T-0005
-      - T-0006
-      - T-0007
-    iterations: 5
-    base_seed: 0
-    max_questions: 50
-    model_ids:
-      - M-0001
-      - M-0002
-      - M-0003
-      - M-0004
-      - M-0005
-      - M-0006
-      - M-0007
-      - M-0008
-      - M-0009
-      - M-0010
-      - M-0012
-      - M-0013
-      - M-0014
-      - M-0015
-      - M-0016
-      - M-0017
-      - M-0020
-      - M-0021
-      - M-0022
+- cohort_id: qualified-core-v1
+  display_name: Core subjects - qualified answers
+  edition_id: '1.1'
+  edition_label: '1.1'
+  edition_status: current
+  benchmark_id: B-0003
+  benchmark_version: 9
+  target_ids:
+  - T-0001
+  - T-0002
+  - T-0004
+  - T-0005
+  - T-0006
+  - T-0008
+  - T-0009
+  - T-0010
+  - T-0011
+  - T-0012
+  iterations: 3
+  base_seed: 0
+  max_questions: 40
+  model_ids:
+  - M-0001
+  - M-0002
+  - M-0003
+  - M-0004
+  - M-0005
+  - M-0006
+  - M-0007
+  - M-0008
+  - M-0009
+  - M-0010
+  - M-0011
+  - M-0012
+  - M-0013
+  - M-0014
+  - M-0015
+  - M-0016
+  - M-0017
+  - M-0018
+  - M-0020
+  - M-0021
+  - M-0022
+  - M-0023
+  - M-0024
+  - M-0101
+  - M-0104
+  eligibility:
+    kind: qualified_release
+    prompts:
+      guesser: stateful-category-guesser-v16-five-answer-category-guide
+      judge: oracle-judge-v15-labelled-source-context
+      oracle: live-web-oracle-v17-labelled-source-context
+      reviewer: oracle-reviewer-v12-labelled-source-context
+      validator: strict-guess-validator-v2-generic-kinds
+      recovery: live-web-oracle-v17-labelled-source-context
+    game_rules:
+      max_consecutive_contract_violations: 5
+      reveal_entity_type: true
+      final_guess_after_limit: true
+    subject_identities:
+    - target_id: T-0001
+      identity_hash: 5b5ece8935af0af3c2487d310bf324b3552a92caad447cc9ada388f18fedec07
+    - target_id: T-0002
+      identity_hash: 3fdfa8d696bffd55d8734e503d44fd78112270077be83d895a5ac4b705fb52e1
+    - target_id: T-0004
+      identity_hash: b923393c498e4c678b7dae73053818e27e88e43cebbbded69688337b92d9dbeb
+    - target_id: T-0005
+      identity_hash: aa65c7288a4379944d92aabea20460462a77c1174fbe3510094ed0e31df8a4bc
+    - target_id: T-0006
+      identity_hash: 1877f6502c96decd3e1b60f2eef0e9ff0c5979646ac39dc7410bc18a9255ad71
+    - target_id: T-0008
+      identity_hash: 38e9ab6d7e941f6ee12ae29cdeae186cc773b5d0ce925ba5d071c7b9444f9763
+    - target_id: T-0009
+      identity_hash: 4a80307113decee5d17c0f2be46e5ded9ddc5c7682197838044527d446cea215
+    - target_id: T-0010
+      identity_hash: f98239050d2aeaa032ea52a3784f597a4c5417196971208f7cbb62a5f78821fc
+    - target_id: T-0011
+      identity_hash: 85b17aee35b29ebedae8446db3569d4c36ebe51f12c3b8bfef759c8314062d96
+    - target_id: T-0012
+      identity_hash: 6b4e749ae25916c1141bae0beb35fe1468e9528593427ca46303044ba48d3e7f
+    oracle_configuration_hash: 5272a02e3c185211907ef52f06bd642a83871fa309b16d7b4e188cbf390be477
+    oracle_contract_hash: 50bb04553047a821ac09ce24b2a664fba4194cd0d1917a632854a8e21d34c45a
+    validator_configuration_hash: f78512d0696574a3363a6176d6bd61dffdfaa1448943426be1f13c08d08f98bc
+    accepted_revisions:
+    - revision_id: concise-source-context-transition
+      prompts:
+        guesser: stateful-category-guesser-v16-five-answer-category-guide
+        judge: oracle-judge-v15-labelled-source-context
+        oracle: live-web-oracle-v17-labelled-source-context
+        reviewer: oracle-reviewer-v12-labelled-source-context
+        validator: strict-guess-validator-v2-generic-kinds
+        recovery: live-web-oracle-v17-labelled-source-context
+      game_rules:
+        max_consecutive_contract_violations: 5
+        reveal_entity_type: true
+        final_guess_after_limit: true
+      subject_identities:
+      - target_id: T-0001
+        identity_hash: 5b5ece8935af0af3c2487d310bf324b3552a92caad447cc9ada388f18fedec07
+      - target_id: T-0002
+        identity_hash: 3fdfa8d696bffd55d8734e503d44fd78112270077be83d895a5ac4b705fb52e1
+      - target_id: T-0004
+        identity_hash: b923393c498e4c678b7dae73053818e27e88e43cebbbded69688337b92d9dbeb
+      - target_id: T-0005
+        identity_hash: aa65c7288a4379944d92aabea20460462a77c1174fbe3510094ed0e31df8a4bc
+      - target_id: T-0006
+        identity_hash: 1877f6502c96decd3e1b60f2eef0e9ff0c5979646ac39dc7410bc18a9255ad71
+      - target_id: T-0008
+        identity_hash: 38e9ab6d7e941f6ee12ae29cdeae186cc773b5d0ce925ba5d071c7b9444f9763
+      - target_id: T-0009
+        identity_hash: 4a80307113decee5d17c0f2be46e5ded9ddc5c7682197838044527d446cea215
+      - target_id: T-0010
+        identity_hash: f98239050d2aeaa032ea52a3784f597a4c5417196971208f7cbb62a5f78821fc
+      - target_id: T-0011
+        identity_hash: 85b17aee35b29ebedae8446db3569d4c36ebe51f12c3b8bfef759c8314062d96
+      - target_id: T-0012
+        identity_hash: 6b4e749ae25916c1141bae0beb35fe1468e9528593427ca46303044ba48d3e7f
+      oracle_configuration_hash: 5272a02e3c185211907ef52f06bd642a83871fa309b16d7b4e188cbf390be477
+      oracle_contract_hash: 16fad31cfeb29239bbb77384d07940099499c12030198ec62d89f19dc918d6f5
+      validator_configuration_hash: f78512d0696574a3363a6176d6bd61dffdfaa1448943426be1f13c08d08f98bc
+      additional_prompt_versions:
+      - guesser: stateful-category-guesser-v16-five-answer-category-guide
+        oracle: live-web-oracle-v16-search-headroom
+        recovery: live-web-oracle-v17-labelled-source-context
+        reviewer: oracle-reviewer-v11-unknown-context
+        judge: oracle-judge-v15-labelled-source-context
+        validator: strict-guess-validator-v2-generic-kinds
+    - revision_id: judge-knowledge-evidence-context
+      prompts:
+        guesser: stateful-category-guesser-v16-five-answer-category-guide
+        judge: oracle-evidence-judge-v10-stable-knowledge
+        oracle: live-web-oracle-v12-evidence-context
+        recovery: live-web-oracle-recovery-v5-evidence-context
+        reviewer: oracle-evidence-reviewer-v7-generic-five-answers
+        validator: strict-guess-validator-v2-generic-kinds
+      game_rules:
+        max_consecutive_contract_violations: 5
+        reveal_entity_type: true
+        final_guess_after_limit: true
+      subject_identities:
+      - target_id: T-0001
+        identity_hash: 52a875129fe95ce99b898f120eace3b3dc9bd733dbab293bff5b5538586c7f37
+      - target_id: T-0002
+        identity_hash: 15f6556ce84a1a532448480ea87bc32b86cd008dec7a92556a2d8515590a0948
+      - target_id: T-0004
+        identity_hash: 50a431df5dd84370f4efe156837327845bb814cd8ea1af6621f1b7b255eee300
+      - target_id: T-0005
+        identity_hash: 7d876da1156248ff59c476737e3bb26eb9cd8f05e22c26d1b53ddeae28668a7c
+      - target_id: T-0006
+        identity_hash: 11b450ce6789248d672b0eb18a71f808f9c6e52f42e153fea9a9fa7e8ac6c1b5
+      - target_id: T-0008
+        identity_hash: 2a874a71e377b7215b836500182be0a8c8fbe7d08f8b1326ca56485456a39d36
+      - target_id: T-0009
+        identity_hash: 5f4a9680de9ed1ce97086ea579add31f07f16114a67e27e7ef8061858cf27ad9
+      - target_id: T-0010
+        identity_hash: 6f8ee4d7861db52ab4b2172e4a21c1bdfb1e49f3c86953e98c72c489eca29886
+      - target_id: T-0011
+        identity_hash: fedd08a75f31aa1d46d7885960ca1ec144444c5bbf80a91bb5fffd5eec4b8ba6
+      - target_id: T-0012
+        identity_hash: bea424b5b7f081905302d6ecac34f9b84013baabd7f262931d4aadca1137b03e
+      oracle_configuration_hash: 9f20956d9937df4f31aaf39a2f13fb320e2282a53168efed4236a543dc50cbc3
+      oracle_contract_hash: 74b3503a682b4c090da741e7af993940ca13b67ccac603f5121264adf8e541ff
+      validator_configuration_hash: f78512d0696574a3363a6176d6bd61dffdfaa1448943426be1f13c08d08f98bc
+    - revision_id: concise-property-scope-repair
+      prompts:
+        guesser: stateful-category-guesser-v16-five-answer-category-guide
+        judge: oracle-judge-v15-labelled-source-context
+        oracle: live-web-oracle-v17-labelled-source-context
+        reviewer: oracle-reviewer-v12-labelled-source-context
+        validator: strict-guess-validator-v2-generic-kinds
+        recovery: live-web-oracle-v17-labelled-source-context
+      game_rules:
+        max_consecutive_contract_violations: 5
+        reveal_entity_type: true
+        final_guess_after_limit: true
+      subject_identities:
+      - target_id: T-0001
+        identity_hash: 5b5ece8935af0af3c2487d310bf324b3552a92caad447cc9ada388f18fedec07
+      - target_id: T-0002
+        identity_hash: 3fdfa8d696bffd55d8734e503d44fd78112270077be83d895a5ac4b705fb52e1
+      - target_id: T-0004
+        identity_hash: b923393c498e4c678b7dae73053818e27e88e43cebbbded69688337b92d9dbeb
+      - target_id: T-0005
+        identity_hash: aa65c7288a4379944d92aabea20460462a77c1174fbe3510094ed0e31df8a4bc
+      - target_id: T-0006
+        identity_hash: 1877f6502c96decd3e1b60f2eef0e9ff0c5979646ac39dc7410bc18a9255ad71
+      - target_id: T-0008
+        identity_hash: 38e9ab6d7e941f6ee12ae29cdeae186cc773b5d0ce925ba5d071c7b9444f9763
+      - target_id: T-0009
+        identity_hash: 4a80307113decee5d17c0f2be46e5ded9ddc5c7682197838044527d446cea215
+      - target_id: T-0010
+        identity_hash: f98239050d2aeaa032ea52a3784f597a4c5417196971208f7cbb62a5f78821fc
+      - target_id: T-0011
+        identity_hash: 85b17aee35b29ebedae8446db3569d4c36ebe51f12c3b8bfef759c8314062d96
+      - target_id: T-0012
+        identity_hash: 6b4e749ae25916c1141bae0beb35fe1468e9528593427ca46303044ba48d3e7f
+      oracle_configuration_hash: 5272a02e3c185211907ef52f06bd642a83871fa309b16d7b4e188cbf390be477
+      oracle_contract_hash: dda83bb6d311020f6b1f8efb61d1263d4986c6cce2deb3051c60f0d1a1800adb
+      validator_configuration_hash: f78512d0696574a3363a6176d6bd61dffdfaa1448943426be1f13c08d08f98bc
+      additional_prompt_versions:
+      - guesser: stateful-category-guesser-v16-five-answer-category-guide
+        judge: oracle-judge-v13-property-scope
+        oracle: live-web-oracle-v16-search-headroom
+        reviewer: oracle-reviewer-v10-property-scope
+        validator: strict-guess-validator-v2-generic-kinds
+        recovery: live-web-oracle-v17-labelled-source-context
+      - guesser: stateful-category-guesser-v16-five-answer-category-guide
+        judge: oracle-judge-v14-unknown-context
+        oracle: live-web-oracle-v16-search-headroom
+        reviewer: oracle-reviewer-v11-unknown-context
+        validator: strict-guess-validator-v2-generic-kinds
+        recovery: live-web-oracle-v17-labelled-source-context
+- cohort_id: core-v2
+  display_name: Core subjects · protocol v9
+  benchmark_id: B-0001
+  benchmark_version: 9
+  target_ids:
+  - T-0001
+  - T-0002
+  - T-0003
+  - T-0004
+  - T-0005
+  - T-0006
+  - T-0007
+  iterations: 5
+  base_seed: 0
+  max_questions: 50
+  model_ids:
+  - M-0001
+  - M-0002
+  - M-0003
+  - M-0004
+  - M-0005
+  - M-0006
+  - M-0007
+  - M-0008
+  - M-0009
+  - M-0010
+  - M-0012
+  - M-0013
+  - M-0014
+  - M-0015
+  - M-0016
+  - M-0017
+  - M-0020
+  - M-0021
+  - M-0022
+  edition_id: '1.0'
+  edition_label: '1'
+  edition_status: previous
+  eligibility:
+    kind: historical_standard
+default_edition_id: '1.1'

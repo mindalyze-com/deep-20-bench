@@ -1,0 +1,4890 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260908-B-0003-experimental-M0015-001
+    model_id: M-0015
+    target_id: T-0006
+    trial_id: trial-002
+    trial_number: 2
+    episode_run_id: BR-019bfbdb54779113c6e6726237d5b1c075434cc2
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-019bfbdb54779113c6e6726237d5b1c075434cc2
+      episode_id: EP-01a081179a4575e58f50d99823d8f22d
+      subject:
+        target_id: T-0006
+        canonical_name: Genghis Khan
+        aliases:
+        - Chinggis Khan
+        - Temüjin
+        - Temujin
+        entity_type: person
+        description: Genghis Khan, the founder and first khan of the Mongol Empire,
+          identified by Wikidata entity Q720. The target is this historical person,
+          not the empire, the title of khan, or another ruler who held that title.
+        reference_url: https://en.wikipedia.org/wiki/Genghis_Khan
+      started_at: '2026-09-08T12:56:42.821273+00:00'
+      completed_at: '2026-09-08T13:01:16.570933+00:00'
+      duration_ms: 273750
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: false
+    summary:
+      total_turns: 15
+      counted_questions: 14
+      guesser_call_count: 15
+      ask_count: 14
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      oracle_quality:
+        reviewed_questions: 14
+        agreements: 14
+        disagreements: 0
+        judge_invocations: 0
+        oracle_answers_changed: 0
+        final_unknown_answers: 0
+        judge_yes_answers: 0
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0162645'
+        judge_cost_usd: '0'
+        quality_control_cost_usd: '0.0162645'
+        question_types:
+        - question_type: other
+          reviewed_questions: 12
+          disagreements: 0
+        - question_type: temporal_comparison
+          reviewed_questions: 2
+          disagreements: 0
+      contract:
+        evaluated_outputs: 15
+        valid_outputs: 15
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: noncompliant
+      costs_usd:
+        guesser: '0.057206'
+        oracle: '0.0485808899999999998'
+        validator: '0.0001816'
+        total: '0.1059684899999999998'
+      tokens:
+        guesser: 25393
+        oracle: 106422
+        validator: 673
+        total: 132488
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0015
+        requested_model: x-ai/grok-4.6
+        requested_provider: xai
+        resolved_models:
+        - x-ai/grok-4.6
+        resolved_providers:
+        - xAI
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v16-five-answer-category-guide
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v17-labelled-source-context
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v2-generic-kinds
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is the person male?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a08117b06a7780bf9b5d07b4ddf338
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.biography.com/political-figures/genghis-khan
+          excerpt: 'Name: Genghis Khan · Birth Year: 1162 · Birth Country: Mongolia
+            · Gender: Male · Best Known For: Mongolian warrior and ruler Genghis Khan
+            created'
+          validation: model_reported
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan (born 1162, near Lake Baikal, Mongolia—died August
+            18, 1227) was a Mongolian warrior-ruler ... who consolidated tribes into
+            a unified Mongolia.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The provided evidence explicitly states that Genghis
+              Khan's gender is male.
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-01a081179a4575e58f50d99a1a3baf7e
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is the person currently alive?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a08117dbe2706d930142fcd5d11b47
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Britannica identifies Genghis Khan as born in 1162 and states that
+            he died on August 18, 1227, during a campaign against the Tangut kingdom
+            of Xixia.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.history.com/this-day-in-history/August-18/genghis-khan-dies
+          excerpt: 'History.com states: “On August 18, 1227, while putting down a
+            revolt in the kingdom of Xi Xia, Genghis Khan died.”'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Excerpts establish that Genghis Khan died on August
+              18, 1227, meaning he is not currently alive.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-01a08117d4d47405a80d69904bb2631d
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Was he born in Europe?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a08118206873488d41155e62e9a73d
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: 'Genghis Khan (born 1162, near Lake Baikal, Mongolia—died August
+            18, 1227)... Born: 1162, near Lake Baikal, Mongolia.'
+          validation: model_reported
+        - source_url: https://www.history.com/articles/genghis-khan
+          excerpt: Temujin, later Genghis Khan, was born around 1162 near the border
+            between modern Mongolia and Siberia.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Excerpts establish that Genghis Khan was born near
+              Lake Baikal, Mongolia, and Siberia, which are located in Asia, not Europe.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-01a08117ff07773f88265707fa9d8b88
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Was he born in North America?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a08118496077249cab29b2e55dfb67
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.escapetomongolia.com/blog/deluun-boldog-birthplace-of-genghis-khan-in-khentii
+          excerpt: Deluun Boldog is the birthplace of Genghis Khan located in Dadal
+            soum of Khentii province... The location near where Onon River and Balj
+            River join is believed to be the birthplace of Genghis Khan.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.history.com/articles/genghis-khan
+          excerpt: Temujin, later Genghis Khan, was born around 1162 near the border
+            between modern Mongolia and Siberia.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Genghis Khan was born at Deluun Boldog near the
+              border between modern Mongolia and Siberia, which is not in North America.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-01a081184127775a99029624128afb31
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Was he born in Asia?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a081188b73764b80b39d96b73c4c21
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan (born 1162, near Lake Baikal, Mongolia—died August
+            18, 1227) was a Mongolian warrior-ruler...
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://kids.britannica.com/kids/article/Genghis-Khan/353171
+          excerpt: Genghis Khan was born in about 1162 in northern Mongolia. His name
+            at first was Temüjin.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Genghis Khan was born in Mongolia, near Lake Baikal,
+              which is located in Asia.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-01a0811882717635a5a9c5c7577c0526
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Was he primarily known as a political leader or ruler?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a08118d61071f98f5d30e67baa9c3d
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan ... was a Mongolian warrior-ruler, one of the most
+            famous conquerors of history, who consolidated tribes into a unified Mongolia
+            and then extended his empire across Asia.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.worldhistory.org/Genghis_Khan/
+          excerpt: Genghis Khan (aka Chinggis Khan) was the founder of the Mongol
+            Empire which he ruled from 1206 until his death in 1227.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Genghis Khan is documented as a warrior-ruler and
+              the founder and ruler of the Mongol Empire, making him primarily known
+              as a political leader or ruler.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-01a08118b8847266b64e74bac5b082dc
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Did he live primarily in the 20th century?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a08119047173d8a4d41940090a6d7a
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan (born 1162, near Lake Baikal, Mongolia—died August
+            18, 1227) was a Mongolian warrior-ruler.
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Genghis_Khan
+          excerpt: Genghis Khan [was] born Temüjin; c. 1162 – 18 or 25 August 1227.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Excerpts 1 and 2 establish that Genghis Khan was
+              born around 1162 and died in 1227, meaning he lived in the 12th and
+              13th centuries rather than the 20th century.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-01a08118f7ff73cd98f50e329f92f8c3
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Was he born in China?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0811934d876f9a7bee462b36f99f9
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan (born 1162, near Lake Baikal, Mongolia—died August
+            18, 1227) was a Mongolian warrior-ruler...
+          validation: model_reported
+        - source_url: https://www.britannica.com/facts/Genghis-Khan
+          excerpt: Born | 1162 • near Lake Baikal • Mongolia
+          validation: model_reported
+        - source_url: https://www.ebsco.com/research-starters/biography/genghis-khan
+          excerpt: Temüjin ... was born in the village of Delyun Boldog on the Odon
+            River in the northeastern borderlands between Mongolia and China...
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Excerpts state that Genghis Khan was born near Lake
+              Baikal in Mongolia or in the borderlands between Mongolia and China,
+              not in China itself.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-01a08119228976fc91dc5568f772bc30
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Did he live primarily before the year 1500?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a08119a22473ddbfa1fde4ab361e2b
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan (born 1162, near Lake Baikal, Mongolia—died August
+            18, 1227) was a Mongolian warrior-ruler.
+          validation: model_reported
+        - source_url: https://www.britannica.com/facts/Genghis-Khan
+          excerpt: Born | 1162 ... Died | August 18, 1227 (aged 65).
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Excerpts establish that Genghis Khan was born in
+              1162 and died in 1227, which is primarily before the year 1500.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-01a0811978fd7323a17f7863f416f895
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Was he born on the Indian subcontinent?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0811a121c7213a52f25b56ba3aaae
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Britannica states that Genghis Khan was born in 1162 near Lake
+            Baikal, Mongolia.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.ebsco.com/research-starters/biography/genghis-khan
+          excerpt: EBSCO states that Temüjin was born in the village of Delyun Boldog
+            on the Odon River, in the northeastern borderlands between Mongolia and
+            China.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Excerpts 1 and 2 state that Genghis Khan was born
+              near Lake Baikal in Mongolia and in the northeastern borderlands between
+              Mongolia and China, which are not on the Indian subcontinent.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-01a08119c437709796e73b9683a0fef7
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Did he live primarily before the year 1000?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0811a70bf708b91f790b1494b0841
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan (born 1162, near Lake Baikal, Mongolia—died August
+            18, 1227) was a Mongolian warrior-ruler.
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Genghis_Khan
+          excerpt: Genghis Khan (born Temüjin; c. 1162 – 18 or 25 August 1227), also
+            known as Chinggis Khan, was the founder and first khan of the Mongol Empire.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: temporal_comparison
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Genghis Khan was born around 1162 and died in 1227,
+              so he did not live primarily before the year 1000.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-01a0811a34a07396b5146547e215f7ea
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Was he born in East Asia (such as Mongolia, Japan, or Korea)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0811ae0b57445b239457629ea324f
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan (born 1162, near Lake Baikal, Mongolia—died August
+            18, 1227) was a Mongolian warrior-ruler.
+          validation: model_reported
+        - source_url: https://www.history.com/articles/genghis-khan
+          excerpt: Temujin, later Genghis Khan, was born around 1162 near the border
+            between modern Mongolia and Siberia.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Genghis Khan was born in Mongolia (near Lake Baikal
+              and the Siberian border), which is located in East Asia.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-01a0811a971c73c98e21f643795693ec
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Was he born in Mongolia?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0811b3eed7000bd4ad18be3142a40
+        answer: 'YES'
+        evidence:
+        - source_url: https://kids.britannica.com/kids/article/Genghis-Khan/353171
+          excerpt: Genghis Khan was born in about 1162 in northern Mongolia. His name
+            at first was Temüjin.
+          validation: model_reported
+        - source_url: https://www.ebsco.com/research-starters/biography/genghis-khan
+          excerpt: Temüjin, as Genghis Khan was first named, was born in the village
+            of Delyun Boldog on the Odon River in the northeastern borderlands between
+            Mongolia and China.
+          validation: model_reported
+        - source_url: https://www.britannica.com/place/Mongolia/The-rise-of-Genghis-Khan
+          excerpt: Such was the setting in Mongolia when Genghis Khan (his given name
+            was Temüüjin) was born, about 1162.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Excerpts state that Genghis Khan was born in northern
+              Mongolia.
+            evidence_indices:
+            - 1
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-01a0811b043071e4893554368257f8fc
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Was he the founder of the Mongol Empire?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0811b858670a587a11f92e50ffc2a
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Genghis-Khan
+          excerpt: Genghis Khan was a warrior and ruler of genius who, starting from
+            obscure and insignificant beginnings, brought all the nomadic tribes of
+            Mongolia under the rule of himself and his family in a rigidly disciplined
+            military state.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.history.com/articles/genghis-khan
+          excerpt: Mongol leader Genghis Khan (1162-1227) rose from humble beginnings
+            to establish the largest land empire in history.
+          validation: model_reported
+        - source_url: http://en.wikipedia.org/wiki/Genghis_Khan
+          excerpt: Genghis Khan (born Temüjin; c. 1162 – 18 or 25 August 1227), also
+            known as Chinggis Khan, was the founder and first khan of the Mongol Empire.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Excerpt 3 states that Genghis Khan was the founder
+              and first khan of the Mongol Empire.
+            evidence_indices:
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-01a0811b6f55704b9d5ff0140f3d22b7
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: GUESS
+        question: null
+        name: Genghis Khan
+        description: Mongol ruler who founded the Mongol Empire in the 13th century
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a0811bc1a274bfaf1f717d7ff37a05
+        answer: 'YES'
+        evidence: []
+        explanation: The proposed identity names Genghis Khan directly and the description
+          matches the specified historical person as founder and first khan of the
+          Mongol Empire.
+        oracle_quality: null
+      counted: false
+      counted_questions: 14
+      guesser_call_id: GC-01a0811baffb73adb2067f2852e1cb81
+    guesser_conversation:
+    - role: system
+      content: "You are the Guesser in a Twenty Questions benchmark. Identify the\
+        \ hidden subject using as few\ncounted turns as possible. BEGIN provides only\
+        \ its broad category. The variation_token has no\nclues; do not interpret,\
+        \ mention, or repeat it.\n\nThe category in BEGIN has a broad meaning:\n-\
+        \ person: a real human, living or historical.\n- fictional_character: an invented\
+        \ character from a story, book, comic, film, television,\n  game, or another\
+        \ fictional work.\n- mythological_figure: a figure from mythology or traditional\
+        \ legend.\n- video_game_character: a character known from video games.\n-\
+        \ thing: a broad category covering natural and human-made entities, living\
+        \ or nonliving,\n  whole entities or parts of them. Possibilities include\
+        \ everyday objects, tools, machines,\n  materials, food, animals, plants,\
+        \ body parts, natural structures, geographical features,\n  celestial bodies,\
+        \ natural phenomena, and concepts. These possibilities are not exhaustive.\n\
+        \  The target may be a general kind or one particular instance.\n\nUse questions\
+        \ to narrow the supplied category. These definitions are not a list of targets.\n\
+        \nUse ASK for a factual question that distinguishes candidates. Never use\
+        \ ASK to confirm a\nspecific identity. Use GUESS with a name and short identifying\
+        \ description to name a candidate.\n\nASK has five possible replies:\n- YES\
+        \ or NO: the evidence establishes that answer to the exact question.\n- RATHER_YES\
+        \ or RATHER_NO: evidence leans that way, but is not strong enough for a firm\
+        \ answer.\n  Treat this as a clue; keep candidates fitting the opposite answer\
+        \ possible.\n- UNKNOWN: no reliable direction. It supports neither answer.\n\
+        \nAsk clear questions about verifiable properties. \"Can\", \"sometimes\"\
+        , \"usually\", \"always\", and\n\"mainly\" ask different things. Do not assume\
+        \ that one property proves another or rules out alternatives.\nQualified replies\
+        \ express uncertainty about your question, not how often a property applies.\n\
+        Before narrowing heavily, check your key assumption with a different property.\
+        \ After rejected\nguesses, reconsider earlier assumptions as well as candidates.\
+        \ Answers can be mistaken; check\nanother property when stuck. Do not ignore\
+        \ an answer merely because it conflicts with a\npreferred candidate.\n\nEach\
+        \ ASK, rejected GUESS, or format error before the limit costs one turn. A\
+        \ correct GUESS costs\nnone. After 40 counted turns, make one final GUESS;\
+        \ ASK is then forbidden. Identity\nvalidation uses only YES, NO, or UNKNOWN.\
+        \ UNKNOWN on GUESS ends the game without success.\n\nFORMAT_ERROR means your\
+        \ output broke the contract, was not checked for correctness, and cost\none\
+        \ turn. Retry using its displayed formats if a turn remains. Return only the\
+        \ required JSON\nobject with exactly one result action. No explanations, reasoning,\
+        \ or extra fields.\n"
+    - role: user
+      content: '{"category":"person","event":"BEGIN","variation_token":"BKXG3AZI"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person male?"}}'
+      turn_number: 1
+    - role: user
+      content: 'YES'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the person currently alive?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        he born in Europe?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        he born in North America?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        he born in Asia?"}}'
+      turn_number: 5
+    - role: user
+      content: 'YES'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        he primarily known as a political leader or ruler?"}}'
+      turn_number: 6
+    - role: user
+      content: 'YES'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        he live primarily in the 20th century?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        he born in China?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        he live primarily before the year 1500?"}}'
+      turn_number: 9
+    - role: user
+      content: 'YES'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        he born on the Indian subcontinent?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Did
+        he live primarily before the year 1000?"}}'
+      turn_number: 11
+    - role: user
+      content: 'NO'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        he born in East Asia (such as Mongolia, Japan, or Korea)?"}}'
+      turn_number: 12
+    - role: user
+      content: 'YES'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        he born in Mongolia?"}}'
+      turn_number: 13
+    - role: user
+      content: 'YES'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Was
+        he the founder of the Mongol Empire?"}}'
+      turn_number: 14
+    - role: user
+      content: 'YES'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"Mongol ruler who founded
+        the Mongol Empire in the 13th century","name":"Genghis Khan","question":null}}'
+      turn_number: 15
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0015
+          gateway: openrouter
+          model: x-ai/grok-4.6
+          provider: xai
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: supported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '2.00'
+            cached_input_usd_per_million: '0.50'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 15
+          cost_usd: '0.057206'
+          latency_ms: 125770
+          total_tokens: 25393
+          input_tokens: 19804
+          cached_input_tokens: 10624
+          cache_write_tokens: 0
+          output_tokens: 5589
+          reasoning_tokens: 5118
+          estimated_cache_savings_usd: '0.01593600'
+          recovery:
+            request_attempts: 15
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: xAI
+            calls: 15
+            cost_usd: '0.057206'
+            latency_ms: 125770
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          prompt_profile: qualified_v1
+          adjudication_policy: concise_knowledge_v1
+          parallel_search: true
+          parallel_search_mode: fast
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 14
+          cost_usd: '0.0485808899999999998'
+          latency_ms: 146134
+          total_tokens: 106422
+          input_tokens: 95959
+          cached_input_tokens: 41927
+          cache_write_tokens: 0
+          output_tokens: 10463
+          reasoning_tokens: 4764
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 28
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 14
+              cost_usd: '0.0323163899999999998'
+              latency_ms: 124892
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 14
+              cost_usd: '0.0162645'
+              latency_ms: 21242
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers: []
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0001816'
+          latency_ms: 1517
+          total_tokens: 673
+          input_tokens: 626
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 47
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.0001816'
+            latency_ms: 1517
+          unreported_calls: 0
+          fallback_calls: 0
+    audit:
+      schema_version: 1
+      calls:
+      - component: guesser
+        call_id: GC-01a081179a4575e58f50d99a1a3baf7e
+        turn_number: 1
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 2887b1cb9acff96b21be9f7878011782133136f3bcd5032c52a2f88e98616025
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:56:42.821486+00:00'
+          completed_at: '2026-09-08T12:56:48.488229+00:00'
+          latency_ms: 5666
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1056
+            cached_input_tokens: 1024
+            cache_write_tokens: 0
+            output_tokens: 281
+            reasoning_tokens: 253
+            search_count: 0
+            cost_usd: '0.002262'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 99
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a08117b06a7780bf9b5d07b4ddf338
+        turn_number: 1
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: c9e1ea1f27e8a4cb8e16bae4b2de121656bb18aa23ae2a529133a18a5f818181
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:56:48.493194+00:00'
+            completed_at: '2026-09-08T12:56:56.598953+00:00'
+            latency_ms: 8105
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 6281
+              cached_input_tokens: 1501
+              cache_write_tokens: 0
+              output_tokens: 375
+              reasoning_tokens: 56
+              search_count: 1
+              cost_usd: '0.00267472'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1056
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The subject is the historical person Genghis Khan,
+              also known as Temüjin. Biographical sources identify Genghis Khan's
+              gender as male and describe him as a Mongolian warrior-ruler.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan male historical person biography sex gender
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: c9e1ea1f27e8a4cb8e16bae4b2de121656bb18aa23ae2a529133a18a5f818181
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:56:48.493194+00:00'
+              completed_at: '2026-09-08T12:56:56.598953+00:00'
+              latency_ms: 8105
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 6281
+                cached_input_tokens: 1501
+                cache_write_tokens: 0
+                output_tokens: 375
+                reasoning_tokens: 56
+                search_count: 1
+                cost_usd: '0.00267472'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1056
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 56638244508d2999c11b5661247652c496a6a694b661341f766f843d613c4411
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:56:56.599696+00:00'
+            completed_at: '2026-09-08T12:56:57.799922+00:00'
+            latency_ms: 1200
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1199
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 163
+              reasoning_tokens: 107
+              search_count: 0
+              cost_usd: '0.0007672'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 184
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a08117d4d47405a80d69904bb2631d
+        turn_number: 2
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 5ccc0becff1b72ad790af1303ea3f1bb8e8ea5479e9832941b3fd5e7f1b26878
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:56:57.813126+00:00'
+          completed_at: '2026-09-08T12:56:59.617771+00:00'
+          latency_ms: 1804
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1091
+            cached_input_tokens: 1024
+            cache_write_tokens: 0
+            output_tokens: 67
+            reasoning_tokens: 38
+            search_count: 0
+            cost_usd: '0.001048'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 110
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a08117dbe2706d930142fcd5d11b47
+        turn_number: 2
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: b2956b7b68cd2fda904b63bb39b44659ff50e2e5200a1a5b98bd7f8bf4315752
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:56:59.620167+00:00'
+            completed_at: '2026-09-08T12:57:07.660530+00:00'
+            latency_ms: 8040
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4330
+              cached_input_tokens: 2833
+              cache_write_tokens: 0
+              output_tokens: 365
+              reasoning_tokens: 59
+              search_count: 1
+              cost_usd: '0.00186861'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 954
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Genghis Khan died in 1227, so the historical person
+              identified as Genghis Khan is not currently alive.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan died 1227 historical person currently alive
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: b2956b7b68cd2fda904b63bb39b44659ff50e2e5200a1a5b98bd7f8bf4315752
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:56:59.620167+00:00'
+              completed_at: '2026-09-08T12:57:07.660530+00:00'
+              latency_ms: 8040
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4330
+                cached_input_tokens: 2833
+                cache_write_tokens: 0
+                output_tokens: 365
+                reasoning_tokens: 59
+                search_count: 1
+                cost_usd: '0.00186861'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 954
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 14790ef5eaedf203786ef277ae3363d8f17353cb13a66b9587615db24df6072e
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:57:07.663026+00:00'
+            completed_at: '2026-09-08T12:57:08.603734+00:00'
+            latency_ms: 940
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1197
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 176
+              reasoning_tokens: 103
+              search_count: 0
+              cost_usd: '0.0007991'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 211
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a08117ff07773f88265707fa9d8b88
+        turn_number: 3
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 1854cc9d1f86179d1843356e566967b62f1055fb3574f2e7d882bb92a4f5266d
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:57:08.615523+00:00'
+          completed_at: '2026-09-08T12:57:17.159118+00:00'
+          latency_ms: 8543
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1127
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 352
+            reasoning_tokens: 323
+            search_count: 0
+            cost_usd: '0.004366'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 102
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a08118206873488d41155e62e9a73d
+        turn_number: 3
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 090ed88ae155b6429180f8f3df8efb059048d28a5b1fa27293a56570ccc0ab8d
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:57:17.163118+00:00'
+            completed_at: '2026-09-08T12:57:24.177318+00:00'
+            latency_ms: 7014
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5264
+              cached_input_tokens: 2833
+              cache_write_tokens: 0
+              output_tokens: 362
+              reasoning_tokens: 57
+              search_count: 1
+              cost_usd: '0.00209851'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1015
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Sources place Genghis Khan’s birth near Lake Baikal
+              in Mongolia or near the border of modern Mongolia and Siberia, not in
+              Europe. The sources differ on the precise location and date, but neither
+              supports a European birthplace.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan born where Europe birthplace Mongolia historical sources
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 090ed88ae155b6429180f8f3df8efb059048d28a5b1fa27293a56570ccc0ab8d
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:57:17.163118+00:00'
+              completed_at: '2026-09-08T12:57:24.177318+00:00'
+              latency_ms: 7014
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5264
+                cached_input_tokens: 2833
+                cache_write_tokens: 0
+                output_tokens: 362
+                reasoning_tokens: 57
+                search_count: 1
+                cost_usd: '0.00209851'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1015
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 4723ab99a752f5e3e9a971cd108e69fa07357b5fd20bc1a3cf45cfc1957f85a2
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:57:24.179066+00:00'
+            completed_at: '2026-09-08T12:57:25.527946+00:00'
+            latency_ms: 1348
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1181
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 274
+              reasoning_tokens: 205
+              search_count: 0
+              cost_usd: '0.0010393'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 228
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a081184127775a99029624128afb31
+        turn_number: 4
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 0ae9088b668a6aa029f7a35adda2973f481eea21b08e003ecd807144f73e82db
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:57:25.543452+00:00'
+          completed_at: '2026-09-08T12:57:27.646532+00:00'
+          latency_ms: 2103
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1163
+            cached_input_tokens: 128
+            cache_write_tokens: 0
+            output_tokens: 78
+            reasoning_tokens: 48
+            search_count: 0
+            cost_usd: '0.002602'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 109
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a08118496077249cab29b2e55dfb67
+        turn_number: 4
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 0c4f52a769914f013fe28630f86b86cc6890d9ee70ab7925a8f88a2d7f1b89e3
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:57:27.650235+00:00'
+            completed_at: '2026-09-08T12:57:41.000500+00:00'
+            latency_ms: 13350
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4796
+              cached_input_tokens: 2834
+              cache_write_tokens: 0
+              output_tokens: 392
+              reasoning_tokens: 63
+              search_count: 1
+              cost_usd: '0.0020172799999999998'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1073
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Sources place Genghis Khan's birth in Delüün Boldog,
+              in present-day Mongolia, or near the Mongolia–Siberia border. These
+              locations are in Asia, not North America.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan birthplace born Delüün Boldog Mongolia North America
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 0c4f52a769914f013fe28630f86b86cc6890d9ee70ab7925a8f88a2d7f1b89e3
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:57:27.650235+00:00'
+              completed_at: '2026-09-08T12:57:41.000500+00:00'
+              latency_ms: 13350
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4796
+                cached_input_tokens: 2834
+                cache_write_tokens: 0
+                output_tokens: 392
+                reasoning_tokens: 63
+                search_count: 1
+                cost_usd: '0.0020172799999999998'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1073
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: c51dca4780790ac28ef7b210c85e2e21f7f64cf748d1817486a59d1548aa94a3
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:57:41.003269+00:00'
+            completed_at: '2026-09-08T12:57:42.244036+00:00'
+            latency_ms: 1240
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1190
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 252
+              reasoning_tokens: 196
+              search_count: 0
+              cost_usd: '0.000987'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 215
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0811882717635a5a9c5c7577c0526
+        turn_number: 5
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 6817c0544165c6e029af7c98fc31c17986ea21c1a070797510e20639b831f1b3
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:57:42.258069+00:00'
+          completed_at: '2026-09-08T12:57:44.561736+00:00'
+          latency_ms: 2303
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1200
+            cached_input_tokens: 1152
+            cache_write_tokens: 0
+            output_tokens: 81
+            reasoning_tokens: 52
+            search_count: 0
+            cost_usd: '0.001158'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 100
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a081188b73764b80b39d96b73c4c21
+        turn_number: 5
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: d7aef77404e7291268f8a1ed7fd93136b51ba7e1aaf9df637db3a0357207be6b
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:57:44.566118+00:00'
+            completed_at: '2026-09-08T12:57:54.933900+00:00'
+            latency_ms: 10367
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5616
+              cached_input_tokens: 2833
+              cache_write_tokens: 0
+              output_tokens: 413
+              reasoning_tokens: 97
+              search_count: 1
+              cost_usd: '0.00224771'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 974
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Britannica states that Genghis Khan was born near
+              Lake Baikal in Mongolia, and Britannica Kids states he was born in northern
+              Mongolia. Mongolia is in Asia, so he was born in Asia.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan Temüjin born in Asia birthplace Delüün Boldog Mongolia
+              biography
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: d7aef77404e7291268f8a1ed7fd93136b51ba7e1aaf9df637db3a0357207be6b
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:57:44.566118+00:00'
+              completed_at: '2026-09-08T12:57:54.933900+00:00'
+              latency_ms: 10367
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5616
+                cached_input_tokens: 2833
+                cache_write_tokens: 0
+                output_tokens: 413
+                reasoning_tokens: 97
+                search_count: 1
+                cost_usd: '0.00224771'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 974
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 0c9a6eabfb37a2e152215fcc59665b3c5bd6d895de2eb92bedb2e8a4d417b53f
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:57:54.935884+00:00'
+            completed_at: '2026-09-08T12:57:56.085960+00:00'
+            latency_ms: 1150
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1180
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 233
+              reasoning_tokens: 169
+              search_count: 0
+              cost_usd: '0.0009365'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 194
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a08118b8847266b64e74bac5b082dc
+        turn_number: 6
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 182a82e745807e7e7854f03abf1cffc9b9d9c7933138608235ef3629f0b243fd
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:57:56.100335+00:00'
+          completed_at: '2026-09-08T12:58:03.662398+00:00'
+          latency_ms: 7562
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1236
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 284
+            reasoning_tokens: 252
+            search_count: 0
+            cost_usd: '0.004176'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 126
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a08118d61071f98f5d30e67baa9c3d
+        turn_number: 6
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: e135f89e1cff7e97d36565b1cd9d4d64d67e0aba07fd9944d9eccdfa3bc5c967
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:58:03.666124+00:00'
+            completed_at: '2026-09-08T12:58:10.792261+00:00'
+            latency_ms: 7126
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5204
+              cached_input_tokens: 2838
+              cache_write_tokens: 0
+              output_tokens: 379
+              reasoning_tokens: 51
+              search_count: 1
+              cost_usd: '0.00210276'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1149
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Genghis Khan is directly described by Britannica
+              as a Mongolian warrior-ruler and by World History Encyclopedia as the
+              founder and ruler of the Mongol Empire. These facts establish that he
+              was primarily known as a political leader or ruler.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan primarily known as political leader ruler founder first
+              khan Mongol Empire biography
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: e135f89e1cff7e97d36565b1cd9d4d64d67e0aba07fd9944d9eccdfa3bc5c967
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:58:03.666124+00:00'
+              completed_at: '2026-09-08T12:58:10.792261+00:00'
+              latency_ms: 7126
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5204
+                cached_input_tokens: 2838
+                cache_write_tokens: 0
+                output_tokens: 379
+                reasoning_tokens: 51
+                search_count: 1
+                cost_usd: '0.00210276'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1149
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: bc7d09fee34f61692f09b7a013494b5506bd074e56676407ec4efa8ec0768ebd
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:58:10.795288+00:00'
+            completed_at: '2026-09-08T12:58:12.336940+00:00'
+            latency_ms: 1541
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1200
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 299
+              reasoning_tokens: 222
+              search_count: 0
+              cost_usd: '0.0011075'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 268
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a08118f7ff73cd98f50e329f92f8c3
+        turn_number: 7
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: b178087c0403250105b058e264f776c307c22613c130e4cdac7498047cbb537e
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:58:12.351641+00:00'
+          completed_at: '2026-09-08T12:58:15.536242+00:00'
+          latency_ms: 3184
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1277
+            cached_input_tokens: 1152
+            cache_write_tokens: 0
+            output_tokens: 138
+            reasoning_tokens: 104
+            search_count: 0
+            cost_usd: '0.001654'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 122
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a08119047173d8a4d41940090a6d7a
+        turn_number: 7
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: de547c690f91c905531d70131eaf942121df9c39aa2d9ec63e4486e46493d350
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:58:15.539910+00:00'
+            completed_at: '2026-09-08T12:58:21.912557+00:00'
+            latency_ms: 6372
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5991
+              cached_input_tokens: 2836
+              cache_write_tokens: 0
+              output_tokens: 394
+              reasoning_tokens: 85
+              search_count: 1
+              cost_usd: '0.00231797'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 849
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Genghis Khan was born around 1162 and died in 1227,
+              so he lived primarily in the 12th and 13th centuries, not the 20th century.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan dates of life 1162 1227 lived 20th century
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: de547c690f91c905531d70131eaf942121df9c39aa2d9ec63e4486e46493d350
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:58:15.539910+00:00'
+              completed_at: '2026-09-08T12:58:21.912557+00:00'
+              latency_ms: 6372
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5991
+                cached_input_tokens: 2836
+                cache_write_tokens: 0
+                output_tokens: 394
+                reasoning_tokens: 85
+                search_count: 1
+                cost_usd: '0.00231797'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 849
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: f1fda869b21e38b2910dede27a4f2bc5987ebde0d9095a636c8e4bae4baf43d3
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:58:21.914824+00:00'
+            completed_at: '2026-09-08T12:58:23.227469+00:00'
+            latency_ms: 1312
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1188
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 291
+              reasoning_tokens: 192
+              search_count: 0
+              cost_usd: '0.0010839'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 276
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a08119228976fc91dc5568f772bc30
+        turn_number: 8
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 3be0435118978c7d441dce72fc4a6b88807b87917c4a40153efac3db31823981
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:58:23.241814+00:00'
+          completed_at: '2026-09-08T12:58:27.926377+00:00'
+          latency_ms: 4684
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1318
+            cached_input_tokens: 1152
+            cache_write_tokens: 0
+            output_tokens: 195
+            reasoning_tokens: 168
+            search_count: 0
+            cost_usd: '0.002078'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 93
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0811934d876f9a7bee462b36f99f9
+        turn_number: 8
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 0577824e8cc12c2636fcb4fcb2f38878e9459db9d38e5a054317147a11cd1b1d
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:58:27.931521+00:00'
+            completed_at: '2026-09-08T12:58:41.949197+00:00'
+            latency_ms: 14017
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 10665
+              cached_input_tokens: 6388
+              cache_write_tokens: 0
+              output_tokens: 649
+              reasoning_tokens: 192
+              search_count: 2
+              cost_usd: '0.00397536'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 9
+            url_citation_count: 9
+            raw_output_present: true
+            raw_output_characters: 1455
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Britannica identifies Genghis Khan as born near
+              Lake Baikal, Mongolia. Under the ordinary modern-country meaning of
+              “China,” this rejects the claim that he was born in China. Some sources
+              describe the broader birthplace region as near the Mongolia–China border,
+              but that does not establish China as the country of birth.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan born location Delüün Boldog Mongolia China historical sources
+              birthplace
+            - Genghis Khan birthplace Deluun Boldog Khentii Mongolia born source Britannica
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 0577824e8cc12c2636fcb4fcb2f38878e9459db9d38e5a054317147a11cd1b1d
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:58:27.931521+00:00'
+              completed_at: '2026-09-08T12:58:41.949197+00:00'
+              latency_ms: 14017
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 10665
+                cached_input_tokens: 6388
+                cache_write_tokens: 0
+                output_tokens: 649
+                reasoning_tokens: 192
+                search_count: 2
+                cost_usd: '0.00397536'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 9
+              url_citation_count: 9
+              raw_output_present: true
+              raw_output_characters: 1455
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 1960826505fa6252ffe05db0bd6a0bf852b07d3d155c138793f8a5db19400b9f
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:58:41.951689+00:00'
+            completed_at: '2026-09-08T12:58:45.359375+00:00'
+            latency_ms: 3407
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1200
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 899
+              reasoning_tokens: 819
+              search_count: 0
+              cost_usd: '0.0026075'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 263
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0811978fd7323a17f7863f416f895
+        turn_number: 9
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 135b7d98d90514b0686623d455c2516f7728a87826f840933d2dbc871bff60d3
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:58:45.373616+00:00'
+          completed_at: '2026-09-08T12:58:55.905636+00:00'
+          latency_ms: 10532
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1354
+            cached_input_tokens: 1280
+            cache_write_tokens: 0
+            output_tokens: 468
+            reasoning_tokens: 434
+            search_count: 0
+            cost_usd: '0.003596'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 123
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a08119a22473ddbfa1fde4ab361e2b
+        turn_number: 9
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 747e1d8d81619f59cfa9620fd45e5a283339a7307079297b31b01526e4d4240e
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:58:55.910976+00:00'
+            completed_at: '2026-09-08T12:59:03.825216+00:00'
+            latency_ms: 7914
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5537
+              cached_input_tokens: 2841
+              cache_write_tokens: 0
+              output_tokens: 375
+              reasoning_tokens: 58
+              search_count: 1
+              cost_usd: '0.00218052'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 888
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Genghis Khan was born around 1162 and died in 1227,
+              so his entire lifetime occurred before 1500. Therefore, he lived primarily
+              before the year 1500.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan Temüjin birth death dates 1162 1227 historical person lived
+              before 1500
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 747e1d8d81619f59cfa9620fd45e5a283339a7307079297b31b01526e4d4240e
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:58:55.910976+00:00'
+              completed_at: '2026-09-08T12:59:03.825216+00:00'
+              latency_ms: 7914
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5537
+                cached_input_tokens: 2841
+                cache_write_tokens: 0
+                output_tokens: 375
+                reasoning_tokens: 58
+                search_count: 1
+                cost_usd: '0.00218052'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 888
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 1871f5ddf43c2ecf3bbad00ad3ad8969dc22b39911b52604f365526839f2cfad
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:59:03.827951+00:00'
+            completed_at: '2026-09-08T12:59:04.618648+00:00'
+            latency_ms: 790
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1182
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 77
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0005471'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 216
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a08119c437709796e73b9683a0fef7
+        turn_number: 10
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 35793fe767ba08aa0440f71966f4e3e60d24ee566001d26cffb2018699438d84
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:59:04.631822+00:00'
+          completed_at: '2026-09-08T12:59:24.569640+00:00'
+          latency_ms: 19937
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1395
+            cached_input_tokens: 1280
+            cache_write_tokens: 0
+            output_tokens: 860
+            reasoning_tokens: 830
+            search_count: 0
+            cost_usd: '0.00603'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 111
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0811a121c7213a52f25b56ba3aaae
+        turn_number: 10
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 061236dbfddb647be2234abfd7b29c84f5ecd085018b1a1445f1cd86a77d5214
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:59:24.574639+00:00'
+            completed_at: '2026-09-08T12:59:32.117044+00:00'
+            latency_ms: 7542
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4686
+              cached_input_tokens: 2835
+              cache_write_tokens: 0
+              output_tokens: 458
+              reasoning_tokens: 133
+              search_count: 1
+              cost_usd: '0.00206875'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1060
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Britannica identifies Genghis Khan as born near
+              Lake Baikal, Mongolia. EBSCO places his birth in Delyun Boldog in the
+              northeastern borderlands between Mongolia and China. These locations
+              are not on the Indian subcontinent.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan born Indian subcontinent birthplace Delüün Boldog Mongolia
+              1162 sources
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 061236dbfddb647be2234abfd7b29c84f5ecd085018b1a1445f1cd86a77d5214
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:59:24.574639+00:00'
+              completed_at: '2026-09-08T12:59:32.117044+00:00'
+              latency_ms: 7542
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4686
+                cached_input_tokens: 2835
+                cache_write_tokens: 0
+                output_tokens: 458
+                reasoning_tokens: 133
+                search_count: 1
+                cost_usd: '0.00206875'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1060
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: d077645a9605e57a7b10b1de0988101e65dd27295ec4b05951e9515cfe32abc2
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:59:32.121663+00:00'
+            completed_at: '2026-09-08T12:59:33.395673+00:00'
+            latency_ms: 1274
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1184
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 257
+              reasoning_tokens: 171
+              search_count: 0
+              cost_usd: '0.0009977'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 299
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0811a34a07396b5146547e215f7ea
+        turn_number: 11
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 87229dc6ce8db9a69084817b06b15984c5e95955be59392c98fbdb952afb65f0
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:59:33.409143+00:00'
+          completed_at: '2026-09-08T12:59:48.797325+00:00'
+          latency_ms: 15388
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1434
+            cached_input_tokens: 1280
+            cache_write_tokens: 0
+            output_tokens: 658
+            reasoning_tokens: 626
+            search_count: 0
+            cost_usd: '0.004896'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 115
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0811a70bf708b91f790b1494b0841
+        turn_number: 11
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 76031a7f52a91727e615f3e5ba06d31282ade29b9bf5b1d7217d8231145060d6
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:59:48.802904+00:00'
+            completed_at: '2026-09-08T12:59:57.212939+00:00'
+            latency_ms: 8410
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5224
+              cached_input_tokens: 2839
+              cache_write_tokens: 0
+              output_tokens: 422
+              reasoning_tokens: 84
+              search_count: 1
+              cost_usd: '0.00215913'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 972
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Genghis Khan is generally dated as born around 1162
+              and dying in 1227. Both dates are after the year 1000, so he did not
+              live primarily before 1000.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan dates of life born 1162 died 1227 lived primarily before
+              year 1000
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 76031a7f52a91727e615f3e5ba06d31282ade29b9bf5b1d7217d8231145060d6
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T12:59:48.802904+00:00'
+              completed_at: '2026-09-08T12:59:57.212939+00:00'
+              latency_ms: 8410
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5224
+                cached_input_tokens: 2839
+                cache_write_tokens: 0
+                output_tokens: 422
+                reasoning_tokens: 84
+                search_count: 1
+                cost_usd: '0.00215913'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 972
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: f50b88289725e204f71a2891751885559ef81db33a4a0b35840309361deca7cd
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T12:59:57.214907+00:00'
+            completed_at: '2026-09-08T12:59:58.607681+00:00'
+            latency_ms: 1392
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1203
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 304
+              reasoning_tokens: 224
+              search_count: 0
+              cost_usd: '0.0011209'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 217
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0811a971c73c98e21f643795693ec
+        turn_number: 12
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 9e1b0990dab1adb057abababd903374e9400ac014b88892eb6f03b30864e29c1
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T12:59:58.620547+00:00'
+          completed_at: '2026-09-08T13:00:17.458203+00:00'
+          latency_ms: 18837
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1475
+            cached_input_tokens: 128
+            cache_write_tokens: 0
+            output_tokens: 881
+            reasoning_tokens: 844
+            search_count: 0
+            cost_usd: '0.008044'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 133
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0811ae0b57445b239457629ea324f
+        turn_number: 12
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: b4e0077947e96a2f8c0928b97b6d6e3b8473d1bf76a7fdb7a9b2375734b70cd8
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T13:00:17.462994+00:00'
+            completed_at: '2026-09-08T13:00:24.958033+00:00'
+            latency_ms: 7495
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4824
+              cached_input_tokens: 2846
+              cache_write_tokens: 0
+              output_tokens: 383
+              reasoning_tokens: 85
+              search_count: 1
+              cost_usd: '0.00201072'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 932
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Genghis Khan, also known as Temüjin, is reported
+              to have been born near Lake Baikal in Mongolia. Mongolia is in East
+              Asia, so the claim applies to the named person.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan born birthplace East Asia Mongolia 1162 source
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: b4e0077947e96a2f8c0928b97b6d6e3b8473d1bf76a7fdb7a9b2375734b70cd8
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T13:00:17.462994+00:00'
+              completed_at: '2026-09-08T13:00:24.958033+00:00'
+              latency_ms: 7495
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4824
+                cached_input_tokens: 2846
+                cache_write_tokens: 0
+                output_tokens: 383
+                reasoning_tokens: 85
+                search_count: 1
+                cost_usd: '0.00201072'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 932
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 7732091e48d9e349a2d4b83afb10f369a6086e3e861501a0d44a423fb4023daf
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T13:00:24.960884+00:00'
+            completed_at: '2026-09-08T13:00:26.526594+00:00'
+            latency_ms: 1565
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1182
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 309
+              reasoning_tokens: 245
+              search_count: 0
+              cost_usd: '0.0011271'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 212
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0811b043071e4893554368257f8fc
+        turn_number: 13
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: d21e1274b41d71934c0033e50825599104fc4b9a76def2e36503c09b19cbe5fe
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T13:00:26.544446+00:00'
+          completed_at: '2026-09-08T13:00:41.579406+00:00'
+          latency_ms: 15034
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1522
+            cached_input_tokens: 1024
+            cache_write_tokens: 0
+            output_tokens: 751
+            reasoning_tokens: 724
+            search_count: 0
+            cost_usd: '0.006014'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 96
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0811b3eed7000bd4ad18be3142a40
+        turn_number: 13
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 2242c363a75e50dbd6b89d162bfeae2d947a29becbaef4f283916f0585f34a0f
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T13:00:41.583491+00:00'
+            completed_at: '2026-09-08T13:00:52.109440+00:00'
+            latency_ms: 10525
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5267
+              cached_input_tokens: 2833
+              cache_write_tokens: 0
+              output_tokens: 548
+              reasoning_tokens: 143
+              search_count: 1
+              cost_usd: '0.00232246'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1382
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Sources identify Genghis Khan (Temüjin) as born
+              in northern Mongolia, specifically at or near Delüün Boldog. The historical
+              name and borders differ from the modern country, but the ordinary modern-geographic
+              interpretation supports YES.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan born in Mongolia birthplace Delüün Boldog modern Mongolia
+              source
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 2242c363a75e50dbd6b89d162bfeae2d947a29becbaef4f283916f0585f34a0f
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T13:00:41.583491+00:00'
+              completed_at: '2026-09-08T13:00:52.109440+00:00'
+              latency_ms: 10525
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5267
+                cached_input_tokens: 2833
+                cache_write_tokens: 0
+                output_tokens: 548
+                reasoning_tokens: 143
+                search_count: 1
+                cost_usd: '0.00232246'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1382
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 0ba48eb2e6770d9e73d6c44e0c9713718fa665bf4e9a86b3bb842fc11dcaf4b7
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T13:00:52.111713+00:00'
+            completed_at: '2026-09-08T13:00:53.961900+00:00'
+            latency_ms: 1850
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1208
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 410
+              reasoning_tokens: 374
+              search_count: 0
+              cost_usd: '0.0013874'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 149
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0811b6f55704b9d5ff0140f3d22b7
+        turn_number: 14
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 19c56f5ceb635b1a05ee534d808ff9b0115792f304c143e1e98138ef70f751bb
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T13:00:53.973608+00:00'
+          completed_at: '2026-09-08T13:00:59.651569+00:00'
+          latency_ms: 5678
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1558
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 259
+            reasoning_tokens: 228
+            search_count: 0
+            cost_usd: '0.00467'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 112
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0811b858670a587a11f92e50ffc2a
+        turn_number: 14
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: c95a664daa132bef5c9e40ca0cc2767c9630819cffd48a68404d13509db5d861
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T13:00:59.657689+00:00'
+            completed_at: '2026-09-08T13:01:08.273489+00:00'
+            latency_ms: 8615
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5534
+              cached_input_tokens: 2837
+              cache_write_tokens: 0
+              output_tokens: 451
+              reasoning_tokens: 60
+              search_count: 1
+              cost_usd: '0.00227189'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1366
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Genghis Khan is identified as the founder and first
+              khan of the Mongol Empire. This directly supports that he was the founder;
+              no material gap remains.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Genghis Khan founder of the Mongol Empire historical source
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: c95a664daa132bef5c9e40ca0cc2767c9630819cffd48a68404d13509db5d861
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T13:00:59.657689+00:00'
+              completed_at: '2026-09-08T13:01:08.273489+00:00'
+              latency_ms: 8615
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5534
+                cached_input_tokens: 2837
+                cache_write_tokens: 0
+                output_tokens: 451
+                reasoning_tokens: 60
+                search_count: 1
+                cost_usd: '0.00227189'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1366
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 4227dcb73ba6b5f2d0e2111e040818dedc9801f981af63d685a8e5af3802dbab
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T13:01:08.276213+00:00'
+            completed_at: '2026-09-08T13:01:10.509701+00:00'
+            latency_ms: 2233
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1246
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 553
+              reasoning_tokens: 514
+              search_count: 0
+              cost_usd: '0.0017563'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 171
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0811baffb73adb2067f2852e1cb81
+        turn_number: 15
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 646672aa5e678732611dceba902f4a383190a197a51c8bb526f170d5d9e5afc4
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T13:01:10.523985+00:00'
+          completed_at: '2026-09-08T13:01:15.039682+00:00'
+          latency_ms: 4515
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: x-ai/grok-4.6
+          resolved_model: x-ai/grok-4.6
+          requested_provider: xai
+          resolved_provider: xAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1598
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 236
+            reasoning_tokens: 194
+            search_count: 0
+            cost_usd: '0.004612'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 146
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a0811bc1a274bfaf1f717d7ff37a05
+        turn_number: 15
+        status: success
+        prompt:
+          version: strict-guess-validator-v2-generic-kinds
+          hash: 5c41550a645ca2277d5a25c642908d82c3523c5d50d9e3bbd23d2676a32d62a5
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T13:01:15.043324+00:00'
+          completed_at: '2026-09-08T13:01:16.560638+00:00'
+          latency_ms: 1517
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 626
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 47
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.0001816'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 190
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      unavailable_call_count: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0015/BX-20260908-B-0003-experimental-M0015-001/subjects/T-0006/trials/trial-002/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 960c2d53d8f6547b07dcc31886978a5429550a1f0fecf9f0710bb5fbcbe8e2df

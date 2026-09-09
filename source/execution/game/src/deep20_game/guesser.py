@@ -8,7 +8,7 @@ from deep20_oracle.util import canonical_json, safe_json_value, sha256_text, tim
 from pydantic import ValidationError
 
 from .config import GamePolicy, ModelConfig
-from .errors import GameError, GameProviderError, GuesserProtocolError
+from .errors import GameConfigurationError, GameError, GameProviderError, GuesserProtocolError
 from .models import (
     GUESSER_ACTION_SCHEMA_NAME,
     ContractViolationKind,
@@ -24,7 +24,12 @@ from .models import (
     guesser_action_output_schema,
     parse_guesser_action_output,
 )
-from .prompt import GUESSER_PROMPT_VERSION, prompt_hash, validate_guesser_prompt_nonce
+from .prompt import (
+    guesser_prompt_version,
+    guesser_system_prompt,
+    prompt_hash,
+    validate_guesser_prompt_nonce,
+)
 from .provider import GameModelProvider
 from .service_util import (
     metrics_from_trace,
@@ -70,7 +75,7 @@ class Guesser:
         cache_material = canonical_json(
             {
                 "configuration_id": self.config.configuration_id,
-                "prompt_version": GUESSER_PROMPT_VERSION,
+                "prompt_version": guesser_prompt_version(self.policy.prompt_profile),
                 "schema_hash": schema_hash,
                 "max_questions": self.policy.max_questions,
             }
@@ -81,6 +86,16 @@ class Guesser:
         trace: ProviderTrace | None = None
         try:
             validate_guesser_prompt_nonce(rendered_messages, sampling.prompt_nonce)
+            if rendered_messages[0] != {
+                "role": "system",
+                "content": guesser_system_prompt(
+                    self.policy.max_questions, self.policy.prompt_profile,
+                ),
+            }:
+                raise GameConfigurationError(
+                    "Guesser instructions do not match the configured prompt profile",
+                    code="guesser_prompt_profile_mismatch",
+                )
             provider_request = GameProviderRequest(
                 messages=rendered_messages,
                 output_schema=output_schema,
@@ -91,7 +106,7 @@ class Guesser:
             )
             action, trace = self._complete_action(provider_request)
             audit = GameCallAudit(
-                prompt_version=GUESSER_PROMPT_VERSION,
+                prompt_version=guesser_prompt_version(self.policy.prompt_profile),
                 prompt_hash=rendered_hash,
                 messages=rendered_messages,
                 session_id=session_id,
@@ -128,7 +143,7 @@ class Guesser:
                     episode_id=episode_id,
                     metrics=metrics_from_trace(trace, self.config) if trace else None,
                     audit=FailedGameCallAudit(
-                        prompt_version=GUESSER_PROMPT_VERSION,
+                        prompt_version=guesser_prompt_version(self.policy.prompt_profile),
                         prompt_hash=rendered_hash,
                         messages=rendered_messages,
                         session_id=session_id,

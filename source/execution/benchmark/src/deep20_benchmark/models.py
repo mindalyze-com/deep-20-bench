@@ -12,7 +12,7 @@ from deep20_game.models import (
     GuesserContractReliability,
     TurnProgress,
 )
-from deep20_oracle.config import OracleConfig
+from deep20_oracle.config import OracleConfig, PromptProfile, validate_prompt_profiles
 from deep20_oracle.models import (
     FailureDiagnostics,
     OracleQuestionType,
@@ -23,6 +23,8 @@ from deep20_oracle.models import (
     Subject,
 )
 from pydantic import ConfigDict, Field, RootModel, field_validator, model_validator
+
+from .history_models import OracleHistoryLoad, OracleHistorySnapshot
 
 ERROR_OUTPUT_PREVIEW_MAX_CHARACTERS = 250
 
@@ -126,6 +128,18 @@ class BenchmarkDefinitionSnapshot(StrictModel):
     validator_configuration: ModelConfig
     definition_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
 
+    @model_validator(mode="after")
+    def experimental_prompts_only(self) -> BenchmarkDefinitionSnapshot:
+        if self.game_policy.benchmark_mode is BenchmarkMode.OFFICIAL and (
+            self.game_policy.prompt_profile is not PromptProfile.STANDARD
+            or self.oracle_configuration.prompt_profile is not PromptProfile.STANDARD
+        ):
+            raise ValueError("revised prompts require experimental benchmark mode")
+        validate_prompt_profiles(
+            self.game_policy.prompt_profile, self.oracle_configuration.prompt_profile,
+        )
+        return self
+
 
 class TrialIdentity(StrictModel):
     execution_id: BenchmarkExecutionId
@@ -140,6 +154,7 @@ class TrialRepairPolicy(StrictModel):
     """Bounded re-execution of infrastructure-failed trials with unchanged identity."""
 
     max_attempts_per_trial: int = Field(default=3, ge=1, le=10)
+    allow_oracle_contract_change: bool = Field(default=False, exclude_if=lambda v: not v)
     judge_ignored_providers: tuple[str, ...] = Field(
         default_factory=tuple,
         max_length=16,
@@ -200,6 +215,8 @@ class BenchmarkRunArtifactReferences(StrictModel):
 
 
 class BenchmarkManifest(StrictModel):
+    oracle_contract_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$", exclude_if=lambda v: v is None)
+    oracle_cache: OracleHistorySnapshot | None = Field(default=None, exclude_if=lambda v: v is None)
     schema_version: Literal[3] = 3
     request: BenchmarkRequest
     definition: BenchmarkDefinitionSnapshot
@@ -323,6 +340,7 @@ class SupersededInfrastructureAttempt(StrictModel):
 
 
 class CompletedTrialResult(StrictModel):
+    oracle_judge_ignored_providers: tuple[str, ...] = Field(default=(), exclude_if=lambda v: not v)
     status: Literal["completed"] = "completed"
     identity: TrialIdentity
     attempt_number: int = Field(default=1, ge=1)
@@ -443,6 +461,10 @@ class OracleQualityAggregate(StrictModel):
     judge_yes_answers: int = Field(default=0, ge=0)
     judge_no_answers: int = Field(default=0, ge=0)
     judge_unknown_answers: int = Field(default=0, ge=0)
+    final_rather_yes_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    final_rather_no_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    judge_rather_yes_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    judge_rather_no_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
     reviewer_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
     judge_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
     quality_control_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
@@ -556,7 +578,20 @@ class SubjectSummaryEntry(StrictModel):
     summary_markdown: ArtifactFileReference
 
 
+class OracleContractRevision(StrictModel):
+    previous_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    current_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    current_definition_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    oracle_cache: OracleHistorySnapshot | None = None
+    recorded_at: str
+
+
 class BenchmarkRun(StrictModel):
+    oracle_contract_revisions: tuple[OracleContractRevision, ...] = Field(
+        default=(), exclude_if=lambda v: not v,
+    )
+    oracle_cache_loads: tuple[OracleHistoryLoad, ...] = Field(default=(), exclude_if=lambda v: not v)
+    oracle_cache: OracleHistorySnapshot | None = Field(default=None, exclude_if=lambda v: v is None)
     execution_id: BenchmarkExecutionId
     definition: BenchmarkDefinitionSnapshot
     model: BenchmarkModelSnapshot
@@ -641,6 +676,9 @@ class ExecutionResumedEvent(StrictModel):
     model_id: BenchmarkModelId
     operation: Literal["resume", "repair"]
     git_commit: str
+    oracle_contract_revision: OracleContractRevision | None = Field(
+        default=None, exclude_if=lambda v: v is None,
+    )
     repair_policy: TrialRepairPolicy | None = Field(
         default=None,
         exclude_if=lambda value: value is None,

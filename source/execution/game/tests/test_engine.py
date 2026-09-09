@@ -20,8 +20,9 @@ from deep20_game.models import (
 )
 from deep20_game.sampling import derive_guesser_prompt_nonce, derive_guesser_seed
 from deep20_game.validator import GuessValidator
-from deep20_oracle.config import OracleConfig
-from deep20_oracle.errors import OracleProtocolError
+from deep20_oracle.audit import RunAuditWriter
+from deep20_oracle.config import AdjudicationPolicy, OracleConfig, PromptProfile
+from deep20_oracle.errors import OracleProviderError
 from deep20_oracle.models import (
     Evidence,
     EvidenceDecisionBasis,
@@ -43,6 +44,8 @@ from deep20_oracle.models import (
     OracleResult,
     OracleRoleMetrics,
 )
+from deep20_oracle.provider import ProviderExchange, ProviderRequest
+from deep20_oracle.service import Oracle
 
 from .conftest import FakeGameProvider, official_policy, provider_trace
 
@@ -289,74 +292,159 @@ def test_oracle_unknown_result_audit_keeps_search_and_citation_counts(
     assert "response-0" not in serialized
 
 
-def test_research_exhaustion_is_retained_in_terminal_result_diagnostics(
-    audit_writer,
-    model_config,
-    validator_config,
-    policy,
-    subject,
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
+@pytest.mark.parametrize("question", [
+    "Is it usually located indoors?", "Is it usually found indoors?",
+])
+@pytest.mark.parametrize("technical_failure", [False, True])
+def test_real_oracle_inconclusive_research_keeps_game_scored_and_history_blind(
+    profile, question, technical_failure, tmp_path, audit_writer,
+    model_config, validator_config, policy, subject,
 ) -> None:
-    trace = provider_trace(model_config, '{"answer":"UNKNOWN"}')
-    trace = trace.model_copy(
-        update={
-            "usage": trace.usage.model_copy(update={"search_count": 2}),
-        }
+    policy = policy.model_copy(update={"prompt_profile": profile, "max_questions": 1})
+    audit_writer.game_policy = policy
+    audit_writer.oracle_config = audit_writer.oracle_config.model_copy(update={
+        "prompt_profile": profile,
+        "adjudication_policy": (AdjudicationPolicy.JUDGE_STABLE_KNOWLEDGE_V1
+                                if profile is PromptProfile.QUALIFIED_V1
+                                else AdjudicationPolicy.PROFILE_DEFAULT),
+    })
+    config = audit_writer.oracle_config
+    subject = subject.model_copy(update={
+        "canonical_name": "Bike pump", "aliases": (), "entity_type": "thing",
+        "description": "A general kind of pump for inflating bicycle tires.",
+        "reference_url": None,
+    })
+    output = json.dumps({
+        "answer": "UNKNOWN", "evidence": [],
+        "research_outcome": "insufficient_coverage",
+        "attempted_queries": ["PRIVATE_RESEARCH_QUERY"],
+    })
+    trace = provider_trace(model_config.model_copy(update={"model": config.model}), output)
+    trace = trace.model_copy(update={"usage": trace.usage.model_copy(update={"search_count": 1})})
+
+    class ResearchProvider:
+        def __init__(self):
+            self.requests = []
+
+        def complete(self, request: ProviderRequest) -> ProviderExchange:
+            self.requests.append(request)
+            if technical_failure and len(self.requests) == 2:
+                raise OracleProviderError("provider unavailable", code="provider_request_failed")
+            return ProviderExchange(raw_output=output, trace=trace)
+
+    class UnusedReviewProvider:
+        def complete(self, request: ProviderRequest) -> ProviderExchange:
+            pytest.fail("An Oracle UNKNOWN must bypass Reviewer and Judge")
+
+    provider = ResearchProvider()
+    sink = RunAuditWriter(
+        tmp_path / "oracle", config=config, subject_catalog_hash="a" * 64,
+        repository=tmp_path,
     )
-
-    class ExhaustedOracle:
-        def ask(self, request):
-            raise OracleProtocolError(
-                "Oracle research could not retrieve usable evidence for a closed fact",
-                code="oracle_research_exhausted",
-                call_id="OC-00000000000000000000000000000001",
-                details={
-                    "provider_trace": trace.model_dump(mode="json"),
-                    "oracle_research": {
-                        "question_class": "temporal_status",
-                        "resolution": "retrieval_exhausted_unknown",
-                        "attempts": [
-                            {
-                                "attempt_number": 1,
-                                "strategy": "primary",
-                                "outcome": "no_results",
-                                "attempted_queries": ["Albert Einstein alive"],
-                            },
-                            {
-                                "attempt_number": 2,
-                                "strategy": "diversified_recovery",
-                                "outcome": "irrelevant_results",
-                                "attempted_queries": ["Albert Einstein death date biography"],
-                            },
-                        ],
-                    },
-                },
-            )
-
+    oracle = Oracle(provider, UnusedReviewProvider(), UnusedReviewProvider(), sink, config)
+    guesser = FakeGameProvider(model_config, [
+        ask(question), guess("Bike pump", "A pump for inflating bicycle tires."),
+    ])
     engine = make_engine(
-        guesser_provider=FakeGameProvider(
-            model_config,
-            [ask("Is this person currently alive?")],
-        ),
-        validator_provider=FakeGameProvider(validator_config, []),
-        oracle=ExhaustedOracle(),
-        audit_writer=audit_writer,
-        policy=policy,
-        model_config=model_config,
-        validator_config=validator_config,
+        guesser_provider=guesser,
+        validator_provider=FakeGameProvider(validator_config, [validation("YES")]),
+        oracle=oracle, audit_writer=audit_writer, policy=policy,
+        model_config=model_config, validator_config=validator_config,
     )
 
     result = engine.play(GameRequest(run_id="research-exhausted", subject=subject))
 
-    assert result.terminal_reason is TerminalReason.INFRASTRUCTURE_FAILURE
-    assert result.scoring_eligible is False
-    assert result.failure is not None
-    assert result.failure.code == "oracle_research_exhausted"
-    assert result.failure.diagnostics is not None
-    research = result.failure.diagnostics.metadata["oracle_research"]
-    assert research["question_class"] == "temporal_status"
-    assert len(research["attempts"]) == 2
-    assert result.audit is not None
-    assert result.audit.unavailable_call_count == 1
+    assert len(provider.requests) == 2
+    if technical_failure:
+        assert result.terminal_reason is TerminalReason.INFRASTRUCTURE_FAILURE
+        assert result.scoring_eligible is False
+        assert result.failure is not None
+        assert result.failure.code == "provider_request_failed"
+        assert len(guesser.requests) == 1
+    else:
+        assert result.success is result.scoring_eligible is True
+        assert result.failure is None
+        assert result.counted_questions == result.oracle_unknown_count == 1
+        assert result.turns[0].adjudication.answer is OracleAnswer.UNKNOWN
+        assert len(guesser.requests) == 2
+        messages = guesser.requests[1].messages
+        assert messages[-1] == {"role": "user", "content": "UNKNOWN"}
+        assert len(messages) == 4
+        visible = json.dumps(messages)
+        for private_text in ("PRIVATE_RESEARCH_QUERY", "insufficient_coverage", "Bike pump"):
+            assert private_text not in visible
+        assert result.costs_usd.oracle == Decimal("0.02")
+
+
+@pytest.mark.parametrize("query_target,searches", ((3, 4), (3, 5), (5, 7)))
+def test_real_oracle_search_headroom_keeps_game_running_and_review_blind(
+    query_target, searches, tmp_path, audit_writer, model_config, validator_config, policy, subject,
+) -> None:
+    policy = policy.model_copy(update={"prompt_profile": PromptProfile.QUALIFIED_V1})
+    config = audit_writer.oracle_config.model_copy(update={
+        "prompt_profile": PromptProfile.QUALIFIED_V1,
+        "adjudication_policy": AdjudicationPolicy.CONCISE_KNOWLEDGE_V1,
+        "research_query_target": query_target,
+    })
+    audit_writer.game_policy = policy
+    audit_writer.oracle_config = config
+    output = json.dumps({
+        "answer": "YES", "basis": "evidence", "supporting_statement": "PRIVATE_ORACLE_SUPPORT",
+        "evidence": [{"source_url": "https://example.test/birth", "excerpt": "Born in 1879.",
+                      "validation": "model_reported"}],
+        "research_outcome": "answered",
+        "attempted_queries": [f"PRIVATE_QUERY_{i}" for i in range(searches)],
+    })
+    correction = json.dumps({
+        "answer": "NO", "basis": "evidence", "supporting_statement": "1879 is after 1800.",
+        "evidence_indices": [1],
+    })
+
+    class ResearchProvider:
+        def __init__(self, route, output, search_count):
+            self.output = output
+            self.requests = []
+            trace = provider_trace(model_config.model_copy(update={
+                "model": route.model, "provider": route.provider,
+            }), output)
+            self.trace = trace.model_copy(update={
+                "usage": trace.usage.model_copy(update={"search_count": search_count}),
+            })
+
+        def complete(self, request: ProviderRequest) -> ProviderExchange:
+            self.requests.append(request)
+            return ProviderExchange(raw_output=self.output, trace=self.trace)
+
+    primary = ResearchProvider(config, output, searches)
+    reviewer = ResearchProvider(config.reviewer, correction, 0)
+    judge = ResearchProvider(config.judge, correction, 0)
+    sink = RunAuditWriter(tmp_path / "oracle", config=config, subject_catalog_hash="a" * 64,
+                         repository=tmp_path)
+    oracle = Oracle(primary, reviewer, judge, sink, config)
+    guesser = FakeGameProvider(model_config, [
+        ask("Was this person born before 1800?"), guess("Albert Einstein", "The physicist."),
+    ])
+    engine = make_engine(
+        guesser_provider=guesser,
+        validator_provider=FakeGameProvider(validator_config, [validation("YES")]),
+        oracle=oracle, audit_writer=audit_writer, policy=policy,
+        model_config=model_config, validator_config=validator_config,
+    )
+    result = engine.play(GameRequest(run_id="search-headroom", subject=subject))
+    assert result.success is result.scoring_eligible is True
+    assert result.failure is None
+    assert len(guesser.requests) == 2
+    assert primary.requests[0].max_web_search_requests == query_target + 2
+    assert len(reviewer.requests) == len(judge.requests) == 1
+    assert result.turns[0].adjudication.answer is OracleAnswer.NO
+    assert result.audit.calls[1].research.attempts[0].provider.web_search_requests == searches
+    assert guesser.requests[1].messages[-1] == {"role": "user", "content": "NO"}
+    visible = json.dumps(guesser.requests[1].messages)
+    for private_text in ("PRIVATE_QUERY", "PRIVATE_ORACLE_SUPPORT", "1879", "Albert Einstein"):
+        assert private_text not in visible
+    for role in (reviewer, judge):
+        assert "PRIVATE_ORACLE_SUPPORT" not in json.dumps(role.requests[0].messages)
 
 
 def test_immediate_correct_guess_reveals_only_category(
@@ -396,7 +484,7 @@ def test_immediate_correct_guess_reveals_only_category(
     assert result.models.under_test.resolved_models == ("openai/test-model",)
     assert (
         result.models.under_test.prompt_version
-        == "stateful-category-guesser-v10-unknown-evidence-guidance"
+        == "stateful-category-guesser-v14-category-guide"
     )
     assert result.models.oracle.requested_model == "openai/test-oracle"
     assert result.models.oracle.resolved_models == ()
@@ -549,13 +637,20 @@ def test_immediate_correct_guess_reveals_only_category(
     )
 
 
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
 def test_wrong_guess_oracle_unknown_then_success_preserves_visible_history(
+    profile: PromptProfile,
     audit_writer,
     model_config,
     validator_config,
     policy,
     subject,
 ) -> None:
+    policy = policy.model_copy(update={"prompt_profile": profile})
+    audit_writer.game_policy = policy
+    audit_writer.oracle_config = audit_writer.oracle_config.model_copy(
+        update={"prompt_profile": profile},
+    )
     guesser_provider = FakeGameProvider(
         model_config,
         [
@@ -660,13 +755,30 @@ def test_wrong_guess_oracle_unknown_then_success_preserves_visible_history(
     ]
 
 
+@pytest.mark.parametrize(("profile", "adjudication_policy"), (
+    (PromptProfile.STANDARD, AdjudicationPolicy.PROFILE_DEFAULT),
+    (PromptProfile.CONCISE_V1, AdjudicationPolicy.PROFILE_DEFAULT),
+    (PromptProfile.QUALIFIED_V1, AdjudicationPolicy.PROFILE_DEFAULT),
+    (PromptProfile.QUALIFIED_V1, AdjudicationPolicy.JUDGE_STABLE_KNOWLEDGE_V1),
+))
 def test_disagreement_metadata_never_enters_guesser_visible_projection(
+    profile: PromptProfile,
+    adjudication_policy: AdjudicationPolicy,
     audit_writer,
     model_config,
     validator_config,
     policy,
     subject,
 ) -> None:
+    policy = policy.model_copy(update={"prompt_profile": profile})
+    audit_writer.game_policy = policy
+    audit_writer.oracle_config = audit_writer.oracle_config.model_copy(
+        update={"prompt_profile": profile, "adjudication_policy": adjudication_policy},
+    )
+    reviewer_knowledge = profile is not PromptProfile.QUALIFIED_V1
+    judge_knowledge = (
+        reviewer_knowledge or adjudication_policy is AdjudicationPolicy.JUDGE_STABLE_KNOWLEDGE_V1
+    )
     class DisagreementOracle(FakeOracle):
         def ask(self, request):
             call = super().ask(request)
@@ -674,11 +786,15 @@ def test_disagreement_metadata_never_enters_guesser_visible_projection(
                 oracle_answer=OracleAnswer.YES,
                 reviewer=EvidenceReviewResult(
                     answer=OracleAnswer.NO,
-                    basis=EvidenceDecisionBasis.MODEL_KNOWLEDGE,
+                    basis=(EvidenceDecisionBasis.MODEL_KNOWLEDGE if reviewer_knowledge
+                           else EvidenceDecisionBasis.EVIDENCE),
+                    evidence_indices=() if reviewer_knowledge else (1,),
                 ),
                 judge=EvidenceReviewResult(
                     answer=OracleAnswer.NO,
-                    basis=EvidenceDecisionBasis.MODEL_KNOWLEDGE,
+                    basis=(EvidenceDecisionBasis.MODEL_KNOWLEDGE if judge_knowledge
+                           else EvidenceDecisionBasis.EVIDENCE),
+                    evidence_indices=() if judge_knowledge else (1,),
                 ),
                 disagreement=True,
                 judge_invoked=True,
@@ -733,6 +849,7 @@ def test_disagreement_metadata_never_enters_guesser_visible_projection(
     assert "oracle_answer" not in visible
     assert "reviewer" not in visible
     assert "model_knowledge" not in visible
+    assert "judge_stable_knowledge_v1" not in visible
     assert "complete enumeration" not in visible
     assert "no other evidence was found" not in visible
     assert "Amazon Bedrock" not in visible
@@ -740,13 +857,16 @@ def test_disagreement_metadata_never_enters_guesser_visible_projection(
     assert result.turns[0].adjudication.oracle_quality is not None
     assert result.turns[0].adjudication.oracle_quality.judge_invoked is True
     assert (
-        result.turns[0].adjudication.oracle_quality.reviewer.basis
+        (result.turns[0].adjudication.oracle_quality.reviewer.basis
         is EvidenceDecisionBasis.MODEL_KNOWLEDGE
+        ) == reviewer_knowledge
     )
     assert (
-        result.turns[0].adjudication.oracle_quality.judge.basis
+        (result.turns[0].adjudication.oracle_quality.judge.basis
         is EvidenceDecisionBasis.MODEL_KNOWLEDGE
+        ) == judge_knowledge
     )
+    assert result.llm_details.oracle.configuration.adjudication_policy is adjudication_policy
     assert result.summary.oracle_quality.reviewed_questions == 1
     assert result.summary.oracle_quality.disagreements == 1
     assert result.summary.oracle_quality.judge_invocations == 1
@@ -794,6 +914,8 @@ def test_validator_unknown_is_scored_terminal_failure(
     assert result.counted_questions == 1
 
 
+@pytest.mark.parametrize("max_questions", [2, 40, 50])
+@pytest.mark.parametrize("final_answer", ["YES", "NO"])
 def test_limit_allows_one_final_guess_without_changing_schema(
     tmp_path,
     monkeypatch,
@@ -801,8 +923,10 @@ def test_limit_allows_one_final_guess_without_changing_schema(
     model_config,
     validator_config,
     subject,
+    max_questions,
+    final_answer,
 ) -> None:
-    policy = official_policy(max_questions=2).model_copy(
+    policy = official_policy(max_questions=max_questions).model_copy(
         update={
             "benchmark_mode": BenchmarkMode.EXPERIMENTAL,
             "include_oracle_evidence": False,
@@ -822,8 +946,7 @@ def test_limit_allows_one_final_guess_without_changing_schema(
     guesser_provider = FakeGameProvider(
         model_config,
         [
-            ask("Question one?"),
-            ask("Question two?"),
+            *(ask(f"Question {number}?") for number in range(1, max_questions + 1)),
             guess("Isaac Newton", "The English scientist associated with gravity."),
         ],
     )
@@ -831,9 +954,9 @@ def test_limit_allows_one_final_guess_without_changing_schema(
         guesser_provider=guesser_provider,
         validator_provider=FakeGameProvider(
             validator_config,
-            [validation("NO")],
+            [validation(final_answer)],
         ),
-        oracle=FakeOracle([OracleAnswer.YES, OracleAnswer.NO]),
+        oracle=FakeOracle([OracleAnswer.NO] * max_questions),
         audit_writer=writer,
         policy=policy,
         model_config=model_config,
@@ -842,10 +965,14 @@ def test_limit_allows_one_final_guess_without_changing_schema(
 
     result = engine.play(GameRequest(run_id="final-guess", subject=subject))
 
-    assert result.terminal_reason is TerminalReason.LIMIT_EXHAUSTED
-    assert result.counted_questions == 2
-    assert result.guesser_call_count == 3
-    assert result.rejected_guess_count == 1
+    assert result.terminal_reason is (
+        TerminalReason.SUCCESS if final_answer == "YES" else TerminalReason.LIMIT_EXHAUSTED
+    )
+    assert result.counted_questions == max_questions
+    assert result.guesser_call_count == max_questions + 1
+    assert result.rejected_guess_count == (0 if final_answer == "YES" else 1)
+    assert str(max_questions) in guesser_provider.requests[0].messages[0]["content"]
+    assert guesser_provider.requests[-1].messages[0] == guesser_provider.requests[0].messages[0]
     assert result.guesser_conversation == ()
     stored_result = yaml.safe_load((writer.runs_root / "final-guess" / "result.yml").read_text())
     assert stored_result["guesser_conversation"] == []
@@ -1011,13 +1138,20 @@ def test_invalid_final_guesser_output_is_scored_protocol_failure(
     assert persisted_result["failure"]["diagnostics"] == diagnostics
 
 
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
 def test_contract_violation_costs_one_turn_then_success_remains_marked_breached(
+    profile: PromptProfile,
     audit_writer,
     model_config,
     validator_config,
     policy,
     subject,
 ) -> None:
+    policy = policy.model_copy(update={"prompt_profile": profile})
+    audit_writer.game_policy = policy
+    audit_writer.oracle_config = audit_writer.oracle_config.model_copy(
+        update={"prompt_profile": profile},
+    )
     invalid = json.dumps(
         {
             "result": {
@@ -1410,3 +1544,172 @@ def test_validator_output_limit_remains_infrastructure_failure(
 
     assert result.terminal_reason is TerminalReason.INFRASTRUCTURE_FAILURE
     assert result.scoring_eligible is False
+
+
+@pytest.mark.parametrize(
+    ("entity_type", "canonical_name", "description"),
+    [
+        ("person", "Albert Einstein", "The physicist known for relativity."),
+        ("object", "Hairbrush", "A brush used to groom hair."),
+        ("object", "Computer keyboard", "A physical keyboard for entering computer input."),
+    ],
+)
+def test_five_answer_game_preserves_qualified_tokens_and_scoring(
+    audit_writer, model_config, validator_config, policy, subject,
+    entity_type: str, canonical_name: str, description: str,
+) -> None:
+    subject = subject.model_copy(update={
+        "entity_type": entity_type,
+        "canonical_name": canonical_name,
+        "description": description,
+        "aliases": ("PRIVATE_SUBJECT_ALIAS",),
+        "reference_url": None,
+    })
+    policy = policy.model_copy(update={"prompt_profile": PromptProfile.QUALIFIED_V1})
+    audit_writer.game_policy = policy
+    audit_writer.oracle_config = audit_writer.oracle_config.model_copy(
+        update={"prompt_profile": PromptProfile.QUALIFIED_V1},
+    )
+    provider = FakeGameProvider(model_config, [
+        ask("Is it widely known?"), ask("Is it mainly associated with music?"),
+        guess(canonical_name, description),
+    ])
+    class QualifiedJudgeOracle(FakeOracle):
+        def ask(self, request):
+            call = super().ask(request)
+            if call.guesser_answer() is OracleAnswer.RATHER_NO:
+                call.adjudication = OracleAdjudication(
+                    oracle_answer=OracleAnswer.NO,
+                    reviewer=EvidenceReviewResult(answer=OracleAnswer.UNKNOWN,
+                        basis=EvidenceDecisionBasis.EVIDENCE),
+                    judge=EvidenceReviewResult(answer=OracleAnswer.RATHER_NO,
+                        basis=EvidenceDecisionBasis.EVIDENCE, evidence_indices=(1,)),
+                    disagreement=True, judge_invoked=True,
+                    final_answer=OracleAnswer.RATHER_NO,
+                    decision_path=OracleDecisionPath.JUDGE_DISAGREEMENT,
+                )
+                call.metrics = call.metrics.model_copy(update={"judge":call.metrics.reviewer})
+            return call
+
+    engine = make_engine(guesser_provider=provider,
+        validator_provider=FakeGameProvider(validator_config, [validation("YES")]),
+        oracle=QualifiedJudgeOracle([OracleAnswer.RATHER_YES, OracleAnswer.RATHER_NO]),
+        audit_writer=audit_writer, policy=policy, model_config=model_config,
+        validator_config=validator_config)
+    result = engine.play(GameRequest(run_id="qualified-game", subject=subject))
+    assert result.success
+    assert result.counted_questions == 2
+    assert provider.requests[1].messages[-1] == {"role":"user", "content":"RATHER_YES"}
+    assert provider.requests[2].messages[-1] == {"role":"user", "content":"RATHER_NO"}
+    assert result.summary.oracle_quality.final_rather_yes_answers == 1
+    assert result.summary.oracle_quality.final_rather_no_answers == 1
+    assert result.summary.oracle_quality.judge_rather_no_answers == 1
+    assert result.summary.oracle_quality.judge_invocations == 1
+    assert result.summary.oracle_quality.final_unknown_answers == 0
+    begin = json.loads(provider.requests[0].messages[1]["content"])
+    assert set(begin) == {"event", "category", "variation_token"}
+    assert begin["category"] == entity_type
+    assert begin["event"] == "BEGIN"
+    for request in provider.requests:
+        assert canonical_name not in str(request.messages)
+        assert description not in str(request.messages)
+        assert "PRIVATE_SUBJECT_ALIAS" not in str(request.messages)
+        assert "Evidence for:" not in str(request.messages)
+        assert "reviewer_agreement" not in str(request.messages)
+        assert "source_url" not in str(request.messages)
+
+
+def test_five_answer_game_requires_matching_oracle_profile(
+    audit_writer, model_config, validator_config, policy,
+) -> None:
+    policy = policy.model_copy(update={"prompt_profile": PromptProfile.QUALIFIED_V1})
+    with pytest.raises(ValueError, match="selected together"):
+        make_engine(guesser_provider=FakeGameProvider(model_config, []),
+            validator_provider=FakeGameProvider(validator_config, []), oracle=FakeOracle([]),
+            audit_writer=audit_writer, policy=policy, model_config=model_config,
+            validator_config=validator_config)
+
+
+@pytest.mark.parametrize("cache_policy", ["historical_ask_v1", "same_execution_ask_v1"])
+def test_historical_answer_keeps_evidence_and_provenance_out_of_guesser_requests(
+    audit_writer, model_config, validator_config, policy, subject, cache_policy,
+):
+    from deep20_game.models import (
+        CachedOracleAnswer,
+        EpisodeResult,
+        OracleCacheSource,
+        OracleResultCallAudit,
+        OracleRoleResultCallAudit,
+        ResultPromptAudit,
+    )
+    from deep20_oracle.models import OracleRole
+    from deep20_oracle.result_audit import provider_result_audit
+
+    question = "Was this person born before 1900?"
+    fresh = FakeOracle([OracleAnswer.YES]).ask(OracleRequest(
+        run_id="original", subject=subject, question=question))
+    source = OracleCacheSource(
+        policy=cache_policy,
+        context_hash="a" * 64, snapshot_hash="b" * 64, execution_id="BX-original-source",
+        model_id="M-0001", benchmark_id="B-0001", target_id=subject.target_id,
+        trial_id="trial-001", episode_id="EP-" + "a" * 32, turn_number=4,
+        oracle_call_id="OC-" + "a" * 32, question=question,
+        answered_at="2026-07-26T10:00:01+00:00",
+        source_file="runs/M-0001/BX-original-source/subjects/T-0001/trials/trial-001/result.yml",
+        source_integrity_hash="c" * 64,
+    )
+    audit = OracleResultCallAudit(call_id=source.oracle_call_id, turn_number=4,
+        oracle=OracleRoleResultCallAudit(role=OracleRole.ORACLE,
+            prompt=ResultPromptAudit(version="original-oracle-prefix", hash="d" * 64),
+            provider=provider_result_audit(provider_trace(model_config, "PRIVATE_ORIGINAL_RESPONSE"))))
+    cached = CachedOracleAnswer(result=OracleResult(answer=OracleAnswer.YES, evidence=fresh.result.evidence),
+                                adjudication=fresh.adjudication, source=source, original_audit=audit)
+    class Cache:
+        def lookup(self, request):
+            assert request.subject == subject and request.question == question
+            return cached
+
+    live_oracle = FakeOracle([])
+    provider = FakeGameProvider(model_config, [ask(question), ask(question),
+        guess("Albert Einstein", "The physicist associated with relativity.")])
+    engine = make_engine(guesser_provider=provider,
+        validator_provider=FakeGameProvider(validator_config, [validation("YES")]),
+        oracle=live_oracle, audit_writer=audit_writer, policy=policy,
+        model_config=model_config, validator_config=validator_config)
+    engine.oracle_cache = Cache()
+    result = engine.play(GameRequest(run_id="cache-isolation", subject=subject))
+    assert result.success and not live_oracle.requests
+    assert result.summary.oracle_cache_hits == 2
+    assert result.llm.oracle.metrics.calls == 0
+    assert result.llm.oracle.metrics.recovery.request_attempts == 0
+    assert result.llm.oracle.metrics.total_tokens == 0
+    assert result.costs_usd.oracle == 0
+    assert result.summary.oracle_quality.reviewed_questions == 0
+    assert result.turns[0].adjudication.evidence == cached.result.evidence
+    assert result.turns[1].adjudication.cache_source == source
+    assert result.turns[0].adjudication.call_id != result.turns[1].adjudication.call_id
+    assert result.audit is not None
+    reused = [call for call in result.audit.calls if isinstance(call, OracleResultCallAudit)]
+    assert len(reused) == 2 and all(call.cache_source == source for call in reused)
+    assert all(call.oracle.provider == audit.oracle.provider for call in reused)
+    # Strict retained-result round trip also checks matching audit/turn provenance.
+    assert EpisodeResult.model_validate_json(result.model_dump_json()) == result
+    requests = json.dumps([request.messages for request in provider.requests])
+    for marker in (source.execution_id, source.episode_id, source.oracle_call_id,
+                   source.source_file, "Original evidence", "PRIVATE_ORIGINAL_RESPONSE",
+                   "cache_source", "oracle_cache", cache_policy, "original-oracle-prefix"):
+        assert marker not in requests
+    assert 'YES' in requests
+
+    live_provider = FakeGameProvider(model_config, [ask(question), ask(question),
+        guess("Albert Einstein", "The physicist associated with relativity.")])
+    live_engine = make_engine(guesser_provider=live_provider,
+        validator_provider=FakeGameProvider(validator_config, [validation("YES")]),
+        oracle=FakeOracle([OracleAnswer.YES, OracleAnswer.YES]), audit_writer=audit_writer,
+        policy=policy, model_config=model_config, validator_config=validator_config)
+    live_result = live_engine.play(GameRequest(run_id="fresh-isolation", subject=subject))
+    assert live_result.success
+    assert [request.messages for request in provider.requests] == [
+        request.messages for request in live_provider.requests
+    ]
+    assert cached.result.evidence[0].excerpt not in requests

@@ -8,10 +8,14 @@ from xml.etree import ElementTree
 
 from deep20_publication.cli import (
     _application_build_document,
+    _edition_route_manifest,
     _publication_build_time,
+    _read_yaml,
     _static_route_manifest,
     _write_public_data,
 )
+from deep20_publication.legacy import legacy_dataset_schema_json
+from deep20_publication.loader import parse_publication_config
 from deep20_publication.models import (
     PublicationAppBuildDocument,
     PublishedDataset,
@@ -31,8 +35,11 @@ def test_generated_data_is_not_stored_in_site_source() -> None:
 
 
 def test_search_files_follow_the_static_route_manifest() -> None:
-    bundle = split_publication(_published_dataset())
-    route_manifest = _static_route_manifest(bundle)
+    config = parse_publication_config(_read_yaml(REPOSITORY / "config/publication.yml"), "publication")
+    bundles = tuple(
+        split_publication(_published_dataset(cohort.edition_id)) for cohort in config.cohorts
+    )
+    route_manifest = _published_routes()
     published_routes = StaticRouteManifest.model_validate_json(
         (REPOSITORY / "docs" / "data" / "routes.json").read_text(encoding="utf-8")
     )
@@ -71,7 +78,7 @@ def test_search_files_follow_the_static_route_manifest() -> None:
     )
     assert sum(
         "/runs/" in location for location in locations if location is not None
-    ) == len(bundle.runs) + len(bundle.subjects)
+    ) == sum(len(bundle.runs) + len(bundle.subjects) for bundle in bundles)
     assert (REPOSITORY / "docs" / "robots.txt").read_text(encoding="utf-8") == (
         f"User-agent: *\nAllow: /\n\nSitemap: {CANONICAL_URL}sitemap.xml\n"
     )
@@ -162,15 +169,21 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
     assert "public benchmark for large language models (LLMs)" in entry
     assert "What this pilot tests" in entry
     assert "more than the traditional twenty" in entry_copy
-    assert "The concept works and the first step is complete." in entry_copy
-    assert "cost is the main constraint." in entry_copy
+    current = _published_dataset("1.1")
+    if current.official_runs:
+        assert "No complete 1.1 results yet" not in entry_copy
+        for run in current.official_runs:
+            assert f'href="/runs/{run.execution_id}/"' in entry
+    else:
+        assert "No complete 1.1 results yet" in entry_copy
+    assert "RATHER YES" in entry_copy
     assert "small first step" not in entry
     assert "not a definitive ranking" not in entry
     assert "https://github.com/mindalyze-com/deep-20-bench/discussions" in entry
     assert "Join discussion" in entry
     assert "How to read the pilot" in entry
     assert "Comparable runs, limited conclusions." in entry
-    assert "The Guesser is isolated from this process" in entry
+    assert "The Guesser receives only the final answer token." in entry_copy
     assert "Deep20Bench needs JavaScript" not in entry
     assert '<script type="application/ld+json">' in entry
     structured_data = [
@@ -181,7 +194,7 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
     ]
     assert [document["@type"] for document in structured_data] == ["Dataset", "WebSite"]
     assert structured_data[0]["license"] == "https://creativecommons.org/licenses/by/4.0/"
-    assert structured_data[0]["@id"] == f"{CANONICAL_URL}#dataset"
+    assert structured_data[0]["@id"] == f"{CANONICAL_URL}editions/1.1/#dataset"
     website = structured_data[1]
     site = _published_dataset().site
     assert website["name"] == site.title
@@ -190,7 +203,7 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
     assert website["@id"] == f"{CANONICAL_URL}#website"
     assert '"alternateName":["Deep20 Bench","D20B"]' in entry
     assert '"keywords":["Deep20Bench","Deep20 Bench","Deep20 benchmark"' in entry
-    assert 'rel="canonical" href="https://deep20bench.com/"' in entry
+    assert 'rel="canonical" href="https://deep20bench.com/editions/1.1/"' in entry
     assert "deep20-static-home" not in entry
     assert "deep20-structured-data" not in entry
     assert 'id="deep20-page-state" type="application/json"' in entry
@@ -203,8 +216,8 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
         assert (REPOSITORY / "docs" / font_url.lstrip("/")).is_file()
 
 
-def _published_dataset() -> PublishedDataset:
-    source = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
+def _published_dataset(edition_id: str = "1.0") -> PublishedDataset:
+    source = REPOSITORY / "docs" / "data" / "editions" / edition_id / "deep20bench-v10.json"
     return PublishedDataset.model_validate_json(source.read_text(encoding="utf-8"))
 
 
@@ -330,7 +343,7 @@ def test_generated_run_and_subject_are_prerendered_and_episode_is_noindex() -> N
 
 
 def test_all_sitemap_pages_have_unique_metadata_and_a_static_referrer() -> None:
-    manifest = _static_route_manifest(split_publication(_published_dataset()))
+    manifest = _published_routes()
     sitemap_routes = tuple(
         entry for entry in manifest.routes if entry.sitemap_included
     )
@@ -359,14 +372,15 @@ def test_all_sitemap_pages_have_unique_metadata_and_a_static_referrer() -> None:
         descriptions.append(description.group(1))
         canonicals.append(canonical.group(1))
         expected_url = CANONICAL_URL if entry.route == "" else f"{CANONICAL_URL}{entry.route}/"
-        expected_href = (
-            "/" if entry.route == "" else f"/{entry.route}/"
-        )
+        expected_hrefs = {
+            "/" if candidate.route == "" else f"/{candidate.route}/"
+            for candidate in manifest.routes if candidate.canonical_route == entry.canonical_route
+        }
         assert canonical.group(1) == expected_url
         assert 'name="robots"' not in html
         assert 'id="route-content"' in html
         assert any(
-            f'href="{expected_href}"' in referring_html
+            any(f'href="{href}"' in referring_html for href in expected_hrefs)
             for route, referring_html in html_by_route.items()
             if route != entry.route
         )
@@ -397,7 +411,9 @@ def test_split_public_data_is_complete_and_removes_stale_files(
         (data / "deep20bench-v9.schema.json").read_text(encoding="utf-8")
     )
     assert public_schema.pop("$schema") == "https://json-schema.org/draft/2020-12/schema"
-    assert public_schema == PublishedDataset.model_json_schema(mode="serialization")
+    expected_schema = json.loads(legacy_dataset_schema_json())
+    expected_schema.pop("$schema")
+    assert public_schema == expected_schema
     serialized_schema = json.dumps(public_schema, sort_keys=True)
     for forbidden_field in (
         "call_id",
@@ -423,14 +439,14 @@ def test_split_public_data_is_complete_and_removes_stale_files(
     leaderboard = json.loads((data / "leaderboard.json").read_text(encoding="utf-8"))
     repeat_averages = json.loads((data / "repeat-averages.json").read_text(encoding="utf-8"))
     assert manifest["document_type"] == "manifest"
-    assert manifest["dataset_schema_version"] == 9
+    assert manifest["dataset_schema_version"] == 10
     assert application == {
         "document_type": "app_build",
         "schema_version": 1,
         "built_at": "2026-08-01T18:00:00Z",
     }
     assert leaderboard["document_type"] == "leaderboard"
-    assert leaderboard["schema_version"] == 3
+    assert leaderboard["schema_version"] == 4
     first_row = leaderboard["leaderboard"][0]
     assert first_row["ideal_distance_rank"] is not None
     assert first_row["ideal_distance_score"] is not None
@@ -444,7 +460,7 @@ def test_split_public_data_is_complete_and_removes_stale_files(
     assert "normalized_guesser_cost" in csv_header
     assert "product_efficiency_rank" in csv_header
     assert repeat_averages["document_type"] == "repeat_averages"
-    assert repeat_averages["schema_version"] == 1
+    assert repeat_averages["schema_version"] == 2
     assert len(repeat_averages["averages"]) == sum(
         run.iterations for run in dataset.official_runs if run.question_score is not None
     )
@@ -461,3 +477,12 @@ def test_split_public_data_is_complete_and_removes_stale_files(
     assert (first / "episodes" / "trial-001.json").read_text(encoding="utf-8") != (
         second / "episodes" / "trial-001.json"
     ).read_text(encoding="utf-8")
+
+
+def _published_routes() -> StaticRouteManifest:
+    config = parse_publication_config(_read_yaml(REPOSITORY / "config/publication.yml"), "publication")
+    datasets = tuple(PublishedDataset.model_validate_json(
+        (REPOSITORY / "docs/data/editions" / cohort.edition_id / "deep20bench-v10.json")
+        .read_text(encoding="utf-8")
+    ) for cohort in config.cohorts)
+    return _edition_route_manifest(config, datasets)

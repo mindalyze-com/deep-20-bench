@@ -189,6 +189,69 @@ def test_echo_payload_allows_automatic_provider_selection() -> None:
     }
 
 
+def test_concise_canaries_use_selected_instructions_and_separate_cache_keys() -> None:
+    from deep20_benchmark.canary import (
+        _STRUCTURED_CANARY_REVIEW,
+        _evidence_review_canary_request,
+    )
+    from deep20_oracle.config import PromptProfile
+    from deep20_oracle.models import OracleRole
+    from deep20_oracle.prompt import render_evidence_review_messages
+
+    for role in (OracleRole.REVIEWER, OracleRole.JUDGE):
+        baseline = _evidence_review_canary_request("test", role=role)
+        revised = _evidence_review_canary_request(
+            "test", role=role, profile=PromptProfile.CONCISE_V1,
+        )
+        assert revised.messages == render_evidence_review_messages(
+            _STRUCTURED_CANARY_REVIEW, role=role, profile=PromptProfile.CONCISE_V1,
+        )
+        assert revised.messages[1] == baseline.messages[1]
+        assert revised.messages[0] != baseline.messages[0]
+        assert revised.prompt_cache_key != baseline.prompt_cache_key
+        assert revised.output_schema == baseline.output_schema
+
+
+@pytest.mark.parametrize("judge_uses_knowledge", (False, True))
+def test_judge_policy_reaches_startup_canary_without_changing_reviewer(
+    judge_uses_knowledge: bool,
+) -> None:
+    from deep20_benchmark.canary import _evidence_review_canary_request
+    from deep20_oracle.config import AdjudicationPolicy, PromptProfile
+    from deep20_oracle.models import OracleRole
+
+    model, benchmark = _configuration()
+    oracle = benchmark.oracle_configuration.model_copy(update={
+        "prompt_profile": PromptProfile.QUALIFIED_V1,
+        "adjudication_policy": AdjudicationPolicy.JUDGE_STABLE_KNOWLEDGE_V1,
+    })
+    benchmark = benchmark.model_copy(update={"oracle_configuration": oracle})
+    reviewer = RecordingEvidenceReviewProvider(oracle.reviewer)
+    judge = RecordingEvidenceReviewProvider(
+        oracle.judge,
+        output=(json.dumps({"answer": "YES", "basis": "model_knowledge", "evidence_indices": []})
+                if judge_uses_knowledge else None),
+    )
+    result = run_startup_canaries(
+        model, benchmark, api_key="unused", provider=RecordingEchoProvider(),
+        reviewer_provider=reviewer, judge_provider=judge,
+    )
+    # This canary supplies decisive evidence, so a knowledge-based answer fails the check.
+    assert result.valid is not judge_uses_knowledge
+    for role, provider in ((OracleRole.REVIEWER, reviewer), (OracleRole.JUDGE, judge)):
+        baseline = _evidence_review_canary_request("old", role=role, profile=oracle.prompt_profile)
+        revised = provider.requests[0]
+        assert revised.messages[1] == baseline.messages[1]
+        if role is OracleRole.REVIEWER:
+            assert revised.messages == baseline.messages
+            assert revised.output_schema == baseline.output_schema
+            assert revised.prompt_cache_key == baseline.prompt_cache_key
+        else:
+            assert revised.messages[0] != baseline.messages[0]
+            assert revised.output_schema != baseline.output_schema
+            assert revised.prompt_cache_key != baseline.prompt_cache_key
+
+
 def test_startup_canaries_use_the_structured_contract_for_reviewer_and_judge() -> None:
     model, benchmark = _configuration()
     provider = RecordingEchoProvider()
@@ -404,3 +467,27 @@ def test_echo_exchange_reads_openrouter_provider_metadata() -> None:
     assert exchange.resolved_provider == "Google"
     assert exchange.usage.input_tokens == 8
     assert exchange.usage.output_tokens == 1
+
+
+def test_concise_policy_reaches_both_structured_startup_canaries() -> None:
+    from deep20_oracle.config import AdjudicationPolicy, PromptProfile
+
+    model, benchmark = _configuration()
+    oracle = benchmark.oracle_configuration.model_copy(update={
+        "prompt_profile": PromptProfile.QUALIFIED_V1,
+        "adjudication_policy": AdjudicationPolicy.CONCISE_KNOWLEDGE_V1,
+    })
+    benchmark = benchmark.model_copy(update={"oracle_configuration": oracle})
+    output = json.dumps({"answer": "YES", "basis": "evidence", "evidence_indices": [1],
+                         "supporting_statement": "The supplied excerpt establishes the claim."})
+    reviewer = RecordingEvidenceReviewProvider(oracle.reviewer, output=output)
+    judge = RecordingEvidenceReviewProvider(oracle.judge, output=output)
+    result = run_startup_canaries(
+        model, benchmark, api_key="unused", provider=RecordingEchoProvider(),
+        reviewer_provider=reviewer, judge_provider=judge,
+    )
+    assert result.valid
+    for provider in (reviewer, judge):
+        request = provider.requests[0]
+        assert request.output_schema["$defs"]["EvidenceDecisionBasis"]["enum"] == ["evidence", "other"]
+        assert "supporting_statement" in request.output_schema["required"]

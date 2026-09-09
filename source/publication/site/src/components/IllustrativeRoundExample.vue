@@ -1,20 +1,23 @@
 <script setup lang="ts">
-import { illustrativeRound } from "@/lib/illustrative-round";
+import { computed } from "vue";
+import { illustrativeRound, qualifiedIllustrativeRound } from "@/lib/illustrative-round";
 
-const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "question").length;
+const props = withDefaults(defineProps<{ qualified?: boolean }>(), { qualified: false });
+const round = computed(() => props.qualified ? qualifiedIllustrativeRound : illustrativeRound);
+const questionCount = computed(() => round.value.turns.filter(turn => turn.kind === "question").length);
 </script>
 
 <template>
   <aside
     class="round-example"
     :aria-label="
-      `Illustrative round: ${illustrativeRound.subject} identified with a trial score of ${questionCount}`
+      `Illustrative round: ${round.subject} identified with a trial score of ${questionCount}`
     "
   >
     <div class="round-card">
       <div class="round-head">
         <span>Illustrative round</span>
-        <span>Not benchmark data</span>
+        <span class="round-example-label" title="Not benchmark data">Example only</span>
       </div>
       <div class="round-columns" aria-hidden="true">
         <span>Turn</span>
@@ -23,7 +26,7 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
       </div>
       <ol>
         <li
-          v-for="(turn, index) in illustrativeRound.turns"
+          v-for="(turn, index) in round.turns"
           :key="turn.prompt"
           :class="{ 'round-guess': turn.kind === 'guess' }"
         >
@@ -36,8 +39,8 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
             </span>
             <span v-if="turn.kind === 'guess'" class="round-not-counted">Not counted</span>
           </p>
-          <strong>
-            {{ turn.kind === "guess" ? `${turn.prompt} - ${turn.answer}` : turn.answer }}
+          <strong class="round-answer" :class="{ 'round-answer--no': turn.answer === 'NO' }">
+            {{ turn.kind === "guess" ? "Identified" : turn.answer }}
           </strong>
         </li>
       </ol>
@@ -66,6 +69,8 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
 
 <style scoped>
 .round-example {
+  --round-answer-width: 5.5rem;
+  --round-turn-width: 2.5rem;
   position: relative;
   width: min(100%, var(--round-example-max));
   color: white;
@@ -74,8 +79,10 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
 }
 
 .round-card {
+  padding-inline: 1.2rem;
   border: var(--rule-inverse);
-  background: rgb(255 255 255 / 4%);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 3%);
 }
 
 .round-head,
@@ -83,29 +90,47 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
 .round-card li {
   display: grid;
   align-items: center;
-  gap: 0.8rem;
-  padding: 0.78rem 0.95rem;
+  gap: 0.75rem;
+  padding-block: 0.5rem;
   border-bottom: var(--rule-inverse-subtle);
 }
 
-.round-head,
-.round-columns {
+.round-head {
   grid-template-columns: 1fr auto;
+  padding-block: 0.75rem;
+  font-size: 1.0625rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.round-columns {
   font-size: var(--text-micro);
   font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.035em;
   text-transform: uppercase;
 }
 
-.round-head span:last-child,
+.round-example-label {
+  padding: 0.2rem 0.55rem;
+  border-radius: 5px;
+  background: rgb(255 255 255 / 5%);
+  color: var(--text-inverse-muted);
+  font-size: var(--text-micro);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
 .round-card li > span {
-  color: rgb(255 255 255 / 48%);
+  color: var(--text-inverse-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .round-columns {
-  grid-template-columns: 2rem 1fr auto;
-  color: rgb(255 255 255 / 47%);
+  grid-template-columns: var(--round-turn-width) minmax(0, 1fr) var(--round-answer-width);
+  padding-block: 0.55rem;
+  color: var(--text-inverse-muted);
 }
+
+.round-columns > span:last-child { text-align: center; }
 
 .round-card ol {
   margin: 0;
@@ -114,8 +139,8 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
 }
 
 .round-card li {
-  grid-template-columns: 2rem minmax(0, 1fr) auto;
-  min-height: 3.7rem;
+  grid-template-columns: var(--round-turn-width) minmax(0, 1fr) var(--round-answer-width);
+  min-height: 3.4rem;
   color: inherit;
   line-height: 1.5;
 }
@@ -127,13 +152,27 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
   line-height: 1.5;
 }
 
-.round-card li strong {
+.round-card li > .round-answer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--round-answer-width);
+  min-height: 2.3rem;
+  padding: 0.35rem 0.4rem;
+  border: 0;
+  border-radius: 6px;
+  background: rgb(214 255 38 / 10%);
   color: var(--acid);
   font-size: var(--text-micro);
-  letter-spacing: 0.02em;
-  line-height: 1.5;
-  text-align: right;
-  text-transform: uppercase;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.3;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.round-card li > .round-answer--no {
+  background: rgb(255 255 255 / 7%);
+  color: #d5d8df;
 }
 
 .round-card li:last-child {
@@ -141,9 +180,7 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
 }
 
 .round-card li.round-guess {
-  grid-template-columns: 3rem minmax(0, 1fr) auto;
-  gap: 0.5rem;
-  min-height: 4.5rem;
+  min-height: 4rem;
   border-top: 1px dashed rgb(255 255 255 / 18%);
   background: transparent;
 }
@@ -162,7 +199,8 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
 
 .round-guess p {
   display: flex;
-  gap: 0.65rem;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.5rem;
   align-items: center;
   min-width: 0;
 }
@@ -174,20 +212,12 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
 
 .round-not-counted {
   flex: 0 0 auto;
-  padding: 0.2rem 0.42rem;
-  border: var(--rule-inverse);
-  border-radius: 2px;
-  color: rgb(255 255 255 / 52%);
+  color: var(--text-inverse-muted);
   font-size: 0.625rem;
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.04em;
   line-height: 1.2;
   text-transform: uppercase;
-}
-
-.round-card li.round-guess > strong {
-  max-width: 7rem;
-  line-height: 1.3;
 }
 
 .round-score-connector {
@@ -338,9 +368,10 @@ const questionCount = illustrativeRound.turns.filter((turn) => turn.kind === "qu
 }
 
 @media (max-width: 620px) {
-  .round-card li strong {
-    max-width: 8rem;
-  }
+  .round-example { --round-turn-width: 2.25rem; --round-answer-width: 5.25rem; }
+  .round-card { padding-inline: 0.85rem; }
+  .round-head { font-size: 1rem; }
+  .round-columns, .round-card li { gap: 0.55rem; }
 
   .round-score-card {
     min-height: 9.1rem;

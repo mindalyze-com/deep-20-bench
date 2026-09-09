@@ -1,5 +1,26 @@
 # Game engine concept
 
+New B-0003 executions use `concise_knowledge_v1`: one research attempt requesting
+`research_query_target` queries (default 3), with an API ceiling calculated as the target plus
+two bonus calls. Valid completed answers within that ceiling retain normal independent
+evidence/knowledge decisions and private `evidence`/`other` basis plus a supporting statement. This policy permits source-free directional answers
+and retained UNKNOWN context; the earlier evidence/recovery rules below describe historical
+policies. See [the current policy](../../../documentation/five-answer-experiment.md#concise-evidenceknowledge-policy).
+
+
+Benchmark executions support [historical Oracle answer reuse](../../../documentation/oracle-history-cache.md) under the explicit
+`historical_ask_v1`, `same_episode_ask_v1`, and `same_execution_ask_v1` policies. The benchmark
+lazily loads verified historical trials and adds eligible live ASK answers after each completed,
+scoring-eligible game. Later repetitions reuse these answers; resume restores them from verified
+trial artifacts. The engine also stores answers immediately for normalized repeats within one
+game. Repeats still count as questions. Reused ASK turns retain original evidence and marked
+source provenance, with no new adjudicator calls or cost. Each Guesser conversation starts fresh;
+cache metadata never enters it. Standalone commands keep fresh-call behavior. Guesser and
+Validator responses are never cached. Older manifests retain their recorded cache scope.
+
+
+The opt-in B-0003 experiment extends factual replies to five tokens without changing role boundaries or scoring. See [Five-answer experiment](../../../documentation/five-answer-experiment.md).
+
 ## Purpose and scope
 
 The game engine is the deterministic state machine for one Deep20Bench episode. Given one
@@ -17,7 +38,9 @@ repeatedly.
 flowchart LR
     Request["GameRequest: run + hidden subject"] --> Engine["GameEngine.play"]
     Engine --> Guesser["Guesser (model under test)"]
-    Guesser -->|"ASK"| Oracle["Primary Oracle research (live web)"]
+    Guesser -->|"ASK"| Cache{"Compatible benchmark ASK cache hit?"}
+    Cache -->|"no or disabled"| Oracle["Primary Oracle research (live web)"]
+    Cache -->|"yes: original final token"| Engine
     Guesser -->|"GUESS"| Validator["Guess Validator (no web)"]
     Oracle --> Retrieval{"Retrieval-related UNKNOWN?"}
     Retrieval -->|"yes"| Recovery["Independent diversified research"]
@@ -28,7 +51,7 @@ flowchart LR
     Reviewer --> Agreement{"Agrees with Oracle?"}
     Agreement -->|"yes"| Engine
     Agreement -->|"no"| Judge["Blind Judge (no web)"]
-    Judge -->|"final YES / NO / UNKNOWN"| Engine
+    Judge -->|"final profile-specific factual token"| Engine
     Validator -->|"YES / NO / UNKNOWN"| Engine
     Engine -->|"visible answer or fixed FORMAT_ERROR only"| Guesser
     Engine --> Audit["Injected typed audit sink"]
@@ -61,9 +84,20 @@ never added to Guesser-visible history.
 
 ## Game contract
 
+The Guess Validator distinguishes general kinds from particular entities. For a general
+kind, a recognized subtype or design variant is accepted when it retains the defining
+kind/function and satisfies the target's explicit restrictions. Unspecified shape, material,
+size, or design does not make that match ambiguous. For a particular entity, the proposal must
+identify that exact entity. Broader categories, related objects, part/whole substitutions,
+and incompatible subtypes are not accepted. See [Identity acceptance](Usage.md#identity-acceptance).
+
+This is `strict-guess-validator-v2-generic-kinds`. It retains the existing three identity
+tokens and their counting/terminal behavior. In particular, actual identity uncertainty still
+returns `UNKNOWN` and ends the game; subtype recognition should return `YES` directly.
+
 The versioned `GamePolicy` currently enforces:
 
-- At most 50 counted questions.
+- At most 40 counted questions by default.
 - An initial broad category taken from the subject's trusted `entity_type`.
 - One additional final guess-only opportunity after the limit is reached.
 
@@ -121,9 +155,11 @@ conversation for the engine.
 The engine therefore owns and resends the complete visible transcript on every Guesser call:
 
 1. Fixed, versioned system instructions.
-2. A structured `BEGIN` game-start message containing the trusted broad category.
+2. A structured `BEGIN` containing the trusted broad category and subject-independent
+   trial variation token.
 3. A canonically serialized Guesser action.
-4. Exactly `YES`, `NO`, or `UNKNOWN`.
+4. Exactly one final answer token: `YES`, `NO`, or `UNKNOWN`, with `RATHER_YES` and
+   `RATHER_NO` additionally permitted for qualified ASK turns.
 5. After a malformed output only, the canonical `FORMAT_ERROR` event instead of an
    action/answer pair.
 6. Further action/answer pairs appended in the same form.
@@ -134,6 +170,12 @@ shows the fixed formats, states that no semantic check occurred, and charges the
 It contains no dynamic parser detail. Timestamps, call IDs, costs, counters, provider traces,
 and other changing metadata are excluded. Hidden reasoning and provider-specific continuation
 state are not retained, which keeps an episode portable across model providers.
+
+The fixed instructions contain one shared category guide in every prompt profile. It explains
+the broad category labels and makes clear that `thing` includes natural and human-made
+entities, living organisms, parts, phenomena, and concepts, with either a general kind or a
+particular instance as the target. This guide is identical across subjects; it never lists
+catalog identities or adds a hint selected from the hidden subject description.
 
 ## Information and trust boundaries
 
@@ -151,9 +193,10 @@ under a different fixed policy; it does not receive the primary query, answer, e
 outcome, trace, or response. The Reviewer and Judge each receive only the trusted subject
 snapshot, the same current question, and the Oracle's numbered evidence excerpts. Neither
 receives the Oracle answer, the Reviewer answer, explanations, search traces, or episode
-history; neither has web access. Both may independently return `UNKNOWN`. Both use evidence
-first and may use labelled model knowledge only for a stable closed fact. The Reviewer applies
-that fallback conservatively because agreement bypasses the Judge. The private decision basis
+history; neither has web access. Both may independently return `UNKNOWN`. In standard and
+concise profiles, both use evidence first and may use labelled knowledge for stable closed facts.
+Qualified review is evidence-only, and its Judge may use knowledge only under the explicit
+`judge_stable_knowledge_v1` policy. The private decision basis
 never enters Guesser history. The Guess Validator receives only the trusted subject snapshot
 and the current structured guess, treating all guess strings as untrusted data. It has no
 web-search tool, and its explanation is retained only for audit.
@@ -161,7 +204,7 @@ web-search tool, and its explanation is retained only for audit.
 This separation prevents any adjudicator's privileged context from leaking back into the model
 under test.
 
-## Prompt caching without answer caching
+## Guesser prompt caching and benchmark ASK reuse
 
 The Guesser's fixed prefix and append-only transcript are designed for provider-side prompt
 caching. Every Guesser call uses:
@@ -173,8 +216,9 @@ caching. Every Guesser call uses:
   history.
 
 Provider prompt caching may reuse computation for an unchanged prefix while still generating a
-fresh action. OpenRouter response caching and application-level answer caching are prohibited:
-replaying an earlier action would invalidate the game.
+fresh action. OpenRouter response caching and reuse of Guesser or Validator responses are
+prohibited. Benchmark-only ASK reuse bypasses fresh adjudication under the explicit
+policies above; it never replays a Guesser action or exposes cache metadata in visible history.
 
 Experimental configurations may use best-effort prompt caching. Official Guesser
 configurations require a successful paid capability probe for the exact route and parameters.
@@ -257,8 +301,9 @@ Failures are classified by what they measure:
 - A provider, required Reviewer, required Judge, Oracle, Guess Validator, configuration, or
   persistence failure is an infrastructure failure and is excluded from scoring. The system
   never substitutes the provisional Oracle answer after a required quality-control failure.
-- Two unsuccessful retrieval attempts for a deterministic closed or temporal fact are an
-  Oracle infrastructure failure, not an ordinary factual `UNKNOWN`.
+- Valid Oracle research that remains inconclusive after recovery returns `UNKNOWN`. The ASK
+  consumes one question and the game continues under the normal scoring rules, independent
+  of question wording. Technical failures remain infrastructure failures.
 - Enabled result and audit persistence is fail-closed.
 
 ## Deliberate non-goals
@@ -269,7 +314,8 @@ This package deliberately does not provide:
 - Repetition management.
 - Aggregate statistics, ranking, or confidence intervals.
 - Website or report generation.
-- A persistent fact library or answer cache.
+- A persistent fact library or filesystem-owned answer cache. Historical source loading belongs
+  to the benchmark; the engine's optional same-game answer map exists only during one play call.
 
 The benchmark package supplies scheduling, repetition management, aggregate statistics, and
 reports without adding them to the one-game state machine.

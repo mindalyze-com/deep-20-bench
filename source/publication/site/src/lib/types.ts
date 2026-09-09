@@ -12,10 +12,35 @@ export interface ScorePolicy {
   failure_penalty_offset: number;
 }
 
+export interface ReleaseContract {
+  game_rules: {
+    max_consecutive_contract_violations: number;
+    reveal_entity_type: boolean;
+    final_guess_after_limit: boolean;
+  };
+  prompts: Record<"guesser" | "oracle" | "recovery" | "reviewer" | "judge" | "validator", string>;
+  additional_prompt_versions?: ReleaseContract["prompts"][];
+  subject_identities: { target_id: string; identity_hash: string }[];
+  oracle_configuration_hash: string;
+  oracle_contract_hash?: string | null;
+  validator_configuration_hash: string;
+}
+
+export interface AcceptedReleaseRevision extends ReleaseContract {
+  revision_id: string;
+  oracle_contract_hash: string;
+}
+
 export interface CohortConfig {
   cohort_id: string;
   display_name: string;
-  active: boolean;
+  edition_id: string;
+  edition_label: string;
+  edition_status: "current" | "previous";
+  eligibility: { kind: "historical_standard" } | (ReleaseContract & {
+    kind: "qualified_release";
+    accepted_revisions?: AcceptedReleaseRevision[];
+  });
   benchmark_id: string;
   benchmark_version: number;
   target_ids: string[];
@@ -155,6 +180,7 @@ export interface PublicRunModel {
   resolved_providers: string[];
   reasoning_effort: string;
   prompt_version: string | null;
+  prompt_versions?: string[];
   calls: number;
   cost_usd: string;
   providers: ResolvedProviderUsage[];
@@ -220,9 +246,35 @@ export interface PublicEvidence {
   source_url: string;
   excerpt: string;
   validation: "model_reported";
+  kind?: "quotation" | "source_summary";
+}
+
+export type PublicOracleCacheSource = PublicHistoricalOracleCacheSource | PublicEpisodeOracleCacheSource;
+
+export interface PublicEpisodeOracleCacheSource {
+  scope: "same_episode";
+  target_id: string;
+  episode_id: string;
+  turn_number: number;
+  question: string;
+  answered_at: string;
+}
+
+export interface PublicHistoricalOracleCacheSource {
+  scope?: "historical" | "same_execution";
+  execution_id: string;
+  model_id: string;
+  benchmark_id: string;
+  target_id: string;
+  trial_id: string;
+  episode_id: string;
+  turn_number: number;
+  question: string;
+  answered_at: string;
 }
 
 export interface PublicActionTurn {
+  oracle_cache?: PublicOracleCacheSource | null;
   turn_type: "action";
   turn_number: number;
   action: "ASK" | "GUESS";
@@ -230,7 +282,7 @@ export interface PublicActionTurn {
   guess_name: string | null;
   guess_description: string | null;
   adjudicator: "oracle" | "guess_validator";
-  answer: "YES" | "NO" | "UNKNOWN";
+  answer: "YES" | "RATHER_YES" | "RATHER_NO" | "NO" | "UNKNOWN";
   validator_explanation: string | null;
   counted: boolean;
   counted_questions: number;
@@ -333,8 +385,9 @@ export interface PublicationRunReference {
 
 export interface ManifestDocument {
   document_type: "manifest";
-  schema_version: 1;
-  dataset_schema_version: 9;
+  schema_version: 2;
+  edition_id: string;
+  dataset_schema_version: 10;
   site: SiteMetadata;
   score_policy: ScorePolicy;
   active_cohort: CohortConfig;
@@ -353,7 +406,8 @@ export interface AppBuildDocument {
 
 export interface LeaderboardDocument {
   document_type: "leaderboard";
-  schema_version: 3;
+  schema_version: 4;
+  edition_id: string;
   leaderboard: LeaderboardRow[];
 }
 
@@ -369,20 +423,23 @@ export interface PublicRepeatAverage {
 
 export interface RepeatAveragesDocument {
   document_type: "repeat_averages";
-  schema_version: 1;
+  schema_version: 2;
+  edition_id: string;
   averages: PublicRepeatAverage[];
 }
 
 export interface RunDocument {
   document_type: "run";
-  schema_version: 3;
+  schema_version: 4;
+  edition_id: string;
   run: PublicRunSummary;
   subjects: PublicSubjectSummary[];
 }
 
 export interface SubjectDocument {
   document_type: "subject";
-  schema_version: 1;
+  schema_version: 2;
+  edition_id: string;
   execution_id: string;
   target_id: string;
   profile: {
@@ -395,9 +452,30 @@ export interface SubjectDocument {
 
 export interface EpisodeDocument {
   document_type: "episode";
-  schema_version: 2;
+  schema_version: 3;
+  edition_id: string;
   execution_id: string;
   target_id: string;
   trial_id: string;
   episode: PublicEpisodeDetail;
+}
+
+
+export interface EditionReference {
+  edition_id: string;
+  label: string;
+  status: "current" | "previous";
+  manifest_path: string;
+  leaderboard_path: string;
+  repeat_averages_path: string;
+  runs: { execution_id: string; model_id: string; model_name: string;
+    classification: "official" | "lab"; target_ids: string[] }[];
+}
+
+export interface EditionsDocument {
+  document_type: "editions";
+  schema_version: 1;
+  default_edition_id: string;
+  built_at: string;
+  editions: EditionReference[];
 }

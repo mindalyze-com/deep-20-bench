@@ -71,7 +71,7 @@ test(
     await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(2);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
-      "https://deep20bench.com/",
+      "https://deep20bench.com/editions/1.1/",
     );
 
     await context.close();
@@ -92,7 +92,7 @@ test(
       await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
     }
 
-    await page.goto(new URL("results/", staticBase).href);
+    await page.goto(new URL("editions/1.0/results/", staticBase).href);
     for (const reference of manifest.official_runs) {
       await expect(
         page.locator(`a[href="/runs/${reference.execution_id}/"]`).first(),
@@ -100,7 +100,7 @@ test(
     }
     for (const routePath of staticPaths.filter((value) => value.startsWith("results/"))) {
       await expect(
-        page.locator(`a[href="/${routePath}"]`).first(),
+        page.locator(`a[href="/editions/1.0/${routePath}"]`).first(),
       ).toBeAttached();
     }
 

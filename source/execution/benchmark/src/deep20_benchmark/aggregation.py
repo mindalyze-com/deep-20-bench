@@ -398,6 +398,22 @@ def aggregate_trials(
                 trial.result.summary.oracle_quality.final_unknown_answers
                 for trial in completed
             ),
+            final_rather_yes_answers=sum(
+                trial.result.summary.oracle_quality.final_rather_yes_answers
+                for trial in completed
+            ),
+            final_rather_no_answers=sum(
+                trial.result.summary.oracle_quality.final_rather_no_answers
+                for trial in completed
+            ),
+            judge_rather_yes_answers=sum(
+                trial.result.summary.oracle_quality.judge_rather_yes_answers
+                for trial in completed
+            ),
+            judge_rather_no_answers=sum(
+                trial.result.summary.oracle_quality.judge_rather_no_answers
+                for trial in completed
+            ),
             judge_yes_answers=sum(
                 trial.result.summary.oracle_quality.judge_yes_answers
                 for trial in completed

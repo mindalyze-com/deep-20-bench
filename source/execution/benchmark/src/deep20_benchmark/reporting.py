@@ -256,6 +256,9 @@ def render_benchmark(result: BenchmarkResult) -> str:
         f"- Model: `{model.model_id}` - {model.display_name}",
         f"- Exact route: `{model.configuration.model}`",
         f"- Execution commits: {', '.join(f'`{item}`' for item in result.run.git_commits)}",
+        *([(f"- Oracle contract revisions: {len(result.run.oracle_contract_revisions)}; "
+            "mixed-contract repair, not publication eligible")]
+          if result.run.oracle_contract_revisions else []),
         f"- Status: {'completed' if result.outcome.complete else 'failed'}",
         f"- Success rate: {_rate(result.summary)}",
         f"- Median counted questions: {_median(result.summary)}",

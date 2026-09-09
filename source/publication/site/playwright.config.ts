@@ -66,6 +66,16 @@ export default defineConfig({
         viewport: { width: 1280, height: 720 },
       },
     },
+    {
+      name: "mobile-webkit-editions",
+      grep: /(?=.*@editions)(?=.*@(mobile|both))/,
+      use: {
+        browserName: "webkit",
+        hasTouch: true,
+        isMobile: true,
+        viewport: { width: 390, height: 844 },
+      },
+    },
   ],
   webServer: [
     {

@@ -65,6 +65,7 @@ const parseRouteManifest = (value) => {
     if (!supportedKinds.has(kind)) throw new Error(`Unsupported route kind ${kind}.`);
     return {
       route: stringValue(route.route, `routes[${index}].route`),
+      editionId: stringValue(route.edition_id, `routes[${index}].edition_id`),
       kind,
       indexable: booleanValue(route.indexable, `routes[${index}].indexable`),
       sitemapIncluded: booleanValue(
@@ -102,16 +103,16 @@ const parseRouteManifest = (value) => {
 
 const routes = parseRouteManifest(readJson(routeManifestPath));
 const clientTemplateSource = readFileSync(join(outputRoot, "index.html"), "utf8");
-const manifestDocument = readJson(join(publicRoot, "data", "manifest.json"));
-const leaderboardDocument = readJson(join(publicRoot, "data", "leaderboard.json"));
-const runDocuments = new Map(
-  manifestDocument.official_runs.map((reference) => {
-    const document = readJson(
-      join(publicRoot, "data", "runs", `${reference.execution_id}.json`),
-    );
-    return [reference.execution_id, document];
-  }),
-);
+const editionsDocument = readJson(join(publicRoot, "data", "editions.json"));
+const editionManifests = new Map(editionsDocument.editions.map(edition => [edition.edition_id,
+  readJson(join(publicRoot, "data", edition.manifest_path))]));
+const editionLeaderboards = new Map(editionsDocument.editions.map(edition => [edition.edition_id,
+  readJson(join(publicRoot, "data", edition.leaderboard_path))]));
+const manifestDocument = editionManifests.get(editionsDocument.default_edition_id);
+const runDocuments = new Map(editionsDocument.editions.flatMap(edition => edition.runs).map(reference => {
+  const document = readJson(join(publicRoot, "data", "runs", `${reference.execution_id}.json`));
+  return [reference.execution_id, document];
+}));
 const subjectDocuments = new Map(
   routes
     .filter((route) => route.kind === "subject")
@@ -134,7 +135,7 @@ const subjectDocuments = new Map(
 );
 
 const serverEntryPath = join(serverRoot, "entry-server.js");
-const { renderPublicationPage, dataLicenseResource } = await import(pathToFileURL(serverEntryPath).href);
+const { renderPublicationPage, homepageStructuredData } = await import(pathToFileURL(serverEntryPath).href);
 
 const escapeHtml = (value) =>
   value
@@ -173,82 +174,20 @@ const clientTemplate = replaceUnique(
 const routeUrl = (route) =>
   route.length === 0 ? canonicalUrl : `${canonicalUrl}${route}/`;
 
-const websiteStructuredData = () => {
-  const data = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "@id": new URL("#website", canonicalUrl).href,
-    name: manifestDocument.site.title,
-    alternateName: manifestDocument.site.short_title,
-    url: canonicalUrl,
-  };
-  return `<script type="application/ld+json">${safeJson(data)}</script>`;
-};
-
-const datasetStructuredData = () => {
-  const evaluated = leaderboardDocument.leaderboard.filter(
-    (row) => row.status === "evaluated",
-  );
-  const data = {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    "@id": new URL("#dataset", canonicalUrl).href,
-    name: manifestDocument.site.title,
-    alternateName: ["Deep20 Bench", "D20B"],
-    description: manifestDocument.site.description,
-    url: canonicalUrl,
-    creator: {
-      "@type": "Person",
-      name: manifestDocument.site.creator_name,
-    },
-    dateModified: manifestDocument.provenance.built_at,
-    isAccessibleForFree: true,
-    license: dataLicenseResource.href,
-    keywords: [
-      "Deep20Bench",
-      "Deep20 Bench",
-      "Deep20 benchmark",
-      "large language models",
-      "large language model benchmark",
-      "LLM benchmark",
-      "Twenty Questions",
-      "question strategy",
-      "state tracking",
-    ],
-    variableMeasured: [
-      "question score",
-      "success rate",
-      "contract compliance",
-      "cost",
-      "runtime",
-    ],
-    measurementTechnique: `${manifestDocument.active_cohort.target_ids.length} subjects, ${manifestDocument.active_cohort.iterations} repeated trials per subject, ${evaluated.length} evaluated models`,
-    distribution: [
-      {
-        "@type": "DataDownload",
-        encodingFormat: "text/csv",
-        contentUrl: new URL("data/leaderboard.csv", canonicalUrl).href,
-      },
-      {
-        "@type": "DataDownload",
-        encodingFormat: "application/json",
-        contentUrl: new URL("data/deep20bench-v9.json", canonicalUrl).href,
-      },
-    ],
-  };
-  return `<script type="application/ld+json">${safeJson(data)}</script>`;
-};
-
 const pageDocuments = (route) => {
-  const documents = [manifestDocument];
-  const needsLeaderboard =
-    route.kind === "home" ||
-    route.kind === "run" ||
-    route.route === "results" ||
-    route.route.startsWith("results/");
-  if (needsLeaderboard) documents.push(leaderboardDocument);
-  if (route.route === "results/cost" || route.route === "results/time") {
-    documents.push(...runDocuments.values());
+  const manifest = editionManifests.get(route.editionId);
+  const leaderboard = editionLeaderboards.get(route.editionId);
+  if (manifest === undefined || leaderboard === undefined) throw new Error(`Missing edition ${route.editionId}`);
+  const localRoute = route.route.replace(/^editions\/[^/]+(?:\/|$)/, "");
+  const documents = [editionsDocument, manifest];
+  const needsLeaderboard = route.kind === "home" || route.kind === "run" ||
+    localRoute === "results" || localRoute.startsWith("results/");
+  if (needsLeaderboard) documents.push(leaderboard);
+  if (localRoute === "methodology") {
+    documents.push(...[...editionManifests.values()].filter(item => item.edition_id !== route.editionId));
+  }
+  if (localRoute === "results/cost" || localRoute === "results/time") {
+    documents.push(...manifest.official_runs.map(reference => runDocuments.get(reference.execution_id)));
   } else if (route.kind === "run") {
     const run = runDocuments.get(route.executionId);
     if (run === undefined) throw new Error(`Missing run data for ${route.route}.`);
@@ -256,9 +195,7 @@ const pageDocuments = (route) => {
   } else if (route.kind === "subject") {
     const run = runDocuments.get(route.executionId);
     const subject = subjectDocuments.get(`${route.executionId}/${route.targetId}`);
-    if (run === undefined || subject === undefined) {
-      throw new Error(`Missing subject data for ${route.route}.`);
-    }
+    if (run === undefined || subject === undefined) throw new Error(`Missing subject data for ${route.route}.`);
     documents.push(run, subject);
   }
   return documents;
@@ -329,7 +266,11 @@ const metadataHtml = (template, route, appHtml, documents) => {
     html,
     /<!-- deep20-structured-data -->/g,
     route.kind === "home"
-      ? `${datasetStructuredData()}\n    ${websiteStructuredData()}`
+      ? homepageStructuredData(
+          editionManifests.get(route.editionId),
+          editionLeaderboards.get(route.editionId),
+          canonicalUrl,
+        ).map((data) => `<script type="application/ld+json">${safeJson(data)}</script>`).join("\n    ")
       : "",
     "structured-data marker",
   );

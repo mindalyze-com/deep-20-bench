@@ -28,7 +28,8 @@ remain explicitly interpretive.
 The evaluation should:
 
 - Assess whether individual questions are clear, relevant, and likely to distinguish candidates.
-- Assess whether the Guesser uses the accumulated `YES`, `NO`, and `UNKNOWN` answers coherently.
+- Assess whether the Guesser uses the episode's answer vocabulary coherently, including
+  `RATHER_YES` and `RATHER_NO` for qualified factual questions.
 - Detect repetition, contradictions, stalled narrowing, premature guesses, and poor recovery.
 - Separate strategy quality from the terminal outcome.
 - Produce structured per-turn findings and aggregate scores that can be compared across episodes.
@@ -78,6 +79,12 @@ A blind evaluation requires a populated `guesser_conversation`. If it was disabl
 episode, the blind evaluation is unavailable; it must not be reconstructed from privileged call
 audits. A privileged evaluation may use the resolved `turns`, but its result must record which
 input fields were available.
+
+The input contract must identify the recorded prompt profile and answer vocabulary. A blind
+judge should assess qualified answers as uncertain directional clues, not convert them to
+firm YES/NO or numeric probabilities. Cache provenance stays out of the blind input because
+the Guesser did not see it; separate post-run analysis can record the execution's historical
+and same-game ASK-reuse policies when interpreting repetition or comparing trajectories.
 
 ## Proposed rubric
 

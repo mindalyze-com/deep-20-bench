@@ -12,6 +12,13 @@ repetitions. This is a modeling assumption. Distinct variation tokens and separa
 make the assumption reasonable, but a different seed does not by itself prove statistical
 independence. Subjects remain separate strata because their difficulty distributions differ.
 
+Benchmark [historical ASK reuse](oracle-history-cache.md) can share adjudicated answers across
+trials, and same-game reuse fixes the response to repeated questions within an episode.
+Separate Guesser sessions do not make those answers independent. For runs using either policy,
+interpret the interval conditional on the recorded reuse policy and history inventory. The
+calculation does not add a covariance correction or estimate variation from fresh research on
+every repeated question. Compare runs with matching policies and historical cutoffs.
+
 For subject `j`, let:
 
 - `n_j` be the number of completed trials;
@@ -44,10 +51,10 @@ score penalty of `Q + 1`, so failures contribute to both the score and its repea
 uncertainty. Infrastructure failures remain unscored and prevent an incomplete run from entering
 the official cohort.
 
-## Worked example: gpt-oss-120B
+## Worked example: edition 1.0 gpt-oss-120B
 
-The current official run has seven subjects and five trials per subject. Its penalized trial
-scores produce these intermediate values:
+The published edition 1.0 run has seven subjects and five trials per subject. Its penalized
+trial scores produce these intermediate values:
 
 | Subject | Trial scores | Subject mean | Sample variance |
 | --- | --- | ---: | ---: |
@@ -102,8 +109,9 @@ Opus 5, it is `13.2729 - 11.4128 = 1.8601` questions. Opus is more repeatable in
 ## Interpretation
 
 A wider interval means the model produced less consistent trial scores on the current subjects.
-All official models use the same subject and trial counts, so interval widths can be compared as
-a repeatability signal. It is still an interval for the mean score, not a range expected to
+Within an edition, all official models use the same subject and trial counts, so interval
+widths can be compared as a repeatability signal under that edition's conditions. Widths from
+different editions are not a common ranking. It is still an interval for the mean score, not a range expected to
 contain individual trial results.
 
 The interval does not include uncertainty from:

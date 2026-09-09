@@ -215,11 +215,11 @@ const facts = computed<MetricGridItem[]>(() => [
   .episode-hero-inner {
     grid-template-columns: minmax(11rem, 0.38fr) minmax(0, 1.62fr);
     gap: 1rem;
-    padding-block: 0.75rem;
+    padding-block: 0.35rem;
   }
 
   .episode-summary .eyebrow {
-    margin-bottom: 0.2rem;
+    display: none;
   }
 
   .episode-summary h1 {

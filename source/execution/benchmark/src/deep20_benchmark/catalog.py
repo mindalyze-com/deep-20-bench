@@ -4,10 +4,11 @@ from pathlib import Path
 from typing import Literal
 
 from deep20_game.config import BenchmarkMode, GamePolicy, ModelConfig
-from deep20_oracle.config import OracleConfig
+from deep20_oracle.cache_contract import oracle_contract_hash
+from deep20_oracle.config import OracleConfig, validate_prompt_profiles
 from deep20_oracle.models import StrictModel
 from deep20_oracle.util import canonical_json, load_yaml_unique, sha256_text
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 
 from .models import (
     BenchmarkDefinitionSnapshot,
@@ -74,6 +75,13 @@ class BenchmarkCatalogEntry(StrictModel):
     oracle_configuration: OracleConfig
     validator_configuration: ModelConfig
 
+    @model_validator(mode="after")
+    def matching_answer_protocols(self) -> BenchmarkCatalogEntry:
+        validate_prompt_profiles(
+            self.game_policy.prompt_profile, self.oracle_configuration.prompt_profile,
+        )
+        return self
+
 
 class BenchmarkCatalog(StrictModel):
     version: Literal[2] = 2
@@ -99,9 +107,12 @@ class BenchmarkCatalog(StrictModel):
     ) -> BenchmarkDefinitionSnapshot:
         entry = self.entry(benchmark_id)
         iterations = iterations_override or entry.default_iterations
-        game_policy = entry.game_policy.model_copy(update={"benchmark_mode": benchmark_mode})
+        game_policy = GamePolicy.model_validate(
+            {**entry.game_policy.model_dump(), "benchmark_mode": benchmark_mode}
+        )
         unsigned = {
             **entry.model_dump(mode="json"),
+            "oracle_contract_hash": oracle_contract_hash(entry.oracle_configuration),
             "game_policy": game_policy.model_dump(mode="json"),
             "subject_ids": [str(subject_id) for subject_id in subject_ids],
             "iterations": iterations,

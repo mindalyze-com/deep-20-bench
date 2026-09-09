@@ -1,0 +1,5170 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260908-B-0003-experimental-M0023-001
+    model_id: M-0023
+    target_id: T-0010
+    trial_id: trial-003
+    trial_number: 3
+    episode_run_id: BR-1048c2bdcbb0793baa2cea4698525f03fa033a80
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-1048c2bdcbb0793baa2cea4698525f03fa033a80
+      episode_id: EP-01a082e228d677e7a720e45ad4316fcc
+      subject:
+        target_id: T-0010
+        canonical_name: Eyebrow
+        aliases:
+        - Eye brow
+        - Eyebrows
+        - Human eyebrow
+        entity_type: thing
+        description: Human eyebrow, the anatomical feature formed by the area of short
+          hairs above a human eye. The target is the eyebrow as a body feature, not
+          an isolated hair, the eye, a cosmetic product, or a drawn imitation. It
+          is a general type, with no particular person or cosmetic styling specified.
+        reference_url: https://en.wikipedia.org/wiki/Eyebrow
+      started_at: '2026-09-08T21:17:34.806243+00:00'
+      completed_at: '2026-09-08T21:19:37.646690+00:00'
+      duration_ms: 122840
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: false
+    summary:
+      total_turns: 17
+      counted_questions: 16
+      guesser_call_count: 17
+      ask_count: 13
+      guess_count: 2
+      rejected_guess_count: 1
+      oracle_unknown_count: 0
+      oracle_cache_hits: 5
+      oracle_quality:
+        reviewed_questions: 8
+        agreements: 7
+        disagreements: 1
+        judge_invocations: 1
+        oracle_answers_changed: 0
+        final_unknown_answers: 0
+        judge_yes_answers: 1
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0137571'
+        judge_cost_usd: '0.020995'
+        quality_control_cost_usd: '0.0347521'
+        question_types:
+        - question_type: other
+          reviewed_questions: 8
+          disagreements: 1
+      contract:
+        evaluated_outputs: 17
+        valid_outputs: 15
+        violations: 2
+        counted_penalties: 2
+        affected_trials: 1
+        compliance_rate: '0.8823529411764705882352941176'
+        status: breached
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.000561160'
+        oracle: '0.05437522'
+        validator: '0.0004264'
+        total: '0.055362780'
+      tokens:
+        guesser: 17743
+        oracle: 67145
+        validator: 1407
+        total: 86295
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0023
+        requested_model: z-ai/glm-5.3-flash
+        requested_provider: z-ai
+        resolved_models:
+        - z-ai/glm-5.3-flash
+        resolved_providers:
+        - Z.AI
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v16-five-answer-category-guide
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v17-labelled-source-context
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v2-generic-kinds
+    turns:
+    - turn_type: contract_violation
+      turn_number: 1
+      violation_code: invalid_guesser_output
+      violation_kind: invalid_action
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-01a082e228d677e7a720e45ca4d41763
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is it a living thing (or part of one)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e23467736797cbcd63bffea2f7
+        answer: 'YES'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: 'Brow: The soft tissue at the junction of the frontalis and orbicularis
+            oculi muscles, overlying the bony supraorbital ridge. Eyebrow: The arch
+            of hair on the brow.'
+          validation: model_reported
+        - source_url: https://www.aao.org/eye-health/tips-prevention/why-do-humans-have-eyebrows-eyelashes
+          excerpt: The area of curved, delicate hairs above our eyes are believed
+            to channel unwanted moisture—sweat and rain in particular—away from the
+            eye.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The supplied excerpts and general knowledge establish
+              that the eyebrow is an anatomical feature consisting of hair and soft
+              tissue on a human, making it part of a living thing.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-01a082e22f9475228334c4c55c3d489f
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is it an animal?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e25a5a7311bf6e79e2c4b42d89
+        answer: 'NO'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: 'Eyebrow: The arch of hair on the brow ... The eyebrows usually
+            extend further laterally than medially, in relation to the eye.'
+          validation: model_reported
+        - source_url: https://www.imaios.com/en/e-anatomy/anatomical-structures/eyebrow-1536887516
+          excerpt: The Eyebrows (supercilia) are two arched eminences of integument
+            ... and support numerous short, thick hairs ... The eyebrows consist of
+            thickened integument.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: other
+            supporting_statement: An eyebrow is an anatomical feature or body part
+              of a human, not an independent living organism or animal.
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0010
+          episode_id: EP-01a082da0c0e7536aa3f70f86875f73a
+          turn_number: 3
+          oracle_call_id: OC-01a082da4a08701a923d92f1ce9905a1
+          question: Is it an animal?
+          answered_at: '2026-09-08T21:09:07.036103+00:00'
+          policy: same_execution_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: f94478cda54ed075f483e9dd794312a262752802a377b367748065ddcc27bf98
+          execution_id: BX-20260908-B-0003-experimental-M0023-001
+          model_id: M-0023
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0010/trials/trial-001/result.yml
+          source_integrity_hash: dfc74fe6cfeea5510b2af6cdb3bfe4149ecf0cf9a4449f44c3233d0a360bba4e
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-01a082e255b8723cb2ad8324059fb4d7
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is it a plant?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e25f1f70aa972093a40e07dfe0
+        answer: 'NO'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: The eyebrow is defined as the arch of hair on the brow, with the
+            hairs divided into medial, middle, and lateral parts.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://dictionary.cambridge.org/us/dictionary/english/eyebrow
+          excerpt: Cambridge Dictionary defines eyebrow as the line of short hairs
+            that humans have above each eye.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: other
+            supporting_statement: An eyebrow is defined as an anatomical feature of
+              humans consisting of a line of short hairs above the eye, making it
+              a human body part rather than a plant, supported by source definitions
+              and remembered biological knowledge.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-01a082e25a5c7766a62e27491f67b589
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is it a fungus?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e283c47145b3d487382c4edc51
+        answer: 'NO'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: The NIH Elements of Morphology page defines an eyebrow as “the
+            arch of hair on the brow” and describes the brow as soft tissue overlying
+            the bony supraorbital ridge.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://pubmed.ncbi.nlm.nih.gov/24385126
+          excerpt: The PubMed record describes eyebrow hair biology, structure, and
+            function, stating that eyebrow hair follicles share the same basic structure
+            as hair follicles elsewhere on the body.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://dictionary.cambridge.org/us/dictionary/english-chinese-traditional/eyebrow
+          excerpt: Cambridge Dictionary defines eyebrow as “the line of short hairs
+            above each eye in humans.”
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Excerpts establish that an eyebrow is an anatomical
+              feature consisting of an arch of hair and soft tissue above the eye,
+              which is not a fungus.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-01a082e27dcb7304944b6895fae1a1b4
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is it a part of the human body?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e2aff27708af31d7e342506084
+        answer: 'YES'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: 'The anatomy of the various structures is described in more detail
+            below. ... Eyebrow: The arch of hair on the brow (Fig. 2) ... Based on
+            observed localized abnormalities of the eyebrow, it is useful to divide
+            the eyebrow into three parts: medial, middle (central), and lateral.'
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.vocabulary.com/dictionary/eyebrow
+          excerpt: 'Your eyebrows are the curved areas of hair on your face above
+            each of your eyes. ... Definitions of eyebrow: noun the arch of hair above
+            each eye.'
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://dictionary.cambridge.org/dictionary/english/eyebrow
+          excerpt: the line of short hairs that humans have above each eye
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The eyebrows are anatomical features located on
+              the human face above the eyes, confirming that they are a part of the
+              human body.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0010
+          episode_id: EP-01a08183d7a0762a81a45c386e9724c6
+          turn_number: 8
+          oracle_call_id: OC-01a081861cd071fda74e6f0b7a6045da
+          question: Is it a part of the human body?
+          answered_at: '2026-09-08T14:57:33.554161+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: e16b7c23ae0ffd700febce142a79c4829c91c943408caa381bdee4a80068e06f
+          execution_id: BX-20260908-B-0003-experimental-M0015-001
+          model_id: M-0015
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0015/BX-20260908-B-0003-experimental-M0015-001/subjects/T-0010/trials/trial-001/result.yml
+          source_integrity_hash: e01ec1c71946cc23ab139f6bb787a9f65a138e6748d975a34e91fbe305433485
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-01a082e2a9fb7582a32d50ec388d18a6
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is it an internal organ?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e2b56f74e89be740bdd204367a
+        answer: 'NO'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: 'Eyebrow: The arch of hair on the brow.'
+          validation: model_reported
+        - source_url: https://www.wikidoc.org/index.php/Eyebrow
+          excerpt: The eyebrow is an area of coarse skin hairs above the eye that
+            follows the shape of the brow ridges.
+          validation: model_reported
+        - source_url: https://my.clevelandclinic.org/health/articles/organs-in-the-body
+          excerpt: Organs are structures inside your body that have specialized jobs.
+            They include internal organs like your heart and brain, plus external
+            ones like your skin.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Excerpts establish that the eyebrow is an external
+              area of skin hairs above the eye, whereas internal organs are structures
+              located inside the body. Thus, it is not an internal organ.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0010
+          episode_id: EP-01a0818f9a2273acbaed7cb401a6da56
+          turn_number: 11
+          oracle_call_id: OC-01a08192d905731595c4bdf7ceae221c
+          question: Is it an internal organ?
+          answered_at: '2026-09-08T15:11:37.699729+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: e16b7c23ae0ffd700febce142a79c4829c91c943408caa381bdee4a80068e06f
+          execution_id: BX-20260908-B-0003-experimental-M0015-001
+          model_id: M-0015
+          benchmark_id: B-0003
+          trial_id: trial-003
+          source_file: runs/M-0015/BX-20260908-B-0003-experimental-M0015-001/subjects/T-0010/trials/trial-003/result.yml
+          source_integrity_hash: 5571c37977261f7bb0836f5871751e3064eac9897c3144c03216905b58554442
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-01a082e2aff474d296bf3a402e0d2e62
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Is it located on the head?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e2ba9e73839b2be9881e7f4e04
+        answer: 'YES'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: 'Eyebrow: The arch of hair on the brow. The brow is the soft tissue
+            at the junction of the frontalis and orbicularis oculi muscles, overlying
+            the bony supraorbital ridge.'
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://europepmc.org/article/med/16052142
+          excerpt: The male eyebrow sits along the supraorbital ridge. The study describes
+            the eyebrow's three-dimensional relation to the eye and supraorbital rim.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The eyebrow overlies the bony supraorbital ridge
+              on the brow, which is part of the head.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0010
+          episode_id: EP-01a0827bf1c675f3a41441e1963a9a28
+          turn_number: 6
+          oracle_call_id: OC-01a0827d1f0270728aaab89947414eb8
+          question: Is it located on the head?
+          answered_at: '2026-09-08T19:27:20.817201+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: e16b7c23ae0ffd700febce142a79c4829c91c943408caa381bdee4a80068e06f
+          execution_id: BX-20260908-B-0003-experimental-M0020-001
+          model_id: M-0020
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0020/BX-20260908-B-0003-experimental-M0020-001/subjects/T-0010/trials/trial-001/result.yml
+          source_integrity_hash: ba4f1f08b80fd0cf52e687c0e2214df76bb78b7a11829b67cbeea6f77c8a4d9e
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-01a082e2b57177af8b2b5b21d5ee3c68
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Is it the nose?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e2bec6778799d1daf7db13c5ab
+        answer: 'NO'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: 'Eyebrow: The arch of hair on the brow. The eyebrows usually extend
+            further laterally than medially, in relation to the eye.'
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Glabella
+          excerpt: The glabella, in humans, is the area of skin between the eyebrows
+            and above the nose.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: An eyebrow is an anatomical feature located above
+              the eye, distinct from the nose, as confirmed by anatomical descriptions.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0010
+          episode_id: EP-01a082e01db975cdb7a63b8719c33376
+          turn_number: 14
+          oracle_call_id: OC-01a082e1aaad7618b553ed6a2b4c7dfd
+          question: Is it the nose?
+          answered_at: '2026-09-08T21:17:11.775290+00:00'
+          policy: same_execution_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: f94478cda54ed075f483e9dd794312a262752802a377b367748065ddcc27bf98
+          execution_id: BX-20260908-B-0003-experimental-M0023-001
+          model_id: M-0023
+          benchmark_id: B-0003
+          trial_id: trial-002
+          source_file: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0010/trials/trial-002/result.yml
+          source_integrity_hash: 4540113da7cfaed3940bc247d28e55de126df18b6b99bba2b9876a8812f0bdff
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-01a082e2baa0749485509b37c90f122a
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Is it the mouth or any part of it (like lips or tongue)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e2c383706f8848e89f09733f96
+        answer: 'NO'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: The eyebrow is defined as “the arch of hair on the brow,” within
+            the periorbital region overlying the supraorbital ridge.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-oral.shtml
+          excerpt: The mouth is defined as the oral aperture opening into the oral
+            cavity. The oral cavity includes structures such as the gums, teeth, palate,
+            and tongue; the lips surround the oral aperture.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: An eyebrow is the arch of hair above the eye in
+              the periorbital region, whereas the mouth is the oral aperture and its
+              cavity, making them entirely distinct anatomical structures.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-01a082e2bec97333b986315ff0ff6da5
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Is it the ear?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e2fee4740e9de3e70e36cdfa6e
+        answer: 'NO'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: 'Eyebrow: The arch of hair on the brow. The eyebrows usually extend
+            further laterally than medially, in relation to the eye.'
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://dictionary.cambridge.org/us/dictionary/english/eyebrow
+          excerpt: the line of short hairs above each eye in humans
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: other
+            supporting_statement: An eyebrow is the anatomical feature formed by the
+              area of short hairs above the eye, which is distinct from the ear.
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-01a082e2fa4c71fabc31fae5a174b29c
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Is it an eye or a part of the eye?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e326787324a04a313561c288cf
+        answer: 'NO'
+        evidence:
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: 'Brow: The soft tissue at the junction of the frontalis and orbicularis
+            oculi muscles, overlying the bony supraorbital ridge. Eyebrow: The arch
+            of hair on the brow. The eyebrows usually extend further laterally than
+            medially, in relation to the eye.'
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://dictionary.cambridge.org/us/dictionary/english/eyebrow
+          excerpt: eyebrow noun ... the line of short hairs above each eye in humans
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.merriam-webster.com/dictionary/eyebrow
+          excerpt: 'Medical Definition: eyebrow ... the ridge over the eye or the
+            hair growing usually in a line or arch on the skin over it'
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: The excerpts describe the eyebrow as being located
+              above or over the eye, indicating it is near the eye rather than being
+              an eye or a part of the eye itself.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-01a082e3205c724cb2533a072b9b22ae
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Is it hair (or the hair on the head specifically)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e366737050a8c1de947376cf87
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.britannica.com/dictionary/eyebrow
+          excerpt: Britannica Dictionary defines eyebrow as “the line of hair that
+            grows over your eye.”
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://elementsofmorphology.nih.gov/anatomy-periorbital.shtml
+          excerpt: The NIH-supported Elements of Morphology resource defines eyebrow
+            as “the arch of hair on the brow” and discusses the hairs making up its
+            medial, middle, and lateral parts.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://dictionary.cambridge.org/us/dictionary/english/eyebrow
+          excerpt: Cambridge defines eyebrow as “the line of short hairs above each
+            eye in humans.”
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: evidence
+            supporting_statement: Dictionaries define the eyebrow as a line or arch
+              of hair, whereas the subject description defines it as an anatomical
+              feature formed by hair, creating an ambiguity between the hair itself
+              and the anatomical structure.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Dictionary and anatomical definitions define the
+              eyebrow as "the line of hair that grows over your eye" / "the arch of
+              hair on the brow" / "the line of short hairs above each eye", so the
+              eyebrow itself is hair (located on the head, though not scalp hair).
+              The inclusive OR is satisfied by the first branch.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-01a082e35e287464962aeddcca92eb2b
+    - turn_type: contract_violation
+      turn_number: 14
+      violation_code: invalid_guesser_output
+      violation_kind: invalid_action
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-01a082e3be697611a556b309953c2a40
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: GUESS
+        question: null
+        name: hair (head hair)
+        description: The hair growing on the human head, a living part of the body
+          located on the head
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a082e3c9277382af1dac598e795274
+        answer: 'NO'
+        evidence: []
+        explanation: The target is the eyebrow, a specific anatomical feature above
+          the eye. Head hair is a broader and different body hair category, not the
+          eyebrow itself.
+        oracle_quality: null
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-01a082e3c3f1746f91be7673b5e03c2e
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: ASK
+        question: Is it the eyebrows (or an eyebrow)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e3de69768790ec067fcf199fb8
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Eyebrow
+          excerpt: An eyebrow is an area of short terminal hairs above each eye that
+            follows the shape of the lower margin of the brow ridges of some mammals.
+          validation: model_reported
+        - source_url: https://www.britannica.com/dictionary/eyebrow
+          excerpt: 'eyebrow ... noun plural eyebrows: the line of hair that grows
+            over your eye.'
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The subject is an eyebrow, and the evidence directly
+              defines an eyebrow as an area of short terminal hairs above each eye.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 16
+      guesser_call_id: GC-01a082e3d43377c88b8054b60135a384
+    - turn_type: action
+      turn_number: 17
+      action:
+        action: GUESS
+        question: null
+        name: eyebrow
+        description: The strip of hair growing above each human eye, located on the
+          head
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a082e4030b701aa3025dc3eb19ce24
+        answer: 'YES'
+        evidence: []
+        explanation: The proposal identifies the general human eyebrow body feature
+          above the eye, not an isolated hair or unrelated object.
+        oracle_quality: null
+      counted: false
+      counted_questions: 16
+      guesser_call_id: GC-01a082e3fde1714d869a7c416bb8fdd1
+    guesser_conversation:
+    - role: system
+      content: "You are the Guesser in a Twenty Questions benchmark. Identify the\
+        \ hidden subject using as few\ncounted turns as possible. BEGIN provides only\
+        \ its broad category. The variation_token has no\nclues; do not interpret,\
+        \ mention, or repeat it.\n\nThe category in BEGIN has a broad meaning:\n-\
+        \ person: a real human, living or historical.\n- fictional_character: an invented\
+        \ character from a story, book, comic, film, television,\n  game, or another\
+        \ fictional work.\n- mythological_figure: a figure from mythology or traditional\
+        \ legend.\n- video_game_character: a character known from video games.\n-\
+        \ thing: a broad category covering natural and human-made entities, living\
+        \ or nonliving,\n  whole entities or parts of them. Possibilities include\
+        \ everyday objects, tools, machines,\n  materials, food, animals, plants,\
+        \ body parts, natural structures, geographical features,\n  celestial bodies,\
+        \ natural phenomena, and concepts. These possibilities are not exhaustive.\n\
+        \  The target may be a general kind or one particular instance.\n\nUse questions\
+        \ to narrow the supplied category. These definitions are not a list of targets.\n\
+        \nUse ASK for a factual question that distinguishes candidates. Never use\
+        \ ASK to confirm a\nspecific identity. Use GUESS with a name and short identifying\
+        \ description to name a candidate.\n\nASK has five possible replies:\n- YES\
+        \ or NO: the evidence establishes that answer to the exact question.\n- RATHER_YES\
+        \ or RATHER_NO: evidence leans that way, but is not strong enough for a firm\
+        \ answer.\n  Treat this as a clue; keep candidates fitting the opposite answer\
+        \ possible.\n- UNKNOWN: no reliable direction. It supports neither answer.\n\
+        \nAsk clear questions about verifiable properties. \"Can\", \"sometimes\"\
+        , \"usually\", \"always\", and\n\"mainly\" ask different things. Do not assume\
+        \ that one property proves another or rules out alternatives.\nQualified replies\
+        \ express uncertainty about your question, not how often a property applies.\n\
+        Before narrowing heavily, check your key assumption with a different property.\
+        \ After rejected\nguesses, reconsider earlier assumptions as well as candidates.\
+        \ Answers can be mistaken; check\nanother property when stuck. Do not ignore\
+        \ an answer merely because it conflicts with a\npreferred candidate.\n\nEach\
+        \ ASK, rejected GUESS, or format error before the limit costs one turn. A\
+        \ correct GUESS costs\nnone. After 40 counted turns, make one final GUESS;\
+        \ ASK is then forbidden. Identity\nvalidation uses only YES, NO, or UNKNOWN.\
+        \ UNKNOWN on GUESS ends the game without success.\n\nFORMAT_ERROR means your\
+        \ output broke the contract, was not checked for correctness, and cost\none\
+        \ turn. Retry using its displayed formats if a turn remains. Return only the\
+        \ required JSON\nobject with exactly one result action. No explanations, reasoning,\
+        \ or extra fields.\n"
+    - role: user
+      content: '{"category":"thing","event":"BEGIN","variation_token":"AMZAISLM"}'
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a living thing (or part of one)?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it an animal?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a plant?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a fungus?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a part of the human body?"}}'
+      turn_number: 6
+    - role: user
+      content: 'YES'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it an internal organ?"}}'
+      turn_number: 7
+    - role: user
+      content: 'NO'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it located on the head?"}}'
+      turn_number: 8
+    - role: user
+      content: 'YES'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it the nose?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it the mouth or any part of it (like lips or tongue)?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it the ear?"}}'
+      turn_number: 11
+    - role: user
+      content: 'NO'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it an eye or a part of the eye?"}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it hair (or the hair on the head specifically)?"}}'
+      turn_number: 13
+    - role: user
+      content: 'YES'
+      turn_number: 13
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The hair growing on the
+        human head, a living part of the body located on the head","name":"hair (head
+        hair)","question":null}}'
+      turn_number: 15
+    - role: user
+      content: 'NO'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it the eyebrows (or an eyebrow)?"}}'
+      turn_number: 16
+    - role: user
+      content: 'YES'
+      turn_number: 16
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The strip of hair growing
+        above each human eye, located on the head","name":"eyebrow","question":null}}'
+      turn_number: 17
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0023
+          gateway: openrouter
+          model: z-ai/glm-5.3-flash
+          provider: z-ai
+          reasoning_effort: high
+          structured_output_mode: json_object
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '0.075'
+            cached_input_usd_per_million: '0.015'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 17
+          cost_usd: '0.000561160'
+          latency_ms: 24942
+          total_tokens: 17743
+          input_tokens: 16962
+          cached_input_tokens: 15104
+          cache_write_tokens: 0
+          output_tokens: 781
+          reasoning_tokens: 275
+          estimated_cache_savings_usd: '0.00090624000'
+          recovery:
+            request_attempts: 17
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Z.AI
+            calls: 17
+            cost_usd: '0.000561160'
+            latency_ms: 24942
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          prompt_profile: qualified_v1
+          adjudication_policy: concise_knowledge_v1
+          parallel_search: true
+          parallel_search_mode: fast
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 8
+          cost_usd: '0.05437522'
+          latency_ms: 93514
+          total_tokens: 67145
+          input_tokens: 58517
+          cached_input_tokens: 24801
+          cache_write_tokens: 0
+          output_tokens: 8628
+          reasoning_tokens: 5165
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 17
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 8
+              cost_usd: '0.01962312'
+              latency_ms: 69236
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 8
+              cost_usd: '0.0137571'
+              latency_ms: 18201
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers:
+            - provider: Claude Platform on AWS
+              calls: 1
+              cost_usd: '0.020995'
+              latency_ms: 6077
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 2
+          cost_usd: '0.0004264'
+          latency_ms: 4264
+          total_tokens: 1407
+          input_tokens: 1262
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 145
+          reasoning_tokens: 56
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 2
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 2
+            cost_usd: '0.0004264'
+            latency_ms: 4264
+          unreported_calls: 0
+          fallback_calls: 0
+    audit:
+      schema_version: 1
+      calls:
+      - component: guesser
+        call_id: GC-01a082e228d677e7a720e45ca4d41763
+        turn_number: 1
+        status: contract_violation
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 222e77189ad04815d25a9dc4bfbdc11b04b68c52c8b58458b0320e1a7925fe00
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:17:34.806593+00:00'
+          completed_at: '2026-09-08T21:17:36.528326+00:00'
+          latency_ms: 1721
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 660
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 33
+            reasoning_tokens: 11
+            search_count: 0
+            cost_usd: '0.00005775'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 73
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: guesser
+        call_id: GC-01a082e22f9475228334c4c55c3d489f
+        turn_number: 2
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: c99e0c8d04608d2d16840344e6d20c345bd708173b93e174afdae4a4f2d82a9c
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:17:36.532593+00:00'
+          completed_at: '2026-09-08T21:17:37.767003+00:00'
+          latency_ms: 1234
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 771
+            cached_input_tokens: 640
+            cache_write_tokens: 0
+            output_tokens: 40
+            reasoning_tokens: 8
+            search_count: 0
+            cost_usd: '0.000029425'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 110
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e23467736797cbcd63bffea2f7
+        turn_number: 2
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: b6f9c2b4c252fb524901c5832f610460e9a3f5460bb573296cfc9c4049451c81
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:17:37.768413+00:00'
+            completed_at: '2026-09-08T21:17:44.412186+00:00'
+            latency_ms: 6643
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4557
+              cached_input_tokens: 1514
+              cache_write_tokens: 0
+              output_tokens: 431
+              reasoning_tokens: 90
+              search_count: 1
+              cost_usd: '0.00230793'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1183
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: 'The eyebrow is an anatomical feature of the human
+              body: an arch of hair on the brow, which is soft tissue overlying the
+              supraorbital ridge. As a body feature of a human, it is part of a living
+              organism, not an independent living organism itself.'
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - human eyebrow anatomical feature hairs above eye part of human body
+              living person
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: b6f9c2b4c252fb524901c5832f610460e9a3f5460bb573296cfc9c4049451c81
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:17:37.768413+00:00'
+              completed_at: '2026-09-08T21:17:44.412186+00:00'
+              latency_ms: 6643
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4557
+                cached_input_tokens: 1514
+                cache_write_tokens: 0
+                output_tokens: 431
+                reasoning_tokens: 90
+                search_count: 1
+                cost_usd: '0.00230793'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1183
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 6c10b92e4f893dc2d240efa94f811c448d119d3bc3d655e89a014febe9574937
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:17:44.413108+00:00'
+            completed_at: '2026-09-08T21:17:46.290935+00:00'
+            latency_ms: 1877
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1190
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 444
+              reasoning_tokens: 367
+              search_count: 0
+              cost_usd: '0.001467'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 292
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e255b8723cb2ad8324059fb4d7
+        turn_number: 3
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: fd69e1a55684f1674ab731b2dfedd5ba8a24e61024bdad5b8557109dd763af88
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:17:46.296488+00:00'
+          completed_at: '2026-09-08T21:17:47.481973+00:00'
+          latency_ms: 1185
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 806
+            cached_input_tokens: 768
+            cache_write_tokens: 0
+            output_tokens: 34
+            reasoning_tokens: 9
+            search_count: 0
+            cost_usd: '0.00002287'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 88
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e25a5a7311bf6e79e2c4b42d89
+        turn_number: 3
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 8909cdbc9c6747c068c1832bd3f074286d58290465525c65da8440c4b5055dad
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:08:59.017431+00:00'
+            completed_at: '2026-09-08T21:09:05.484725+00:00'
+            latency_ms: 6467
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5337
+              cached_input_tokens: 2837
+              cache_write_tokens: 0
+              output_tokens: 427
+              reasoning_tokens: 109
+              search_count: 1
+              cost_usd: '0.0021938400000000003'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1119
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0010
+          episode_id: EP-01a082da0c0e7536aa3f70f86875f73a
+          turn_number: 3
+          oracle_call_id: OC-01a082da4a08701a923d92f1ce9905a1
+          question: Is it an animal?
+          answered_at: '2026-09-08T21:09:07.036103+00:00'
+          policy: same_execution_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: f94478cda54ed075f483e9dd794312a262752802a377b367748065ddcc27bf98
+          execution_id: BX-20260908-B-0003-experimental-M0023-001
+          model_id: M-0023
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0010/trials/trial-001/result.yml
+          source_integrity_hash: dfc74fe6cfeea5510b2af6cdb3bfe4149ecf0cf9a4449f44c3233d0a360bba4e
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: 'The subject is a human anatomical feature: an eyebrow
+              is an arch or area of hair above the eye, not an animal itself. The
+              supplied description also identifies it as a body feature rather than
+              a whole organism.'
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - human eyebrow anatomical feature animal body part is an animal itself
+              definition
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 8909cdbc9c6747c068c1832bd3f074286d58290465525c65da8440c4b5055dad
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:08:59.017431+00:00'
+              completed_at: '2026-09-08T21:09:05.484725+00:00'
+              latency_ms: 6467
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5337
+                cached_input_tokens: 2837
+                cache_write_tokens: 0
+                output_tokens: 427
+                reasoning_tokens: 109
+                search_count: 1
+                cost_usd: '0.0021938400000000003'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1119
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 4c1b32c38772e5d5fe616784d305fd2144413de3280e7461cee885893c08a62a
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:09:05.485550+00:00'
+            completed_at: '2026-09-08T21:09:07.036103+00:00'
+            latency_ms: 1550
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1181
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 321
+              reasoning_tokens: 265
+              search_count: 0
+              cost_usd: '0.0011568'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 202
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e25a5c7766a62e27491f67b589
+        turn_number: 4
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 2df38bec77d099c49df442f105917b954fefe3001c6f578fcc0fdd89068d511e
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:17:47.484936+00:00'
+          completed_at: '2026-09-08T21:17:48.703009+00:00'
+          latency_ms: 1218
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 834
+            cached_input_tokens: 768
+            cache_write_tokens: 0
+            output_tokens: 35
+            reasoning_tokens: 10
+            search_count: 0
+            cost_usd: '0.00002522'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 86
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e25f1f70aa972093a40e07dfe0
+        turn_number: 4
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 808e416d5163e046c87e67a760210ad4bbdf7b8f646d1892f2a9c3ab2e816b3b
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:17:48.704724+00:00'
+            completed_at: '2026-09-08T21:17:54.087417+00:00'
+            latency_ms: 5382
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5161
+              cached_input_tokens: 2836
+              cache_write_tokens: 0
+              output_tokens: 324
+              reasoning_tokens: 57
+              search_count: 1
+              cost_usd: '0.00202647'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 927
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: 'The subject is a human anatomical feature: an arch
+              or line of short hairs above the eye. It is not a plant.'
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - human eyebrow anatomical feature short hairs above the eye plant
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 808e416d5163e046c87e67a760210ad4bbdf7b8f646d1892f2a9c3ab2e816b3b
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:17:48.704724+00:00'
+              completed_at: '2026-09-08T21:17:54.087417+00:00'
+              latency_ms: 5382
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5161
+                cached_input_tokens: 2836
+                cache_write_tokens: 0
+                output_tokens: 324
+                reasoning_tokens: 57
+                search_count: 1
+                cost_usd: '0.00202647'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 927
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: e1de7c724903dfffc81888365ea6494c684228794390962d4545933189542e60
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:17:54.088309+00:00'
+            completed_at: '2026-09-08T21:17:56.550818+00:00'
+            latency_ms: 2462
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1173
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 613
+              reasoning_tokens: 527
+              search_count: 0
+              cost_usd: '0.0018844'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 337
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e27dcb7304944b6895fae1a1b4
+        turn_number: 5
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 7e3178578eec2ed2842da4139cebc04df38622b1576121c982b3f0b2ccfca2af
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:17:56.555557+00:00'
+          completed_at: '2026-09-08T21:17:58.083818+00:00'
+          latency_ms: 1528
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 862
+            cached_input_tokens: 832
+            cache_write_tokens: 0
+            output_tokens: 42
+            reasoning_tokens: 17
+            search_count: 0
+            cost_usd: '0.00002523'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 87
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e283c47145b3d487382c4edc51
+        turn_number: 5
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 61e53976a60e98162b7fa10d7ca97eed34c9a16e8633d8fca983a6052ef34bde
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:17:58.085473+00:00'
+            completed_at: '2026-09-08T21:18:05.961795+00:00'
+            latency_ms: 7876
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5358
+              cached_input_tokens: 2837
+              cache_write_tokens: 0
+              output_tokens: 442
+              reasoning_tokens: 67
+              search_count: 1
+              cost_usd: '0.00221709'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1432
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: An eyebrow is an anatomical feature consisting of
+              an arch or line of hair above the eye. The cited anatomical and medical
+              sources classify it as hair and soft tissue, not as a fungus.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - human eyebrow anatomical feature short hairs above eye fungus biological
+              classification
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 61e53976a60e98162b7fa10d7ca97eed34c9a16e8633d8fca983a6052ef34bde
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:17:58.085473+00:00'
+              completed_at: '2026-09-08T21:18:05.961795+00:00'
+              latency_ms: 7876
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5358
+                cached_input_tokens: 2837
+                cache_write_tokens: 0
+                output_tokens: 442
+                reasoning_tokens: 67
+                search_count: 1
+                cost_usd: '0.00221709'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1432
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 54e3f9642bd01ca85edc30390693ddaebfac3517e25198932df8e88c0c5d02cc
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:18:05.962592+00:00'
+            completed_at: '2026-09-08T21:18:07.863301+00:00'
+            latency_ms: 1900
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1220
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 311
+              reasoning_tokens: 238
+              search_count: 0
+              cost_usd: '0.0011435'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 249
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e2a9fb7582a32d50ec388d18a6
+        turn_number: 6
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 29eaeab9d833caa478091de36eb62f77c23da0b061f4dbd0aca731c3fb893459
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:18:07.868014+00:00'
+          completed_at: '2026-09-08T21:18:09.393478+00:00'
+          latency_ms: 1525
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 890
+            cached_input_tokens: 832
+            cache_write_tokens: 0
+            output_tokens: 66
+            reasoning_tokens: 37
+            search_count: 0
+            cost_usd: '0.00003333'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 103
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e2aff27708af31d7e342506084
+        turn_number: 6
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: b1b3a31cc6173e04e8b2ea803bb23568c71a8af827235a824c504badeede26a6
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T14:57:25.202477+00:00'
+            completed_at: '2026-09-08T14:57:32.162783+00:00'
+            latency_ms: 6960
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4868
+              cached_input_tokens: 2842
+              cache_write_tokens: 0
+              output_tokens: 408
+              reasoning_tokens: 15
+              search_count: 1
+              cost_usd: '0.00205264'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1472
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0010
+          episode_id: EP-01a08183d7a0762a81a45c386e9724c6
+          turn_number: 8
+          oracle_call_id: OC-01a081861cd071fda74e6f0b7a6045da
+          question: Is it a part of the human body?
+          answered_at: '2026-09-08T14:57:33.554161+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: e16b7c23ae0ffd700febce142a79c4829c91c943408caa381bdee4a80068e06f
+          execution_id: BX-20260908-B-0003-experimental-M0015-001
+          model_id: M-0015
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0015/BX-20260908-B-0003-experimental-M0015-001/subjects/T-0010/trials/trial-001/result.yml
+          source_integrity_hash: e01ec1c71946cc23ab139f6bb787a9f65a138e6748d975a34e91fbe305433485
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The subject is the human eyebrow as an anatomical
+              body feature. Sources define an eyebrow as the arch or line of hair
+              above the eye and describe it as an anatomical facial/periorbital structure,
+              so it is part of the human body.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - eyebrow anatomical feature part of the human body definition
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: b1b3a31cc6173e04e8b2ea803bb23568c71a8af827235a824c504badeede26a6
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T14:57:25.202477+00:00'
+              completed_at: '2026-09-08T14:57:32.162783+00:00'
+              latency_ms: 6960
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4868
+                cached_input_tokens: 2842
+                cache_write_tokens: 0
+                output_tokens: 408
+                reasoning_tokens: 15
+                search_count: 1
+                cost_usd: '0.00205264'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1472
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: d7e26a88a03b33e34115cb43045b6d2e8e5c3cf7eb55d8fd31e2037b8d1435a9
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T14:57:32.165338+00:00'
+            completed_at: '2026-09-08T14:57:33.554161+00:00'
+            latency_ms: 1388
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1245
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 265
+              reasoning_tokens: 197
+              search_count: 0
+              cost_usd: '0.001036'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 236
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e2aff474d296bf3a402e0d2e62
+        turn_number: 7
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: b81b8b02a186edf19a1ba52937d40f688659776bdd2765b01ea9d257264df1a1
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:18:09.396828+00:00'
+          completed_at: '2026-09-08T21:18:10.798619+00:00'
+          latency_ms: 1401
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 922
+            cached_input_tokens: 832
+            cache_write_tokens: 0
+            output_tokens: 32
+            reasoning_tokens: 6
+            search_count: 0
+            cost_usd: '0.00002723'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 96
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e2b56f74e89be740bdd204367a
+        turn_number: 7
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: dee25d1f538dedca3160cd1e01bdf0452efa79392bea6c5c38973a4e94f1e138
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T15:11:19.816037+00:00'
+            completed_at: '2026-09-08T15:11:35.805001+00:00'
+            latency_ms: 15989
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 10772
+              cached_input_tokens: 6831
+              cache_write_tokens: 0
+              output_tokens: 454
+              reasoning_tokens: 70
+              search_count: 2
+              cost_usd: '0.0036662200000000004'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 9
+            url_citation_count: 9
+            raw_output_present: true
+            raw_output_characters: 1314
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0010
+          episode_id: EP-01a0818f9a2273acbaed7cb401a6da56
+          turn_number: 11
+          oracle_call_id: OC-01a08192d905731595c4bdf7ceae221c
+          question: Is it an internal organ?
+          answered_at: '2026-09-08T15:11:37.699729+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: e16b7c23ae0ffd700febce142a79c4829c91c943408caa381bdee4a80068e06f
+          execution_id: BX-20260908-B-0003-experimental-M0015-001
+          model_id: M-0015
+          benchmark_id: B-0003
+          trial_id: trial-003
+          source_file: runs/M-0015/BX-20260908-B-0003-experimental-M0015-001/subjects/T-0010/trials/trial-003/result.yml
+          source_integrity_hash: 5571c37977261f7bb0836f5871751e3064eac9897c3144c03216905b58554442
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: 'The target is the eyebrow itself: an external arch
+              or area of hair above the eye, not an organ located inside the body.
+              Therefore it is not an internal organ.'
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - eyebrow anatomical feature organ internal organ definition eyebrow anatomy
+            - internal organ definition organs inside body eyebrow external facial
+              hair anatomy
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: dee25d1f538dedca3160cd1e01bdf0452efa79392bea6c5c38973a4e94f1e138
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T15:11:19.816037+00:00'
+              completed_at: '2026-09-08T15:11:35.805001+00:00'
+              latency_ms: 15989
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 10772
+                cached_input_tokens: 6831
+                cache_write_tokens: 0
+                output_tokens: 454
+                reasoning_tokens: 70
+                search_count: 2
+                cost_usd: '0.0036662200000000004'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 9
+              url_citation_count: 9
+              raw_output_present: true
+              raw_output_characters: 1314
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: eb194f475d99c97269d1f165a7ed441b79e64585f82dd8ab565aa6f3dece7b3f
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T15:11:35.806917+00:00'
+            completed_at: '2026-09-08T15:11:37.699729+00:00'
+            latency_ms: 1892
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1186
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 431
+              reasoning_tokens: 351
+              search_count: 0
+              cost_usd: '0.0014333'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 289
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e2b57177af8b2b5b21d5ee3c68
+        turn_number: 8
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: a464f157299ef4e625065c47c2966a9542b85fa4f926e2fb35a20974f898f23a
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:18:10.801455+00:00'
+          completed_at: '2026-09-08T21:18:12.125600+00:00'
+          latency_ms: 1324
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 951
+            cached_input_tokens: 896
+            cache_write_tokens: 0
+            output_tokens: 39
+            reasoning_tokens: 12
+            search_count: 0
+            cost_usd: '0.000027315'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 98
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e2ba9e73839b2be9881e7f4e04
+        turn_number: 8
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 4750ba4f95fae774bff00c44f08eb87bd7dfbf5a7f863ec08736e42ec6849fc6
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:27:13.155731+00:00'
+            completed_at: '2026-09-08T19:27:19.577304+00:00'
+            latency_ms: 6421
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4809
+              cached_input_tokens: 2839
+              cache_write_tokens: 0
+              output_tokens: 353
+              reasoning_tokens: 35
+              search_count: 1
+              cost_usd: '0.0019725800000000003'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1145
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0010
+          episode_id: EP-01a0827bf1c675f3a41441e1963a9a28
+          turn_number: 6
+          oracle_call_id: OC-01a0827d1f0270728aaab89947414eb8
+          question: Is it located on the head?
+          answered_at: '2026-09-08T19:27:20.817201+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: e16b7c23ae0ffd700febce142a79c4829c91c943408caa381bdee4a80068e06f
+          execution_id: BX-20260908-B-0003-experimental-M0020-001
+          model_id: M-0020
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0020/BX-20260908-B-0003-experimental-M0020-001/subjects/T-0010/trials/trial-001/result.yml
+          source_integrity_hash: ba4f1f08b80fd0cf52e687c0e2214df76bb78b7a11829b67cbeea6f77c8a4d9e
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The eyebrow is an anatomical feature located above
+              the eye, on the supraorbital region of the human head. The supplied
+              description identifies it as a human body feature, and anatomical references
+              place the eyebrow over the supraorbital ridge.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - human eyebrow anatomical feature located on the head above the eye
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 4750ba4f95fae774bff00c44f08eb87bd7dfbf5a7f863ec08736e42ec6849fc6
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:27:13.155731+00:00'
+              completed_at: '2026-09-08T19:27:19.577304+00:00'
+              latency_ms: 6421
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4809
+                cached_input_tokens: 2839
+                cache_write_tokens: 0
+                output_tokens: 353
+                reasoning_tokens: 35
+                search_count: 1
+                cost_usd: '0.0019725800000000003'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1145
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: c3e9d2c08e8351515525201259571fb15fb0c824b0db5f14c20b7f330c9e9601
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:27:19.578070+00:00'
+            completed_at: '2026-09-08T19:27:20.817201+00:00'
+            latency_ms: 1239
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1200
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 252
+              reasoning_tokens: 203
+              search_count: 0
+              cost_usd: '0.00099'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 182
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e2baa0749485509b37c90f122a
+        turn_number: 9
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 442b8dc0f5c6e8badf1e95060b96fcf5ee41e57d79129654a9e275fcae2eb89a
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:18:12.129086+00:00'
+          completed_at: '2026-09-08T21:18:13.190207+00:00'
+          latency_ms: 1061
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 981
+            cached_input_tokens: 896
+            cache_write_tokens: 0
+            output_tokens: 25
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.000026065'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 87
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e2bec6778799d1daf7db13c5ab
+        turn_number: 9
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 8698bc08e1cda4485d0b9fc22407c53cfa085e3e8f32bc320ce8c8d57d38b3c8
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:17:02.510054+00:00'
+            completed_at: '2026-09-08T21:17:10.454456+00:00'
+            latency_ms: 7944
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4446
+              cached_input_tokens: 2839
+              cache_write_tokens: 0
+              output_tokens: 355
+              reasoning_tokens: 66
+              search_count: 1
+              cost_usd: '0.00188423'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1033
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0010
+          episode_id: EP-01a082e01db975cdb7a63b8719c33376
+          turn_number: 14
+          oracle_call_id: OC-01a082e1aaad7618b553ed6a2b4c7dfd
+          question: Is it the nose?
+          answered_at: '2026-09-08T21:17:11.775290+00:00'
+          policy: same_execution_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: f94478cda54ed075f483e9dd794312a262752802a377b367748065ddcc27bf98
+          execution_id: BX-20260908-B-0003-experimental-M0023-001
+          model_id: M-0023
+          benchmark_id: B-0003
+          trial_id: trial-002
+          source_file: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0010/trials/trial-002/result.yml
+          source_integrity_hash: 4540113da7cfaed3940bc247d28e55de126df18b6b99bba2b9876a8812f0bdff
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The subject is an eyebrow, defined as an arch of
+              hair on the brow above and in relation to the eye. The nose is a distinct
+              anatomical structure; the retrieved source places the area between the
+              eyebrows above the nose, further distinguishing them.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - human eyebrow anatomical feature above the eye nose distinct body part
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 8698bc08e1cda4485d0b9fc22407c53cfa085e3e8f32bc320ce8c8d57d38b3c8
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:17:02.510054+00:00'
+              completed_at: '2026-09-08T21:17:10.454456+00:00'
+              latency_ms: 7944
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4446
+                cached_input_tokens: 2839
+                cache_write_tokens: 0
+                output_tokens: 355
+                reasoning_tokens: 66
+                search_count: 1
+                cost_usd: '0.00188423'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1033
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: def467edad79a53193fe2f8738dfdfd1194b68a2306046f651025dbc03b9e108
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:17:10.457070+00:00'
+            completed_at: '2026-09-08T21:17:11.775290+00:00'
+            latency_ms: 1318
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1166
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 248
+              reasoning_tokens: 181
+              search_count: 0
+              cost_usd: '0.0009698'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 238
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e2bec97333b986315ff0ff6da5
+        turn_number: 10
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: d9ad460e0bbc1e7466208b72a4dfe2d5263f4890054378efa9b318bfd87f2703
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:18:13.193529+00:00'
+          completed_at: '2026-09-08T21:18:14.403357+00:00'
+          latency_ms: 1209
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1009
+            cached_input_tokens: 960
+            cache_write_tokens: 0
+            output_tokens: 36
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.000027075'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 128
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e2c383706f8848e89f09733f96
+        turn_number: 10
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: d355f03d38620cd49653cc10421bfea17287be8e81af48e306bfe9bca34c533b
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:18:14.404820+00:00'
+            completed_at: '2026-09-08T21:18:27.256680+00:00'
+            latency_ms: 12851
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 10629
+              cached_input_tokens: 6248
+              cache_write_tokens: 0
+              output_tokens: 616
+              reasoning_tokens: 226
+              search_count: 2
+              cost_usd: '0.00395896'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 1302
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The eyebrow is an arch of hair in the periorbital
+              region above the eye, not the mouth. The cited anatomy source defines
+              the mouth as the oral aperture and identifies the tongue as part of
+              the oral cavity; therefore the eyebrow is neither the mouth nor any
+              part of it, including the lips or tongue.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - eyebrow anatomical feature above the eye mouth lips tongue anatomy
+            - site:nih.gov eyebrow periorbital region mouth lips tongue oral region
+              distinct anatomy
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: d355f03d38620cd49653cc10421bfea17287be8e81af48e306bfe9bca34c533b
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:18:14.404820+00:00'
+              completed_at: '2026-09-08T21:18:27.256680+00:00'
+              latency_ms: 12851
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 10629
+                cached_input_tokens: 6248
+                cache_write_tokens: 0
+                output_tokens: 616
+                reasoning_tokens: 226
+                search_count: 2
+                cost_usd: '0.00395896'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 1302
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: cae1d6e3ecf22356d66a7f51e7689d604a06d208dbbf0d95a67bf0e2c5187a7d
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:18:27.257562+00:00'
+            completed_at: '2026-09-08T21:18:28.422481+00:00'
+            latency_ms: 1164
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1207
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 254
+              reasoning_tokens: 173
+              search_count: 0
+              cost_usd: '0.0009971'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 294
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e2fa4c71fabc31fae5a174b29c
+        turn_number: 11
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 6089da081a029b13be7d1eec1303d45fce2423f726c871a24d1d41b46294c347
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:18:28.428450+00:00'
+          completed_at: '2026-09-08T21:18:29.604071+00:00'
+          latency_ms: 1175
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1048
+            cached_input_tokens: 960
+            cache_write_tokens: 0
+            output_tokens: 25
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.00002725'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 86
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e2fee4740e9de3e70e36cdfa6e
+        turn_number: 11
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 41d0f5b8dd7fc3f1f6f441570f44a397d7e5c5711be8f5c415bfafa102b598ba
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:18:29.607069+00:00'
+            completed_at: '2026-09-08T21:18:36.371011+00:00'
+            latency_ms: 6763
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4803
+              cached_input_tokens: 2836
+              cache_write_tokens: 0
+              output_tokens: 422
+              reasoning_tokens: 149
+              search_count: 1
+              cost_usd: '0.00205457'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 930
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The target is an eyebrow, anatomically the arch
+              or line of hair above the eye. An ear is a separate anatomical structure,
+              so the eyebrow is not the ear.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - human eyebrow anatomical feature above the eye ear different body part
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 41d0f5b8dd7fc3f1f6f441570f44a397d7e5c5711be8f5c415bfafa102b598ba
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:18:29.607069+00:00'
+              completed_at: '2026-09-08T21:18:36.371011+00:00'
+              latency_ms: 6763
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4803
+                cached_input_tokens: 2836
+                cache_write_tokens: 0
+                output_tokens: 422
+                reasoning_tokens: 149
+                search_count: 1
+                cost_usd: '0.00205457'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 930
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 754681bdf9b22a0cd745adbe07e0acf533b879283e1e2095d4844597948c4e4d
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:18:36.371876+00:00'
+            completed_at: '2026-09-08T21:18:38.168275+00:00'
+            latency_ms: 1796
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1164
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 386
+              reasoning_tokens: 337
+              search_count: 0
+              cost_usd: '0.0013142'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 203
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e3205c724cb2533a072b9b22ae
+        turn_number: 12
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 0513e6b6b6fa5cf34c910138d383e1eb4b99f4624351e18bf23a3c73d5b4cf1e
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:18:38.172930+00:00'
+          completed_at: '2026-09-08T21:18:39.736047+00:00'
+          latency_ms: 1563
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1076
+            cached_input_tokens: 1024
+            cache_write_tokens: 0
+            output_tokens: 31
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.00002701'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 106
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e326787324a04a313561c288cf
+        turn_number: 12
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: c693ec5e5a05e94ce65b0bda731389a7899cad54d72ac96df93746355f63b5de
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:18:39.737516+00:00'
+            completed_at: '2026-09-08T21:18:51.826692+00:00'
+            latency_ms: 12088
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5386
+              cached_input_tokens: 2844
+              cache_write_tokens: 0
+              output_tokens: 613
+              reasoning_tokens: 192
+              search_count: 1
+              cost_usd: '0.00242768'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1509
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The eyebrow is the arch or line of hair above the
+              eye, not the eye itself. Anatomically it is a distinct external feature
+              of the periorbital region overlying the supraorbital ridge, rather than
+              a component of the eyeball or eye organ. Thus neither OR branch is supported.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - eyebrow anatomical feature part of the eye or separate from the eye
+              anatomy definition
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: c693ec5e5a05e94ce65b0bda731389a7899cad54d72ac96df93746355f63b5de
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:18:39.737516+00:00'
+              completed_at: '2026-09-08T21:18:51.826692+00:00'
+              latency_ms: 12088
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5386
+                cached_input_tokens: 2844
+                cache_write_tokens: 0
+                output_tokens: 613
+                reasoning_tokens: 192
+                search_count: 1
+                cost_usd: '0.00242768'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1509
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 9c49cfc0a0c487b16a4f327bd2dc2f995b38a6beefec982c7bc73d18956945cd
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:18:51.827580+00:00'
+            completed_at: '2026-09-08T21:18:53.987822+00:00'
+            latency_ms: 2160
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1245
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 574
+              reasoning_tokens: 492
+              search_count: 0
+              cost_usd: '0.0018085'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 279
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e35e287464962aeddcca92eb2b
+        turn_number: 13
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: f90767de567804130ce01ff467a729354ff2e606c3a42bd3601b13296e8f8fe5
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:18:53.992713+00:00'
+          completed_at: '2026-09-08T21:18:56.114985+00:00'
+          latency_ms: 2122
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1110
+            cached_input_tokens: 1024
+            cache_write_tokens: 0
+            output_tokens: 78
+            reasoning_tokens: 45
+            search_count: 0
+            cost_usd: '0.00004131'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 122
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e366737050a8c1de947376cf87
+        turn_number: 13
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 4bed270217c1b2798a4aaffde40ca446214978216f5ef49d2bef2c753bbd7ecd
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:18:56.116570+00:00'
+            completed_at: '2026-09-08T21:19:07.645392+00:00'
+            latency_ms: 11528
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5220
+              cached_input_tokens: 2844
+              cache_write_tokens: 0
+              output_tokens: 726
+              reasoning_tokens: 351
+              search_count: 1
+              cost_usd: '0.00252178'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1359
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: An eyebrow is ordinarily defined as a line or arch
+              of hair above the eye, so the first OR branch is supported. It is facial
+              hair rather than specifically the hair on the scalp, but that does not
+              defeat the inclusive OR claim.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - eyebrow definition area strip of hair above eye eyebrow hair on head
+              anatomical feature
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 4bed270217c1b2798a4aaffde40ca446214978216f5ef49d2bef2c753bbd7ecd
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:18:56.116570+00:00'
+              completed_at: '2026-09-08T21:19:07.645392+00:00'
+              latency_ms: 11528
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5220
+                cached_input_tokens: 2844
+                cache_write_tokens: 0
+                output_tokens: 726
+                reasoning_tokens: 351
+                search_count: 1
+                cost_usd: '0.00252178'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1359
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: a08aaacf1fc293234fdfe5f0f26555a9a63c2ebfc8582f470c918b401efe51b6
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:19:07.646213+00:00'
+            completed_at: '2026-09-08T21:19:12.545853+00:00'
+            latency_ms: 4899
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1214
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 1291
+              reasoning_tokens: 1204
+              search_count: 0
+              cost_usd: '0.0035917'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 345
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge:
+          role: judge
+          prompt:
+            version: oracle-judge-v15-labelled-source-context
+            hash: 5846199f0bc09a68e8246f9803882b0887e1f2bfe71d396e2c0e22da7f6f60f4
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:19:12.546693+00:00'
+            completed_at: '2026-09-08T21:19:18.624219+00:00'
+            latency_ms: 6077
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: anthropic/claude-opus-5
+            resolved_model: anthropic/claude-opus-5
+            requested_provider: openrouter-auto
+            resolved_provider: Claude Platform on AWS
+            fallback_occurred: false
+            usage:
+              input_tokens: 2609
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 318
+              reasoning_tokens: 163
+              search_count: 0
+              cost_usd: '0.020995'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 401
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+      - component: guesser
+        call_id: GC-01a082e3be697611a556b309953c2a40
+        turn_number: 14
+        status: contract_violation
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: d5d19cb39dc9136296b4ec0524f643dc16f2f18fe9b27f909fe3ba6ca82440f7
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:19:18.633900+00:00'
+          completed_at: '2026-09-08T21:19:20.045493+00:00'
+          latency_ms: 1411
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1146
+            cached_input_tokens: 1088
+            cache_write_tokens: 0
+            output_tokens: 42
+            reasoning_tokens: 8
+            search_count: 0
+            cost_usd: '0.00003117'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 121
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: guesser
+        call_id: GC-01a082e3c3f1746f91be7673b5e03c2e
+        turn_number: 15
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 9d463212c52ff88629dc23de6f0f216c489495e957f0f7a88497817ee14628d2
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:19:20.049743+00:00'
+          completed_at: '2026-09-08T21:19:21.383150+00:00'
+          latency_ms: 1333
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1257
+            cached_input_tokens: 1088
+            cache_write_tokens: 0
+            output_tokens: 50
+            reasoning_tokens: 7
+            search_count: 0
+            cost_usd: '0.000041495'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 169
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a082e3c9277382af1dac598e795274
+        turn_number: 15
+        status: success
+        prompt:
+          version: strict-guess-validator-v2-generic-kinds
+          hash: fae9253a8009a71dd1893d1133797408257558721410ea6b4696385ed0ee206a
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:19:21.384094+00:00'
+          completed_at: '2026-09-08T21:19:24.208355+00:00'
+          latency_ms: 2824
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 634
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 106
+            reasoning_tokens: 56
+            search_count: 0
+            cost_usd: '0.000254'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 184
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: guesser
+        call_id: GC-01a082e3d43377c88b8054b60135a384
+        turn_number: 16
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: cd8d42ff4112eca4aa3da6a41a7661e1e014d0e7226a546247a57b58253e5cc2
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:19:24.211902+00:00'
+          completed_at: '2026-09-08T21:19:26.824369+00:00'
+          latency_ms: 2612
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1303
+            cached_input_tokens: 1216
+            cache_write_tokens: 0
+            output_tokens: 130
+            reasoning_tokens: 100
+            search_count: 0
+            cost_usd: '0.000057265'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 107
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e3de69768790ec067fcf199fb8
+        turn_number: 16
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: e72a46db72595feb25672f91a3a48a9d012451c5cf0a157a0a0b90ab1913e625
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:19:26.826022+00:00'
+            completed_at: '2026-09-08T21:19:32.931435+00:00'
+            latency_ms: 6105
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5212
+              cached_input_tokens: 2842
+              cache_write_tokens: 0
+              output_tokens: 383
+              reasoning_tokens: 98
+              search_count: 1
+              cost_usd: '0.00210864'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1017
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The subject is explicitly identified as a human
+              eyebrow, and the question asks whether it is the eyebrows or an eyebrow.
+              This is a direct identity match; the cited definition also describes
+              an eyebrow as the short-haired area above an eye.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - eyebrow definition anatomical feature short hairs above the eye eyebrows
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: e72a46db72595feb25672f91a3a48a9d012451c5cf0a157a0a0b90ab1913e625
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:19:26.826022+00:00'
+              completed_at: '2026-09-08T21:19:32.931435+00:00'
+              latency_ms: 6105
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5212
+                cached_input_tokens: 2842
+                cache_write_tokens: 0
+                output_tokens: 383
+                reasoning_tokens: 98
+                search_count: 1
+                cost_usd: '0.00210864'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1017
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 1872a34dde2b05c4e41f32473da42ea8061b36abef3bf8d6ba36f26e8dfbf96a
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:19:32.932250+00:00'
+            completed_at: '2026-09-08T21:19:34.875614+00:00'
+            latency_ms: 1943
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1169
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 480
+              reasoning_tokens: 434
+              search_count: 0
+              cost_usd: '0.0015507'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 208
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e3fde1714d869a7c416bb8fdd1
+        turn_number: 17
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: f00b91950819477f5eeed4625eca7ca798d8b42e643a3645b7b6b47900bbda47
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:19:34.881946+00:00'
+          completed_at: '2026-09-08T21:19:36.202761+00:00'
+          latency_ms: 1320
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1336
+            cached_input_tokens: 1280
+            cache_write_tokens: 0
+            output_tokens: 43
+            reasoning_tokens: 5
+            search_count: 0
+            cost_usd: '0.00003415'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 146
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a082e4030b701aa3025dc3eb19ce24
+        turn_number: 17
+        status: success
+        prompt:
+          version: strict-guess-validator-v2-generic-kinds
+          hash: 844ced426b70b2f466c6063094758c66562058cd872ea1f33cd4e6a80f05dd30
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:19:36.203734+00:00'
+          completed_at: '2026-09-08T21:19:37.644248+00:00'
+          latency_ms: 1440
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 628
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 39
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.0001724'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 152
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      unavailable_call_count: 0
+  error_output_preview:
+    component: guesser
+    attempt_number: 1
+    finish_reason: stop
+    text: '{"result":{"action":"GUESS","description":"The hair growing on the top
+      of a person''s head.","name":"hair (on the head)"}}'
+    original_characters: 121
+    trailing_whitespace_characters: 0
+    truncated: false
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0010/trials/trial-003/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs:
+      relative_path: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0010/trials/trial-003/error-outputs.jsonl
+      record_count: 2
+      integrity_hash: 030ffad67295c0b7e5d7c63eea5b6130a62670183b49157508bed4e9b3414be7
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 9bab4ebb7946b8bdb5561ef718441c59a075ad674495714945f382c4f6908ec4

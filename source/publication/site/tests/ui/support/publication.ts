@@ -34,11 +34,11 @@ const fixtureDataRoot = path.resolve(
   "tests/fixtures/publication/data",
 );
 
-export const derivePublicationPaths = (dataRoot: string) => {
+export const derivePublicationPaths = (dataRoot: string, selectedExecutionId?: string) => {
   const manifest = JSON.parse(
     readFileSync(path.join(dataRoot, "manifest.json"), "utf8"),
   ) as PublicationManifest;
-  const executionId = manifest.official_runs[0]?.execution_id;
+  const executionId = selectedExecutionId ?? manifest.official_runs[0]?.execution_id;
   if (executionId === undefined) {
     throw new Error("The publication data has no official run.");
   }
@@ -154,7 +154,7 @@ export const waitForPublication = async (page: Page): Promise<void> => {
       : pathname.includes("/runs/")
         ? ".run-overview-pane, .benchmark-workspace > .error-state"
         : pathname.includes("/results/")
-          ? ".results-view > .content-section, .results-view > .error-state"
+          ? ".results-view > .content-section, .results-view > .error-state, .edition-empty"
           : pathname.endsWith("/data/")
             ? ".data-page > .page-hero, .data-page > .error-state"
             : "#route-content";

@@ -4,6 +4,7 @@ import uuid
 from pathlib import Path
 from typing import Literal
 
+from deep20_oracle.config import PromptProfile
 from deep20_oracle.diagnostics import diagnose_exception
 from deep20_oracle.models import FailureDiagnostics, ProviderTrace, StrictModel
 from deep20_oracle.util import canonical_json, sha256_text, timestamp
@@ -20,8 +21,8 @@ from .models import (
     parse_guesser_action_output,
 )
 from .prompt import (
-    GUESSER_PROMPT_VERSION,
     append_visible_turn,
+    guesser_prompt_version,
     initial_guesser_messages,
 )
 from .provider import GameModelProvider
@@ -94,7 +95,7 @@ def run_cache_probe(
     cache_material = canonical_json(
         {
             "configuration_id": config.configuration_id,
-            "prompt_version": GUESSER_PROMPT_VERSION,
+            "prompt_version": guesser_prompt_version(policy.prompt_profile),
             "schema_hash": sha256_text(canonical_json(output_schema)),
             "max_questions": policy.max_questions,
         }
@@ -104,6 +105,7 @@ def run_cache_probe(
         policy.max_questions,
         "person",
         derive_guesser_prompt_nonce(base_seed=0, trial_number=1),
+        policy.prompt_profile,
     )
     for index in range(policy.max_questions):
         synthetic = GuesserAction(
@@ -137,6 +139,7 @@ def run_cache_probe(
         return _artifact(
             probe_id,
             config,
+            profile=policy.prompt_profile,
             first_trace=first_trace,
             second_trace=None,
             failure_reason=(
@@ -163,6 +166,7 @@ def run_cache_probe(
         return _artifact(
             probe_id,
             config,
+            profile=policy.prompt_profile,
             first_trace=first_trace,
             second_trace=second_trace,
             failure_reason=(
@@ -192,6 +196,7 @@ def run_cache_probe(
     return _artifact(
         probe_id,
         config,
+        profile=policy.prompt_profile,
         first_trace=first_trace,
         second_trace=second_trace,
         failure_reason=failure_reason,
@@ -202,6 +207,7 @@ def _artifact(
     probe_id: str,
     config: ModelConfig,
     *,
+    profile: PromptProfile,
     first_trace: ProviderTrace | None,
     second_trace: ProviderTrace | None,
     failure_reason: str | None,
@@ -219,7 +225,7 @@ def _artifact(
         ),
         "configuration_id": config.configuration_id,
         "configuration_hash": configuration_hash(config),
-        "prompt_version": GUESSER_PROMPT_VERSION,
+        "prompt_version": guesser_prompt_version(profile),
         "output_schema_hash": schema_hash(),
         "minimum_cacheable_tokens": config.prompt_cache.minimum_cacheable_tokens,
         "ttl_seconds": config.prompt_cache.ttl_seconds,
@@ -242,7 +248,9 @@ def write_cache_probe(path: Path, artifact: CacheProbeArtifact) -> None:
     path.write_text(artifact.model_dump_json(indent=2) + "\n", encoding="utf-8")
 
 
-def load_cache_probe(path: Path, config: ModelConfig) -> CacheProbeArtifact:
+def load_cache_probe(
+    path: Path, config: ModelConfig, profile: PromptProfile = PromptProfile.STANDARD,
+) -> CacheProbeArtifact:
     artifact = CacheProbeArtifact.model_validate_json(path.read_text(encoding="utf-8"))
     unsigned = artifact.model_dump(mode="json")
     stored = unsigned.pop("integrity_hash")
@@ -257,7 +265,7 @@ def load_cache_probe(path: Path, config: ModelConfig) -> CacheProbeArtifact:
             code="cache_probe_configuration_mismatch",
         )
     if (
-        artifact.prompt_version != GUESSER_PROMPT_VERSION
+        artifact.prompt_version != guesser_prompt_version(profile)
         or artifact.output_schema_hash != schema_hash()
     ):
         raise GameConfigurationError(

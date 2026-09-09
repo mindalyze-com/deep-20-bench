@@ -1,5 +1,30 @@
 # Game usage
 
+New B-0003 executions use `concise_knowledge_v1`: one research attempt requesting
+`research_query_target` queries (default 3), with an API ceiling calculated as the target plus
+two bonus calls. Valid completed answers within that ceiling retain normal independent
+evidence/knowledge decisions and private `evidence`/`other` basis plus a supporting statement. This policy permits source-free directional answers
+and retained UNKNOWN context; the earlier evidence/recovery rules below describe historical
+policies. See [the current policy](../../../documentation/five-answer-experiment.md#concise-evidenceknowledge-policy).
+
+
+Benchmark executions support [historical Oracle answer reuse](../../../documentation/oracle-history-cache.md) under the explicit
+`historical_ask_v1`, `same_episode_ask_v1`, and `same_execution_ask_v1` policies. The benchmark
+lazily loads verified historical trials and adds eligible live ASK answers after each completed,
+scoring-eligible game. Later repetitions reuse these answers; resume restores them from verified
+trial artifacts. The engine also stores answers immediately for normalized repeats within one
+game. Repeats still count as questions. Reused ASK turns retain original evidence and marked
+source provenance, with no new adjudicator calls or cost. Each Guesser conversation starts fresh;
+cache metadata never enters it. Standalone commands keep fresh-call behavior. Guesser and
+Validator responses are never cached. Older manifests retain their recorded cache scope.
+
+
+The paired qualified_v1 game and Oracle profiles permit RATHER_YES/RATHER_NO for ASK in experimental mode. Identity validation remains three-valued. See [Five-answer experiment](../../../documentation/five-answer-experiment.md).
+
+An experimental game policy may set `prompt_profile: concise_v1` for shorter instructions
+about overlapping roles, uncertainty, and reconsidering assumptions. The default `standard`
+retains the original prompt. See [Concise prompt experiment](../../../documentation/concise-prompt-experiment.md).
+
 The `deep20-game` package runs one hidden-subject episode. It maintains the Guesser's complete
 visible conversation, sends factual questions to the live-web Oracle with blind no-web
 Reviewer/Judge quality control, and sends identity proposals to a strict no-web Guess
@@ -38,7 +63,7 @@ Use the corresponding `--game-config`, `--guesser-config`, `--validator-config`,
 The Reviewer and Judge are not separate CLI configuration files: their independent no-web
 models and routing policies are the `reviewer` and `judge` sections of `config/oracle.yaml`.
 
-The default policy is experimental, reveals the subject's broad `entity_type`, permits 50
+The default policy is experimental, reveals the subject's broad `entity_type`, permits 40
 counted questions, allows one final guess-only call, and includes Oracle evidence in the final
 result. It also includes the exact Guesser-visible conversation through the terminal assistant
 action. Set `include_oracle_evidence: false` to omit source URLs and excerpts, or
@@ -49,6 +74,10 @@ zero counted questions and one Guesser call.
 Completed run IDs are immutable because `result.yml` cannot be overwritten. In verbose mode,
 the manifest also rejects a changed policy, model configuration, catalog, prompt version, or
 cache-probe context before the first paid call. Choose a new run ID for a changed configuration.
+
+The 40-question default replaces 50 for new games. Historical results keep their recorded
+limit. The fixed Guesser instructions declare the selected limit from the first request;
+reaching it permits one final GUESS without another counted question.
 
 ## Compare a different Guesser
 
@@ -68,6 +97,18 @@ comparable runs. None of the adjudication roles inherits the Guesser configurati
 explicit override is needed.
 
 ## Guesser protocol
+
+Every Guesser profile includes a fixed guide to `person`, `fictional_character`,
+`mythological_figure`, `video_game_character`, and `thing`. The last category is deliberately
+broad: it covers natural and human-made entities, living organisms, body parts, materials,
+places, celestial bodies, phenomena, and concepts. The target may be a general kind or one
+particular instance. These possibilities are examples of scope, not a list of benchmark
+subjects. The complete guide is identical in every game; only the category field in `BEGIN`
+varies by subject.
+
+The guide uses new Guesser prompt versions in all three profiles. Start fresh execution IDs
+for the revised prompts and use new cache probes where required. Historical results keep
+their recorded instructions and versions.
 
 The Guesser returns exactly one stable `result` envelope:
 
@@ -110,11 +151,51 @@ After the policy's `max_consecutive_contract_violations` counted violations in a
 The engine starts with fixed instructions and a structured `BEGIN` message such as
 `{"category":"person","event":"BEGIN","variation_token":"EAQCORIU"}`. It then appends the
 canonical action and exactly one
-`YES`, `NO`, or `UNKNOWN` response. The entire visible transcript is resent on every call. The
+profile-specific final answer response: three tokens for standard/concise ASK and all GUESS
+actions, or five for qualified ASK. The entire visible transcript is resent on every call. The
 only exception is the fixed `FORMAT_ERROR` event after invalid output. The malformed output and
 dynamic validation details are not appended. The subject's identity and description, Oracle
 evidence, Reviewer/Judge decisions or disagreement state, Validator explanations, provider
 traces, raw output, and hidden reasoning never enter that transcript.
+
+When valid Oracle research remains inconclusive after its recovery attempt, the Guesser
+receives only `UNKNOWN`. That ASK counts normally and play continues. Question keywords no
+longer determine whether the game is excluded from scoring. Actual technical failures still
+end as infrastructure failures. Use fresh run IDs for the revised factual contract; existing
+results keep their recorded outcomes.
+
+## Identity acceptance
+
+The Guess Validator uses `strict-guess-validator-v2-generic-kinds`. It judges the proposed
+name and description together against the hidden subject's identity and explicit restrictions.
+A general kind accepts a recognized subtype or design variant when the defining kind/function
+is preserved. Unspecified shape, material, size, or design is not grounds for rejection or
+uncertainty. A particular entity still requires that exact entity. The rule is shared across
+subjects; the fixed prompt does not list catalog answers.
+
+Examples under the current catalog definitions:
+
+| Target | Proposed identity and consistent description | Expected answer |
+| --- | --- | --- |
+| Door handle | Doorknob, a round handle turned to open a door | YES |
+| Door handle | Lever handle used by hand to open a building door | YES |
+| Door handle | Door, the hinged panel closing a doorway | NO |
+| Door handle | Latch, the catch holding a door closed | NO |
+| Door handle | Hardware, the general class of fittings | NO |
+| Bike pump | Floor bicycle pump for inflating bicycle tires | YES |
+| Earth's Moon | Luna, Earth's natural satellite | YES |
+| Earth's Moon | Titan, Saturn's natural satellite | NO |
+| Earth's Moon | Natural satellite, a generic category without identifying which one | NO |
+
+An explicitly restricted target does not accept a subtype that contradicts that restriction.
+`UNKNOWN` remains available for unresolved or conflicting identity and still terminates the
+game. It is never treated as success or automatically replaced with `YES`. ASK decisions
+remain separate; an earlier Reviewer/Judge YES is not an identity verdict and is not passed
+to the Validator. Explanations remain audit-only.
+
+Use fresh execution IDs for the revised policy, retain old results with their original
+Validator version, and distinguish versions when comparing runs. The v2 policy does not
+retroactively reclassify the original Door handle canary.
 
 ## Session and prompt caching
 
@@ -127,8 +208,9 @@ conversation memory.
 
 Model configuration freezes the cache policy, cache control, minimum cacheable tokens, TTL,
 and input/cache-write/cache-read pricing. Per-call audit records contain actual cache reads,
-writes, provider discounts, cost, and latency. OpenRouter response caching and application
-answer caching are never enabled.
+writes, provider discounts, cost, and latency. Guesser and Validator response caching is never
+enabled. The benchmark's historical and same-game ASK policies are separate from provider
+prompt caching and are disabled in standalone game commands.
 
 The model configuration freezes a typed recovery policy. Within a shared 300-second allowance,
 the adapter makes at most eight requests for transport failures and OpenRouter

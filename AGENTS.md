@@ -1,5 +1,23 @@
 # Deep20Bench project conventions
 
+## Mandatory: paid calls run only on demand
+
+- Normal tests, regression runs, CI, builds, and routine verification must be offline and must
+  not spend money on OpenRouter or any other paid provider. Use mocks or recorded fixtures.
+- Never register live Oracle question suites, replay collections, benchmarks, canaries, or
+  other paid experiments in the default regression suite or an automatic job.
+- Run paid calls only when the user explicitly requests a live run or has authorized a
+  specific ongoing live experiment. Having credentials available is not authorization.
+  A request to build, fix, test, or verify code does not by itself authorize paid calls.
+- Keep live tests marked `integration` and require explicit `--run-paid-tests` opt-in in
+  addition to selecting them. Ordinary pytest runs exclude them, even if credentials exist.
+- Oracle test/replay harness commands default to preview/export only. Paid execution requires
+  an explicit `--live` flag. Saved question collections are on-demand experiment inputs,
+  not automatically executed regression tests.
+- Keep paid runs bounded to the requested cases/repetitions and respect the user's total
+  spending limit, including retries and failed calls. Prefer focused diagnostic questions
+  before a larger, explicitly requested live regression run.
+
 ## Required references
 
 Read and follow the relevant detailed specification before changing these areas:
@@ -34,6 +52,21 @@ Read and follow the relevant detailed specification before changing these areas:
 - Never create, save, or deploy a Codex Sites project, `.openai/hosting.json`, or other Sites
   configuration for this repository.
 
+## Reviews
+
+- Store all review reports and supporting artifacts in `private/reviews/`.
+- Keep reviews local and covered by the `/private/` Git ignore rule. Do not force-add them,
+  include them in public Git commits or publication output, or recreate a top-level `reviews/`.
+
+## Benchmark iteration default
+
+- Use **3 iterations per subject and model** for new-game (`B-0003` / `qualified_v1`)
+  benchmarks unless the user specifies another count. Apply this default to planning, command
+  examples, and launches. The earlier five-repeat diagnostic is not the new-game default.
+- Keep the new-game catalog default and future benchmark definitions at 3 unless the user
+  requests a different default. Iterations belong to benchmark scheduling, not the one-game
+  engine.
+
 ## Long benchmark launches
 
 - On macOS, run full benchmarks in detached `screen` sessions with
@@ -44,6 +77,12 @@ Read and follow the relevant detailed specification before changing these areas:
   new ID.
 
 ## Highest-priority invariant: Guesser isolation
+
+- The user-authorized B-0003 experiment uses paired `qualified_v1` profiles. It adds only
+  `RATHER_YES` and `RATHER_NO` to the final ASK-token vocabulary below. Every directional token
+  requires blind review; any exact-token disagreement invokes the Judge. GUESS remains
+  `YES`/`NO`/`UNKNOWN`. All other isolation requirements still apply. Standard profiles keep
+  the three-token vocabulary. See `documentation/five-answer-experiment.md`.
 
 - The Guesser is the model under test. Its information boundary overrides convenience,
   observability, performance, caching, and reporting.
@@ -112,7 +151,10 @@ Read and follow the relevant detailed specification before changing these areas:
   models, routes, pricing, provider policy, or expected reuse changes.
 - Prompt-prefix caching may reuse computation for an exact prefix but never an earlier Oracle,
   Reviewer, Judge, or Validator answer or extra state. Never add application or provider
-  response caching.
+  response caching except the explicitly authorized benchmark-only `historical_ask_v1`,
+  `same_episode_ask_v1`, and `same_execution_ask_v1` policies in
+  `documentation/oracle-history-cache.md`. These policies reuse only fully adjudicated ASK
+  answers with compatible contracts and explicit provenance; all isolation rules still apply.
 - Keep safe stable prefixes, measure actual cache tokens, discounts, latency, and cost, and
   record route-specific thresholds and pricing. Do not pad without favorable measured
   break-even or claim unmeasured savings.

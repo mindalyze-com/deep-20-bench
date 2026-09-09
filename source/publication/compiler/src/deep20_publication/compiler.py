@@ -7,6 +7,7 @@ from decimal import Decimal, localcontext
 from fractions import Fraction
 from typing import Literal
 
+from .integrity import canonical_json, sha256_text
 from .models import (
     CohortConfig,
     CompletedTrialSummary,
@@ -22,17 +23,21 @@ from .models import (
     LeaderboardRow,
     LoadedEpisode,
     LoadedRun,
+    OracleConfigurationSnapshot,
+    OracleResultCallAuditSnapshot,
     PublicActionTurn,
     PublicationConfig,
     PublicComponentTelemetry,
     PublicContractViolationTurn,
     PublicEpisodeDetail,
+    PublicEpisodeOracleCacheSource,
     PublicEpisodeTelemetry,
     PublicEvidence,
     PublicExcludedRepairCost,
     PublicGuesserDisclosure,
     PublicGuesserRequiredFormats,
     PublicModel,
+    PublicOracleCacheSource,
     PublicRun,
     PublicRunComparison,
     PublicRunCostTotals,
@@ -41,6 +46,9 @@ from .models import (
     PublicSubject,
     PublicTrial,
     PublishedDataset,
+    QualifiedEligibility,
+    ReleaseContract,
+    ReleasePromptVersions,
     ResolvedProviderUsageSnapshot,
     RoleProviderUsageSnapshot,
     SubjectCatalog,
@@ -84,8 +92,29 @@ def _reason_codes(
     cohort: CohortConfig,
 ) -> tuple[str, ...]:
     reasons: list[str] = []
+    expected_profile = (
+        "qualified_v1" if isinstance(cohort.eligibility, QualifiedEligibility) else "standard"
+    )
+    if run.summary.benchmark_id != cohort.benchmark_id:
+        reasons.append("benchmark_id_mismatch")
+    if (
+        run.manifest.definition.game_policy.prompt_profile != expected_profile
+        or run.manifest.definition.oracle_configuration.root.get("prompt_profile", "standard")
+        != expected_profile
+    ):
+        reasons.append("experimental_prompt_profile")
+    if (isinstance(cohort.eligibility, QualifiedEligibility)
+            and "experimental_prompt_profile" not in reasons):
+        contracts = (cohort.eligibility, *cohort.eligibility.accepted_revisions)
+        matches = tuple(_release_reason_codes(run, cohort, contract) for contract in contracts)
+        # A run must match one complete accepted contract. Diagnose the closest
+        # revision when none matches; never combine fields across contracts.
+        closest: tuple[str, ...] = min(matches, key=lambda candidate: len(candidate))
+        reasons.extend(closest)
     if run.state.status != "completed":
         reasons.append("incomplete")
+    if run.manifest.definition.game_policy.max_questions != cohort.max_questions:
+        reasons.append("question_limit_mismatch")
     subjects = {subject.target_id: subject for subject in run.summary.subjects}
     if set(subjects) != set(cohort.target_ids):
         reasons.append("subject_cohort_mismatch")
@@ -101,6 +130,101 @@ def _reason_codes(
         }
         if len(subject.trials) != cohort.iterations or completed_numbers != expected_numbers:
             reasons.append("trial_coverage_mismatch")
+    return tuple(dict.fromkeys(reasons))
+
+
+def _oracle_prompt_versions_match(
+    call: OracleResultCallAuditSnapshot, prompts: ReleasePromptVersions,
+) -> bool:
+    for role in (call.oracle, call.reviewer, call.judge):
+        if role is not None and role.prompt.version != getattr(prompts, role.role):
+            return False
+    if call.research is not None:
+        for attempt in call.research.attempts:
+            expected = prompts.oracle if attempt.strategy == "primary" else prompts.recovery
+            if attempt.prompt.version != expected:
+                return False
+    return True
+
+
+def _release_reason_codes(
+    run: LoadedRun, cohort: CohortConfig, release: ReleaseContract,
+) -> tuple[str, ...]:
+    reasons: list[str] = []
+    prompt_versions = (release.prompts, *release.additional_prompt_versions)
+    if (release.oracle_contract_hash is not None
+            and run.manifest.oracle_contract_hash != release.oracle_contract_hash):
+        reasons.append("oracle_contract_mismatch")
+    if run.manifest.request.base_seed != cohort.base_seed:
+        reasons.append("base_seed_mismatch")
+    policy = run.manifest.definition.game_policy
+    if (policy.max_consecutive_contract_violations != release.game_rules.max_consecutive_contract_violations
+            or policy.reveal_entity_type != release.game_rules.reveal_entity_type
+            or policy.final_guess_after_limit != release.game_rules.final_guess_after_limit):
+        reasons.append("game_rules_mismatch")
+    oracle = OracleConfigurationSnapshot.model_validate(
+        run.manifest.definition.oracle_configuration.root
+    )
+    validator = run.manifest.definition.validator_configuration
+    if (sha256_text(canonical_json(oracle.model_dump(mode="json")))
+            != release.oracle_configuration_hash
+            or sha256_text(canonical_json(validator.model_dump(mode="json")))
+            != release.validator_configuration_hash):
+        reasons.append("support_configuration_mismatch")
+    expected_subjects = {item.target_id: item.identity_hash for item in release.subject_identities}
+    if not run.episodes:
+        reasons.append("release_episode_details_missing")
+    for episode in run.episodes:
+        result = episode.result
+        if (sha256_text(canonical_json(result.run.subject.model_dump(mode="json")))
+                != expected_subjects.get(episode.identity.target_id)):
+            reasons.append("subject_identity_mismatch")
+        versions = result.models
+        if not any(
+            versions.under_test.prompt_version == prompts.guesser
+            and versions.oracle.prompt_version == prompts.oracle
+            and versions.validator.prompt_version == prompts.validator
+            for prompts in prompt_versions
+        ):
+            reasons.append("prompt_revision_mismatch")
+        if (result.llm_details.oracle.configuration != oracle
+                or result.llm_details.validator.configuration != validator):
+            reasons.append("support_configuration_mismatch")
+        if result.llm_details.guesser.configuration != run.manifest.model.configuration:
+            reasons.append("guesser_configuration_mismatch")
+        # The retained audit proves Reviewer/Judge/recovery versions when those roles ran.
+        if result.audit is None or result.audit.unavailable_call_count:
+            reasons.append("release_prompt_audit_missing")
+            continue
+        audits = {call.call_id: call for call in result.audit.calls}
+        for turn in result.turns:
+            if not isinstance(turn, EpisodeActionTurn):
+                continue
+            adjudication = turn.adjudication
+            call = audits.get(adjudication.call_id)
+            guesser_call = audits.get(turn.guesser_call_id)
+            if guesser_call is None or guesser_call.component != "guesser":
+                reasons.append("release_prompt_audit_missing")
+            if adjudication.component == "guess_validator":
+                if call is None or call.component != "validator":
+                    reasons.append("release_prompt_audit_missing")
+                continue
+            quality = adjudication.oracle_quality
+            if not isinstance(call, OracleResultCallAuditSnapshot) or quality is None:
+                reasons.append("release_prompt_audit_missing")
+                continue
+            if ((quality.reviewer is None) != (call.reviewer is None)
+                    or (quality.judge is None) != (call.judge is None)):
+                reasons.append("release_prompt_audit_missing")
+        for call in result.audit.calls:
+            if call.component == "guesser" or call.component == "validator":
+                if not any(call.prompt.version == getattr(prompts, call.component)
+                           for prompts in prompt_versions):
+                    reasons.append("prompt_revision_mismatch")
+            elif (isinstance(call, OracleResultCallAuditSnapshot)
+                  and not any(_oracle_prompt_versions_match(call, prompts)
+                              for prompts in prompt_versions)):
+                reasons.append("prompt_revision_mismatch")
     return tuple(dict.fromkeys(reasons))
 
 
@@ -199,12 +323,16 @@ def _public_versioned_run_model(
     if not versions:
         raise ValueError(f"public run has no {role} model version")
     stable_versions = tuple(
-        version.model_copy(update={"resolved_models": (), "resolved_providers": ()})
+        version.model_copy(update={
+            "resolved_models": (), "resolved_providers": (),
+            "prompt_version": versions[0].prompt_version if role == "oracle" else version.prompt_version,
+        })
         for version in versions
     )
     if any(version != stable_versions[0] for version in stable_versions[1:]):
         raise ValueError(f"public run has inconsistent {role} model configuration")
     first = versions[0]
+    prompt_versions = tuple(dict.fromkeys(version.prompt_version for version in versions))
     usage = _merged_provider_usage(provider_usages)
     return PublicRunModel(
         role=role,
@@ -221,7 +349,8 @@ def _public_versioned_run_model(
             )
         ),
         reasoning_effort=first.reasoning_effort,
-        prompt_version=first.prompt_version,
+        prompt_version=prompt_versions[0] if len(prompt_versions) == 1 else None,
+        prompt_versions=prompt_versions if len(prompt_versions) > 1 else (),
         calls=calls,
         cost_usd=cost_usd,
         providers=usage.providers,
@@ -360,10 +489,33 @@ def _public_episode(episode: LoadedEpisode) -> PublicEpisodeDetail:
                         source_url=evidence.source_url,
                         excerpt=evidence.excerpt,
                         validation=evidence.validation,
+                        kind=evidence.kind,
                     )
                     for evidence in turn.adjudication.evidence
                 ),
                 recorded_output=recorded_outputs.get(turn.turn_number),
+                oracle_cache=(PublicOracleCacheSource(
+                    scope=("same_execution"
+                           if turn.adjudication.cache_source.policy == "same_execution_ask_v1"
+                           else "historical"),
+                    execution_id=turn.adjudication.cache_source.execution_id,
+                    model_id=turn.adjudication.cache_source.model_id,
+                    benchmark_id=turn.adjudication.cache_source.benchmark_id,
+                    target_id=turn.adjudication.cache_source.target_id,
+                    trial_id=turn.adjudication.cache_source.trial_id,
+                    episode_id=turn.adjudication.cache_source.episode_id,
+                    turn_number=turn.adjudication.cache_source.turn_number,
+                    question=turn.adjudication.cache_source.question,
+                    answered_at=turn.adjudication.cache_source.answered_at,
+                ) if turn.adjudication.cache_source is not None
+                    and turn.adjudication.cache_source.policy != "same_episode_ask_v1"
+                    else PublicEpisodeOracleCacheSource(
+                        target_id=turn.adjudication.cache_source.target_id,
+                        episode_id=turn.adjudication.cache_source.episode_id,
+                        turn_number=turn.adjudication.cache_source.turn_number,
+                        question=turn.adjudication.cache_source.question,
+                        answered_at=turn.adjudication.cache_source.answered_at,
+                    ) if turn.adjudication.cache_source is not None else None),
             )
             if isinstance(turn, EpisodeActionTurn)
             else PublicContractViolationTurn(
@@ -952,8 +1104,9 @@ def compile_publication(
     subject_catalog: SubjectCatalog,
     subject_catalog_hash: str,
     built_at: datetime,
+    cohort: CohortConfig | None = None,
 ) -> PublishedDataset:
-    cohort = config.active_cohort
+    cohort = cohort or config.active_cohort
     missing_targets = tuple(
         target_id for target_id in cohort.target_ids if target_id not in subject_catalog.subjects
     )
@@ -969,6 +1122,8 @@ def compile_publication(
             loaded_run,
             cohort,
         )
+        if reasons:
+            continue
         projected_runs.append(
             _public_run(
                 loaded_run,
@@ -1046,7 +1201,7 @@ def compile_publication(
         active_cohort=cohort,
         provenance=DatasetProvenance(
             built_at=built_at,
-            source_run_count=len(projected_runs),
+            source_run_count=len(runs),
             official_run_count=len(selected),
             lab_run_count=0,
             latest_completed_at=max(selected_dates) if selected_dates else None,

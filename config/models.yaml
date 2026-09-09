@@ -507,6 +507,65 @@ models:
         cached_input_usd_per_million: "1.00"
         cache_write_multiplier: "1.25"
 
+  M-0023:
+    model_id: M-0023
+    display_name: GLM-5.3-Flash (high)
+    configuration:
+      configuration_id: M-0023
+      gateway: openrouter
+      model: z-ai/glm-5.3-flash
+      provider: z-ai
+      reasoning_effort: high
+      # The Z.AI route advertised reasoning effort and JSON-object mode, but
+      # no strict JSON Schema enforcement or seed support on 2026-09-08.
+      structured_output_mode: json_object
+      allow_fallbacks: false
+      max_output_tokens: 32768
+      timeout_seconds: 120
+      recovery: *default_recovery
+      seed_capability: unsupported
+      prompt_cache:
+        policy: best_effort
+        control: automatic
+        # Observation defaults; the route does not publish a cache threshold
+        # or retention guarantee and does not advertise implicit caching.
+        minimum_cacheable_tokens: 1024
+        ttl_seconds: 300
+        # Z.AI's 50% promotion ends 2026-09-09 at 16:00 UTC. Standard input
+        # and cache-read rates are $0.15 and $0.03 per million tokens.
+        input_usd_per_million: "0.075"
+        cached_input_usd_per_million: "0.015"
+        cache_write_multiplier: "1.00"
+
+  M-0024:
+    model_id: M-0024
+    display_name: MiniMax M3 (high)
+    configuration:
+      configuration_id: M-0024
+      gateway: openrouter
+      model: minimax/minimax-m3
+      # CoreWeave advertised strict JSON Schema, seed support, and the highest
+      # standard-route daily uptime among strict-schema endpoints on 2026-09-08.
+      provider: coreweave
+      reasoning_effort: high
+      reasoning_control: generic
+      structured_output_mode: strict_json_schema
+      allow_fallbacks: false
+      max_output_tokens: 32768
+      timeout_seconds: 120
+      recovery: *default_recovery
+      seed_capability: supported
+      prompt_cache:
+        policy: best_effort
+        control: automatic
+        # Observation defaults, not verified provider thresholds or retention.
+        # The route does not advertise implicit caching; no savings are assumed.
+        minimum_cacheable_tokens: 1024
+        ttl_seconds: 300
+        input_usd_per_million: "0.23"
+        cached_input_usd_per_million: "0.05"
+        cache_write_multiplier: "1.00"
+
 # Models with medium reasoning (high above in belo 100 range scope)
   M-0101:
     model_id: M-0101
@@ -551,4 +610,35 @@ models:
         ttl_seconds: 300
         input_usd_per_million: "1.50"
         cached_input_usd_per_million: "0.15"
+        cache_write_multiplier: "1.00"
+
+  M-0026:
+    model_id: M-0026
+    display_name: Muse Spark 1.3 Contributor (high)
+    configuration:
+      configuration_id: M-0026
+      gateway: openrouter
+      model: meta/muse-spark-1.3-contributor
+      # Contributor prompts and outputs may be used to improve Meta's products.
+      provider: meta
+      reasoning_effort: high
+      structured_output_mode: strict_json_schema
+      allow_fallbacks: false
+      max_output_tokens: 32768
+      timeout_seconds: 120
+      recovery: *default_recovery
+      # The Meta route advertised strict structured outputs but no seed support
+      # on 2026-09-09.
+      seed_capability: unsupported
+      prompt_cache:
+        policy: best_effort
+        control: automatic
+        # Observation defaults, not verified provider thresholds or retention.
+        # The route does not advertise implicit caching; no savings are assumed.
+        minimum_cacheable_tokens: 1024
+        ttl_seconds: 300
+        # OpenRouter advertised $0.10 input, $0.20 output, and $0.002 cache reads
+        # per million tokens, with no separate cache-write price on 2026-09-09.
+        input_usd_per_million: "0.10"
+        cached_input_usd_per_million: "0.002"
         cache_write_multiplier: "1.00"

@@ -1,3 +1,4 @@
+import { selectedEditionId } from "./api";
 import type { LocationQueryRaw, RouteLocationRaw } from "vue-router";
 
 export const runRoute = (executionId: string): RouteLocationRaw => ({
@@ -23,3 +24,9 @@ export const episodeRoute = (
   params: { executionId, targetId, trialId },
   ...(query === undefined ? {} : { query }),
 });
+
+export const editionRoute = (
+  name: string,
+  options: { hash?: string; editionId?: string } = {},
+): RouteLocationRaw => ({ name, params: { editionId: options.editionId ?? selectedEditionId.value },
+      ...(options.hash === undefined ? {} : { hash: options.hash }) });

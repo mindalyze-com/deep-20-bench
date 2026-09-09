@@ -33,6 +33,8 @@ const readHead = (page: Page) => page.evaluate(() => ({
   ogUrl: document.querySelector('meta[property="og:url"]')?.getAttribute("content") ?? null,
   twitterTitle: document.querySelector('meta[name="twitter:title"]')?.getAttribute("content") ?? null,
   twitterDescription: document.querySelector('meta[name="twitter:description"]')?.getAttribute("content") ?? null,
+  structuredData: [...document.querySelectorAll('script[type="application/ld+json"]')]
+    .map((script) => JSON.parse(script.textContent ?? "null") as unknown),
 }));
 
 test("initial SEO metadata survives hydration", { tag: ["@metadata", "@desktop"] }, async ({ browser, page }) => {
@@ -41,6 +43,8 @@ test("initial SEO metadata survives hydration", { tag: ["@metadata", "@desktop"]
   try {
     const paths = [
       ...staticPaths,
+      ...routes.filter((entry) => /^editions\/[^/]+(?:\/[^/]+)*$/.test(entry.route))
+        .map((entry) => `${entry.route}/`),
       "story/",
       `${firstSubject.route.split("/subjects/")[0]}/`,
       `${firstSubject.route}/`,
@@ -61,18 +65,22 @@ test("initial SEO metadata survives hydration", { tag: ["@metadata", "@desktop"]
 });
 
 test("client navigation keeps full metadata and restores indexing after an episode", { tag: ["@metadata", "@desktop"] }, async ({ page }) => {
-  await page.goto(staticBase);
+  const owner = JSON.parse(readFileSync(path.join(
+    docsRoot, "data", `${firstSubject.route.split("/subjects/")[0]}.json`,
+  ), "utf8")) as { edition_id: string };
+  const editionHome = `editions/${owner.edition_id}`;
+  await page.goto(new URL(`${editionHome}/`, staticBase).href);
   await waitForPublication(page);
   const paths = [
-    "results",
+    `${editionHome}/results`,
     firstSubject.route.split("/subjects/")[0]!,
     firstSubject.route,
     episode.route,
     firstSubject.route,
-    "results",
+    `${editionHome}/results`,
     secondSubject.route.split("/subjects/")[0]!,
     secondSubject.route,
-    "",
+    editionHome,
   ];
   for (const route of paths) {
     const href = `/${route === "" ? "" : `${route}/`}`;
@@ -88,5 +96,33 @@ test("client navigation keeps full metadata and restores indexing after an episo
     expect(head.ogSiteName).toBe("Deep20Bench");
     expect(head.twitterTitle).toBe(expected.browser_title);
     expect(head.robots).toBe(expected.indexable ? null : "noindex, follow");
+  }
+});
+
+test("edition switching keeps dataset markup aligned with the page", { tag: ["@metadata", "@desktop"] }, async ({ browser, page }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const initial = await context.newPage();
+  const homes = routes.filter((entry) => /^editions\/[^/]+$/.test(entry.route));
+  try {
+    await page.goto(new URL(`${homes[0]!.route}/`, staticBase).href);
+    await waitForPublication(page);
+    for (const home of [...homes.slice(1), homes[0]!]) {
+      await initial.goto(new URL(`${home.route}/`, staticBase).href);
+      const expected = await readHead(initial);
+      await page.locator(".edition-trigger").click();
+      await page.locator(`.edition-links a[href="/${home.route}/"]`).click();
+      await expect.poll(() => readHead(page)).toEqual(expected);
+
+      const resultsPath = `${home.route}/results/`;
+      await initial.goto(new URL(resultsPath, staticBase).href);
+      const resultsHead = await readHead(initial);
+      await page.locator(`.primary-navigation a[href="/${resultsPath}"]`).click();
+      await expect.poll(() => readHead(page)).toEqual(resultsHead);
+
+      await page.locator(`.wordmark[href="/${home.route}/"]`).click();
+      await expect.poll(() => readHead(page)).toEqual(expected);
+    }
+  } finally {
+    await context.close();
   }
 });

@@ -1,0 +1,1 @@
+import{g as e,l as t,u as n,w as r}from"./runtime-core.esm-bundler-BplWOmn1.js";var i={key:0,class:`workspace-progress`,"aria-hidden":`true`},a=e({__name:`WorkspaceProgress`,props:{active:{type:Boolean}},setup(e){return(a,o)=>e.active?(r(),n(`div`,i)):t(``,!0)}});export{a as t};

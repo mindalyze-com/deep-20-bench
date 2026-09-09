@@ -289,7 +289,7 @@ const { loading, error } = usePublicationLoad(async () => {
         </div>
 
         <p class="results-note">
-          The 95% CI uses repeated seeded trials on the seven fixed subjects. The three CI width
+          The 95% CI uses repeated seeded trials on this edition's fixed subjects. The three CI width
           bands divide the displayed scale into equal ranges. They are not fixed quality
           thresholds. The 95% CI does not cover different subjects, model versions, or
           providers.

@@ -169,7 +169,7 @@ test("primary and result navigation use distinct section names", { tag: ["@inter
   await waitForPublication(page);
 
   const aboutLink = page.locator(".primary-navigation a").filter({ hasText: "About" });
-  await expect(aboutLink).toHaveAttribute("href", "/deep-20-bench/about/");
+  await expect(aboutLink).toHaveAttribute("href", "/deep-20-bench/editions/1.0/about/");
   await expect(page.locator(".primary-navigation a").filter({ hasText: "Story" })).toHaveCount(0);
 
   const resultLinks = page.locator(".results-nav a");
@@ -196,14 +196,14 @@ test("canonical URL resolves aliases and follows client navigation", { tag: ["@i
   );
 
   await page.locator(".primary-navigation a").filter({ hasText: "Results" }).click();
-  await expect(page).toHaveURL(/\/deep-20-bench\/results\/$/);
+  await expect(page).toHaveURL(/\/deep-20-bench\/editions\/1.0\/results\/$/);
   await expect(canonical).toHaveAttribute(
     "href",
-    "https://mindalyze-com.github.io/deep-20-bench/results/",
+    "https://mindalyze-com.github.io/deep-20-bench/editions/1.0/results/",
   );
 
   await page.locator(".primary-navigation a").filter({ hasText: "About" }).click();
-  await expect(page).toHaveURL(/\/deep-20-bench\/about\/$/);
+  await expect(page).toHaveURL(/\/deep-20-bench\/editions\/1.0\/about\/$/);
   await expect(canonical).toHaveAttribute(
     "href",
     "https://mindalyze-com.github.io/deep-20-bench/about/",

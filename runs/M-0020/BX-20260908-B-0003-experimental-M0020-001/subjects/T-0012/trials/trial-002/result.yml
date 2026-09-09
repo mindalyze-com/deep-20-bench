@@ -1,0 +1,5110 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260908-B-0003-experimental-M0020-001
+    model_id: M-0020
+    target_id: T-0012
+    trial_id: trial-002
+    trial_number: 2
+    episode_run_id: BR-0896c29fcae96672ddf58c3e10c0f930a9587d1d
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-0896c29fcae96672ddf58c3e10c0f930a9587d1d
+      episode_id: EP-01a08299544570299af2baa0308a247f
+      subject:
+        target_id: T-0012
+        canonical_name: Door handle
+        aliases:
+        - Doorhandle
+        - Türfalle
+        - Türklinke
+        - Türgriff
+        entity_type: thing
+        description: Door handle, the hand-operated fitting used to open and close
+          a building door, called Türfalle in Swiss German. The target is the handle
+          fitting itself, not the whole door, a lock mechanism, or the material from
+          which the handle is made. It is a general type, with no particular material,
+          design, brand, or individual handle specified.
+        reference_url: https://en.wikipedia.org/wiki/Door_handle
+      started_at: '2026-09-08T19:58:01.797821+00:00'
+      completed_at: '2026-09-08T20:03:12.509334+00:00'
+      duration_ms: 310712
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: false
+    summary:
+      total_turns: 16
+      counted_questions: 15
+      guesser_call_count: 16
+      ask_count: 14
+      guess_count: 2
+      rejected_guess_count: 1
+      oracle_unknown_count: 1
+      oracle_quality:
+        reviewed_questions: 13
+        agreements: 12
+        disagreements: 1
+        judge_invocations: 1
+        oracle_answers_changed: 0
+        final_unknown_answers: 1
+        judge_yes_answers: 1
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0188158'
+        judge_cost_usd: '0.02037'
+        quality_control_cost_usd: '0.0391858'
+        question_types:
+        - question_type: other
+          reviewed_questions: 13
+          disagreements: 1
+      contract:
+        evaluated_outputs: 16
+        valid_outputs: 16
+        violations: 0
+        counted_penalties: 0
+        affected_trials: 0
+        compliance_rate: '1'
+        status: clean
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.16523475'
+        oracle: '0.0827668199999999998'
+        validator: '0.0004364'
+        total: '0.2484379699999999998'
+      tokens:
+        guesser: 34238
+        oracle: 141658
+        validator: 1432
+        total: 177328
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0020
+        requested_model: anthropic/claude-fable-5.1
+        requested_provider: anthropic
+        resolved_models:
+        - anthropic/claude-fable-5.1
+        resolved_providers:
+        - Anthropic
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v16-five-answer-category-guide
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v17-labelled-source-context
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v2-generic-kinds
+    turns:
+    - turn_type: action
+      turn_number: 1
+      action:
+        action: ASK
+        question: Is it a living thing (or a part of a living thing)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829969fe75f68f99044c7d542d93
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Door_handle
+          excerpt: 'Door handle
+
+            A door handle or doorknob is a handle used to open or close a door.'
+          validation: model_reported
+        - source_url: https://www.collinsdictionary.com/dictionary/english-chinese/door-handle
+          excerpt: A door handle is a small round object or a lever that is attached
+            to a door and is used for opening and closing it.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: other
+            supporting_statement: A door handle is an inanimate object or lever used
+              to open or close a door, and is not a living thing or part of one.
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-01a08299544570299af2baa28fbf796f
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is it human-made?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082999e7e7730bfb868e4f72e7c7b
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Door_handle
+          excerpt: A door handle or doorknob is a handle used to open or close a door.
+          validation: model_reported
+        - source_url: https://www.doorfit.co.uk/architectural-hardware/door-hardware
+          excerpt: Door hardware essentially refers to a variety of items which you
+            attach to your door to aid with ease of use, security and efficiency.
+            The range includes door handles and other manufactured door accessories.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Excerpt 2 explicitly classifies door handles as
+              manufactured door accessories, establishing that they are human-made.
+            evidence_indices:
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-01a082998cf17660ba001336590e9f72
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is it a physical object (as opposed to an abstract concept, idea,
+          or work of art like a song)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a08299d9fb76338920da3abb8e7130
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Door_handle
+          excerpt: A door handle or doorknob is a handle used to open or close a door.
+          validation: model_reported
+        - source_url: https://www.collinsdictionary.com/dictionary/english/door-handle
+          excerpt: A door handle is a small round object or a lever that is attached
+            to a door and is used for opening and closing it.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Excerpts establish that a door handle is an object
+              or lever attached to a door, making it a physical object.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-01a08299c76e70a5940f81f5bd46460c
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is it small enough to be held in one hand?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829a0921721ea852418253174f35
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.mockett.com/ada-hardware/dh6a-sss.html
+          excerpt: Product page titled “Door Handle - Small 19-3/4" Length” lists
+            the overall length as 19 27/32 inches, projection as 2 3/4 inches, and
+            diameter as 1 inch. It describes the item as an interior door handle.
+          validation: model_reported
+          kind: source_summary
+        - source_url: http://accesshardware.com/wp-content/uploads/2014/11/ADA-are-you-doing-enough-to-meet-ADA-requirements-mtd.pdf
+          excerpt: The accessibility guidance asks whether a door handle is “operable
+            with a closed fist” and explains that the test is to try opening the door
+            or operating the control using only one hand held in a fist.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: UNKNOWN
+            basis: other
+            supporting_statement: Door handles vary widely in size, from small knobs
+              and levers easily grasped in one hand to large architectural pull bars
+              nearly twenty inches long. This size variation creates ambiguity regarding
+              whether the general type is small enough to be held in one hand.
+            evidence_indices:
+            - 1
+            - 2
+          judge:
+            answer: 'YES'
+            basis: other
+            supporting_statement: A door handle is a hand-operated fitting designed
+              to be grasped and turned or pulled with one hand; typical levers and
+              knobs are only a few inches to about a foot in size, easily held in
+              one hand. Excerpt 2's one-hand (closed-fist) operability test supports
+              single-hand grasp. Excerpt 1 shows some pull handles are ~20 in long,
+              but even these are gripped by one hand, and ordinary door handles are
+              hand-sized (remembered general knowledge).
+            evidence_indices:
+            - 1
+            - 2
+          disagreement: true
+          judge_invoked: true
+          final_answer: 'YES'
+          decision_path: judge_disagreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-01a08299f61e757387aa23ba85f7ee9e
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Does it use electricity or contain electronic components?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829a7a917622bdfadf10efd8dfba
+        answer: UNKNOWN
+        evidence:
+        - source_url: http://simplydoorhandles.co.uk/door-handles
+          excerpt: Door handles are mechanical fittings that allow doors to be opened,
+            closed, and secured.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.kentix.com/en/knowledge-base/doorlock-le-operating-instructions/
+          excerpt: The Kentix DoorLock-LE is a battery operated electronic door handle
+            with radio. The electronics are fully integrated in the handle.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.assaabloy.com/pl/en/solutions/products/digital-access-solutions/aperio/aperio-h100-electronic-lock
+          excerpt: The Aperio H100 Handle is a battery-powered door handle with integrated
+            RFID and BLE readers.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: UNKNOWN
+          question_type: other
+          reviewer: null
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: UNKNOWN
+          decision_path: oracle_unknown
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-01a0829a667f745f99aef02e19bd6f81
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is it primarily used as a tool to perform a practical task (rather
+          than for decoration, play, or consumption)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829ad3b8704c8613457036676167
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Door_handle
+          excerpt: The door handle has only a lever handle or knob which operates
+            this latch. Pushing the handle down rotates the spindle, operating the
+            tubular latch mechanism inside the door, allowing it to be opened.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.dictionary.com/browse/door-handle
+          excerpt: A door handle is the handle used to open and close a door.
+          validation: model_reported
+        - source_url: https://www.emtek.com/blog/what-door-function-do-you-need
+          excerpt: A passage door knob or lever is a handle set without an internal
+            locking mechanism. The handle set will open and close by simply turning
+            the knob or lever.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: A door handle is used to open and close a door by
+              operating a latch mechanism, serving primarily as a functional device
+              for a practical task.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-01a0829abbdc7023b11bd7f1560051a1
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is it mainly made of metal?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829b234876c0b12e3f914f269035
+        answer: 'YES'
+        evidence:
+        - source_url: https://brennancorp.com/blog/how-to-clean-exterior-door-hardware
+          excerpt: In the U.S., most door knobs and levers are made from brass. Historically,
+            door knobs and levers have been made from glass, wood, clay, bronze, brass,
+            iron, and steel. Today, most door hardware in the U.S. is brass, but you’ll
+            also find options made from bronze, stainless steel, iron, pewter, and
+            other metals.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://atlantichandles.com/what-metals-are-door-handles-made-of
+          excerpt: Door handles can be made from various materials depending on the
+            style, function, and budget. Common materials listed include brass, stainless
+            steel, zinc alloy, aluminum, bronze, and, in some cases, plastic or PVC.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Evidence indicates that most door handles and hardware
+              are made from metals such as brass, stainless steel, bronze, iron, and
+              aluminum.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-01a0829b022b76ba9fc24e7539ee6e0a
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Does it have a sharp edge or point used for cutting or piercing?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829b6b1e71a4b64f7f97189c6fa8
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.dictionary.com/browse/door-handle
+          excerpt: A door handle is the handle used to open and close a door. ...
+            Doorknobs ... refer to a handle shaped like a knob — a part that sticks
+            out and has a rounded end. Door handles can ... be fixed in place, like
+            a vertical or horizontal bar.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://atlantichandles.com/what-are-the-different-types-of-door-handles
+          excerpt: A handle/lever ... turns the spindle ... allowing the door to be
+            opened. ... Pull handles ... are designed for pulling the door open or
+            closed. Knob handles are round-shaped handles that you can twist to operate
+            the latch or lock.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: other
+            supporting_statement: A door handle is a hand-operated fitting used for
+              opening and closing doors, designed to be grasped, turned, or pulled.
+              It does not possess a sharp edge or point used for cutting or piercing.
+            evidence_indices: []
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-01a0829b484a7293b03e069d736e3196
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Is it commonly used for eating or preparing food?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829bd6687467b0a833a6d312d77f
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.dictionary.com/browse/door-handle
+          excerpt: A door handle is the handle used to open and close a door.
+          validation: model_reported
+        - source_url: https://atlantichandles.com/what-are-the-different-types-of-door-handles
+          excerpt: Door-handle types are described as mechanisms used to open, close,
+            latch, lock, or provide access through doors; the page does not identify
+            eating or food preparation as a use.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: A door handle is a fitting used to open and close
+              a door, and its ordinary functions do not include eating or preparing
+              food.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-01a0829bb13a779ab63ef74ee486c057
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Is it used to fasten, join, or hold things together (e.g., a fastener
+          like a screw, nail, clip, or a tool for tightening them)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829c11c57236a603089b6a5f8c9d
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Door_handle
+          excerpt: The door handle has only a lever handle or knob which operates
+            this latch. Pushing the handle down rotates the spindle, operating the
+            tubular latch mechanism inside the door, allowing it to be opened.
+          validation: model_reported
+        - source_url: https://www.dictionary.com/browse/door-handle
+          excerpt: A door handle is the handle used to open and close a door.
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Fastener
+          excerpt: A fastener ... is a hardware device that mechanically joins or
+            affixes two or more objects together.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: A door handle is used to open and close a door by
+              operating a latch or lock mechanism, not to fasten, join, or hold things
+              together like a fastener (such as a screw, nail, or clip).
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-01a0829bf19a7146b80ac7948e2271fb
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Is it used to lock or unlock / open something?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829c7d9072d0853f7ae2ba21713d
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.dictionary.com/browse/door-handle
+          excerpt: A door handle is the handle used to open and close a door.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Evidence 1 states that a door handle is the handle
+              used to open and close a door, establishing that it is used to open
+              something.
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-01a0829c55fc72cfbe61ab9cea510f57
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: GUESS
+        question: null
+        name: Key
+        description: A small metal device inserted into a lock to open or secure it
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a0829cba3573a385ba2171b1f69c38
+        answer: 'NO'
+        evidence: []
+        explanation: The proposal identifies a key, which is a separate device used
+          with a lock, not the door-handle fitting itself.
+        oracle_quality: null
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-01a0829ca1b676e2bc10ba762a6501cc
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: ASK
+        question: Is it itself a lock (a device that secures something, rather than
+          a tool for opening)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829ce6a372f1a2c21960ca081075
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.dictionary.com/browse/door-handle
+          excerpt: A door handle is the handle used to open and close a door. ...
+            Door handles can turn, but they can also be fixed in place, like a vertical
+            or horizontal bar.
+          validation: model_reported
+        - source_url: https://www.schlage.com/en/blog/product_updates/door-hardware-terms-and-parts-of-a-door-lock.html
+          excerpt: The spindle is the bar that connects knobs or levers through the
+            door to operate the lock mechanism. The article separately identifies
+            the lock's chassis, latch bolt, and strike plate as components of the
+            locking hardware.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.thespruce.com/types-of-door-handles-7565664
+          excerpt: A keyed entry door handle provides a lock and key. A privacy door
+            handle can have a twist or button lock on one side of the door.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: The subject description and excerpt 1 state that
+              a door handle is a fitting used to open and close a door, while excerpts
+              2 and 3 distinguish the handle from the separate lock mechanism it operates
+              or incorporates, establishing that a door handle is not itself a lock.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 13
+      guesser_call_id: GC-01a0829cc095734abbf5754cbdace875
+    - turn_type: action
+      turn_number: 14
+      action:
+        action: ASK
+        question: Is it used to open containers such as bottles or cans?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829d566f771faec3cd3294bf4ba8
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.collinsdictionary.com/jp/%E8%8B%B1%E8%AA%9E%E5%AD%A6%E7%BF%92/door-handle
+          excerpt: A door handle is a small round object or a lever that is attached
+            to a door and is used for opening and closing it.
+          validation: model_reported
+        - source_url: https://www.collinsdictionary.com/us/dictionary/english/opener
+          excerpt: An opener is a tool which is used to open containers such as cans
+            or bottles. ...a can opener.
+          validation: model_reported
+        - source_url: https://www.dictionary.com/browse/door-handle
+          excerpt: A door handle is the handle used to open and close a door.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: A door handle is used for opening and closing a
+              door, not for opening containers such as bottles or cans.
+            evidence_indices:
+            - 1
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 14
+      guesser_call_id: GC-01a0829d2d447687bb540e2dfaebf197
+    - turn_type: action
+      turn_number: 15
+      action:
+        action: ASK
+        question: Is it typically attached to or installed on a door?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0829dbe7476c0845ed6d531e69885
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.collinsdictionary.com/dictionary/english/door-handle
+          excerpt: A door handle is a small round object or a lever that is attached
+            to a door and is used for opening and closing it.
+          validation: model_reported
+        - source_url: https://www.dictionary.com/browse/door-handle
+          excerpt: A door handle is the handle used to open and close a door. Door
+            handles can turn, but they can also be fixed in place, like a vertical
+            or horizontal bar.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Excerpt 1 states that a door handle is attached
+              to a door and used for opening and closing it.
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 15
+      guesser_call_id: GC-01a0829d8e7f7625a85fd807de31913f
+    - turn_type: action
+      turn_number: 16
+      action:
+        action: GUESS
+        question: null
+        name: Doorknob
+        description: A round metal handle mounted on a door that is turned to open
+          it
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a0829e017674beb572adc8ab12d120
+        answer: 'YES'
+        evidence: []
+        explanation: A doorknob is a recognized subtype/design variant of a door handle
+          and retains the target’s defining hand-operated door-opening function.
+        oracle_quality: null
+      counted: false
+      counted_questions: 15
+      guesser_call_id: GC-01a0829ddbfc719688f0b73bdccfedb6
+    guesser_conversation:
+    - role: system
+      content: "You are the Guesser in a Twenty Questions benchmark. Identify the\
+        \ hidden subject using as few\ncounted turns as possible. BEGIN provides only\
+        \ its broad category. The variation_token has no\nclues; do not interpret,\
+        \ mention, or repeat it.\n\nThe category in BEGIN has a broad meaning:\n-\
+        \ person: a real human, living or historical.\n- fictional_character: an invented\
+        \ character from a story, book, comic, film, television,\n  game, or another\
+        \ fictional work.\n- mythological_figure: a figure from mythology or traditional\
+        \ legend.\n- video_game_character: a character known from video games.\n-\
+        \ thing: a broad category covering natural and human-made entities, living\
+        \ or nonliving,\n  whole entities or parts of them. Possibilities include\
+        \ everyday objects, tools, machines,\n  materials, food, animals, plants,\
+        \ body parts, natural structures, geographical features,\n  celestial bodies,\
+        \ natural phenomena, and concepts. These possibilities are not exhaustive.\n\
+        \  The target may be a general kind or one particular instance.\n\nUse questions\
+        \ to narrow the supplied category. These definitions are not a list of targets.\n\
+        \nUse ASK for a factual question that distinguishes candidates. Never use\
+        \ ASK to confirm a\nspecific identity. Use GUESS with a name and short identifying\
+        \ description to name a candidate.\n\nASK has five possible replies:\n- YES\
+        \ or NO: the evidence establishes that answer to the exact question.\n- RATHER_YES\
+        \ or RATHER_NO: evidence leans that way, but is not strong enough for a firm\
+        \ answer.\n  Treat this as a clue; keep candidates fitting the opposite answer\
+        \ possible.\n- UNKNOWN: no reliable direction. It supports neither answer.\n\
+        \nAsk clear questions about verifiable properties. \"Can\", \"sometimes\"\
+        , \"usually\", \"always\", and\n\"mainly\" ask different things. Do not assume\
+        \ that one property proves another or rules out alternatives.\nQualified replies\
+        \ express uncertainty about your question, not how often a property applies.\n\
+        Before narrowing heavily, check your key assumption with a different property.\
+        \ After rejected\nguesses, reconsider earlier assumptions as well as candidates.\
+        \ Answers can be mistaken; check\nanother property when stuck. Do not ignore\
+        \ an answer merely because it conflicts with a\npreferred candidate.\n\nEach\
+        \ ASK, rejected GUESS, or format error before the limit costs one turn. A\
+        \ correct GUESS costs\nnone. After 40 counted turns, make one final GUESS;\
+        \ ASK is then forbidden. Identity\nvalidation uses only YES, NO, or UNKNOWN.\
+        \ UNKNOWN on GUESS ends the game without success.\n\nFORMAT_ERROR means your\
+        \ output broke the contract, was not checked for correctness, and cost\none\
+        \ turn. Retry using its displayed formats if a turn remains. Return only the\
+        \ required JSON\nobject with exactly one result action. No explanations, reasoning,\
+        \ or extra fields.\n"
+    - role: user
+      content: '{"category":"thing","event":"BEGIN","variation_token":"BKXG3AZI"}'
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a living thing (or a part of a living thing)?"}}'
+      turn_number: 1
+    - role: user
+      content: 'NO'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it human-made?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a physical object (as opposed to an abstract concept, idea, or work of
+        art like a song)?"}}'
+      turn_number: 3
+    - role: user
+      content: 'YES'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it small enough to be held in one hand?"}}'
+      turn_number: 4
+    - role: user
+      content: 'YES'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        it use electricity or contain electronic components?"}}'
+      turn_number: 5
+    - role: user
+      content: UNKNOWN
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it primarily used as a tool to perform a practical task (rather than for decoration,
+        play, or consumption)?"}}'
+      turn_number: 6
+    - role: user
+      content: 'YES'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it mainly made of metal?"}}'
+      turn_number: 7
+    - role: user
+      content: 'YES'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        it have a sharp edge or point used for cutting or piercing?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it commonly used for eating or preparing food?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it used to fasten, join, or hold things together (e.g., a fastener like a
+        screw, nail, clip, or a tool for tightening them)?"}}'
+      turn_number: 10
+    - role: user
+      content: 'NO'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it used to lock or unlock / open something?"}}'
+      turn_number: 11
+    - role: user
+      content: 'YES'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"A small metal device inserted
+        into a lock to open or secure it","name":"Key","question":null}}'
+      turn_number: 12
+    - role: user
+      content: 'NO'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it itself a lock (a device that secures something, rather than a tool for
+        opening)?"}}'
+      turn_number: 13
+    - role: user
+      content: 'NO'
+      turn_number: 13
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it used to open containers such as bottles or cans?"}}'
+      turn_number: 14
+    - role: user
+      content: 'NO'
+      turn_number: 14
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it typically attached to or installed on a door?"}}'
+      turn_number: 15
+    - role: user
+      content: 'YES'
+      turn_number: 15
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"A round metal handle mounted
+        on a door that is turned to open it","name":"Doorknob","question":null}}'
+      turn_number: 16
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0020
+          gateway: openrouter
+          model: anthropic/claude-fable-5.1
+          provider: anthropic
+          reasoning_effort: high
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: ephemeral_5m
+            minimum_cacheable_tokens: 512
+            ttl_seconds: 300
+            input_usd_per_million: '10.00'
+            cached_input_usd_per_million: '0.25'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 16
+          cost_usd: '0.16523475'
+          latency_ms: 124587
+          total_tokens: 34238
+          input_tokens: 31692
+          cached_input_tokens: 29229
+          cache_write_tokens: 2399
+          output_tokens: 2546
+          reasoning_tokens: 1743
+          estimated_cache_savings_usd: '0.27898525'
+          recovery:
+            request_attempts: 16
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Anthropic
+            calls: 16
+            cost_usd: '0.16523475'
+            latency_ms: 124587
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          prompt_profile: qualified_v1
+          adjudication_policy: concise_knowledge_v1
+          parallel_search: true
+          parallel_search_mode: fast
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 14
+          cost_usd: '0.0827668199999999998'
+          latency_ms: 180028
+          total_tokens: 141658
+          input_tokens: 127866
+          cached_input_tokens: 66136
+          cache_write_tokens: 0
+          output_tokens: 13792
+          reasoning_tokens: 7435
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 28
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 14
+              cost_usd: '0.0435810199999999998'
+              latency_ms: 149819
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 13
+              cost_usd: '0.0188158'
+              latency_ms: 24415
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers:
+            - provider: Claude Platform on AWS
+              calls: 1
+              cost_usd: '0.02037'
+              latency_ms: 5794
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 2
+          cost_usd: '0.0004364'
+          latency_ms: 5851
+          total_tokens: 1432
+          input_tokens: 1282
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 150
+          reasoning_tokens: 59
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 2
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 2
+            cost_usd: '0.0004364'
+            latency_ms: 5851
+          unreported_calls: 0
+          fallback_calls: 0
+    audit:
+      schema_version: 1
+      calls:
+      - component: guesser
+        call_id: GC-01a08299544570299af2baa28fbf796f
+        turn_number: 1
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 03dc6bef2f05cff98643fdf901070b77621422ed843d25a138156cc8321b6512
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:58:01.798106+00:00'
+          completed_at: '2026-09-08T19:58:07.358394+00:00'
+          latency_ms: 5560
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1564
+            cached_input_tokens: 0
+            cache_write_tokens: 1560
+            output_tokens: 47
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.02189'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 123
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829969fe75f68f99044c7d542d93
+        turn_number: 1
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 25bf3dcda604cd38f12b98e9f6f12b2b401e60aa3de05afcfbd54a8da8dac88d
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:58:07.359891+00:00'
+            completed_at: '2026-09-08T19:58:13.856294+00:00'
+            latency_ms: 6496
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 3932
+              cached_input_tokens: 1530
+              cache_write_tokens: 0
+              output_tokens: 413
+              reasoning_tokens: 106
+              search_count: 1
+              cost_usd: '0.0021264'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1078
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is a hand-operated fitting or object
+              used to open and close a door. The supplied description identifies the
+              target as the handle fitting itself, not a living organism or a part
+              of one. Its attachment to a door does not make it part of a living thing.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle definition hand-operated fitting used to open and close
+              a door object not living thing
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 25bf3dcda604cd38f12b98e9f6f12b2b401e60aa3de05afcfbd54a8da8dac88d
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:58:07.359891+00:00'
+              completed_at: '2026-09-08T19:58:13.856294+00:00'
+              latency_ms: 6496
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 3932
+                cached_input_tokens: 1530
+                cache_write_tokens: 0
+                output_tokens: 413
+                reasoning_tokens: 106
+                search_count: 1
+                cost_usd: '0.0021264'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1078
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 7fdb99cbc2ca5f1947810ca3889fd8bce596791ec82a6aa6667c5d8b43517398
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:58:13.857226+00:00'
+            completed_at: '2026-09-08T19:58:16.299592+00:00'
+            latency_ms: 2442
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1190
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 620
+              reasoning_tokens: 573
+              search_count: 0
+              cost_usd: '0.001907'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 196
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082998cf17660ba001336590e9f72
+        turn_number: 2
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 4e91592b05c965dcd160e026e861dd5f3e326815c149d0473535be3fe471d9c0
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:58:16.305435+00:00'
+          completed_at: '2026-09-08T19:58:20.795829+00:00'
+          latency_ms: 4490
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1617
+            cached_input_tokens: 1560
+            cache_write_tokens: 53
+            output_tokens: 36
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.0028925'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 89
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082999e7e7730bfb868e4f72e7c7b
+        turn_number: 2
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 754d1ff970428df90c22ebf344c7ba272140b9958291597bb8f17b284108be9f
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:58:20.803945+00:00'
+            completed_at: '2026-09-08T19:58:29.879461+00:00'
+            latency_ms: 9075
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8422
+              cached_input_tokens: 5335
+              cache_write_tokens: 0
+              output_tokens: 440
+              reasoning_tokens: 101
+              search_count: 2
+              cost_usd: '0.003406'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 1178
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is a manufactured door fitting or
+              hardware component attached to a door and designed for human use in
+              opening or closing it. The question concerns the handle fitting itself,
+              which is human-made, not the door or its material.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle manufactured human-made fitting used to open door definition
+            - door handle is a manufactured human-made object door hardware fitting
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 754d1ff970428df90c22ebf344c7ba272140b9958291597bb8f17b284108be9f
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:58:20.803945+00:00'
+              completed_at: '2026-09-08T19:58:29.879461+00:00'
+              latency_ms: 9075
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8422
+                cached_input_tokens: 5335
+                cache_write_tokens: 0
+                output_tokens: 440
+                reasoning_tokens: 101
+                search_count: 2
+                cost_usd: '0.003406'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 1178
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 3ee9183541908e33cbd4071982595a85493fe3044e4a63072fc7735930d6e7e3
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:58:29.881879+00:00'
+            completed_at: '2026-09-08T19:58:31.262210+00:00'
+            latency_ms: 1380
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1198
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 299
+              reasoning_tokens: 238
+              search_count: 0
+              cost_usd: '0.0011069'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 226
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a08299c76e70a5940f81f5bd46460c
+        turn_number: 3
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 29c301377203668da87fbc4a7a75796f4e88f3bd32e59e0c0634f32fe60b2f1b
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:58:31.278679+00:00'
+          completed_at: '2026-09-08T19:58:36.026500+00:00'
+          latency_ms: 4747
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1659
+            cached_input_tokens: 1613
+            cache_write_tokens: 42
+            output_tokens: 61
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.00401825'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 166
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline:
+            - stage_type: guardrail
+              name: moderation
+              mode: null
+              tool_types: []
+      - component: oracle
+        call_id: OC-01a08299d9fb76338920da3abb8e7130
+        turn_number: 3
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 7493a169d9831e35313a347970676ddef35eb00467405420772765121aa37a30
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:58:36.028041+00:00'
+            completed_at: '2026-09-08T19:58:41.991273+00:00'
+            latency_ms: 5963
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5310
+              cached_input_tokens: 2871
+              cache_write_tokens: 0
+              output_tokens: 373
+              reasoning_tokens: 81
+              search_count: 1
+              cost_usd: '0.00211447'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1033
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is a tangible fitting or object attached
+              to a door and used by hand to open or close it. The supplied description
+              identifies the target as the handle fitting itself, so it is a physical
+              object rather than an abstract concept or song.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle physical object hand-operated fitting used to open and close
+              a door definition
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 7493a169d9831e35313a347970676ddef35eb00467405420772765121aa37a30
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:58:36.028041+00:00'
+              completed_at: '2026-09-08T19:58:41.991273+00:00'
+              latency_ms: 5963
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5310
+                cached_input_tokens: 2871
+                cache_write_tokens: 0
+                output_tokens: 373
+                reasoning_tokens: 81
+                search_count: 1
+                cost_usd: '0.00211447'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1033
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 2d4bfc953841ffe1ba7044091bb872e22ddf3e5424aebce17108613d45214086
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:58:41.992137+00:00'
+            completed_at: '2026-09-08T19:58:43.218573+00:00'
+            latency_ms: 1226
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1197
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 235
+              reasoning_tokens: 166
+              search_count: 0
+              cost_usd: '0.0009466'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 224
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a08299f61e757387aa23ba85f7ee9e
+        turn_number: 4
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: b04364dfa9a3f50ed779f454c168c1a9dafb9439d97c28c87191e75463f78764
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:58:43.231066+00:00'
+          completed_at: '2026-09-08T19:58:48.096132+00:00'
+          latency_ms: 4865
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1726
+            cached_input_tokens: 1655
+            cache_write_tokens: 67
+            output_tokens: 43
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.00344125'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 114
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829a0921721ea852418253174f35
+        turn_number: 4
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: e3158431b4bc4941e10ed69c727d8c5ce0210aa40149cbc2f7e24d17baa80f47
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:58:48.099993+00:00'
+            completed_at: '2026-09-08T19:59:01.389684+00:00'
+            latency_ms: 13289
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 10224
+              cached_input_tokens: 7131
+              cache_write_tokens: 0
+              output_tokens: 740
+              reasoning_tokens: 283
+              search_count: 2
+              cost_usd: '0.00380342'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1538
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is a hand-operated fitting intended
+              to be grasped and operated by a person. Retrieved product information
+              describes a door handle 19 27/32 inches long and 1 inch in diameter,
+              showing that even a relatively elongated example remains a hand-operable
+              fitting. The question asks whether it is small enough to be held in
+              one hand, not whether every design fits entirely inside a closed hand.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle size small enough to be held in one hand hand-operated fitting
+            - site:en.wikipedia.org/wiki/Door_handle door handle lever knob hand dimensions
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: e3158431b4bc4941e10ed69c727d8c5ce0210aa40149cbc2f7e24d17baa80f47
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:58:48.099993+00:00'
+              completed_at: '2026-09-08T19:59:01.389684+00:00'
+              latency_ms: 13289
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 10224
+                cached_input_tokens: 7131
+                cache_write_tokens: 0
+                output_tokens: 740
+                reasoning_tokens: 283
+                search_count: 2
+                cost_usd: '0.00380342'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1538
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 52ced0dd89cf03634bf5634a23e7bea941d85c6bd93f7b7b70a43d8c8d8ba013
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:59:01.391255+00:00'
+            completed_at: '2026-09-08T19:59:06.189622+00:00'
+            latency_ms: 4798
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1249
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 1249
+              reasoning_tokens: 1162
+              search_count: 0
+              cost_usd: '0.0034972'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 366
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge:
+          role: judge
+          prompt:
+            version: oracle-judge-v15-labelled-source-context
+            hash: 6451664a6582aeab5d40a38770ba6a882a3265abd304d578eaecb36acb027cc2
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:59:06.192169+00:00'
+            completed_at: '2026-09-08T19:59:11.986599+00:00'
+            latency_ms: 5794
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: anthropic/claude-opus-5
+            resolved_model: anthropic/claude-opus-5
+            requested_provider: openrouter-auto
+            resolved_provider: Claude Platform on AWS
+            fallback_occurred: false
+            usage:
+              input_tokens: 2594
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 296
+              reasoning_tokens: 103
+              search_count: 0
+              cost_usd: '0.02037'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 523
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+      - component: guesser
+        call_id: GC-01a0829a667f745f99aef02e19bd6f81
+        turn_number: 5
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: bec1496b2498ce3162351b8488deec8fe9984d5bad9fbd5f14c7809d46e7257d
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:59:12.000214+00:00'
+          completed_at: '2026-09-08T19:59:17.136087+00:00'
+          latency_ms: 5135
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1775
+            cached_input_tokens: 1722
+            cache_write_tokens: 49
+            output_tokens: 44
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.003283'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 129
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline:
+            - stage_type: guardrail
+              name: moderation
+              mode: null
+              tool_types: []
+      - component: oracle
+        call_id: OC-01a0829a7a917622bdfadf10efd8dfba
+        turn_number: 5
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: a4bfb6f13d7aa9e6671df75bd34047a1f6321fa3b6150674e3f6ba58ec531f68
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:59:17.140555+00:00'
+            completed_at: '2026-09-08T19:59:33.846499+00:00'
+            latency_ms: 16706
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 10362
+              cached_input_tokens: 6019
+              cache_write_tokens: 0
+              output_tokens: 951
+              reasoning_tokens: 517
+              search_count: 2
+              cost_usd: '0.00434688'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 1665
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: bounded_unknown
+          attempts:
+          - basis: other
+            supporting_statement: 'The generic subject is ambiguous: ordinary door
+              handles are mechanical fittings and need not use electricity or contain
+              electronics, but electronic door handles are also a recognized type
+              with integrated electronic mechanisms. Because no particular design
+              or individual handle is specified, the claim cannot be resolved as universally
+              true or false.'
+            attempt_number: 1
+            strategy: primary
+            outcome: ambiguous_question
+            attempted_queries:
+            - door handle electronic components battery powered electronic door handle
+              traditional mechanical door handle
+            - ordinary traditional door handle mechanical no electricity door handle
+              definition hand operated fitting
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: a4bfb6f13d7aa9e6671df75bd34047a1f6321fa3b6150674e3f6ba58ec531f68
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:59:17.140555+00:00'
+              completed_at: '2026-09-08T19:59:33.846499+00:00'
+              latency_ms: 16706
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 10362
+                cached_input_tokens: 6019
+                cache_write_tokens: 0
+                output_tokens: 951
+                reasoning_tokens: 517
+                search_count: 2
+                cost_usd: '0.00434688'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 1665
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer: null
+        judge: null
+      - component: guesser
+        call_id: GC-01a0829abbdc7023b11bd7f1560051a1
+        turn_number: 6
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: bf90755f154e7ab1ae63d47702c78b058db7da1f3191fa4b20844bf633f1e43b
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:59:33.852417+00:00'
+          completed_at: '2026-09-08T19:59:39.959473+00:00'
+          latency_ms: 6107
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1830
+            cached_input_tokens: 1771
+            cache_write_tokens: 55
+            output_tokens: 117
+            reasoning_tokens: 53
+            search_count: 0
+            cost_usd: '0.00702025'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 182
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829ad3b8704c8613457036676167
+        turn_number: 6
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 0b8e170be2bd29aca651c740cb6d4dd50122407cb1b51ef65d224f68ed2802ef
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:59:39.960943+00:00'
+            completed_at: '2026-09-08T19:59:49.969647+00:00'
+            latency_ms: 10008
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4958
+              cached_input_tokens: 2869
+              cache_write_tokens: 0
+              output_tokens: 487
+              reasoning_tokens: 110
+              search_count: 1
+              cost_usd: '0.00216373'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1482
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is primarily used to perform the practical
+              task of opening and closing a door. The supplied description identifies
+              it as a hand-operated fitting for that purpose, and retrieved sources
+              confirm that operating the handle opens or closes the door. Its decorative
+              variations do not change its primary practical use.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle used to open and close a door function practical task
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 0b8e170be2bd29aca651c740cb6d4dd50122407cb1b51ef65d224f68ed2802ef
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:59:39.960943+00:00'
+              completed_at: '2026-09-08T19:59:49.969647+00:00'
+              latency_ms: 10008
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4958
+                cached_input_tokens: 2869
+                cache_write_tokens: 0
+                output_tokens: 487
+                reasoning_tokens: 110
+                search_count: 1
+                cost_usd: '0.00216373'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1482
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: aa2864014a663f7f5da1cb65a96ce73e142b501397cf27dc48daea40fde56e3b
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:59:49.971760+00:00'
+            completed_at: '2026-09-08T19:59:51.843289+00:00'
+            latency_ms: 1871
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1248
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 453
+              reasoning_tokens: 376
+              search_count: 0
+              cost_usd: '0.0015069'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 264
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0829b022b76ba9fc24e7539ee6e0a
+        turn_number: 7
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: eb2bbf3a6b8031848d320a53bf3b7468fd959e10397a1e7626ca47f5b2c64740
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:59:51.852166+00:00'
+          completed_at: '2026-09-08T20:00:00.327983+00:00'
+          latency_ms: 8475
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1900
+            cached_input_tokens: 1826
+            cache_write_tokens: 70
+            output_tokens: 99
+            reasoning_tokens: 59
+            search_count: 0
+            cost_usd: '0.0063215'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 99
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829b234876c0b12e3f914f269035
+        turn_number: 7
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 80bf82d9158d19b323d230c983df2122767a31fb70a20c6580e81c8568fd3a76
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:00:00.330200+00:00'
+            completed_at: '2026-09-08T20:00:07.909601+00:00'
+            latency_ms: 7579
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5083
+              cached_input_tokens: 2852
+              cache_write_tokens: 0
+              output_tokens: 473
+              reasoning_tokens: 85
+              search_count: 1
+              cost_usd: '0.00218209'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1457
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Door handles are commonly made from metals such
+              as brass, stainless steel, zinc alloy, aluminum, and bronze. A source
+              states that most U.S. door knobs and levers are brass, while also noting
+              nonmetal alternatives exist. Thus, for the general type, metal is the
+              ordinary predominant material, though not universal.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handles mainly made of metal typical materials door handle fitting
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 80bf82d9158d19b323d230c983df2122767a31fb70a20c6580e81c8568fd3a76
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T20:00:00.330200+00:00'
+              completed_at: '2026-09-08T20:00:07.909601+00:00'
+              latency_ms: 7579
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5083
+                cached_input_tokens: 2852
+                cache_write_tokens: 0
+                output_tokens: 473
+                reasoning_tokens: 85
+                search_count: 1
+                cost_usd: '0.00218209'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1457
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 3a519358bfb5448809838dfb381c38482990b70a9516637b617f406f603af08e
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:00:07.911917+00:00'
+            completed_at: '2026-09-08T20:00:09.793379+00:00'
+            latency_ms: 1881
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1270
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 448
+              reasoning_tokens: 393
+              search_count: 0
+              cost_usd: '0.001501'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 229
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0829b484a7293b03e069d736e3196
+        turn_number: 8
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 6af18e6351fef756e4f0b5ca0efdeacf7055fb18338db523873a8167075206f0
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:00:09.802797+00:00'
+          completed_at: '2026-09-08T20:00:18.718005+00:00'
+          latency_ms: 8915
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 1946
+            cached_input_tokens: 1896
+            cache_write_tokens: 46
+            output_tokens: 115
+            reasoning_tokens: 64
+            search_count: 0
+            cost_usd: '0.006839'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 136
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829b6b1e71a4b64f7f97189c6fa8
+        turn_number: 8
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: c3877a617b8120934e9c1a39cbb5739fa06dc547d7d4e547e4de2b0d590d29f3
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:00:18.719726+00:00'
+            completed_at: '2026-09-08T20:00:34.600374+00:00'
+            latency_ms: 15880
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 10964
+              cached_input_tokens: 6346
+              cache_write_tokens: 0
+              output_tokens: 734
+              reasoning_tokens: 318
+              search_count: 2
+              cost_usd: '0.00416177'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 9
+            url_citation_count: 9
+            raw_output_present: true
+            raw_output_characters: 1493
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is an ordinary hand-operated fitting
+              for opening and closing a door, not a cutting or piercing implement.
+              Common door-handle forms include rounded knobs, levers, and pull bars.
+              Although particular decorative designs may have pointed ornamentation,
+              that does not establish a point used for cutting or piercing.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle sharp edge or point used for cutting or piercing ordinary
+              door handle function
+            - door handle sharp point cutting piercing decorative pointed door handle
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: c3877a617b8120934e9c1a39cbb5739fa06dc547d7d4e547e4de2b0d590d29f3
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T20:00:18.719726+00:00'
+              completed_at: '2026-09-08T20:00:34.600374+00:00'
+              latency_ms: 15880
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 10964
+                cached_input_tokens: 6346
+                cache_write_tokens: 0
+                output_tokens: 734
+                reasoning_tokens: 318
+                search_count: 2
+                cost_usd: '0.00416177'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 9
+              url_citation_count: 9
+              raw_output_present: true
+              raw_output_characters: 1493
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 35f3df78001434c894ad7219530946231716a2e03a0e60a6287cf29e332ffb06
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:00:34.601504+00:00'
+            completed_at: '2026-09-08T20:00:36.659502+00:00'
+            latency_ms: 2058
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1261
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 395
+              reasoning_tokens: 319
+              search_count: 0
+              cost_usd: '0.0013658'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 287
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0829bb13a779ab63ef74ee486c057
+        turn_number: 9
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: a4155b766a4a0563c0338c866408a4f2524f3ef00604c0e3f267f6d29e048d6f
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:00:36.666262+00:00'
+          completed_at: '2026-09-08T20:00:46.183221+00:00'
+          latency_ms: 9517
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 2003
+            cached_input_tokens: 1942
+            cache_write_tokens: 57
+            output_tokens: 162
+            reasoning_tokens: 117
+            search_count: 0
+            cost_usd: '0.009338'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 121
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829bd6687467b0a833a6d312d77f
+        turn_number: 9
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: ea5213f9e24bd048eb222b9ee9044c6c7a44da1ee1826e58b7f7029091930416
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:00:46.187200+00:00'
+            completed_at: '2026-09-08T20:00:51.763415+00:00'
+            latency_ms: 5576
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5253
+              cached_input_tokens: 2854
+              cache_write_tokens: 0
+              output_tokens: 356
+              reasoning_tokens: 56
+              search_count: 1
+              cost_usd: '0.00208373'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1074
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is commonly used to open or close
+              a door, not for eating or preparing food. The supplied description also
+              identifies it as a hand-operated door fitting and distinguishes it from
+              other objects.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle commonly used for eating or preparing food purpose hand-operated
+              fitting open and close door
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: ea5213f9e24bd048eb222b9ee9044c6c7a44da1ee1826e58b7f7029091930416
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T20:00:46.187200+00:00'
+              completed_at: '2026-09-08T20:00:51.763415+00:00'
+              latency_ms: 5576
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5253
+                cached_input_tokens: 2854
+                cache_write_tokens: 0
+                output_tokens: 356
+                reasoning_tokens: 56
+                search_count: 1
+                cost_usd: '0.00208373'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1074
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: db57f6e1336920273ad653d0f6f3ea7082d449dee653ada7c9309796424fd33d
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:00:51.765470+00:00'
+            completed_at: '2026-09-08T20:00:53.139509+00:00'
+            latency_ms: 1374
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1196
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 281
+              reasoning_tokens: 210
+              search_count: 0
+              cost_usd: '0.0010613'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 240
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0829bf19a7146b80ac7948e2271fb
+        turn_number: 10
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 42e368ebfa1ae179cb794c83f7363b2b88b16e29563fa0888a3b336baff8753b
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:00:53.146859+00:00'
+          completed_at: '2026-09-08T20:01:01.379421+00:00'
+          latency_ms: 8232
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 2054
+            cached_input_tokens: 1999
+            cache_write_tokens: 51
+            output_tokens: 236
+            reasoning_tokens: 160
+            search_count: 0
+            cost_usd: '0.01297725'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 199
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829c11c57236a603089b6a5f8c9d
+        turn_number: 10
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: f77b7693c56567f0ca895f96acb379a3b450071bb2d40a502742216d4c1965af
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:01:01.383919+00:00'
+            completed_at: '2026-09-08T20:01:17.303778+00:00'
+            latency_ms: 15919
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 12915
+              cached_input_tokens: 9635
+              cache_write_tokens: 0
+              output_tokens: 729
+              reasoning_tokens: 239
+              search_count: 3
+              cost_usd: '0.0048869'
+              cache_discount_usd: null
+            web_search_requests: 3
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 1605
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The door handle itself is a hand-operated fitting
+              used to operate a door latch and open or close the door. It is not a
+              fastener that joins or holds objects together, nor is it a tool used
+              to tighten fasteners. Any screws or bolts mounting the handle are separate
+              components and do not change the handle's identity or primary use.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle used to fasten join or hold things together fastener tool
+              tightening purpose
+            - site:en.wikipedia.org/wiki/Door_handle door handle used to open or close
+              door definition
+            - door handle definition device used to open and close a door not fastener
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: f77b7693c56567f0ca895f96acb379a3b450071bb2d40a502742216d4c1965af
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T20:01:01.383919+00:00'
+              completed_at: '2026-09-08T20:01:17.303778+00:00'
+              latency_ms: 15919
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 12915
+                cached_input_tokens: 9635
+                cache_write_tokens: 0
+                output_tokens: 729
+                reasoning_tokens: 239
+                search_count: 3
+                cost_usd: '0.0048869'
+                cache_discount_usd: null
+              web_search_requests: 3
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 1605
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 7292ed7349d0273c46b5be410c59c600ed715b63756ab5f33409157a72631463
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:01:17.306047+00:00'
+            completed_at: '2026-09-08T20:01:18.838081+00:00'
+            latency_ms: 1532
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1241
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 387
+              reasoning_tokens: 294
+              search_count: 0
+              cost_usd: '0.0013398'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 303
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0829c55fc72cfbe61ab9cea510f57
+        turn_number: 11
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 75154c7eaf36515c41a2357671da1c6ef37ec659cfa187d71d074e96b0b8d3ac
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:01:18.844279+00:00'
+          completed_at: '2026-09-08T20:01:28.975021+00:00'
+          latency_ms: 10130
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 2136
+            cached_input_tokens: 2050
+            cache_write_tokens: 82
+            output_tokens: 261
+            reasoning_tokens: 217
+            search_count: 0
+            cost_usd: '0.0146275'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 118
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829c7d9072d0853f7ae2ba21713d
+        turn_number: 11
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 975db3e9afc76b1be4469d5c882d2473bc47f1c853055d5e9082679115485556
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:01:28.979421+00:00'
+            completed_at: '2026-09-08T20:01:36.786220+00:00'
+            latency_ms: 7806
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5287
+              cached_input_tokens: 2858
+              cache_write_tokens: 0
+              output_tokens: 382
+              reasoning_tokens: 166
+              search_count: 1
+              cost_usd: '0.00212251'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 728
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is used to open a door, which satisfies
+              the second branch of the inclusive “lock or unlock / open” claim. The
+              generic definition does not establish that every door handle itself
+              locks or unlocks, but that is unnecessary because either branch suffices.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle used to open and close a door lock unlock function definition
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 975db3e9afc76b1be4469d5c882d2473bc47f1c853055d5e9082679115485556
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T20:01:28.979421+00:00'
+              completed_at: '2026-09-08T20:01:36.786220+00:00'
+              latency_ms: 7806
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5287
+                cached_input_tokens: 2858
+                cache_write_tokens: 0
+                output_tokens: 382
+                reasoning_tokens: 166
+                search_count: 1
+                cost_usd: '0.00212251'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 728
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 42c2044a0362eea7da9ce7b4a7cc3c02aa0e1186a58c0c7c9706b55480e5d87f
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:01:36.787808+00:00'
+            completed_at: '2026-09-08T20:01:38.224536+00:00'
+            latency_ms: 1436
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1148
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 302
+              reasoning_tokens: 237
+              search_count: 0
+              cost_usd: '0.0010994'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 230
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0829ca1b676e2bc10ba762a6501cc
+        turn_number: 12
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: feada1d5473c217c6c7104512fd538186d4717a8ae62365173bfedfe8ccb4de9
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:01:38.230912+00:00'
+          completed_at: '2026-09-08T20:01:44.501266+00:00'
+          latency_ms: 6270
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 2186
+            cached_input_tokens: 2132
+            cache_write_tokens: 50
+            output_tokens: 152
+            reasoning_tokens: 101
+            search_count: 0
+            cost_usd: '0.008798'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 137
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a0829cba3573a385ba2171b1f69c38
+        turn_number: 12
+        status: success
+        prompt:
+          version: strict-guess-validator-v2-generic-kinds
+          hash: 4cb7e128b7f0068b42e72d23cfd514850bdabf34e0abf11acff4ceb2d95afa56
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:01:44.502277+00:00'
+          completed_at: '2026-09-08T20:01:46.128935+00:00'
+          latency_ms: 1626
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 639
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 63
+            reasoning_tokens: 19
+            search_count: 0
+            cost_usd: '0.0002034'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 143
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: guesser
+        call_id: GC-01a0829cc095734abbf5754cbdace875
+        turn_number: 13
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: ab693b954307e4f7eb415b9dd2de776f092531b3605b9a3159ba490b881abc8e
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:01:46.133653+00:00'
+          completed_at: '2026-09-08T20:01:55.874250+00:00'
+          latency_ms: 9740
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 2239
+            cached_input_tokens: 2182
+            cache_write_tokens: 53
+            output_tokens: 295
+            reasoning_tokens: 239
+            search_count: 0
+            cost_usd: '0.015998'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 158
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829ce6a372f1a2c21960ca081075
+        turn_number: 13
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 0ffabe8b8717d18699804c615e2c43be14275e0c05e10b6fa781d86e819da5fc
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:01:55.877062+00:00'
+            completed_at: '2026-09-08T20:02:11.826194+00:00'
+            latency_ms: 15949
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 11530
+              cached_input_tokens: 6544
+              cache_write_tokens: 0
+              output_tokens: 808
+              reasoning_tokens: 335
+              search_count: 2
+              cost_usd: '0.00434653'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 1694
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is the hand-operated fitting used
+              to open or close a door, not the lock mechanism that secures it. Some
+              specialized door-handle products may incorporate a lock, but this target
+              is the handle fitting itself and has no particular locking design specified.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle definition handle used to open and close door lock device
+              secures door definition
+            - door handle is not a lock door handle separate from door lock definition
+              hardware
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 0ffabe8b8717d18699804c615e2c43be14275e0c05e10b6fa781d86e819da5fc
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T20:01:55.877062+00:00'
+              completed_at: '2026-09-08T20:02:11.826194+00:00'
+              latency_ms: 15949
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 11530
+                cached_input_tokens: 6544
+                cache_write_tokens: 0
+                output_tokens: 808
+                reasoning_tokens: 335
+                search_count: 2
+                cost_usd: '0.00434653'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 1694
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 8de95609ab7c1abfd5e42c15d44dffc4d34bfefd8aa2bec75b7ae766191cbfb9
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:02:11.827072+00:00'
+            completed_at: '2026-09-08T20:02:13.944724+00:00'
+            latency_ms: 2117
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1275
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 501
+              reasoning_tokens: 398
+              search_count: 0
+              cost_usd: '0.001635'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 390
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0829d2d447687bb540e2dfaebf197
+        turn_number: 14
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: f0ad13bb988efc6da20841578d1068793569226ac2afaa1dc895db73befb15da
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:02:13.956524+00:00'
+          completed_at: '2026-09-08T20:02:24.493532+00:00'
+          latency_ms: 10537
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 2301
+            cached_input_tokens: 2235
+            cache_write_tokens: 62
+            output_tokens: 340
+            reasoning_tokens: 294
+            search_count: 0
+            cost_usd: '0.01837375'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 126
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829d566f771faec3cd3294bf4ba8
+        turn_number: 14
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 83b1634c4f4da17fe2c5919633dd7f2ea248b868c12331f00e131415324a76bc
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:02:24.497980+00:00'
+            completed_at: '2026-09-08T20:02:37.514266+00:00'
+            latency_ms: 13016
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 10809
+              cached_input_tokens: 6435
+              cache_write_tokens: 0
+              output_tokens: 631
+              reasoning_tokens: 182
+              search_count: 2
+              cost_usd: '0.00397895'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 9
+            url_citation_count: 9
+            raw_output_present: true
+            raw_output_characters: 1494
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is ordinarily the fitting used to
+              open and close a door, not a tool for opening containers. Container-opening
+              tools are separately described as openers, such as can openers and bottle
+              openers. The subject is the handle fitting itself, not an unspecified
+              object that might happen to be used for another purpose.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle used to open containers such as bottles or cans ordinary
+              function
+            - door handle definition used to open and close a door bottle opener cans
+              containers separate tool
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 83b1634c4f4da17fe2c5919633dd7f2ea248b868c12331f00e131415324a76bc
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T20:02:24.497980+00:00'
+              completed_at: '2026-09-08T20:02:37.514266+00:00'
+              latency_ms: 13016
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 10809
+                cached_input_tokens: 6435
+                cache_write_tokens: 0
+                output_tokens: 631
+                reasoning_tokens: 182
+                search_count: 2
+                cost_usd: '0.00397895'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 9
+              url_citation_count: 9
+              raw_output_present: true
+              raw_output_characters: 1494
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 30d0544cf69d355e9044fcec3b341a0e65e0d5bb2c96acf6a3098b71ed50ce22
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:02:37.516405+00:00'
+            completed_at: '2026-09-08T20:02:38.830131+00:00'
+            latency_ms: 1313
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1211
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 256
+              reasoning_tokens: 205
+              search_count: 0
+              cost_usd: '0.0010033'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 198
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0829d8e7f7625a85fd807de31913f
+        turn_number: 15
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 45e2e740a87582ca90b405558f077c2469b01bd5e213b53faa33037954a08ac8
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:02:38.847678+00:00'
+          completed_at: '2026-09-08T20:02:51.122209+00:00'
+          latency_ms: 12274
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 2353
+            cached_input_tokens: 2297
+            cache_write_tokens: 52
+            output_tokens: 374
+            reasoning_tokens: 330
+            search_count: 0
+            cost_usd: '0.01996425'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 123
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0829dbe7476c0845ed6d531e69885
+        turn_number: 15
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: c0a12eba7ad194e4fe9a869c49a058e119e883fe48a1f3b15377c4ddd6ae4fe9
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:02:51.127654+00:00'
+            completed_at: '2026-09-08T20:02:57.685108+00:00'
+            latency_ms: 6557
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4337
+              cached_input_tokens: 2857
+              cache_write_tokens: 0
+              output_tokens: 359
+              reasoning_tokens: 50
+              search_count: 1
+              cost_usd: '0.0018576399999999998'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1106
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: A door handle is ordinarily a fitting attached to
+              a door and used to open or close it. The supplied description also identifies
+              it as a hand-operated fitting for a building door, so it is typically
+              installed on that door.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - door handle typically attached to or installed on a door definition
+              fitting used to open close door
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: c0a12eba7ad194e4fe9a869c49a058e119e883fe48a1f3b15377c4ddd6ae4fe9
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T20:02:51.127654+00:00'
+              completed_at: '2026-09-08T20:02:57.685108+00:00'
+              latency_ms: 6557
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4337
+                cached_input_tokens: 2857
+                cache_write_tokens: 0
+                output_tokens: 359
+                reasoning_tokens: 50
+                search_count: 1
+                cost_usd: '0.0018576399999999998'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1106
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: ff7061aa483484d28a20793a0f172124ae4749a6b01c91538df95626446337c2
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T20:02:57.688328+00:00'
+            completed_at: '2026-09-08T20:02:58.676009+00:00'
+            latency_ms: 987
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1202
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 194
+              reasoning_tokens: 132
+              search_count: 0
+              cost_usd: '0.0008456'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 203
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0829ddbfc719688f0b73bdccfedb6
+        turn_number: 16
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: f5a77226bab99a73a5810896446639acc9365524990a9fceaae0703b2a4abe26
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:02:58.684652+00:00'
+          completed_at: '2026-09-08T20:03:08.277936+00:00'
+          latency_ms: 9593
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: anthropic/claude-fable-5.1
+          resolved_model: anthropic/claude-fable-5.1
+          requested_provider: anthropic
+          resolved_provider: Anthropic
+          fallback_occurred: false
+          usage:
+            input_tokens: 2403
+            cached_input_tokens: 2349
+            cache_write_tokens: 50
+            output_tokens: 164
+            reasoning_tokens: 109
+            search_count: 0
+            cost_usd: '0.00945225'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 144
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a0829e017674beb572adc8ab12d120
+        turn_number: 16
+        status: success
+        prompt:
+          version: strict-guess-validator-v2-generic-kinds
+          hash: d521a53463f0df784a502b579dac260fa2c1e37d6d0051724f4e9d71d47fb116
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T20:03:08.279120+00:00'
+          completed_at: '2026-09-08T20:03:12.504539+00:00'
+          latency_ms: 4225
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 643
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 87
+            reasoning_tokens: 40
+            search_count: 0
+            cost_usd: '0.000233'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 170
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      unavailable_call_count: 0
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0020/BX-20260908-B-0003-experimental-M0020-001/subjects/T-0012/trials/trial-002/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs: null
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 4e79264f41b8a8eaf17df4def6fb61743f948d49513ce715f8a121bc97862b4b

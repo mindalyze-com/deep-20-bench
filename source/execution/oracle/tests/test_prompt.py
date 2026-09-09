@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import json
 
+import pytest
+from deep20_oracle.config import AdjudicationPolicy, PromptProfile
+from deep20_oracle.knowledge_prompts import FACTUAL_POLICY as KNOWLEDGE_POLICY
 from deep20_oracle.models import (
     Evidence,
     EvidenceReviewRequest,
     OracleRequest,
     OracleResearchStrategy,
     OracleRole,
+    Subject,
 )
 from deep20_oracle.prompt import (
     JUDGE_PROMPT_VERSION,
@@ -17,6 +21,72 @@ from deep20_oracle.prompt import (
     render_evidence_review_messages,
     render_messages,
 )
+from deep20_oracle.qualified_prompts import FACTUAL_POLICY
+
+
+@pytest.mark.parametrize("adjudication_policy", tuple(AdjudicationPolicy))
+@pytest.mark.parametrize("excerpt", (
+    "PRIVATE_EVIDENCE_EXCERPT",
+    "PRIVATE_EVIDENCE_EXCERPT " + "Relevant surrounding source context. " * 50,
+))
+@pytest.mark.parametrize(
+    ("entity_type", "canonical_name", "description"),
+    [
+        ("person", "Albert Einstein", "The physicist known for relativity."),
+        ("object", "Hairbrush", "A brush used to groom hair."),
+        ("object", "Computer keyboard", "A physical keyboard for entering computer input."),
+    ],
+)
+def test_generic_factual_roles_share_policy_and_keep_subject_data_private(
+    entity_type: str, canonical_name: str, description: str,
+    adjudication_policy: AdjudicationPolicy,
+    excerpt: str,
+) -> None:
+    subject = Subject(
+        target_id="T-9999",
+        canonical_name=canonical_name,
+        entity_type=entity_type,
+        description=description,
+        aliases=("PRIVATE_ALIAS",),
+    )
+    question = "Is it widely known?"
+    evidence = Evidence(
+        source_url="https://example.test/private-source",
+        excerpt=excerpt,
+        validation="model_reported",
+    )
+    expected_subject = subject.model_dump(mode="json")
+    expected_research = {"subject": expected_subject, "current_yes_no_question": question}
+    concise_knowledge = adjudication_policy is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1
+    factual_policy = KNOWLEDGE_POLICY if concise_knowledge else FACTUAL_POLICY
+    for strategy in OracleResearchStrategy:
+        if concise_knowledge and strategy is not OracleResearchStrategy.PRIMARY:
+            continue
+        messages = render_messages(
+            OracleRequest(run_id="PRIVATE_RUN_ID", subject=subject, question=question),
+            strategy=strategy,
+            profile=PromptProfile.QUALIFIED_V1,
+            policy=adjudication_policy,
+        )
+        assert factual_policy in messages[0]["content"]
+        assert canonical_name not in messages[0]["content"]
+        assert "PRIVATE_ALIAS" not in messages[0]["content"]
+        assert json.loads(messages[1]["content"].split("\n", 1)[1]) == expected_research
+
+    for role in (OracleRole.REVIEWER, OracleRole.JUDGE):
+        messages = render_evidence_review_messages(
+            EvidenceReviewRequest(subject=subject, question=question, evidence=(evidence,)),
+            role=role,
+            profile=PromptProfile.QUALIFIED_V1,
+            policy=adjudication_policy,
+        )
+        assert factual_policy in messages[0]["content"]
+        assert canonical_name not in messages[0]["content"]
+        assert "PRIVATE_EVIDENCE_EXCERPT" not in messages[0]["content"]
+        assert json.loads(messages[1]["content"].split("\n", 1)[1]) == {
+            **expected_research,
+            "numbered_evidence_excerpts": [{"number": 1, "excerpt": evidence.excerpt}],
+        }
 
 
 def test_oracle_prompt_uses_provider_default_source_ranking(subject) -> None:

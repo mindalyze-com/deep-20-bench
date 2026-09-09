@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { editionRoute } from "@/lib/route-location";
 import { ref } from "vue";
 
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import PublicationTime from "@/components/PublicationTime.vue";
-import { getManifest, peekManifest, publicDownloadUrl } from "@/lib/api";
+import { getManifest, peekManifest, publicDownloadUrl, editionDownloadUrl } from "@/lib/api";
 import { usePageRouteContext } from "@/lib/route-context";
 import {
   citationResource,
@@ -39,7 +40,7 @@ const { loading, error } = usePublicationLoad(async () => {
         <div class="page-hero-inner site-boundary">
           <div>
             <p class="eyebrow">Public data</p>
-            <h1>Download the public benchmark record.</h1>
+            <h1>Edition {{ manifest.active_cohort.edition_label }} data.</h1>
           </div>
           <div class="lede data-lede">
             <p>
@@ -68,7 +69,7 @@ const { loading, error } = usePublicationLoad(async () => {
             </div>
             <p>
               JSON carries the complete public record, CSV carries the current rankings, and the
-              schema validates both.
+              schema validates the JSON dataset.
             </p>
           </header>
 
@@ -79,7 +80,7 @@ const { loading, error } = usePublicationLoad(async () => {
               <p>Cohort rules, models, runs, subjects, episodes, scores, and build details.</p>
               <a
                 class="button button-primary"
-                :href="publicDownloadUrl('deep20bench-v9.json')"
+                :href="editionDownloadUrl('deep20bench-v10.json')"
                 download
               >
                 Download JSON ↓
@@ -91,7 +92,7 @@ const { loading, error } = usePublicationLoad(async () => {
               <p>One row per model with a selected complete run.</p>
               <a
                 class="button button-secondary"
-                :href="publicDownloadUrl('leaderboard.csv')"
+                :href="editionDownloadUrl('leaderboard.csv')"
                 download
               >
                 Download CSV ↓
@@ -100,10 +101,10 @@ const { loading, error } = usePublicationLoad(async () => {
             <article class="card download-card">
               <p class="file-type">JSON Schema · draft 2020-12</p>
               <h3>Public data schema</h3>
-              <p>Types, required fields, enums, and nested public objects for schema v9.</p>
+              <p>Types, required fields, enums, and nested public objects for schema v10.</p>
               <a
                 class="button button-secondary"
-                :href="publicDownloadUrl('deep20bench-v9.schema.json')"
+                :href="editionDownloadUrl('deep20bench-v10.schema.json')"
                 download
               >
                 Download schema ↓
@@ -113,6 +114,15 @@ const { loading, error } = usePublicationLoad(async () => {
         </div>
       </section>
 
+      <section class="content-section" aria-label="Version 9 compatibility">
+        <div class="content-inner">
+          <h2>Existing v9 download</h2>
+          <p>The <a :href="publicDownloadUrl('deep20bench-v9.json')">v9 dataset</a> and
+            <a :href="publicDownloadUrl('deep20bench-v9.schema.json')">v9 schema</a> remain maintained
+            for edition 1. Version 9 cannot represent both editions or qualified-answer transcripts.
+            Edition 1.1 results are available in its schema 10 download above.</p>
+        </div>
+      </section>
       <section class="content-section flow-stage" aria-labelledby="field-guide-title">
         <div class="content-inner">
           <header class="section-heading">
@@ -147,7 +157,7 @@ const { loading, error } = usePublicationLoad(async () => {
                 <p class="eyebrow">Example query</p>
                 <p>Print leaderboard rank, model name, and exact question score.</p>
               </div>
-              <pre><code>jq -r '.leaderboard[] | [.rank, .model.display_name, .question_score] | @tsv' deep20bench-v9.json</code></pre>
+              <pre><code>jq -r '.leaderboard[] | [.rank, .model.display_name, .question_score] | @tsv' deep20bench-v10.json</code></pre>
             </div>
           </div>
         </div>
@@ -208,14 +218,17 @@ const { loading, error } = usePublicationLoad(async () => {
                   <h4>Included</h4>
                   <p>
                     IDs, model settings, scores, outcomes, costs, timestamps, source commit,
-                    contract reliability, typed transcripts, and published Oracle evidence.
+                    contract reliability, typed transcripts, published Oracle evidence, and
+                    source attribution for reused answers. Contract-violation records may
+                    include captured visible Guesser text, including invalid output.
                   </p>
                 </article>
                 <article>
                   <h4>Excluded</h4>
                   <p>
-                    Malformed completions, adjudicator prompts and decisions, hidden reasoning,
-                    provider payloads, credentials, headers, sessions, and private subject state.
+                    Adjudicator prompts, raw responses and internal decisions, hidden reasoning,
+                    full provider payloads, credentials, headers, sessions, and private subject
+                    state. Owner-only diagnostic files are not published.
                   </p>
                 </article>
               </div>
@@ -230,7 +243,9 @@ const { loading, error } = usePublicationLoad(async () => {
             <article class="card">
               <p class="eyebrow">Citation</p>
               <h3>{{ manifest.site.citation_label }}</h3>
-              <p>Protocol v{{ manifest.active_cohort.benchmark_version }}</p>
+              <p>Deep20Bench, edition {{ manifest.active_cohort.edition_label }}.
+                Published <PublicationTime :value="manifest.provenance.built_at" />.</p>
+              <RouterLink :to="editionRoute('home')">Stable edition URL</RouterLink>
               <a :href="citationResource.href" target="_blank" rel="noreferrer">
                 {{ citationResource.label }} ↗
               </a>
@@ -262,12 +277,12 @@ const { loading, error } = usePublicationLoad(async () => {
             <h2>Inspect the results or read the method.</h2>
           </div>
           <div class="button-row">
-            <RouterLink class="button button-primary" :to="{ name: 'results' }">
+            <RouterLink class="button button-primary" :to="editionRoute('results')">
               View official results →
             </RouterLink>
             <RouterLink
               class="button button-secondary"
-              :to="{ name: 'methodology', hash: '#publication' }"
+              :to="editionRoute('methodology', { hash: '#publication' })"
             >
               Read the publication method →
             </RouterLink>

@@ -4,8 +4,17 @@ import json
 
 import pytest
 from deep20_game.errors import GameAuditError
+from deep20_oracle import cache_contract
 from deep20_oracle.artifacts import RunArtifactPolicy
 from deep20_oracle.audit import RunAuditWriter
+
+
+def test_game_run_rejects_a_changed_oracle_factual_contract(audit_writer, monkeypatch) -> None:
+    with monkeypatch.context() as old:
+        old.setattr(cache_contract, "ORACLE_FACTUAL_CONTRACT_VERSION", "historical_ask_v1")
+        audit_writer.prepare_run("old-contract")
+    with pytest.raises(GameAuditError, match="different immutable game context"):
+        audit_writer.prepare_run("old-contract")
 
 
 def test_game_manifest_precedes_calls_and_is_oracle_compatible(

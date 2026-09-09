@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { editionRoute } from "@/lib/route-location";
 import { computed, ref } from "vue";
 
+import EditionComparison from "@/components/EditionComparison.vue";
+import { useEditionContext } from "@/lib/use-edition-context";
 import ErrorState from "@/components/ErrorState.vue";
 import IllustrativeRoundExample from "@/components/IllustrativeRoundExample.vue";
 import LoadingState from "@/components/LoadingState.vue";
@@ -9,6 +12,7 @@ import { usePageRouteContext } from "@/lib/route-context";
 import type { ManifestDocument } from "@/lib/types";
 import { usePublicationLoad } from "@/lib/use-publication-load";
 
+const { qualified, answers } = useEditionContext();
 const initialManifest = peekManifest();
 const manifest = ref<ManifestDocument | null>(initialManifest);
 usePageRouteContext({
@@ -41,7 +45,7 @@ const totalTrials = computed(() => {
         <div class="page-hero-inner site-boundary">
           <div>
             <p class="eyebrow">Methodology</p>
-            <h1>From one round to a comparable score.</h1>
+            <h1>Edition {{ manifest.active_cohort.edition_label }} method.</h1>
           </div>
           <p class="lede">
             Start with one model playing Twenty Questions. Then repeat the same controlled game
@@ -50,6 +54,7 @@ const totalTrials = computed(() => {
         </div>
       </section>
 
+      <EditionComparison />
       <div class="method-nav-shell site-boundary-shell">
         <nav class="method-nav site-boundary" aria-label="Methodology contents">
           <a href="#game">01 · One round</a>
@@ -97,7 +102,7 @@ const totalTrials = computed(() => {
               question at a time, uses every prior answer, and eventually makes an exact guess.
             </p>
             <div class="method-round">
-              <IllustrativeRoundExample />
+              <IllustrativeRoundExample :qualified="qualified" />
             </div>
             <p>
               In this illustrative round, three questions count. The correct guess does not. An
@@ -105,7 +110,7 @@ const totalTrials = computed(() => {
             </p>
             <dl class="fact-grid" aria-label="Single-round rules">
               <div><dt>Starting clue</dt><dd>Broad category</dd></div>
-              <div><dt>Answer tokens</dt><dd>YES · NO · UNKNOWN</dd></div>
+              <div><dt>Answer tokens</dt><dd>{{ answers.join(" · ") }}</dd></div>
               <div><dt>Question limit</dt><dd>{{ manifest.active_cohort.max_questions }}</dd></div>
               <div><dt>Final opportunity</dt><dd>Exact guess only</dd></div>
             </dl>
@@ -135,23 +140,28 @@ const totalTrials = computed(() => {
           <div>
             <h2>Questions and guesses follow separate paths.</h2>
             <p class="lead">
-              Factual questions go through evidence-backed adjudication. Exact guesses go to a
+              Factual questions go through independent adjudication. Exact guesses go to a
               separate Validator. The Guesser receives only the final answer token.
             </p>
             <div class="answer-roles">
               <article>
                 <span>01 · Oracle</span>
                 <h3>Search and cite evidence.</h3>
-                <p>
-                  The Oracle must search the live web instead of relying on memory. It cites
-                  evidence and proposes YES, NO, or UNKNOWN.
+                <p v-if="qualified">
+                  For a fresh answer, the Oracle searches the live web and retains relevant source
+                  context. The current policy also permits its own knowledge, with a private
+                  supporting statement. It proposes one of this edition’s question-answer tokens.
+                </p>
+                <p v-else>
+                  For a fresh answer, the Oracle must search the live web instead of relying
+                  on memory. It cites evidence and proposes one of this edition’s question-answer tokens.
                 </p>
               </article>
               <article>
                 <span>02 · Reviewer</span>
                 <h3>Make a blind second decision.</h3>
                 <p>
-                  For every Oracle YES or NO, the no-web Reviewer uses the subject, question, and
+                  For every directional Oracle answer, the no-web Reviewer uses the subject, question, and
                   evidence without seeing the Oracle answer.
                 </p>
               </article>
@@ -175,7 +185,7 @@ const totalTrials = computed(() => {
             <div class="decision-path" aria-label="Question and guess decision paths">
               <article>
                 <span>ASK path</span>
-                <strong>Oracle → Reviewer when YES or NO → Judge on disagreement → final</strong>
+                <strong>Oracle → Reviewer for a directional answer → Judge on disagreement → final</strong>
                 <small>Oracle UNKNOWN is final and bypasses review.</small>
               </article>
               <article>
@@ -184,12 +194,26 @@ const totalTrials = computed(() => {
                 <small>The factual-answer roles never evaluate the identity.</small>
               </article>
             </div>
+            <p v-if="qualified">Rather yes and Rather no indicate a direction supported by evidence
+              or knowledge with a material gap. They are not numerical probabilities.
+              Current runs allow the Oracle, Reviewer, and Judge to use evidence or their own
+              knowledge, with a private supporting statement. The earlier accepted revision
+              limits the Reviewer to supplied evidence and permits a bounded Judge knowledge fallback.
+              Each run retains its actual policy and prompt versions.
+              Any exact-token disagreement, including Yes versus Rather yes, invokes the blind Judge.
+              Guess validation still uses only Yes, No, or Unknown.</p>
+            <p v-if="qualified">For a particular entity, the Validator requires the same identity.
+              For a general kind, it also accepts a recognized subtype or design variant that preserves
+              the defining kind and satisfies the subject’s explicit restrictions. Extra detail alone
+              does not invalidate a match.</p>
+            <p v-else>For narrow, stable closed facts, Reviewer and Judge may use their documented
+              model-knowledge fallback when the evidence is insufficient.</p>
             <div class="isolation-callout">
               <h3>The Guesser is fully isolated from adjudication.</h3>
               <p>
                 It never sees the hidden subject, searches, evidence, citations, adjudicator
                 prompts or decisions, provider traces, or private artifacts. Its visible history
-                contains only the broad category, its own prior actions, final YES, NO, or UNKNOWN
+                contains only the broad category, its own prior actions, final {{ answers.join(", ") }}
                 tokens, and the fixed format reminder after its own invalid output.
               </p>
             </div>
@@ -228,11 +252,27 @@ const totalTrials = computed(() => {
               in {{ manifest.active_cohort.iterations }} fresh trials per subject.
             </p>
             <p>
-              Each trial starts a new Guesser conversation. No questions, answers, guesses, or
-              adjudicator state carry into another trial. A versioned, subject-independent
+              Each trial starts a new Guesser conversation, without access to another trial's
+              transcript, evidence, or private adjudicator state. A versioned, subject-independent
               variation token changes the repeated-call condition without revealing anything
               about the hidden subject.
             </p>
+            <aside id="answer-reuse" class="method-note">
+              <strong>Fresh conversations and reused answers</strong>
+              <p>
+                New benchmark executions enable answer reuse by default. A matching question
+                can reuse a fully checked answer from compatible completed trials or from an
+                earlier live answer in the same game. Standalone games use fresh adjudication.
+                The recorded policy and source history determine which answers are eligible.
+              </p>
+              <p>
+                Reused answers retain their original evidence, answer time, and a visible source
+                label in the published transcript. They are historical observations, not new
+                web checks. A repeat still counts as a question, but adds no new adjudicator
+                calls or cost. The Guesser receives only the final token, without the source label
+                or evidence. Comparisons should use matching reuse policies and history cutoffs.
+              </p>
+            </aside>
             <dl class="fact-grid" aria-label="Benchmark repetition">
               <div><dt>Subjects</dt><dd>{{ manifest.active_cohort.target_ids.length }}</dd></div>
               <div><dt>Trials / subject</dt><dd>{{ manifest.active_cohort.iterations }}</dd></div>
@@ -249,15 +289,14 @@ const totalTrials = computed(() => {
               <h3>The current subject set is small.</h3>
               <p>
                 Each subject has a canonical identity, accepted aliases, a clear description,
-                and a public reference. The current cohort includes real people, fictional
-                characters, and a mythological figure. It is a fixed list for every model in
-                this protocol. It is not random, balanced, or representative, and it does not
-                yet include places or objects.
+                and a public reference. Every model in an edition uses the same explicit
+                subject list. The subjects and their categories are listed in each published run.
+                This selection is not random, balanced, or representative.
               </p>
               <p>
-                Seven subjects is too small for broad conclusions. The size is mainly a cost
+                This small subject set does not support broad conclusions. The size is mainly a cost
                 constraint: every additional subject adds repeated Guesser turns, live Oracle
-                searches, Reviewer calls, and sometimes Judge calls. Five trials per subject
+                searches, Reviewer calls, and sometimes Judge calls. Repeated trials per subject
                 help measure variation, but repetition does not make the small subject set more
                 representative.
               </p>
@@ -313,7 +352,7 @@ const totalTrials = computed(() => {
               </article>
               <article>
                 <span>Infrastructure failure</span>
-                <strong>Not scored · waits for retry</strong>
+                <strong>Not scored · incomplete run</strong>
               </article>
             </div>
             <div class="formula" aria-label="Question score formula">
@@ -454,7 +493,13 @@ const totalTrials = computed(() => {
               intervals are not a pairwise significance test.
             </p>
             <p>
-              The <RouterLink :to="{ name: 'results-reliability' }">Stability result view</RouterLink>
+              Reused adjudicated answers can create shared conditions across trials. For runs
+              using answer reuse, interpret the interval conditional on that policy and its
+              recorded source history. The calculation does not correct for dependence from
+              shared answers or estimate fresh-research variation for cached questions.
+            </p>
+            <p>
+              The <RouterLink :to="editionRoute('results-reliability')">Stability result view</RouterLink>
               ranks the exact interval width from narrowest to widest. Every model uses the same
               95% confidence level. Question score remains visible but does not affect this rank,
               so a consistently poor model can still be highly repeatable.
@@ -510,18 +555,32 @@ const totalTrials = computed(() => {
             <p class="section-note">Comparable evidence</p>
           </div>
           <div>
-            <h2>Only complete, comparable runs enter the leaderboard.</h2>
-            <p class="lead">
+            <h2>Only complete runs with accepted settings enter the leaderboard.</h2>
+            <p v-if="qualified" class="lead">
+              Edition 1.1 fixes the ten subjects, three rounds per subject, question limit,
+              game rules, and scoring policy. It includes explicitly accepted revisions of
+              adjudication and subject descriptions. These differences can affect scores as
+              well as the Guesser model; each run records its settings.
+            </p>
+            <p v-else class="lead">
               The Guesser configuration changes between candidates. The subjects, game policy,
               Oracle, Reviewer, Judge, Guess Validator, trial count, and scoring policy stay fixed.
             </p>
             <ul class="check-list">
               <li>Signed run files pass integrity checks.</li>
-              <li>The run is terminal and contains every active subject.</li>
+              <li>The run is terminal and contains every subject declared for this edition.</li>
               <li>Every subject has every configured completed trial.</li>
               <li>Completed model failures remain valid scored trials.</li>
-              <li>Missing or infrastructure-failed trials wait for a retry.</li>
+              <li>Missing or infrastructure-failed trials prevent qualification until an
+                explicitly requested resume or repair completes them.</li>
             </ul>
+            <p v-if="qualified">
+              Edition 1.1 also checks the declared prompt revisions, subject identities, seed,
+              game rules, support configurations, and retained role audits against one complete
+              accepted release contract. Unlisted revisions and incomplete diagnostic runs
+              do not qualify. Experimental execution provenance
+              remains visible in each published run.
+            </p>
             <p>
               If several current runs qualify for one model, the newest completed run is used.
               The publisher never selects the best score. Invalid discovered input stops the
@@ -564,7 +623,7 @@ const totalTrials = computed(() => {
               hidden reasoning, provider traces, and credentials remain excluded.
             </p>
             <div class="button-row">
-              <RouterLink class="button button-secondary" :to="{ name: 'data' }">
+              <RouterLink class="button button-secondary" :to="editionRoute('data')">
                 View public data →
               </RouterLink>
             </div>

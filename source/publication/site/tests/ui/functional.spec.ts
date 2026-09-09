@@ -84,7 +84,7 @@ test("illustrative round connects the correct guess to its trial score", { tag: 
     "50 questions - more than the traditional twenty, giving models more room to finish a round.",
   );
   await expect(details).toContainText(
-    "The concept works and the first step is complete. Expanding the pilot is straightforward; cost is the main constraint.",
+    "Each edition has its own comparison settings and results.",
   );
   await expect(details).not.toContainText("small first step");
   const pilotNote = details.locator(".hero-pilot-note");
@@ -121,7 +121,7 @@ test("illustrative round connects the correct guess to its trial score", { tag: 
   await expect(transcript.locator(".round-guess")).toContainText("Garfield");
   await expect(transcript.locator(".round-not-counted")).toHaveText("Not counted");
   await expect(transcript.locator(".round-guess > strong")).toHaveText(
-    /Garfield - identified/i,
+    "Identified",
   );
   await expect(round.locator(".round-score-connector")).toBeVisible();
   await expect(score.locator(".round-score-label")).toHaveText(
@@ -193,7 +193,7 @@ test("illustrative round connects the correct guess to its trial score", { tag: 
     expect(Math.abs(roundBox!.y - heroBox!.y)).toBeLessThanOrEqual(1);
     expect(transcriptBox!.height).toBeLessThanOrEqual(330);
     expect(detailsBox!.y - (roundBox!.y + roundBox!.height)).toBeLessThanOrEqual(40);
-    expect(detailsBox!.y).toBeLessThanOrEqual(650);
+    expect(detailsBox!.y - heroBox!.y).toBeLessThanOrEqual(560);
   }
   await expectNoViewportOverflow(page);
 });
@@ -219,16 +219,19 @@ test("illustrative round stops at its configured maximum", { tag: ["@functional"
       document.body.append(probe);
       const maximum = Number.parseFloat(getComputedStyle(probe).maxWidth);
       probe.remove();
+      const cardStyle = getComputedStyle(card);
       return {
         maximum,
         exampleWidth: example.getBoundingClientRect().width,
-        cardWidth: card.getBoundingClientRect().width,
+        cardContentWidth: card.clientWidth
+          - Number.parseFloat(cardStyle.paddingLeft)
+          - Number.parseFloat(cardStyle.paddingRight),
         rowWidth: row.getBoundingClientRect().width,
       };
     });
 
     expect(layout.exampleWidth).toBeLessThanOrEqual(layout.maximum + 1);
-    expect(Math.abs(layout.cardWidth - layout.rowWidth)).toBeLessThanOrEqual(2);
+    expect(Math.abs(layout.cardContentWidth - layout.rowWidth)).toBeLessThanOrEqual(2);
   }
 });
 
@@ -272,9 +275,9 @@ test("Method builds from one round to repetition, scoring, and publication", { t
   await waitForPublication(page);
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "From one round to a comparable score.",
+    "Edition 1 method.",
   );
-  await expect(page.locator(".methodology-page > .content-section")).toHaveCount(7);
+  await expect(page.locator(".methodology-page > .content-section")).toHaveCount(8);
   if (!testInfo.project.name.startsWith("mobile")) {
     const alignment = await page.evaluate(() => {
       const methodNav = document.querySelector<HTMLElement>(".method-nav");
@@ -299,6 +302,7 @@ test("Method builds from one round to repetition, scoring, and publication", { t
       .locator(".methodology-page > .content-section")
       .evaluateAll((sections) => sections.map((section) => section.id)),
   ).toEqual([
+    "editions",
     "game",
     "answer-checks",
     "repetition",
@@ -327,7 +331,7 @@ test("Method builds from one round to repetition, scoring, and publication", { t
   await expect(checks).toContainText("Guess Validator");
   await expect(checks).toContainText("The Guesser is fully isolated from adjudication.");
   await expect(checks).toContainText(
-    "contains only the broad category, its own prior actions, final YES, NO, or UNKNOWN tokens",
+    "contains only the broad category, its own prior actions, final YES, NO, UNKNOWN tokens",
   );
   await expect(
     checks.getByRole("link", {
@@ -344,7 +348,7 @@ test("Method builds from one round to repetition, scoring, and publication", { t
     "Every model plays the same 7 subjects in 5 fresh trials per subject.",
   );
   await expect(repetition).toContainText("Subject design and contamination");
-  await expect(repetition).toContainText("Seven subjects is too small for broad conclusions.");
+  await expect(repetition).toContainText("This small subject set does not support broad conclusions.");
   await expect(repetition).toContainText(
     "does not claim that this public cohort is resistant to benchmark contamination",
   );
@@ -471,15 +475,15 @@ test("Data provides schema guidance, reuse terms, and next steps", { tag: ["@fun
   await expect(downloads).toHaveCount(3);
   await expect(page.getByRole("link", { name: "Download JSON" })).toHaveAttribute(
     "href",
-    /data\/deep20bench-v9\.json$/,
+    /data\/editions\/1.0\/deep20bench-v10\.json$/,
   );
   await expect(page.getByRole("link", { name: "Download CSV" })).toHaveAttribute(
     "href",
-    /data\/leaderboard\.csv$/,
+    /data\/editions\/1.0\/leaderboard\.csv$/,
   );
   await expect(page.getByRole("link", { name: "Download schema" })).toHaveAttribute(
     "href",
-    /data\/deep20bench-v9\.schema\.json$/,
+    /data\/editions\/1.0\/deep20bench-v10\.schema\.json$/,
   );
   await expect(page.locator(".field-guide")).toContainText("leaderboard[]");
   await expect(page.locator(".field-guide")).toContainText("official_runs[]");
@@ -563,7 +567,7 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
     "middle",
   );
   await expect(
-    page.getByText("The 95% CI uses repeated seeded trials on the seven fixed subjects"),
+    page.getByText("The 95% CI uses repeated seeded trials on this edition's fixed subjects"),
   ).toBeVisible();
 });
 
@@ -733,9 +737,9 @@ test("efficiency can be viewed by normalized distance from the ideal", { tag: ["
 
   const rows = page.locator(".ranking-table tbody tr");
   await expect(rows.nth(0)).toContainText("Synthetic Model 02");
-  await expect(rows.nth(1)).toContainText("Synthetic Model 06");
+  await expect(rows.nth(1)).toContainText("Synthetic Model 03");
   await expect(rows.nth(2)).toContainText("Synthetic Model 08");
-  await expect(rows.nth(10)).toContainText("Synthetic Model 09");
+  await expect(rows.nth(10)).toContainText("Synthetic Model 07");
 });
 
 test("workspace rows show persistent drill-down affordances", { tag: ["@functional", "@both"] }, async ({
@@ -820,7 +824,7 @@ test("run overview explains its totals and keeps every subject row available", {
   const subjectList = page.locator(".subject-rail-list");
   const subjectLinks = subjectList.locator("a");
   await expect(subjectLinks).toHaveCount(runDocument.subjects.length);
-  await expect(subjectList).toHaveCSS("overflow-y", "visible");
+  await expect(subjectList).toHaveCSS("overflow-y", "auto");
   const bounds = await page.evaluate(() => {
     const railElement = document.querySelector<HTMLElement>(".model-rail");
     const links = [...document.querySelectorAll<HTMLElement>(".subject-rail-list a")];

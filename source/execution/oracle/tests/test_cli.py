@@ -4,11 +4,12 @@ import json
 from pathlib import Path
 
 import pytest
-from conftest import provider_trace
 from deep20_oracle import cli
-from deep20_oracle.config import OracleConfig
+from deep20_oracle.config import OracleConfig, ParallelSearchMode
 from deep20_oracle.provider import ProviderExchange, ProviderRequest
 from typer.testing import CliRunner
+
+from conftest import provider_trace
 
 
 class CliProvider:
@@ -73,10 +74,12 @@ class CliProviderSet:
 
 @pytest.mark.parametrize("verbose", [False, True])
 @pytest.mark.parametrize(
-    ("yaml_parallel_search", "search_flag", "expected_parallel_search"),
+    ("yaml_parallel_search", "yaml_search_mode", "search_flag", "expected_parallel_search"),
     [
-        (False, "--parallel-search", True),
-        (True, "--no-parallel-search", False),
+        (False, "basic", "--parallel-search", True),
+        (True, "basic", "--no-parallel-search", False),
+        (True, "fast", "--no-parallel-search", False),
+        (True, "fast", None, True),
     ],
 )
 def test_cli_asks_oracle_and_respects_artifact_verbosity(
@@ -86,7 +89,8 @@ def test_cli_asks_oracle_and_respects_artifact_verbosity(
     subject,
     verbose: bool,
     yaml_parallel_search: bool,
-    search_flag: str,
+    yaml_search_mode: str,
+    search_flag: str | None,
     expected_parallel_search: bool,
 ) -> None:
     (tmp_path / ".git").mkdir()
@@ -99,6 +103,7 @@ provider: openai
 reasoning_effort: high
 allow_fallbacks: false
 parallel_search: {str(yaml_parallel_search).lower()}
+parallel_search_mode: {yaml_search_mode}
 max_search_results: 5
 max_output_tokens: 1500
 timeout_seconds: 30
@@ -137,7 +142,6 @@ subjects:
         "medium",
         "--provider",
         "openai",
-        search_flag,
         "--max-search-results",
         "3",
         "--max-output-tokens",
@@ -145,6 +149,8 @@ subjects:
         "--timeout-seconds",
         "45",
     ]
+    if search_flag:
+        arguments.append(search_flag)
     if verbose:
         arguments.append("--verbose")
     result = CliRunner().invoke(
@@ -165,6 +171,9 @@ subjects:
     assert CliProvider.seen_config.model == "openai/alternate-model"
     assert CliProvider.seen_config.reasoning_effort == "medium"
     assert CliProvider.seen_config.parallel_search is expected_parallel_search
+    assert CliProvider.seen_config.parallel_search_mode is (
+        ParallelSearchMode(yaml_search_mode) if expected_parallel_search else ParallelSearchMode.BASIC
+    )
     assert CliProvider.seen_config.max_search_results == 3
     assert CliProvider.seen_config.max_output_tokens == 800
     assert CliProvider.seen_config.timeout_seconds == 45

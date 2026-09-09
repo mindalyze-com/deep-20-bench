@@ -45,16 +45,13 @@ const userDateTime = new Intl.DateTimeFormat(undefined, {
   timeStyle: "medium",
 });
 
-const staticDate = new Intl.DateTimeFormat("en-US", {
-  dateStyle: "medium",
-  timeZone: "UTC",
-});
-
-const staticDateAndTime = new Intl.DateTimeFormat("en-US", {
-  dateStyle: "medium",
-  timeStyle: "medium",
-  timeZone: "UTC",
-});
+// Initial HTML and hydration must agree even when browser ICU date patterns differ.
+// PublicationTime switches to the user's local date format after mounting.
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const staticDayLabel = (timestamp: Date): string => {
+  if (Number.isNaN(timestamp.getTime())) throw new RangeError("Invalid time value");
+  return `${months[timestamp.getUTCMonth()]} ${timestamp.getUTCDate()}, ${timestamp.getUTCFullYear()}`;
+};
 
 export const number = (
   value: string | number | null | undefined,
@@ -129,10 +126,16 @@ export const dateTime = (value: string): string =>
   userDateTime.format(new Date(value));
 
 export const staticDateLabel = (value: string): string =>
-  staticDate.format(new Date(value));
+  staticDayLabel(new Date(value));
 
-export const staticDateTimeLabel = (value: string): string =>
-  staticDateAndTime.format(new Date(value));
+export const staticDateTimeLabel = (value: string): string => {
+  const timestamp = new Date(value);
+  const day = staticDayLabel(timestamp);
+  const hours = timestamp.getUTCHours();
+  const minutes = String(timestamp.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(timestamp.getUTCSeconds()).padStart(2, "0");
+  return `${day}, ${hours % 12 || 12}:${minutes}:${seconds} ${hours < 12 ? "AM" : "PM"}`;
+};
 
 export const isoDateTime = (value: string): string =>
   new Date(value).toISOString().replace(/\.\d{3}Z$/, "Z");

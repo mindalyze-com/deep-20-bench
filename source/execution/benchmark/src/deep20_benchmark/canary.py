@@ -17,9 +17,14 @@ from deep20_game.models import (
     parse_guesser_action_output,
 )
 from deep20_game.openrouter_provider import OpenRouterGameProvider
-from deep20_game.prompt import initial_guesser_messages
+from deep20_game.prompt import guesser_prompt_version, initial_guesser_messages
 from deep20_game.service_util import validate_game_trace
-from deep20_oracle.config import EvidenceReviewConfig, ProviderRouting
+from deep20_oracle.config import (
+    AdjudicationPolicy,
+    EvidenceReviewConfig,
+    PromptProfile,
+    ProviderRouting,
+)
 from deep20_oracle.errors import OracleError
 from deep20_oracle.models import (
     Evidence,
@@ -35,12 +40,18 @@ from deep20_oracle.models import (
     Subject,
 )
 from deep20_oracle.openrouter_provider import OpenRouterProvider
-from deep20_oracle.prompt import render_evidence_review_messages
+from deep20_oracle.prompt import evidence_review_prompt_version, render_evidence_review_messages
+from deep20_oracle.protocol import (
+    answer_output_schema,
+    permits_judge_knowledge,
+    validate_protocol_result,
+)
 from deep20_oracle.provider import ProviderExchange, ProviderRequest
 from deep20_oracle.service import validate_oracle_provider_trace
 from deep20_oracle.util import (
     canonical_json,
     openrouter_provider_matches,
+    sha256_text,
 )
 from pydantic import Field, HttpUrl, TypeAdapter, ValidationError
 
@@ -317,6 +328,8 @@ def _evidence_review_canary_request(
     invocation_id: str,
     *,
     role: OracleRole,
+    profile: PromptProfile = PromptProfile.STANDARD,
+    policy: AdjudicationPolicy = AdjudicationPolicy.PROFILE_DEFAULT,
 ) -> ProviderRequest:
     if role not in {OracleRole.REVIEWER, OracleRole.JUDGE}:
         raise ValueError("structured startup canary requires Reviewer or Judge role")
@@ -325,12 +338,22 @@ def _evidence_review_canary_request(
         if role is OracleRole.REVIEWER
         else _JUDGE_CANARY_VERSION
     )
+    if profile is not PromptProfile.STANDARD:
+        version = f"{version}-{profile.value}"
+    if permits_judge_knowledge(profile, role, policy):
+        version = "startup-judge-canary-" + sha256_text(
+            evidence_review_prompt_version(role, profile, policy=policy),
+        )[:12]
     return ProviderRequest(
         messages=render_evidence_review_messages(
             _STRUCTURED_CANARY_REVIEW,
             role=role,
+            profile=profile,
+            policy=policy,
         ),
-        output_schema=EvidenceReviewResult.model_json_schema(),
+        output_schema=answer_output_schema(
+            EvidenceReviewResult, profile, role=role, policy=policy,
+        ),
         response_schema_name=f"{role.value}_canary_result",
         session_id=f"deep20-{version}-{invocation_id}",
         prompt_cache_key=f"deep20-{version}",
@@ -344,10 +367,14 @@ def _run_evidence_review_canary(
     role: OracleRole,
     invocation_id: str,
     provider: EvidenceReviewCanaryProvider,
+    profile: PromptProfile = PromptProfile.STANDARD,
+    policy: AdjudicationPolicy = AdjudicationPolicy.PROFILE_DEFAULT,
 ) -> LlmCanaryResult:
     try:
         exchange = provider.complete(
-            _evidence_review_canary_request(invocation_id, role=role)
+            _evidence_review_canary_request(
+                invocation_id, role=role, profile=profile, policy=policy,
+            )
         )
         trace = exchange.trace
         validate_oracle_provider_trace(
@@ -362,6 +389,7 @@ def _run_evidence_review_canary(
         decision = EvidenceReviewResult.model_validate_json(
             exchange.raw_output
         ).validate_evidence_count(len(_STRUCTURED_CANARY_REVIEW.evidence))
+        validate_protocol_result(decision, profile, role=role, policy=policy)
         if (
             decision.answer is not OracleAnswer.YES
             or decision.basis is not EvidenceDecisionBasis.EVIDENCE
@@ -479,6 +507,8 @@ def run_startup_canaries(
                         role=role,
                         invocation_id=invocation_id,
                         provider=role_provider,
+                        profile=benchmark.oracle_configuration.prompt_profile,
+                        policy=benchmark.oracle_configuration.adjudication_policy,
                     )
                 )
                 continue
@@ -557,6 +587,7 @@ def run_guesser_canary(
     *,
     api_key: str,
     provider: GuesserCanaryProvider | None = None,
+    profile: PromptProfile = PromptProfile.STANDARD,
 ) -> GuesserCanaryResult:
     """Probe one Guesser structured-action contract outside benchmark state."""
 
@@ -579,11 +610,15 @@ def run_guesser_canary(
                     GamePolicy().max_questions,
                     "synthetic_entity",
                     _GUESSER_CANARY_VARIATION_TOKEN,
+                    profile,
                 ),
                 output_schema=guesser_action_output_schema(),
                 schema_name=GUESSER_ACTION_SCHEMA_NAME,
                 session_id=f"deep20-guesser-canary-{model.model_id}",
-                prompt_cache_key="deep20-guesser-canary-v1",
+                prompt_cache_key=(
+                    "deep20-guesser-canary-v1" if profile is PromptProfile.STANDARD
+                    else f"deep20-guesser-canary-{guesser_prompt_version(profile)}"
+                ),
             )
         )
         trace = exchange.trace

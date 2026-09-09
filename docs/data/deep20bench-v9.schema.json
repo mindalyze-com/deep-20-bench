@@ -1,82 +1,5 @@
 {
   "$defs": {
-    "CohortConfig": {
-      "additionalProperties": false,
-      "properties": {
-        "active": {
-          "default": false,
-          "title": "Active",
-          "type": "boolean"
-        },
-        "base_seed": {
-          "maximum": 2147483647,
-          "minimum": 0,
-          "title": "Base Seed",
-          "type": "integer"
-        },
-        "benchmark_id": {
-          "pattern": "^B-[0-9]{4}$",
-          "title": "Benchmark Id",
-          "type": "string"
-        },
-        "benchmark_version": {
-          "const": 9,
-          "default": 9,
-          "title": "Benchmark Version",
-          "type": "integer"
-        },
-        "cohort_id": {
-          "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
-          "title": "Cohort Id",
-          "type": "string"
-        },
-        "display_name": {
-          "maxLength": 160,
-          "minLength": 1,
-          "title": "Display Name",
-          "type": "string"
-        },
-        "iterations": {
-          "maximum": 100,
-          "minimum": 1,
-          "title": "Iterations",
-          "type": "integer"
-        },
-        "max_questions": {
-          "minimum": 1,
-          "title": "Max Questions",
-          "type": "integer"
-        },
-        "model_ids": {
-          "items": {
-            "type": "string"
-          },
-          "minItems": 1,
-          "title": "Model Ids",
-          "type": "array"
-        },
-        "target_ids": {
-          "items": {
-            "type": "string"
-          },
-          "minItems": 1,
-          "title": "Target Ids",
-          "type": "array"
-        }
-      },
-      "required": [
-        "cohort_id",
-        "display_name",
-        "benchmark_id",
-        "target_ids",
-        "iterations",
-        "base_seed",
-        "max_questions",
-        "model_ids"
-      ],
-      "title": "CohortConfig",
-      "type": "object"
-    },
     "ContractReliabilitySnapshot": {
       "additionalProperties": false,
       "properties": {
@@ -491,6 +414,83 @@
       "title": "LeaderboardRow",
       "type": "object"
     },
+    "CohortConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "active": {
+          "default": false,
+          "title": "Active",
+          "type": "boolean"
+        },
+        "base_seed": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Base Seed",
+          "type": "integer"
+        },
+        "benchmark_id": {
+          "pattern": "^B-[0-9]{4}$",
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "benchmark_version": {
+          "const": 9,
+          "default": 9,
+          "title": "Benchmark Version",
+          "type": "integer"
+        },
+        "cohort_id": {
+          "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+          "title": "Cohort Id",
+          "type": "string"
+        },
+        "display_name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Display Name",
+          "type": "string"
+        },
+        "iterations": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Iterations",
+          "type": "integer"
+        },
+        "max_questions": {
+          "minimum": 1,
+          "title": "Max Questions",
+          "type": "integer"
+        },
+        "model_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Model Ids",
+          "type": "array"
+        },
+        "target_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Target Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "cohort_id",
+        "display_name",
+        "benchmark_id",
+        "target_ids",
+        "iterations",
+        "base_seed",
+        "max_questions",
+        "model_ids"
+      ],
+      "title": "CohortConfig",
+      "type": "object"
+    },
     "PublicActionTurn": {
       "additionalProperties": false,
       "properties": {
@@ -556,6 +556,21 @@
           ],
           "title": "Guess Name"
         },
+        "oracle_cache": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PublicOracleCacheSource"
+            },
+            {
+              "$ref": "#/$defs/PublicEpisodeOracleCacheSource"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Oracle Cache"
+        },
         "question": {
           "anyOf": [
             {
@@ -615,136 +630,6 @@
         "recorded_output"
       ],
       "title": "PublicActionTurn",
-      "type": "object"
-    },
-    "PublicComponentTelemetry": {
-      "additionalProperties": false,
-      "properties": {
-        "cache_write_tokens": {
-          "title": "Cache Write Tokens",
-          "type": "integer"
-        },
-        "cached_input_tokens": {
-          "title": "Cached Input Tokens",
-          "type": "integer"
-        },
-        "calls": {
-          "title": "Calls",
-          "type": "integer"
-        },
-        "cost_usd": {
-          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-          "title": "Cost Usd",
-          "type": "string"
-        },
-        "estimated_cache_savings_usd": {
-          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-          "title": "Estimated Cache Savings Usd",
-          "type": "string"
-        },
-        "input_tokens": {
-          "title": "Input Tokens",
-          "type": "integer"
-        },
-        "latency_ms": {
-          "title": "Latency Ms",
-          "type": "integer"
-        },
-        "output_tokens": {
-          "title": "Output Tokens",
-          "type": "integer"
-        },
-        "reasoning_tokens": {
-          "title": "Reasoning Tokens",
-          "type": "integer"
-        },
-        "total_tokens": {
-          "title": "Total Tokens",
-          "type": "integer"
-        }
-      },
-      "required": [
-        "calls",
-        "cost_usd",
-        "latency_ms",
-        "total_tokens",
-        "input_tokens",
-        "cached_input_tokens",
-        "cache_write_tokens",
-        "output_tokens",
-        "reasoning_tokens",
-        "estimated_cache_savings_usd"
-      ],
-      "title": "PublicComponentTelemetry",
-      "type": "object"
-    },
-    "PublicContractViolationTurn": {
-      "additionalProperties": false,
-      "properties": {
-        "counted": {
-          "title": "Counted",
-          "type": "boolean"
-        },
-        "counted_questions": {
-          "title": "Counted Questions",
-          "type": "integer"
-        },
-        "feedback_event": {
-          "anyOf": [
-            {
-              "const": "FORMAT_ERROR",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Feedback Event"
-        },
-        "rejected_outputs": {
-          "default": [],
-          "items": {
-            "$ref": "#/$defs/PublicRejectedOutput"
-          },
-          "title": "Rejected Outputs",
-          "type": "array"
-        },
-        "turn_number": {
-          "title": "Turn Number",
-          "type": "integer"
-        },
-        "turn_type": {
-          "const": "contract_violation",
-          "default": "contract_violation",
-          "title": "Turn Type",
-          "type": "string"
-        },
-        "violation_code": {
-          "const": "invalid_guesser_output",
-          "title": "Violation Code",
-          "type": "string"
-        },
-        "violation_kind": {
-          "enum": [
-            "invalid_json",
-            "invalid_action",
-            "output_limit_exceeded",
-            "empty_output",
-            "incomplete_output"
-          ],
-          "title": "Violation Kind",
-          "type": "string"
-        }
-      },
-      "required": [
-        "turn_number",
-        "violation_code",
-        "violation_kind",
-        "feedback_event",
-        "counted",
-        "counted_questions"
-      ],
-      "title": "PublicContractViolationTurn",
       "type": "object"
     },
     "PublicEpisodeDetail": {
@@ -913,215 +798,6 @@
         "turns"
       ],
       "title": "PublicEpisodeDetail",
-      "type": "object"
-    },
-    "PublicEpisodeTelemetry": {
-      "additionalProperties": false,
-      "properties": {
-        "guesser": {
-          "$ref": "#/$defs/PublicComponentTelemetry"
-        },
-        "oracle": {
-          "$ref": "#/$defs/PublicComponentTelemetry"
-        },
-        "validator": {
-          "$ref": "#/$defs/PublicComponentTelemetry"
-        }
-      },
-      "required": [
-        "guesser",
-        "oracle",
-        "validator"
-      ],
-      "title": "PublicEpisodeTelemetry",
-      "type": "object"
-    },
-    "PublicEvidence": {
-      "additionalProperties": false,
-      "properties": {
-        "excerpt": {
-          "title": "Excerpt",
-          "type": "string"
-        },
-        "source_url": {
-          "format": "uri",
-          "maxLength": 2083,
-          "minLength": 1,
-          "title": "Source Url",
-          "type": "string"
-        },
-        "validation": {
-          "const": "model_reported",
-          "title": "Validation",
-          "type": "string"
-        }
-      },
-      "required": [
-        "source_url",
-        "excerpt",
-        "validation"
-      ],
-      "title": "PublicEvidence",
-      "type": "object"
-    },
-    "PublicExcludedRepairCost": {
-      "additionalProperties": false,
-      "properties": {
-        "affected_trials": {
-          "default": 0,
-          "minimum": 0,
-          "title": "Affected Trials",
-          "type": "integer"
-        },
-        "cost_usd": {
-          "default": "0",
-          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-          "title": "Cost Usd",
-          "type": "string"
-        },
-        "superseded_attempts": {
-          "default": 0,
-          "minimum": 0,
-          "title": "Superseded Attempts",
-          "type": "integer"
-        }
-      },
-      "title": "PublicExcludedRepairCost",
-      "type": "object"
-    },
-    "PublicGuesserDisclosure": {
-      "additionalProperties": false,
-      "properties": {
-        "begin_message": {
-          "title": "Begin Message",
-          "type": "string"
-        },
-        "output_storage": {
-          "const": "canonical_structured_action",
-          "default": "canonical_structured_action",
-          "title": "Output Storage",
-          "type": "string"
-        },
-        "required_formats": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PublicGuesserRequiredFormats"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null
-        },
-        "system_message": {
-          "title": "System Message",
-          "type": "string"
-        }
-      },
-      "required": [
-        "system_message",
-        "begin_message"
-      ],
-      "title": "PublicGuesserDisclosure",
-      "type": "object"
-    },
-    "PublicGuesserRequiredFormats": {
-      "additionalProperties": false,
-      "properties": {
-        "ask": {
-          "minLength": 1,
-          "title": "Ask",
-          "type": "string"
-        },
-        "guess": {
-          "minLength": 1,
-          "title": "Guess",
-          "type": "string"
-        }
-      },
-      "required": [
-        "ask",
-        "guess"
-      ],
-      "title": "PublicGuesserRequiredFormats",
-      "type": "object"
-    },
-    "PublicModel": {
-      "additionalProperties": false,
-      "properties": {
-        "configuration_hash": {
-          "title": "Configuration Hash",
-          "type": "string"
-        },
-        "display_name": {
-          "title": "Display Name",
-          "type": "string"
-        },
-        "model_id": {
-          "title": "Model Id",
-          "type": "string"
-        },
-        "provider": {
-          "title": "Provider",
-          "type": "string"
-        },
-        "reasoning_effort": {
-          "title": "Reasoning Effort",
-          "type": "string"
-        },
-        "route": {
-          "title": "Route",
-          "type": "string"
-        },
-        "seed_capability": {
-          "title": "Seed Capability",
-          "type": "string"
-        }
-      },
-      "required": [
-        "model_id",
-        "display_name",
-        "route",
-        "provider",
-        "reasoning_effort",
-        "seed_capability",
-        "configuration_hash"
-      ],
-      "title": "PublicModel",
-      "type": "object"
-    },
-    "PublicRejectedOutput": {
-      "additionalProperties": false,
-      "description": "Exact Guesser-visible provider text with private provider IDs removed.",
-      "properties": {
-        "attempt_number": {
-          "minimum": 1,
-          "title": "Attempt Number",
-          "type": "integer"
-        },
-        "finish_reason": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Finish Reason"
-        },
-        "text": {
-          "minLength": 1,
-          "title": "Text",
-          "type": "string"
-        }
-      },
-      "required": [
-        "attempt_number",
-        "text"
-      ],
-      "title": "PublicRejectedOutput",
       "type": "object"
     },
     "PublicRun": {
@@ -1309,6 +985,631 @@
         "subjects"
       ],
       "title": "PublicRun",
+      "type": "object"
+    },
+    "PublicSubject": {
+      "additionalProperties": false,
+      "properties": {
+        "average_questions": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Average Questions"
+        },
+        "contract": {
+          "$ref": "#/$defs/ContractReliabilitySnapshot"
+        },
+        "display_name": {
+          "title": "Display Name",
+          "type": "string"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "infrastructure_failed": {
+          "title": "Infrastructure Failed",
+          "type": "integer"
+        },
+        "model_failed": {
+          "title": "Model Failed",
+          "type": "integer"
+        },
+        "success_rate": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Success Rate"
+        },
+        "successful": {
+          "title": "Successful",
+          "type": "integer"
+        },
+        "target_id": {
+          "title": "Target Id",
+          "type": "string"
+        },
+        "trials": {
+          "items": {
+            "$ref": "#/$defs/PublicTrial"
+          },
+          "title": "Trials",
+          "type": "array"
+        }
+      },
+      "required": [
+        "target_id",
+        "display_name",
+        "entity_type",
+        "success_rate",
+        "average_questions",
+        "successful",
+        "model_failed",
+        "infrastructure_failed",
+        "contract",
+        "trials"
+      ],
+      "title": "PublicSubject",
+      "type": "object"
+    },
+    "PublicTrial": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContractReliabilitySnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cost_usd": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Cost Usd",
+          "type": "string"
+        },
+        "counted_questions": {
+          "title": "Counted Questions",
+          "type": "integer"
+        },
+        "duration_ms": {
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "episode": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PublicEpisodeDetail"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "failure_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Code"
+        },
+        "penalized_questions": {
+          "anyOf": [
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Penalized Questions"
+        },
+        "status": {
+          "enum": [
+            "success",
+            "model_failure",
+            "infrastructure_failure"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "trial_id": {
+          "title": "Trial Id",
+          "type": "string"
+        },
+        "trial_number": {
+          "title": "Trial Number",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "trial_id",
+        "trial_number",
+        "status",
+        "counted_questions",
+        "penalized_questions",
+        "cost_usd",
+        "duration_ms",
+        "contract"
+      ],
+      "title": "PublicTrial",
+      "type": "object"
+    },
+    "PublicComponentTelemetry": {
+      "additionalProperties": false,
+      "properties": {
+        "cache_write_tokens": {
+          "title": "Cache Write Tokens",
+          "type": "integer"
+        },
+        "cached_input_tokens": {
+          "title": "Cached Input Tokens",
+          "type": "integer"
+        },
+        "calls": {
+          "title": "Calls",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Cost Usd",
+          "type": "string"
+        },
+        "estimated_cache_savings_usd": {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Estimated Cache Savings Usd",
+          "type": "string"
+        },
+        "input_tokens": {
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "reasoning_tokens": {
+          "title": "Reasoning Tokens",
+          "type": "integer"
+        },
+        "total_tokens": {
+          "title": "Total Tokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "calls",
+        "cost_usd",
+        "latency_ms",
+        "total_tokens",
+        "input_tokens",
+        "cached_input_tokens",
+        "cache_write_tokens",
+        "output_tokens",
+        "reasoning_tokens",
+        "estimated_cache_savings_usd"
+      ],
+      "title": "PublicComponentTelemetry",
+      "type": "object"
+    },
+    "PublicContractViolationTurn": {
+      "additionalProperties": false,
+      "properties": {
+        "counted": {
+          "title": "Counted",
+          "type": "boolean"
+        },
+        "counted_questions": {
+          "title": "Counted Questions",
+          "type": "integer"
+        },
+        "feedback_event": {
+          "anyOf": [
+            {
+              "const": "FORMAT_ERROR",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Feedback Event"
+        },
+        "rejected_outputs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/PublicRejectedOutput"
+          },
+          "title": "Rejected Outputs",
+          "type": "array"
+        },
+        "turn_number": {
+          "title": "Turn Number",
+          "type": "integer"
+        },
+        "turn_type": {
+          "const": "contract_violation",
+          "default": "contract_violation",
+          "title": "Turn Type",
+          "type": "string"
+        },
+        "violation_code": {
+          "const": "invalid_guesser_output",
+          "title": "Violation Code",
+          "type": "string"
+        },
+        "violation_kind": {
+          "enum": [
+            "invalid_json",
+            "invalid_action",
+            "output_limit_exceeded",
+            "empty_output",
+            "incomplete_output"
+          ],
+          "title": "Violation Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "turn_number",
+        "violation_code",
+        "violation_kind",
+        "feedback_event",
+        "counted",
+        "counted_questions"
+      ],
+      "title": "PublicContractViolationTurn",
+      "type": "object"
+    },
+    "PublicEpisodeOracleCacheSource": {
+      "additionalProperties": false,
+      "properties": {
+        "answered_at": {
+          "format": "date-time",
+          "title": "Answered At",
+          "type": "string"
+        },
+        "episode_id": {
+          "title": "Episode Id",
+          "type": "string"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "scope": {
+          "const": "same_episode",
+          "default": "same_episode",
+          "title": "Scope",
+          "type": "string"
+        },
+        "target_id": {
+          "title": "Target Id",
+          "type": "string"
+        },
+        "turn_number": {
+          "minimum": 1,
+          "title": "Turn Number",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "target_id",
+        "episode_id",
+        "turn_number",
+        "question",
+        "answered_at"
+      ],
+      "title": "PublicEpisodeOracleCacheSource",
+      "type": "object"
+    },
+    "PublicEpisodeTelemetry": {
+      "additionalProperties": false,
+      "properties": {
+        "guesser": {
+          "$ref": "#/$defs/PublicComponentTelemetry"
+        },
+        "oracle": {
+          "$ref": "#/$defs/PublicComponentTelemetry"
+        },
+        "validator": {
+          "$ref": "#/$defs/PublicComponentTelemetry"
+        }
+      },
+      "required": [
+        "guesser",
+        "oracle",
+        "validator"
+      ],
+      "title": "PublicEpisodeTelemetry",
+      "type": "object"
+    },
+    "PublicEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "excerpt": {
+          "title": "Excerpt",
+          "type": "string"
+        },
+        "kind": {
+          "default": "quotation",
+          "enum": [
+            "quotation",
+            "source_summary"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "source_url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "validation": {
+          "const": "model_reported",
+          "title": "Validation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_url",
+        "excerpt",
+        "validation"
+      ],
+      "title": "PublicEvidence",
+      "type": "object"
+    },
+    "PublicExcludedRepairCost": {
+      "additionalProperties": false,
+      "properties": {
+        "affected_trials": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Affected Trials",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "default": "0",
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "title": "Cost Usd",
+          "type": "string"
+        },
+        "superseded_attempts": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Superseded Attempts",
+          "type": "integer"
+        }
+      },
+      "title": "PublicExcludedRepairCost",
+      "type": "object"
+    },
+    "PublicGuesserDisclosure": {
+      "additionalProperties": false,
+      "properties": {
+        "begin_message": {
+          "title": "Begin Message",
+          "type": "string"
+        },
+        "output_storage": {
+          "const": "canonical_structured_action",
+          "default": "canonical_structured_action",
+          "title": "Output Storage",
+          "type": "string"
+        },
+        "required_formats": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PublicGuesserRequiredFormats"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "system_message": {
+          "title": "System Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "system_message",
+        "begin_message"
+      ],
+      "title": "PublicGuesserDisclosure",
+      "type": "object"
+    },
+    "PublicGuesserRequiredFormats": {
+      "additionalProperties": false,
+      "properties": {
+        "ask": {
+          "minLength": 1,
+          "title": "Ask",
+          "type": "string"
+        },
+        "guess": {
+          "minLength": 1,
+          "title": "Guess",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ask",
+        "guess"
+      ],
+      "title": "PublicGuesserRequiredFormats",
+      "type": "object"
+    },
+    "PublicModel": {
+      "additionalProperties": false,
+      "properties": {
+        "configuration_hash": {
+          "title": "Configuration Hash",
+          "type": "string"
+        },
+        "display_name": {
+          "title": "Display Name",
+          "type": "string"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "reasoning_effort": {
+          "title": "Reasoning Effort",
+          "type": "string"
+        },
+        "route": {
+          "title": "Route",
+          "type": "string"
+        },
+        "seed_capability": {
+          "title": "Seed Capability",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model_id",
+        "display_name",
+        "route",
+        "provider",
+        "reasoning_effort",
+        "seed_capability",
+        "configuration_hash"
+      ],
+      "title": "PublicModel",
+      "type": "object"
+    },
+    "PublicOracleCacheSource": {
+      "additionalProperties": false,
+      "description": "Allowlisted source attribution, without internal paths or provider call identifiers.",
+      "properties": {
+        "answered_at": {
+          "format": "date-time",
+          "title": "Answered At",
+          "type": "string"
+        },
+        "benchmark_id": {
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "episode_id": {
+          "title": "Episode Id",
+          "type": "string"
+        },
+        "execution_id": {
+          "title": "Execution Id",
+          "type": "string"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "scope": {
+          "default": "historical",
+          "enum": [
+            "historical",
+            "same_execution"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "target_id": {
+          "title": "Target Id",
+          "type": "string"
+        },
+        "trial_id": {
+          "title": "Trial Id",
+          "type": "string"
+        },
+        "turn_number": {
+          "minimum": 1,
+          "title": "Turn Number",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "execution_id",
+        "model_id",
+        "benchmark_id",
+        "target_id",
+        "trial_id",
+        "episode_id",
+        "turn_number",
+        "question",
+        "answered_at"
+      ],
+      "title": "PublicOracleCacheSource",
+      "type": "object"
+    },
+    "PublicRejectedOutput": {
+      "additionalProperties": false,
+      "description": "Exact Guesser-visible provider text with private provider IDs removed.",
+      "properties": {
+        "attempt_number": {
+          "minimum": 1,
+          "title": "Attempt Number",
+          "type": "integer"
+        },
+        "finish_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finish Reason"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "attempt_number",
+        "text"
+      ],
+      "title": "PublicRejectedOutput",
       "type": "object"
     },
     "PublicRunComparison": {
@@ -1522,6 +1823,14 @@
           ],
           "title": "Prompt Version"
         },
+        "prompt_versions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Prompt Versions",
+          "type": "array"
+        },
         "provider_routing": {
           "default": "exact",
           "enum": [
@@ -1636,175 +1945,6 @@
         "guesser_calls"
       ],
       "title": "PublicRunTotals",
-      "type": "object"
-    },
-    "PublicSubject": {
-      "additionalProperties": false,
-      "properties": {
-        "average_questions": {
-          "anyOf": [
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Average Questions"
-        },
-        "contract": {
-          "$ref": "#/$defs/ContractReliabilitySnapshot"
-        },
-        "display_name": {
-          "title": "Display Name",
-          "type": "string"
-        },
-        "entity_type": {
-          "title": "Entity Type",
-          "type": "string"
-        },
-        "infrastructure_failed": {
-          "title": "Infrastructure Failed",
-          "type": "integer"
-        },
-        "model_failed": {
-          "title": "Model Failed",
-          "type": "integer"
-        },
-        "success_rate": {
-          "anyOf": [
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Success Rate"
-        },
-        "successful": {
-          "title": "Successful",
-          "type": "integer"
-        },
-        "target_id": {
-          "title": "Target Id",
-          "type": "string"
-        },
-        "trials": {
-          "items": {
-            "$ref": "#/$defs/PublicTrial"
-          },
-          "title": "Trials",
-          "type": "array"
-        }
-      },
-      "required": [
-        "target_id",
-        "display_name",
-        "entity_type",
-        "success_rate",
-        "average_questions",
-        "successful",
-        "model_failed",
-        "infrastructure_failed",
-        "contract",
-        "trials"
-      ],
-      "title": "PublicSubject",
-      "type": "object"
-    },
-    "PublicTrial": {
-      "additionalProperties": false,
-      "properties": {
-        "contract": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ContractReliabilitySnapshot"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "cost_usd": {
-          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-          "title": "Cost Usd",
-          "type": "string"
-        },
-        "counted_questions": {
-          "title": "Counted Questions",
-          "type": "integer"
-        },
-        "duration_ms": {
-          "title": "Duration Ms",
-          "type": "integer"
-        },
-        "episode": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PublicEpisodeDetail"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null
-        },
-        "failure_code": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Failure Code"
-        },
-        "penalized_questions": {
-          "anyOf": [
-            {
-              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "title": "Penalized Questions"
-        },
-        "status": {
-          "enum": [
-            "success",
-            "model_failure",
-            "infrastructure_failure"
-          ],
-          "title": "Status",
-          "type": "string"
-        },
-        "trial_id": {
-          "title": "Trial Id",
-          "type": "string"
-        },
-        "trial_number": {
-          "title": "Trial Number",
-          "type": "integer"
-        }
-      },
-      "required": [
-        "trial_id",
-        "trial_number",
-        "status",
-        "counted_questions",
-        "penalized_questions",
-        "cost_usd",
-        "duration_ms",
-        "contract"
-      ],
-      "title": "PublicTrial",
       "type": "object"
     },
     "QuestionScoreConfidenceInterval": {

@@ -32,15 +32,45 @@
 
 .site-header {
   position: relative;
-  z-index: 50;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  grid-template-rows: minmax(var(--header-height), auto);
   align-items: center;
+  column-gap: clamp(.25rem, .75vw, .75rem);
   min-height: var(--header-height);
-  padding: 0 max(var(--gutter), calc((100vw - var(--max)) / 2));
+  padding-inline: max(var(--gutter), calc((100vw - var(--max)) / 2));
   border-bottom: var(--rule-inverse);
+  z-index: 50;
   background: var(--ink);
   color: var(--text-inverse);
+}
+
+.site-header-row {
+  display: contents;
+}
+
+.site-header .wordmark { grid-column: 1; grid-row: 1; }
+.site-header .repository-link { grid-column: 3; grid-row: 1; margin-inline-start: .5rem; }
+.site-header .mobile-navigation { grid-column: 4; grid-row: 1; }
+
+@media (min-width: 1025px) and (max-height: 800px) {
+  .app-shell--workspace .drilldown-inner {
+    min-height: 44px;
+  }
+}
+
+@media (min-width: 960px) {
+  .site-header {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    column-gap: 1.5rem;
+  }
+
+  .site-header .primary-navigation { grid-column: 2; grid-row: 1; justify-self: center; }
+  .site-header .repository-link { grid-column: 4; grid-row: 1; margin-inline-start: 1rem; }
+}
+
+@media (min-width: 1025px) and (max-height: 800px) {
+  .app-shell--workspace .site-header { --header-height: 52px; }
 }
 
 .wordmark {
@@ -86,10 +116,14 @@
   color: var(--text-inverse);
 }
 
-.primary-navigation a[aria-current="page"]::after {
+.primary-navigation a > span:last-child {
+  position: relative;
+}
+
+.primary-navigation a[aria-current="page"] > span:last-child::after {
   position: absolute;
   right: 0;
-  bottom: -1px;
+  bottom: -3px;
   left: 0;
   height: 3px;
   background: var(--acid);
@@ -250,11 +284,10 @@
     min-height: 100dvh;
     overflow: visible;
   }
+}
 
-  .site-header {
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    min-height: var(--header-height);
-  }
+@media (max-width: 959px) {
+  .wordmark { min-width: var(--control-min-size); min-height: var(--control-min-size); }
 
   .wordmark > span:last-child {
     font-size: var(--text-ui);
@@ -353,7 +386,9 @@
   .repository-label {
     display: none;
   }
+}
 
+@media (max-width: 760px) {
   .app-viewport {
     min-height: 0;
     overflow: visible;
@@ -422,7 +457,12 @@
   }
 }
 
-@media (max-width: 340px) {
+@media (max-width: 540px) {
+  .mobile-navigation summary > span { display: none; }
+  .mobile-navigation summary { padding-inline: .65rem; }
+}
+
+@media (max-width: 360px) {
   .wordmark > span:last-child {
     display: none;
   }

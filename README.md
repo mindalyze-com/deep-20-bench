@@ -27,9 +27,12 @@
   <a href="https://github.com/mindalyze-com/deep-20-bench/discussions">Discussions</a>
 </p>
 
-Deep20Bench tests how well AI models identify a hidden person or character with yes-or-no
-questions. It uses the Twenty Questions format with a 50-question ceiling, giving models more
-room to finish a round.
+Deep20Bench tests how well AI models identify a hidden subject through factual questions.
+Subjects include people, characters, and general or particular things. New games use the
+Twenty Questions format with a 40-question ceiling. Edition 1.1 adds Rather yes and Rather no
+to the three-answer protocol used by edition 1.0; identity guesses still use Yes, No, or Unknown.
+
+Historical published runs retain their recorded 50-question limit and scores.
 
 The pilot compares model versions and reasoning settings under a shared subject set and scoring
 policy. See the [current results](https://deep20bench.com/results/) for the tested models, trial

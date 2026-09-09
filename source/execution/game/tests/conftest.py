@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 
@@ -70,7 +71,7 @@ def validator_config(model_config: ModelConfig) -> ModelConfig:
 
 @pytest.fixture
 def policy() -> GamePolicy:
-    return GamePolicy(max_questions=50)
+    return GamePolicy()
 
 
 def provider_trace(
@@ -85,9 +86,10 @@ def provider_trace(
     response_cache_status: str | None = None,
     request_attempts: int = 1,
 ) -> ProviderTrace:
+    requested_at = datetime(2026, 7, 26, 10, tzinfo=UTC) + timedelta(seconds=index * 2)
     return ProviderTrace(
-        requested_at=f"2026-07-26T10:00:{index * 2:02d}+00:00",
-        completed_at=f"2026-07-26T10:00:{index * 2 + 1:02d}+00:00",
+        requested_at=requested_at.isoformat(),
+        completed_at=(requested_at + timedelta(seconds=1)).isoformat(),
         latency_ms=1_000,
         http_status_code=200,
         response_id=f"response-{index}",
@@ -172,7 +174,7 @@ def audit_writer(
     return writer
 
 
-def official_policy(max_questions: int = 50) -> GamePolicy:
+def official_policy(max_questions: int = 40) -> GamePolicy:
     return GamePolicy(
         benchmark_mode=BenchmarkMode.OFFICIAL,
         max_questions=max_questions,

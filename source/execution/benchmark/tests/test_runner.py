@@ -90,7 +90,8 @@ from deep20_game.models import (
     guesser_contract_reliability,
 )
 from deep20_game.sinks import ExecutionObserver
-from deep20_oracle.catalog import SubjectCatalog
+from deep20_oracle import cache_contract
+from deep20_oracle.catalog import SubjectCatalog, SubjectCatalogEntry, SubjectStatus
 from deep20_oracle.config import OracleConfig
 from deep20_oracle.models import (
     EvidenceDecisionBasis,
@@ -609,13 +610,13 @@ def fixtures() -> tuple[ModelCatalog, BenchmarkCatalog, SubjectCatalog]:
     subjects = SubjectCatalog(
         version=1,
         subjects={
-            "T-0001": Subject(
+            "T-0001": SubjectCatalogEntry(
                 target_id="T-0001",
                 canonical_name="One",
                 entity_type="person",
                 description="First test subject.",
             ),
-            "T-0002": Subject(
+            "T-0002": SubjectCatalogEntry(
                 target_id="T-0002",
                 canonical_name="Two",
                 entity_type="person",
@@ -977,6 +978,34 @@ def test_runner_returns_nested_typed_result_and_hierarchy(tmp_path: Path) -> Non
     ).run(request)
     assert resumed == result
     assert replacement_executor.calls == []
+
+
+def test_uncached_run_rejects_changed_oracle_contract_before_executing_trials(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    models, benchmark, subjects = fixtures()
+    store = ArtifactStore(tmp_path)
+    monkeypatch.setattr(store, "_git", lambda arguments: "abc123")
+    request = BenchmarkRequest(
+        benchmark_id=BenchmarkId("B-0001"),
+        execution_id=BenchmarkExecutionId("BX-old-contract"),
+        model_id=BenchmarkModelId("M-0001"),
+        benchmark_mode=BenchmarkMode.EXPERIMENTAL,
+        target_ids=(SubjectId("T-0001"),), iterations_override=1,
+    )
+    with monkeypatch.context() as old:
+        old.setattr(cache_contract, "ORACLE_FACTUAL_CONTRACT_VERSION", "historical_ask_v1")
+        BenchmarkRunner(
+            store=store, model_catalog=models, benchmark_catalog=benchmark,
+            subject_catalog=subjects, executor=FakeExecutor(),
+        ).run(request)
+    executor = FakeExecutor()
+    with pytest.raises(ValueError, match="completed execution does not match the benchmark request"):
+        BenchmarkRunner(
+            store=store, model_catalog=models, benchmark_catalog=benchmark,
+            subject_catalog=subjects, executor=executor,
+        ).run(request)
+    assert executor.calls == []
 
 
 def test_manifest_without_request_mode_is_rejected(
@@ -1353,6 +1382,111 @@ def test_model_target_and_iteration_are_bound_to_one_run(tmp_path: Path) -> None
     assert result.summary.counts.scheduled == 3
 
 
+def with_subject_status(
+    catalog: SubjectCatalog, target_id: str, status: SubjectStatus,
+) -> SubjectCatalog:
+    return SubjectCatalog(subjects={
+        **catalog.subjects,
+        target_id: catalog.entry(target_id).model_copy(update={"status": status}),
+    })
+
+
+def test_new_benchmark_skips_inactive_subjects_and_allows_reactivation(tmp_path: Path) -> None:
+    executor = FakeExecutor()
+    runner, _ = _runner(tmp_path, executor)
+    runner.subject_catalog = with_subject_status(
+        runner.subject_catalog, "T-0001", SubjectStatus.INACTIVE,
+    )
+    request = BenchmarkRequest(
+        benchmark_id=BenchmarkId("B-0001"),
+        execution_id=BenchmarkExecutionId("BX-active-only-001"),
+        model_id=BenchmarkModelId("M-0001"),
+        benchmark_mode=BenchmarkMode.EXPERIMENTAL,
+        iterations_override=1,
+    )
+    result = runner.run(request)
+    assert result.run.definition.subject_ids == (SubjectId("T-0002"),)
+    assert [context.subject.target_id for context in executor.calls] == ["T-0002"]
+    assert type(executor.calls[0].subject) is Subject
+    assert "status" not in executor.calls[0].subject.model_dump()
+
+    runner.subject_catalog = with_subject_status(
+        runner.subject_catalog, "T-0001", SubjectStatus.ACTIVE,
+    )
+    reactivated = runner.run(request.model_copy(update={
+        "execution_id": BenchmarkExecutionId("BX-active-only-002"),
+    }))
+    assert reactivated.run.definition.subject_ids == (SubjectId("T-0001"), SubjectId("T-0002"))
+
+
+@pytest.mark.parametrize("explicit", [False, True])
+def test_new_benchmark_rejects_inactive_selection_before_execution(
+    tmp_path: Path, explicit: bool,
+) -> None:
+    executor = FakeExecutor()
+    runner, store = _runner(tmp_path, executor)
+    for target_id in runner.subject_catalog.subjects:
+        runner.subject_catalog = with_subject_status(
+            runner.subject_catalog, target_id, SubjectStatus.INACTIVE,
+        )
+    request = BenchmarkRequest(
+        benchmark_id=BenchmarkId("B-0001"),
+        execution_id=BenchmarkExecutionId("BX-inactive-selection-001"),
+        model_id=BenchmarkModelId("M-0001"),
+        benchmark_mode=BenchmarkMode.EXPERIMENTAL,
+        target_ids=(SubjectId("T-0001"),) if explicit else (),
+    )
+    message = "subject T-0001 is inactive" if explicit else "does not register any active targets"
+    with pytest.raises(ValueError, match=message):
+        runner.run(request)
+    assert executor.calls == []
+    assert store.load_manifest(request.model_id, request.execution_id) is None
+
+
+@pytest.mark.parametrize("explicit", [False, True])
+def test_completed_run_retains_its_schedule_after_subject_deactivation(
+    tmp_path: Path, explicit: bool,
+) -> None:
+    executor = FakeExecutor()
+    runner, _ = _runner(tmp_path, executor)
+    request = BenchmarkRequest(
+        benchmark_id=BenchmarkId("B-0001"),
+        execution_id=BenchmarkExecutionId("BX-inactive-resume-001"),
+        model_id=BenchmarkModelId("M-0001"),
+        benchmark_mode=BenchmarkMode.EXPERIMENTAL,
+        target_ids=(SubjectId("T-0002"), SubjectId("T-0001")) if explicit else (),
+        iterations_override=1,
+    )
+    original = runner.run(request)
+    runner.subject_catalog = with_subject_status(
+        runner.subject_catalog, "T-0001", SubjectStatus.INACTIVE,
+    )
+    assert runner.run(request.model_copy(update={"target_ids": ()})) == original
+    assert len(executor.calls) == 2
+
+
+def test_repair_can_finish_an_inactive_subject_in_the_recorded_schedule(tmp_path: Path) -> None:
+    runner, _ = _runner(tmp_path, FakeExecutor(fail_first=True))
+    request = BenchmarkRequest(
+        benchmark_id=BenchmarkId("B-0001"),
+        execution_id=BenchmarkExecutionId("BX-inactive-repair-001"),
+        model_id=BenchmarkModelId("M-0001"),
+        benchmark_mode=BenchmarkMode.EXPERIMENTAL,
+        iterations_override=1,
+    )
+    original = runner.run(request)
+    assert original.outcome.has_infrastructure_failures
+    runner.subject_catalog = with_subject_status(
+        runner.subject_catalog, "T-0001", SubjectStatus.INACTIVE,
+    )
+    executor = FakeExecutor()
+    runner.executor = executor
+    repaired = runner.run(request, repair=TrialRepairPolicy())
+    assert repaired.run.definition == original.run.definition
+    assert not repaired.outcome.has_infrastructure_failures
+    assert [context.subject.target_id for context in executor.calls] == ["T-0001"]
+
+
 def test_benchmark_logs_one_combined_line_per_resolved_turn(
     tmp_path: Path,
     caplog,
@@ -1361,8 +1495,8 @@ def test_benchmark_logs_one_combined_line_per_resolved_turn(
     subjects = SubjectCatalog(
         version=subjects.version,
         subjects={
-            "T-0001": subjects.subject("T-0001"),
-            "T-0002": subjects.subject("T-0002").model_copy(
+            "T-0001": subjects.entry("T-0001"),
+            "T-0002": subjects.entry("T-0002").model_copy(
                 update={"canonical_name": 'Two\n"Quoted"'}
             ),
         },
@@ -1410,7 +1544,7 @@ def test_benchmark_logs_one_combined_line_per_resolved_turn(
         (
             'benchmark.turn turn=1 question="Was this person born before 1900?" answer=YES '
                 "guesser_ms=841 guesser_cost=0.00123 oracle_ms=1842 oracle_cost=0.00613 "
-                "searches=1 evidence=0 cache=30/0 attempts=2 recovered=0 exhausted=0"
+                "searches=1 evidence=0 cache=30/0 attempts=2 recovered=0 exhausted=0 answer_source=live"
         )
     ] * 4
     removed_turn_fields = (
@@ -1672,7 +1806,7 @@ def test_benchmark_turn_log_names_guess_validator_metrics(
         (
                 'benchmark.turn turn=1 guess="One" answer=YES guesser_ms=841 '
                 "guesser_cost=0.00123 validator_ms=442 validator_cost=0.00073 "
-                "searches=0 evidence=0 cache=24/3 attempts=2 recovered=0 exhausted=0"
+                "searches=0 evidence=0 cache=24/3 attempts=2 recovered=0 exhausted=0 answer_source=live"
         )
     ]
     assert "oracle_ms=" not in turn_lines[0]

@@ -14,6 +14,10 @@ from pydantic import (
     model_validator,
 )
 
+from .knowledge_prompts import MAX_SUPPORT_CHARACTERS
+from .research_outcomes import OracleResearchOutcome as OracleResearchOutcome  # noqa: PLC0414
+from .search_budget import MAX_SERVER_TOOL_CALLS
+
 RUN_ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
 TARGET_ID_PATTERN = r"^T-[0-9]{4}$"
 CALL_ID_PATTERN = r"^OC-[0-9a-f]{32}$"
@@ -53,6 +57,8 @@ class OracleAnswer(StrEnum):
     YES = "YES"
     NO = "NO"
     UNKNOWN = "UNKNOWN"
+    RATHER_YES = "RATHER_YES"
+    RATHER_NO = "RATHER_NO"
 
 
 class OracleRole(StrEnum):
@@ -75,6 +81,8 @@ class OracleQuestionType(StrEnum):
 
 
 class OracleResearchQuestionClass(StrEnum):
+    """Historical audit labels; new calls use OTHER without keyword classification."""
+
     TEMPORAL_STATUS = "temporal_status"
     CLOSED_FACT = "closed_fact"
     ROLE_OR_OCCUPATION = "role_or_occupation"
@@ -83,16 +91,6 @@ class OracleResearchQuestionClass(StrEnum):
     ABSENCE_OR_EXCLUSIVITY = "absence_or_exclusivity"
     COUNT_OR_COMPARISON = "count_or_comparison"
     OTHER = "other"
-
-
-class OracleResearchOutcome(StrEnum):
-    ANSWERED = "answered"
-    NO_RESULTS = "no_results"
-    IRRELEVANT_RESULTS = "irrelevant_results"
-    INSUFFICIENT_COVERAGE = "insufficient_coverage"
-    CONFLICTING_SOURCES = "conflicting_sources"
-    AMBIGUOUS_QUESTION = "ambiguous_question"
-    OPEN_WORLD_NOT_PROVABLE = "open_world_not_provable"
 
 
 class OracleResearchStrategy(StrEnum):
@@ -106,6 +104,7 @@ class OracleResearchResolution(StrEnum):
     GENUINE_UNKNOWN_PRIMARY = "genuine_unknown_primary"
     GENUINE_UNKNOWN_RECOVERY = "genuine_unknown_recovery"
     RETRIEVAL_EXHAUSTED_UNKNOWN = "retrieval_exhausted_unknown"
+    BOUNDED_UNKNOWN = "bounded_unknown"
 
 
 class RecoveryReason(StrEnum):
@@ -122,6 +121,7 @@ class RecoveryReason(StrEnum):
     MALFORMED_RESPONSE = "provider_malformed_response"
     EMPTY_RESPONSE = "provider_empty_response"
     INCOMPLETE_RESPONSE = "provider_incomplete_response"
+    CONTENT_FILTERED = "provider_content_filtered"
     OUTPUT_LIMIT_EXCEEDED = "provider_output_limit_exceeded"
     INVALID_GUESSER_OUTPUT = "invalid_guesser_output"
     INVALID_ORACLE_OUTPUT = "invalid_oracle_output"
@@ -131,10 +131,20 @@ class RecoveryReason(StrEnum):
     HARD_DEADLINE_EXCEEDED = "provider_hard_deadline_exceeded"
 
 
+class EvidenceKind(StrEnum):
+    QUOTATION = "quotation"
+    SOURCE_SUMMARY = "source_summary"
+
+
 class Evidence(StrictModel):
     source_url: HttpUrl
     excerpt: str = Field(min_length=1, max_length=2_000)
     validation: Literal["model_reported"]
+    # Historical evidence was a quotation; omit that default to preserve saved signatures.
+    kind: EvidenceKind = Field(
+        default=EvidenceKind.QUOTATION,
+        exclude_if=lambda value: value is EvidenceKind.QUOTATION,
+    )
 
     @model_validator(mode="before")
     @classmethod
@@ -150,16 +160,44 @@ class Evidence(StrictModel):
         }
 
 
-class OracleResult(StrictModel):
+class EvidenceDecisionBasis(StrEnum):
+    EVIDENCE = "evidence"
+    MODEL_KNOWLEDGE = "model_knowledge"
+    OTHER = "other"
+
+
+class DecisionSupport(StrictModel):
+    """Optional in historical artifacts, required by the concise knowledge wire policy."""
+
+    basis: EvidenceDecisionBasis | None = Field(default=None, exclude_if=lambda v: v is None)
+    supporting_statement: str | None = Field(
+        default=None, min_length=1, max_length=MAX_SUPPORT_CHARACTERS,
+        exclude_if=lambda v: v is None,
+    )
+
+    @model_validator(mode="after")
+    def support_fields_match(self) -> DecisionSupport:
+        if (self.basis is None) != (self.supporting_statement is None):
+            raise ValueError("decision basis and supporting statement must occur together")
+        return self
+
+
+class OracleResult(DecisionSupport):
     answer: OracleAnswer
     evidence: tuple[Evidence, ...] = Field(max_length=3)
 
     @model_validator(mode="after")
     def evidence_matches_answer(self) -> OracleResult:
-        if self.answer is OracleAnswer.UNKNOWN and self.evidence:
-            raise ValueError("UNKNOWN must not carry answer evidence")
-        if self.answer is not OracleAnswer.UNKNOWN and not self.evidence:
-            raise ValueError("YES and NO require at least one evidence item")
+        if self.basis is None:
+            if self.answer is OracleAnswer.UNKNOWN and self.evidence:
+                raise ValueError("UNKNOWN must not carry answer evidence")
+            if self.answer is not OracleAnswer.UNKNOWN and not self.evidence:
+                raise ValueError("YES and NO require at least one evidence item")
+        else:
+            if self.answer is OracleAnswer.UNKNOWN and self.basis is not EvidenceDecisionBasis.OTHER:
+                raise ValueError("UNKNOWN uses other decision basis")
+            if self.basis is EvidenceDecisionBasis.EVIDENCE and not self.evidence:
+                raise ValueError("evidence decisions require source excerpts")
         return self
 
     def guesser_answer(self) -> OracleAnswer:
@@ -167,13 +205,11 @@ class OracleResult(StrictModel):
         return self.answer
 
 
-class OracleResearchAttemptResult(StrictModel):
+class OracleResearchAttemptResult(OracleResult):
     """One untrusted, web-backed research attempt before final adjudication."""
 
-    answer: OracleAnswer
-    evidence: tuple[Evidence, ...] = Field(max_length=3)
     research_outcome: OracleResearchOutcome
-    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=8)
+    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=MAX_SERVER_TOOL_CALLS)
 
     @field_validator("attempted_queries")
     @classmethod
@@ -190,35 +226,33 @@ class OracleResearchAttemptResult(StrictModel):
     @model_validator(mode="after")
     def outcome_matches_answer(self) -> OracleResearchAttemptResult:
         if self.answer is OracleAnswer.UNKNOWN:
-            if self.evidence:
-                raise ValueError("UNKNOWN research attempts must not carry answer evidence")
             if self.research_outcome is OracleResearchOutcome.ANSWERED:
                 raise ValueError("UNKNOWN research attempts cannot be classified as answered")
         else:
-            if not self.evidence:
-                raise ValueError("YES and NO research attempts require evidence")
             if self.research_outcome is not OracleResearchOutcome.ANSWERED:
                 raise ValueError("decisive research attempts must be classified as answered")
         return self
 
     def final_result(self) -> OracleResult:
-        return OracleResult(answer=self.answer, evidence=self.evidence)
+        return OracleResult(
+            answer=self.answer, evidence=self.evidence,
+            basis=self.basis, supporting_statement=self.supporting_statement,
+        )
 
 
 class EvidenceReviewRequest(StrictModel):
     subject: Subject
     question: str = Field(min_length=1, max_length=1_000)
-    evidence: tuple[Evidence, ...] = Field(min_length=1, max_length=3)
-
-
-class EvidenceDecisionBasis(StrEnum):
-    EVIDENCE = "evidence"
-    MODEL_KNOWLEDGE = "model_knowledge"
+    evidence: tuple[Evidence, ...] = Field(max_length=3)
 
 
 class EvidenceReviewResult(StrictModel):
     answer: OracleAnswer
     basis: EvidenceDecisionBasis
+    supporting_statement: str | None = Field(
+        default=None, min_length=1, max_length=MAX_SUPPORT_CHARACTERS,
+        exclude_if=lambda v: v is None,
+    )
     evidence_indices: tuple[int, ...] = Field(default_factory=tuple, max_length=3)
 
     @field_validator("evidence_indices")
@@ -232,11 +266,17 @@ class EvidenceReviewResult(StrictModel):
 
     @model_validator(mode="after")
     def support_matches_answer(self) -> EvidenceReviewResult:
-        if self.answer is OracleAnswer.UNKNOWN and self.evidence_indices:
+        # A supporting statement marks the concise decision format. Its indices may
+        # describe uncertainty; policy validation still rejects this format elsewhere.
+        if (
+            self.answer is OracleAnswer.UNKNOWN
+            and self.evidence_indices
+            and self.supporting_statement is None
+        ):
             raise ValueError("UNKNOWN must not identify supporting evidence")
         if (
             self.answer is OracleAnswer.UNKNOWN
-            and self.basis is EvidenceDecisionBasis.MODEL_KNOWLEDGE
+            and self.basis not in {EvidenceDecisionBasis.EVIDENCE, EvidenceDecisionBasis.OTHER}
         ):
             raise ValueError("UNKNOWN cannot use model knowledge as its decision basis")
         if (
@@ -400,11 +440,11 @@ class ProviderTrace(StrictModel):
         return normalize(value)
 
 
-class OracleResearchAttemptSummary(StrictModel):
+class OracleResearchAttemptSummary(DecisionSupport):
     attempt_number: int = Field(ge=1, le=2)
     strategy: OracleResearchStrategy
     outcome: OracleResearchOutcome
-    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=8)
+    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=MAX_SERVER_TOOL_CALLS)
     query_provenance: Literal["model_reported"] = "model_reported"
     web_search_requests: int = Field(ge=1)
     annotation_count: int = Field(ge=0)
@@ -452,6 +492,7 @@ class OracleResearchAuditTrace(StrictModel):
         if (
             self.resolution
             in {
+                OracleResearchResolution.BOUNDED_UNKNOWN,
                 OracleResearchResolution.ANSWERED_PRIMARY,
                 OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY,
             }
@@ -481,6 +522,7 @@ class OracleResearchAuditTrace(StrictModel):
         if (
             self.resolution
             in {
+                OracleResearchResolution.BOUNDED_UNKNOWN,
                 OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY,
                 OracleResearchResolution.GENUINE_UNKNOWN_RECOVERY,
                 OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN,
@@ -536,6 +578,8 @@ class OracleResearchAuditTrace(StrictModel):
                     attempt_number=attempt.attempt_number,
                     strategy=attempt.strategy,
                     outcome=attempt.result.research_outcome,
+                    basis=attempt.result.basis,
+                    supporting_statement=attempt.result.supporting_statement,
                     attempted_queries=attempt.result.attempted_queries,
                     web_search_requests=attempt.provider.usage.search_count,
                     annotation_count=len(attempt.provider.annotations),

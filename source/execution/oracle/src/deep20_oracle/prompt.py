@@ -3,13 +3,18 @@ from __future__ import annotations
 import json
 from typing import Literal
 
+from . import concise_prompts, knowledge_prompts, qualified_prompts
+from .config import AdjudicationPolicy, PromptProfile
 from .models import (
     EvidenceDecisionBasis,
+    EvidenceKind,
     EvidenceReviewRequest,
     OracleRequest,
     OracleResearchStrategy,
     OracleRole,
 )
+from .protocol import permits_judge_knowledge
+from .search_budget import DEFAULT_RESEARCH_QUERY_TARGET
 from .util import sha256_text
 
 PROMPT_VERSION = "live-web-oracle-v8-classified-research"
@@ -230,6 +235,9 @@ def render_messages(
     request: OracleRequest,
     *,
     strategy: OracleResearchStrategy = OracleResearchStrategy.PRIMARY,
+    profile: PromptProfile = PromptProfile.STANDARD,
+    policy: AdjudicationPolicy = AdjudicationPolicy.PROFILE_DEFAULT,
+    research_query_target: int = DEFAULT_RESEARCH_QUERY_TARGET,
 ) -> tuple[dict[str, str], ...]:
     subject = request.subject.model_dump(mode="json")
     payload = {
@@ -239,6 +247,20 @@ def render_messages(
     system_prompt = (
         SYSTEM_PROMPT if strategy is OracleResearchStrategy.PRIMARY else RECOVERY_SYSTEM_PROMPT
     )
+    if profile is PromptProfile.CONCISE_V1:
+        system_prompt = (
+            concise_prompts.PRIMARY_SYSTEM_PROMPT
+            if strategy is OracleResearchStrategy.PRIMARY
+            else concise_prompts.RECOVERY_SYSTEM_PROMPT
+        )
+    if profile is PromptProfile.QUALIFIED_V1:
+        system_prompt = (qualified_prompts.PRIMARY_SYSTEM_PROMPT
+            if strategy is OracleResearchStrategy.PRIMARY
+            else qualified_prompts.RECOVERY_SYSTEM_PROMPT)
+    if policy is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1:
+        if strategy is not OracleResearchStrategy.PRIMARY:
+            raise ValueError("concise knowledge research has one bounded attempt")
+        system_prompt = knowledge_prompts.primary_system_prompt(research_query_target)
     return (
         {"role": "system", "content": system_prompt},
         {
@@ -252,7 +274,22 @@ def render_messages(
     )
 
 
-def research_prompt_version(strategy: OracleResearchStrategy) -> str:
+def research_prompt_version(
+    strategy: OracleResearchStrategy, profile: PromptProfile = PromptProfile.STANDARD,
+    *, policy: AdjudicationPolicy = AdjudicationPolicy.PROFILE_DEFAULT,
+) -> str:
+    if policy is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1:
+        if strategy is not OracleResearchStrategy.PRIMARY:
+            raise ValueError("concise knowledge research has one bounded attempt")
+        return knowledge_prompts.PRIMARY_PROMPT_VERSION
+    if profile is PromptProfile.QUALIFIED_V1:
+        return ("live-web-oracle-v12-evidence-context"
+            if strategy is OracleResearchStrategy.PRIMARY
+            else "live-web-oracle-recovery-v5-evidence-context")
+    if profile is PromptProfile.CONCISE_V1:
+        if strategy is OracleResearchStrategy.PRIMARY:
+            return "live-web-oracle-v9-concise-evidence"
+        return "live-web-oracle-recovery-v2-concise-evidence"
     if strategy is OracleResearchStrategy.PRIMARY:
         return PROMPT_VERSION
     return RECOVERY_PROMPT_VERSION
@@ -262,7 +299,13 @@ def render_evidence_review_messages(
     request: EvidenceReviewRequest,
     *,
     role: Literal[OracleRole.REVIEWER, OracleRole.JUDGE],
+    profile: PromptProfile = PromptProfile.STANDARD,
+    policy: AdjudicationPolicy = AdjudicationPolicy.PROFILE_DEFAULT,
 ) -> tuple[dict[str, str], ...]:
+    if policy is not AdjudicationPolicy.CONCISE_KNOWLEDGE_V1 and any(
+        item.kind is EvidenceKind.SOURCE_SUMMARY for item in request.evidence
+    ):
+        raise ValueError("source summaries require concise_knowledge_v1 review instructions")
     payload = {
         "subject": request.subject.model_dump(mode="json"),
         "current_yes_no_question": request.question,
@@ -270,11 +313,26 @@ def render_evidence_review_messages(
             {
                 "number": index,
                 "excerpt": evidence.excerpt,
+                **({"kind": evidence.kind.value}
+                   if evidence.kind is EvidenceKind.SOURCE_SUMMARY else {}),
             }
             for index, evidence in enumerate(request.evidence, start=1)
         ],
     }
     system_prompt = REVIEWER_SYSTEM_PROMPT if role is OracleRole.REVIEWER else JUDGE_SYSTEM_PROMPT
+    if profile is PromptProfile.CONCISE_V1:
+        system_prompt = (
+            concise_prompts.REVIEWER_SYSTEM_PROMPT
+            if role is OracleRole.REVIEWER else concise_prompts.JUDGE_SYSTEM_PROMPT
+        )
+    if profile is PromptProfile.QUALIFIED_V1:
+        system_prompt = (qualified_prompts.REVIEWER_SYSTEM_PROMPT
+            if role is OracleRole.REVIEWER else qualified_prompts.JUDGE_SYSTEM_PROMPT)
+    if permits_judge_knowledge(profile, role, policy):
+        system_prompt = qualified_prompts.JUDGE_KNOWLEDGE_SYSTEM_PROMPT
+    if policy is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1:
+        system_prompt = (knowledge_prompts.REVIEWER_SYSTEM_PROMPT
+            if role is OracleRole.REVIEWER else knowledge_prompts.JUDGE_SYSTEM_PROMPT)
     return (
         {"role": "system", "content": system_prompt},
         {
@@ -290,7 +348,23 @@ def render_evidence_review_messages(
 
 def evidence_review_prompt_version(
     role: Literal[OracleRole.REVIEWER, OracleRole.JUDGE],
+    profile: PromptProfile = PromptProfile.STANDARD,
+    *,
+    policy: AdjudicationPolicy = AdjudicationPolicy.PROFILE_DEFAULT,
 ) -> str:
+    if policy is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1:
+        return (knowledge_prompts.REVIEWER_PROMPT_VERSION if role is OracleRole.REVIEWER
+                else knowledge_prompts.JUDGE_PROMPT_VERSION)
+    if permits_judge_knowledge(profile, role, policy):
+        return qualified_prompts.JUDGE_KNOWLEDGE_PROMPT_VERSION
+    if profile is PromptProfile.QUALIFIED_V1:
+        return ("oracle-evidence-reviewer-v7-generic-five-answers"
+            if role is OracleRole.REVIEWER else "oracle-evidence-judge-v8-generic-five-answers")
+    if profile is PromptProfile.CONCISE_V1:
+        return (
+            "oracle-evidence-reviewer-v5-concise-evidence"
+            if role is OracleRole.REVIEWER else "oracle-evidence-judge-v6-concise-evidence"
+        )
     return REVIEWER_PROMPT_VERSION if role is OracleRole.REVIEWER else JUDGE_PROMPT_VERSION
 
 

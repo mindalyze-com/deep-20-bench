@@ -6,6 +6,7 @@ import {
   moneyEpisode,
   number,
   reasoningEffortLabel,
+  staticDateLabel,
   staticDateTimeLabel,
 } from "../../src/lib/format";
 import { splitModelName } from "../../src/lib/model-name";
@@ -45,5 +46,12 @@ describe("publication formatting", () => {
     expect(staticDateTimeLabel("2026-08-05T18:13:13.469638Z")).toBe(
       "Aug 5, 2026, 6:13:13 PM",
     );
+    expect(staticDateTimeLabel("2026-09-06T02:00:00+02:00")).toBe(
+      "Sep 6, 2026, 12:00:00 AM",
+    );
+    expect(staticDateTimeLabel("2026-09-06T12:05:09Z")).toBe(
+      "Sep 6, 2026, 12:05:09 PM",
+    );
+    expect(staticDateLabel("2026-01-01T00:30:00+01:00")).toBe("Dec 31, 2025");
   });
 });

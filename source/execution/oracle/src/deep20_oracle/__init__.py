@@ -2,8 +2,9 @@
 
 from .artifacts import RunArtifactPolicy
 from .audit import RunAuditWriter
-from .catalog import SubjectCatalog, load_subject_catalog
+from .catalog import SubjectCatalog, SubjectCatalogEntry, SubjectStatus, load_subject_catalog
 from .config import (
+    AdjudicationPolicy,
     EvidenceReviewConfig,
     OracleConfig,
     RecoveryPolicy,
@@ -21,6 +22,7 @@ from .errors import (
 from .models import (
     Evidence,
     EvidenceDecisionBasis,
+    EvidenceKind,
     EvidenceReviewResult,
     OracleAdjudication,
     OracleAnswer,
@@ -40,10 +42,12 @@ from .models import (
 from .service import Oracle
 
 __all__ = [
+    "AdjudicationPolicy",
     "AuditWriteError",
     "CredentialLoadError",
     "Evidence",
     "EvidenceDecisionBasis",
+    "EvidenceKind",
     "EvidenceReviewConfig",
     "EvidenceReviewResult",
     "Oracle",
@@ -70,6 +74,8 @@ __all__ = [
     "RunAuditWriter",
     "Subject",
     "SubjectCatalog",
+    "SubjectCatalogEntry",
+    "SubjectStatus",
     "TokenLimitParameter",
     "load_openrouter_api_key",
     "load_oracle_config",

@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { editionRoute } from "@/lib/route-location";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import ComparisonRankingTable from "@/components/ComparisonRankingTable.vue";
+import EmptyEditionResults from "@/components/EmptyEditionResults.vue";
+import { useEditionContext } from "@/lib/use-edition-context";
 import ErrorState from "@/components/ErrorState.vue";
 import IllustrativeRoundExample from "@/components/IllustrativeRoundExample.vue";
 import LoadingState from "@/components/LoadingState.vue";
@@ -45,6 +48,7 @@ const manifest = ref<ManifestDocument | null>(peekManifest());
 const leaderboard = ref<LeaderboardDocument | null>(peekLeaderboard());
 const error = ref<string | null>(null);
 const router = useRouter();
+const { qualified } = useEditionContext();
 const {
   averages: repeatAverages,
   loading: repeatAveragesLoading,
@@ -84,10 +88,6 @@ if (manifest.value === null || leaderboard.value === null) void load();
 const evaluated = computed(() =>
   (leaderboard.value?.leaderboard ?? []).filter((row) => row.status === "evaluated"),
 );
-const totalTrials = computed(() => {
-  const cohort = manifest.value?.active_cohort;
-  return cohort === undefined ? 0 : cohort.target_ids.length * cohort.iterations;
-});
 const failurePenalty = computed(() => {
   const value = manifest.value;
   return value === null
@@ -121,19 +121,22 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="hero-grid" aria-hidden="true"></div>
         <div class="home-hero-inner site-boundary">
           <div class="hero-copy">
-            <p class="eyebrow">Prototype · Twenty Questions for AI models</p>
+            <p class="eyebrow">Deep20Bench {{ manifest.active_cohort.edition_label }} · {{ manifest.active_cohort.edition_status === 'current' ? 'Current edition' : 'Previous edition' }}</p>
             <h1>How well can AI models play Twenty Questions?</h1>
             <p class="hero-lead">
               Deep20Bench is a public benchmark for large language models (LLMs). It measures how
-              efficiently they identify a hidden subject through adaptive yes-or-no questions.
+              efficiently they identify a hidden subject through adaptive questions.
+              <template v-if="qualified">Answers give four directions - Yes, Rather yes,
+                Rather no, and No - plus Unknown when the evidence is unresolved.</template>
+              <template v-else>Answers are Yes, No, or Unknown.</template>
             </p>
             <div class="hero-actions">
-              <RouterLink class="button button-primary" :to="{ name: 'results' }">
+              <RouterLink class="button button-primary" :to="editionRoute('results')">
                 Explore pilot results ↓
               </RouterLink>
             </div>
           </div>
-          <IllustrativeRoundExample />
+          <IllustrativeRoundExample :qualified="qualified" />
           <div class="hero-details">
             <article>
               <p class="hero-detail-label">How scoring works</p>
@@ -148,13 +151,17 @@ const scoreDots = computed<ScoreDot[]>(() =>
             </article>
             <article class="hero-pilot-note">
               <p class="hero-detail-label">Current pilot</p>
-              <p>
-                All results, game transcripts, and scoring data are public. The current pilot
+              <p v-if="evaluated.length > 0">
+                All results, game transcripts, and scoring data are public. This edition
                 compares {{ evaluated.length }} model versions and settings across
                 {{ countWord(manifest.active_cohort.target_ids.length) }} subjects, with
-                {{ countWord(manifest.active_cohort.iterations) }} rounds per subject. The concept
-                works and the first step is complete. Expanding the pilot is straightforward;
-                cost is the main constraint.
+                {{ countWord(manifest.active_cohort.iterations) }} rounds per subject. Each edition has its own comparison settings and results.
+              </p>
+              <p v-else>
+                Edition {{ manifest.active_cohort.edition_label }} is ready for full runs:
+                {{ manifest.active_cohort.target_ids.length }} subjects, with
+                {{ manifest.active_cohort.iterations }} rounds per subject. No complete model
+                result has been published for this edition yet. Edition 1 results remain available.
               </p>
               <div class="hero-discussions">
                 <p>Use GitHub Discussions to suggest what we should test next.</p>
@@ -177,6 +184,8 @@ const scoreDots = computed<ScoreDot[]>(() =>
           </div>
         </div>
       </section>
+
+      <div v-if="evaluated.length === 0" class="site-boundary-shell home-edition-empty"><div class="site-boundary"><EmptyEditionResults /></div></div>
 
       <section id="how-it-works" class="content-section">
         <div class="content-inner">
@@ -215,7 +224,14 @@ const scoreDots = computed<ScoreDot[]>(() =>
               <h3>The Guesser asks. Three roles determine the answer.</h3>
             </div>
             <div class="adjudication-summary">
-              <p>
+              <p v-if="qualified">
+                The Guesser is the LLM under test: it asks questions and makes the final guess.
+                Fresh answers use web research and, under the recorded policy, model knowledge.
+                Every directional answer, including Rather yes and Rather no, receives an
+                independent blind review. A blind Judge resolves any exact-token disagreement.
+                The Guesser receives only the final answer token.
+              </p>
+              <p v-else>
                 The Guesser is the LLM under test: it asks yes-or-no questions and makes the final
                 guess. For every question, the Oracle must search the live web and cite evidence
                 instead of relying on memory. A blind Reviewer uses that evidence to make an
@@ -225,7 +241,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
               </p>
               <RouterLink
                 class="text-link"
-                :to="{ name: 'methodology', hash: '#answer-checks' }"
+                :to="editionRoute('methodology', { hash: '#answer-checks' })"
               >
                 Read the full game and answer-checking method →
               </RouterLink>
@@ -234,12 +250,12 @@ const scoreDots = computed<ScoreDot[]>(() =>
         </div>
       </section>
 
-      <section class="content-section leaderboard-section">
+      <section v-if="evaluated.length > 0" class="content-section leaderboard-section">
         <div class="content-inner">
           <header class="section-heading">
             <div>
-              <p class="eyebrow">Current pilot results</p>
-              <h2>How the current runs compare.</h2>
+              <p class="eyebrow">Edition {{ manifest.active_cohort.edition_label }} results</p>
+              <h2>{{ evaluated.length === 1 ? 'One evaluated model.' : 'How the runs compare.' }}</h2>
             </div>
             <p>
               Lower is better. A failed trial contributes {{ failurePenalty }} questions.
@@ -247,7 +263,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
           </header>
 
           <template v-if="evaluated.length > 0">
-            <article v-if="manifest.winner" class="winner-card">
+            <article v-if="manifest.winner && evaluated.length > 1" class="winner-card">
               <div>
                 <p class="eyebrow">
                   {{
@@ -383,16 +399,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
             </div>
           </template>
 
-          <article v-else class="empty-results">
-            <p class="eyebrow">Current status</p>
-            <h3>Pilot comparison in progress.</h3>
-            <p>Results appear after a complete, integrity-checked run covers every subject.</p>
-            <dl>
-              <div><dt>Active cohort</dt><dd>{{ manifest.active_cohort.display_name }}</dd></div>
-              <div><dt>Trials / model</dt><dd>{{ totalTrials }}</dd></div>
-              <div><dt>Failure penalty</dt><dd>{{ failurePenalty }} questions</dd></div>
-            </dl>
-          </article>
+
         </div>
       </section>
 
@@ -437,10 +444,10 @@ const scoreDots = computed<ScoreDot[]>(() =>
               with the kids. Patrick then designed and built the project.
             </p>
             <div class="button-row">
-              <RouterLink class="button button-secondary" :to="{ name: 'about' }">
+              <RouterLink class="button button-secondary" :to="editionRoute('about')">
                 Origin and prior work
               </RouterLink>
-              <RouterLink class="button button-primary" :to="{ name: 'data' }">
+              <RouterLink class="button button-primary" :to="editionRoute('data')">
                 Explore public data
               </RouterLink>
             </div>
@@ -452,6 +459,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
 </template>
 
 <style scoped>
+.home-edition-empty { padding-block: .5rem 2rem; }
 .home-hero {
   position: relative;
   padding-block: clamp(1.75rem, 2vw, 2.25rem);
@@ -526,20 +534,6 @@ const scoreDots = computed<ScoreDot[]>(() =>
   grid-area: round;
   justify-self: end;
   margin-top: 0;
-}
-
-.home-hero-inner :deep(.round-head),
-.home-hero-inner :deep(.round-columns),
-.home-hero-inner :deep(.round-card li) {
-  padding: 0.7rem 0.9rem;
-}
-
-.home-hero-inner :deep(.round-card li) {
-  min-height: 3.5rem;
-}
-
-.home-hero-inner :deep(.round-card li.round-guess) {
-  min-height: 4.1rem;
 }
 
 .home-hero-inner :deep(.round-score-connector) {

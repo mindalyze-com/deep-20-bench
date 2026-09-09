@@ -52,9 +52,24 @@ def parse_subject_catalog(
     label: str,
 ) -> tuple[SubjectCatalog, str]:
     catalog = _validate_model(SubjectCatalog, value, label)
-    payload = catalog.model_dump(mode="json")
+    # Match the producer's identity hash; status only schedules new executions.
+    payload = catalog.model_dump(
+        mode="json", exclude={"subjects": {"__all__": {"status"}}},
+    )
     serialized = json.dumps(payload, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
     return catalog, sha256_text(serialized)
+
+
+def parse_manifest(value: dict[str, JsonValue], label: str) -> BenchmarkManifestArtifact:
+    verify_signed_object(value, label)
+    return _validate_model(BenchmarkManifestArtifact, value, label)
+
+
+def uses_five_answers(manifest: BenchmarkManifestArtifact) -> bool:
+    return (
+        manifest.definition.game_policy.prompt_profile == "qualified_v1"
+        or manifest.definition.oracle_configuration.root.get("prompt_profile") == "qualified_v1"
+    )
 
 
 def parse_run(

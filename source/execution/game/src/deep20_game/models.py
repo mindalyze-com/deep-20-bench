@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
 from typing import Annotated, Literal
@@ -7,6 +8,7 @@ from typing import Annotated, Literal
 from deep20_oracle.config import OracleConfig
 from deep20_oracle.models import (
     RUN_ID_PATTERN,
+    DecisionSupport,
     Evidence,
     FailureDiagnostics,
     JsonObject,
@@ -18,6 +20,7 @@ from deep20_oracle.models import (
     OracleResearchQuestionClass,
     OracleResearchResolution,
     OracleResearchStrategy,
+    OracleResult,
     OracleRole,
     ProviderResultAudit,
     ProviderTrace,
@@ -26,8 +29,10 @@ from deep20_oracle.models import (
     StrictModel,
     Subject,
 )
-from pydantic import ConfigDict, Field, model_validator
+from deep20_oracle.search_budget import MAX_SERVER_TOOL_CALLS
+from pydantic import ConfigDict, Field, field_validator, model_validator
 
+from .answer_cache import normalized_question
 from .config import ModelConfig
 
 EPISODE_ID_PATTERN = r"^EP-[0-9a-f]{32}$"
@@ -159,6 +164,13 @@ class GuessValidationResult(StrictModel):
     answer: OracleAnswer
     explanation: str = Field(min_length=1, max_length=2_000)
 
+    @field_validator("answer")
+    @classmethod
+    def exact_identity_answer(cls, answer: OracleAnswer) -> OracleAnswer:
+        if answer in {OracleAnswer.RATHER_YES, OracleAnswer.RATHER_NO}:
+            raise ValueError("identity validation requires YES, NO, or UNKNOWN")
+        return answer
+
 
 class GuesserSamplingMode(StrEnum):
     PROMPT_NONCE_PLUS_PROVIDER_SEED = "prompt_nonce_plus_provider_seed"
@@ -251,11 +263,11 @@ class OracleRoleResultCallAudit(StrictModel):
     provider: ProviderResultAudit
 
 
-class OracleResearchAttemptResultCallAudit(StrictModel):
+class OracleResearchAttemptResultCallAudit(DecisionSupport):
     attempt_number: int = Field(ge=1, le=2)
     strategy: OracleResearchStrategy
     outcome: OracleResearchOutcome
-    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=8)
+    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=MAX_SERVER_TOOL_CALLS)
     query_provenance: Literal["model_reported"] = "model_reported"
     evidence_count: int = Field(ge=0, le=3)
     prompt: ResultPromptAudit
@@ -282,14 +294,20 @@ class OracleResearchResultCallAudit(StrictModel):
         ):
             raise ValueError("the second retained research attempt must be recovery")
         primary_resolutions = {
+            OracleResearchResolution.BOUNDED_UNKNOWN,
             OracleResearchResolution.ANSWERED_PRIMARY,
             OracleResearchResolution.GENUINE_UNKNOWN_PRIMARY,
         }
         if (self.resolution in primary_resolutions) != (len(self.attempts) == 1):
             raise ValueError("retained research resolution differs from attempt count")
         for attempt in self.attempts:
-            if (attempt.outcome is OracleResearchOutcome.ANSWERED) != (attempt.evidence_count > 0):
-                raise ValueError("retained research outcome differs from evidence count")
+            if attempt.basis is None:
+                if (attempt.outcome is OracleResearchOutcome.ANSWERED) != (attempt.evidence_count > 0):
+                    raise ValueError("retained research outcome differs from evidence count")
+            elif attempt.basis.value == "evidence" and (
+                attempt.outcome is not OracleResearchOutcome.ANSWERED or not attempt.evidence_count
+            ):
+                raise ValueError("evidence basis requires an answered result and excerpts")
         final_answered = self.attempts[-1].outcome is OracleResearchOutcome.ANSWERED
         answered_resolution = self.resolution in {
             OracleResearchResolution.ANSWERED_PRIMARY,
@@ -336,12 +354,66 @@ class OracleResearchResultCallAudit(StrictModel):
         return self
 
 
+class OracleTurnSource(StrictModel):
+    """Original answer attribution. Never part of a model-visible projection."""
+
+    model_config = ConfigDict(strict=True, extra="forbid", frozen=True, str_strip_whitespace=False)
+
+    normalization: Literal["casefold-ascii-spaces-v1"] = "casefold-ascii-spaces-v1"
+    target_id: str = Field(pattern=r"^T-[0-9]{4}$")
+    episode_id: str = Field(pattern=EPISODE_ID_PATTERN)
+    turn_number: int = Field(ge=1)
+    oracle_call_id: str = Field(pattern=r"^OC-[0-9a-f]{32}$")
+    question: str = Field(min_length=1, max_length=1_000)
+    answered_at: str = Field(min_length=1)
+
+    @field_validator("answered_at")
+    @classmethod
+    def aware_answer_time(cls, value: str) -> str:
+        parsed = datetime.fromisoformat(value)
+        if parsed.tzinfo is None:
+            raise ValueError("cache answer time requires a timezone")
+        return parsed.isoformat()
+
+
+class EpisodeOracleCacheSource(OracleTurnSource):
+    """An original live response in this game, without an invented source file."""
+
+    policy: Literal["same_episode_ask_v1"] = "same_episode_ask_v1"
+    run_id: str = Field(pattern=RUN_ID_PATTERN)
+
+
+class OracleCacheSource(OracleTurnSource):
+    policy: Literal["historical_ask_v1", "same_execution_ask_v1"] = "historical_ask_v1"
+    context_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    snapshot_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    execution_id: str = Field(pattern=r"^BX-[A-Za-z0-9][A-Za-z0-9._-]{0,43}$")
+    model_id: str = Field(pattern=r"^M-[0-9]{4}$")
+    benchmark_id: str = Field(pattern=r"^B-[0-9]{4}$")
+    trial_id: str = Field(pattern=r"^trial-[0-9]{3,5}$")
+    source_file: str = Field(min_length=1)
+    source_integrity_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @field_validator("source_file")
+    @classmethod
+    def relative_source_file(cls, value: str) -> str:
+        if value.startswith("/") or ".." in value.split("/"):
+            raise ValueError("cache source must be a relative artifact path")
+        return value
+
+
+OracleAnswerSource = Annotated[
+    OracleCacheSource | EpisodeOracleCacheSource, Field(discriminator="policy"),
+]
+
+
 class OracleResultCallAudit(StrictModel):
     component: Literal["oracle"] = "oracle"
     call_id: str = Field(pattern=r"^OC-[0-9a-f]{32}$")
     turn_number: int = Field(ge=1)
     status: Literal[ResultCallStatus.SUCCESS] = ResultCallStatus.SUCCESS
     oracle: OracleRoleResultCallAudit
+    cache_source: OracleAnswerSource | None = Field(default=None, exclude_if=lambda v: v is None)
     research: OracleResearchResultCallAudit | None = None
     reviewer: OracleRoleResultCallAudit | None = None
     judge: OracleRoleResultCallAudit | None = None
@@ -358,6 +430,39 @@ class OracleResultCallAudit(StrictModel):
             primary = self.research.attempts[0]
             if primary.prompt != self.oracle.prompt or primary.provider != self.oracle.provider:
                 raise ValueError("primary research audit must match the Oracle role audit")
+        return self
+
+
+class CachedOracleMetrics(StrictModel):
+    """No provider operation occurred. Historical billing stays in the marked source audit."""
+
+    cost_usd: Decimal = Field(default=Decimal(0), ge=0, le=0)
+    latency_ms: Literal[0] = 0
+    input_tokens: Literal[0] = 0
+    cached_input_tokens: Literal[0] = 0
+    cache_write_tokens: Literal[0] = 0
+    output_tokens: Literal[0] = 0
+    reasoning_tokens: Literal[0] = 0
+    search_count: Literal[0] = 0
+    recovery: RecoveryTotals = Field(default_factory=RecoveryTotals)
+
+
+class CachedOracleAnswer(StrictModel):
+    result: OracleResult
+    adjudication: OracleAdjudication
+    source: OracleAnswerSource
+    original_audit: OracleResultCallAudit
+
+    @model_validator(mode="after")
+    def original_answer_matches(self) -> CachedOracleAnswer:
+        if self.result.answer is not self.adjudication.oracle_answer:
+            raise ValueError("cached evidence must belong to the original Oracle answer")
+        if self.original_audit.cache_source is not None:
+            raise ValueError("cache entries must come directly from fresh adjudication")
+        if self.original_audit.turn_number != self.source.turn_number:
+            raise ValueError("cache source and original turn differ")
+        if self.original_audit.call_id != self.source.oracle_call_id:
+            raise ValueError("cache source and original call differ")
         return self
 
 
@@ -634,6 +739,10 @@ class OracleQualityTotals(StrictModel):
     judge_yes_answers: int = Field(default=0, ge=0)
     judge_no_answers: int = Field(default=0, ge=0)
     judge_unknown_answers: int = Field(default=0, ge=0)
+    final_rather_yes_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    final_rather_no_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    judge_rather_yes_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    judge_rather_no_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
     reviewer_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
     judge_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
     quality_control_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
@@ -647,6 +756,7 @@ class OracleQualityTotals(StrictModel):
             raise ValueError("every disagreement must invoke exactly one Judge")
         if (
             self.judge_yes_answers + self.judge_no_answers + self.judge_unknown_answers
+            + self.judge_rather_yes_answers + self.judge_rather_no_answers
             != self.judge_invocations
         ):
             raise ValueError("Judge answer distribution must match Judge invocations")
@@ -671,6 +781,7 @@ class TurnAdjudication(StrictModel):
     evidence: tuple[Evidence, ...] = ()
     explanation: str | None = None
     oracle_quality: OracleAdjudication | None = None
+    cache_source: OracleAnswerSource | None = Field(default=None, exclude_if=lambda v: v is None)
 
     @model_validator(mode="after")
     def details_match_component(self) -> TurnAdjudication:
@@ -681,7 +792,9 @@ class TurnAdjudication(StrictModel):
                 raise ValueError("Oracle adjudication requires quality-control decisions")
             if self.answer is not self.oracle_quality.final_answer:
                 raise ValueError("Oracle turn answer must equal the final quality-control answer")
-        elif self.evidence or self.oracle_quality is not None:
+        elif self.answer in {OracleAnswer.RATHER_YES, OracleAnswer.RATHER_NO}:
+            raise ValueError("Guess Validator adjudication requires an exact identity answer")
+        elif self.evidence or self.oracle_quality is not None or self.cache_source is not None:
             raise ValueError(
                 "Guess Validator adjudication cannot contain Oracle evidence or quality data"
             )
@@ -759,6 +872,7 @@ class EpisodeSummary(StrictModel):
     guess_count: int = Field(ge=0)
     rejected_guess_count: int = Field(ge=0)
     oracle_unknown_count: int = Field(ge=0)
+    oracle_cache_hits: int = Field(default=0, ge=0, exclude_if=lambda v: v == 0)
     oracle_quality: OracleQualityTotals = Field(default_factory=OracleQualityTotals)
     contract: GuesserContractReliability = Field(default_factory=GuesserContractReliability)
     cache_status: CacheStatus
@@ -818,7 +932,50 @@ class EpisodeResult(StrictModel):
             }
         ):
             raise ValueError("terminal failure details require a failed exceptional outcome")
+        cached_turns = tuple(
+            turn for turn in self.turns
+            if isinstance(turn, ActionTurnResult) and turn.adjudication.cache_source is not None
+        )
+        if self.summary.oracle_cache_hits != len(cached_turns):
+            raise ValueError("Oracle cache-hit summary differs from source-marked turns")
+        if cached_turns and self.audit is None:
+            raise ValueError("cached turns require their original role audit")
         if self.audit is not None:
+            audits = {call.call_id: call for call in self.audit.calls}
+            for turn in self.turns:
+                if not isinstance(turn, ActionTurnResult):
+                    continue
+                source = turn.adjudication.cache_source
+                call = audits.get(turn.adjudication.call_id)
+                audit_source = call.cache_source if isinstance(call, OracleResultCallAudit) else None
+                if source != audit_source:
+                    raise ValueError("turn and audit cache provenance differ")
+                if source is not None and source.target_id != self.subject.target_id:
+                    raise ValueError("cached answer subject differs from episode")
+                if isinstance(source, EpisodeOracleCacheSource):
+                    original = next((item for item in self.turns
+                                     if item.turn_number == source.turn_number), None)
+                    if (
+                        source.run_id != self.run_id or source.episode_id != self.episode_id
+                        or source.turn_number >= turn.turn_number
+                        or not isinstance(original, ActionTurnResult)
+                        or original.action.action is not ActionType.ASK
+                        or original.adjudication.cache_source is not None
+                        or original.adjudication.call_id != source.oracle_call_id
+                        or original.action.question != source.question
+                        or normalized_question(source.question)
+                        != normalized_question(turn.action.question or "")
+                        or original.adjudication.answer != turn.adjudication.answer
+                        or original.adjudication.evidence != turn.adjudication.evidence
+                        or original.adjudication.oracle_quality != turn.adjudication.oracle_quality
+                    ):
+                        raise ValueError("same-episode cache source must match an earlier live ASK")
+                    original_audit = audits.get(source.oracle_call_id)
+                    if (not isinstance(call, OracleResultCallAudit)
+                        or not isinstance(original_audit, OracleResultCallAudit)
+                        or call.model_copy(update={"call_id": original_audit.call_id,
+                            "turn_number": source.turn_number, "cache_source": None}) != original_audit):
+                        raise ValueError("same-episode cache audit differs from original")
             expected_calls = (
                 self.summary.guesser_call_count + self.summary.ask_count + self.summary.guess_count
             )
@@ -1058,7 +1215,7 @@ class TurnProgress(StrictModel):
     episode_id: str = Field(pattern=EPISODE_ID_PATTERN)
     turn: ActionTurnResult
     guesser_metrics: CallMetrics
-    adjudicator_metrics: CallMetrics | OracleMetrics
+    adjudicator_metrics: CallMetrics | OracleMetrics | CachedOracleMetrics
 
 
 class ContractViolationProgress(StrictModel):

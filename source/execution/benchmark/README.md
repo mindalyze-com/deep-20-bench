@@ -1,5 +1,48 @@
 # Benchmark control plane
 
+For a Guesser-free replay of recorded questions against the current Oracle pipeline, use
+`deep20 benchmark replay-oracle`. See [Oracle question replay](../../../documentation/oracle-question-replay.md)
+for the Astra five-answer source, preview, filters, private comparison reports, and continuation.
+
+New B-0003 executions use `concise_knowledge_v1`: one research attempt requesting
+`research_query_target` queries (default 3), with an API ceiling calculated as the target plus
+two bonus calls. Valid completed answers within that ceiling retain normal independent
+evidence/knowledge decisions and private `evidence`/`other` basis plus a supporting statement. This policy permits source-free directional answers
+and retained UNKNOWN context; the earlier evidence/recovery rules below describe historical
+policies. See [the current policy](../../../documentation/five-answer-experiment.md#concise-evidenceknowledge-policy).
+
+
+Benchmark executions support [historical Oracle answer reuse](../../../documentation/oracle-history-cache.md) under the explicit
+`historical_ask_v1`, `same_episode_ask_v1`, and `same_execution_ask_v1` policies. The benchmark
+lazily loads verified historical trials and adds eligible live ASK answers after each completed,
+scoring-eligible game. Later repetitions reuse these answers; resume restores them from verified
+trial artifacts. The engine also stores answers immediately for normalized repeats within one
+game. Repeats still count as questions. Reused ASK turns retain original evidence and marked
+source provenance, with no new adjudicator calls or cost. Each Guesser conversation starts fresh;
+cache metadata never enters it. Standalone commands keep fresh-call behavior. Guesser and
+Validator responses are never cached. Older manifests retain their recorded cache scope.
+
+New direct runs discover other processes' completed games when each subject starts. Trial YAML
+is written atomically after each game, so the source run need not be finished. Each subject's
+inventory is saved before reuse and restored on resume; subsequent questions and repetitions
+for that subject do not rescan external history. Pass `--oracle-history-before` to freeze all
+subjects at one cutoff. Existing executions retain the discovery policy in their manifest.
+
+
+B-0003 adds an experimental five-answer qualified_v1 profile with three default repetitions and the same models. Its Guesser and Oracle profiles must match. Qualified tokens stay out of standard runs and the v9 publication. See [Five-answer experiment](../../../documentation/five-answer-experiment.md).
+
+Earlier B-0003 definitions explicitly selected `adjudication_policy: judge_stable_knowledge_v1` in
+Oracle configuration. The versioned Judge fallback changes the immutable definition hash;
+use fresh execution IDs and compare policies separately. Missing policy retains the historical
+profile behavior. The configured policy reaches structured startup canaries, provider schemas,
+local validation, and saved episode configuration. Scheduling remains three iterations, and
+Oracle UNKNOWN and Oracle-Reviewer agreement still bypass the Judge.
+
+The concise policy now gives a completed Oracle reply with explicit zero recorded searches
+the existing bounded invalid-output retry. Missing telemetry and route/cache/budget faults
+do not authorize retry. The retry still requires a recorded search, preserves blind inputs,
+and retains all costs. This service revision changes the factual contract for fresh runs.
+
 `deep20-benchmark` is the top-level orchestration package. Each execution applies a benchmark
 definition to exactly one registered Guesser configuration, persists every trial continuously,
 publishes live typed state, aggregates that model's observations, renders derived summaries,
@@ -16,6 +59,12 @@ paths, configure logging, or own routine benchmark `INFO` lines.
 
 ## Catalogs and scheduling
 
+`B-0002` is an experimental concise-prompt variant of `B-0001`, with five default repeats.
+Its revised Guesser and factual-adjudication profiles keep the same models, scoring, and
+three-answer protocol. It cannot run in official mode or enter the standard leaderboard.
+Startup canaries run by default for this experiment as well as official runs. See
+[Concise prompt experiment](../../../documentation/concise-prompt-experiment.md).
+
 `config/models.yaml` registers exact Guesser configurations by immutable `M-…` ID.
 Each configuration also declares `structured_output_mode`. The normal
 `strict_json_schema` mode requires provider-side JSON Schema enforcement. A route explicitly
@@ -28,10 +77,29 @@ instructions, and is validated locally against the complete action contract with
 - Oracle, blind Reviewer, blind Judge, and Guess Validator configurations. Reviewer and Judge
   routes are nested under the Oracle configuration.
 
+All three benchmark templates now allow 40 counted questions and one final guess-only
+opportunity. Their changed definition hashes require new execution IDs. Existing runs retain
+their recorded 50-question policy; a resume or repair must use its original definition.
+Publication edition 1.0 remains at 50 for the historical leaderboard. Edition 1.1 declares a
+separate 40-question release cohort with its own prompt and configuration pins. Neither cohort
+admits a different limit; current execution defaults do not change either release definition.
+
 `--model` is required and binds one immutable Guesser configuration to the run. With no target
-selection, every registered subject is selected in catalog order; explicit target lists
-preserve caller order. Trials run numerically and execution is sequential. Failed trials are
+selection, a new execution selects every active subject in catalog order; explicit target lists
+preserve caller order and reject inactive subjects. Trials run numerically and execution is
+sequential. Failed trials are
 retained as infrastructure failures and are never silently replaced.
+
+`config/subjects.yaml` retains all subjects. Its optional per-entry `status` is `active` by
+default; set `status: inactive` to remove a subject from new benchmark schedules without
+deleting its identity. Stephen King (`T-0003`) and Mario (`T-0007`) are inactive, leaving ten
+active subjects. Reactivate either by setting `status: active`.
+
+Existing execution IDs retain their signed subject selection on resume or repair, even when a
+subject is now inactive. Omitted targets use that recorded selection. Status does not enter
+the subject identity hash or any component request, so status changes alone do not invalidate
+existing runs. Changes to subject identity, game policy, or other immutable context still fail
+the existing consistency checks. Historical publication cohorts retain their configured IDs.
 
 `--benchmark-mode` is also required and accepts exactly `official` or `experimental`. There is
 no implicit mode: omitting the option stops before credentials or providers are accessed and
@@ -43,6 +111,42 @@ complete registered Guesser catalog, but it does not decide whether an official 
 ```bash
 uv run deep20 benchmark preflight
 ```
+
+For a running official execution, render its completed position scores against both the
+published overall leader and the published model leading over the same completed prefix:
+
+```bash
+uv run python scripts/benchmark-progress-report.py \
+  M-0022 BX-20260904-official-M0022-001
+```
+
+Markdown is the default. Pass `--format` or `--format console` for padded ASCII console tables:
+
+```bash
+uv run python scripts/benchmark-progress-report.py \
+  M-0022 BX-20260904-official-M0022-001 --format console
+```
+
+Pass `--context` to prepend the latest resolved question and answer from both the current and
+previous rounds, including Oracle evidence excerpts and source URLs. An optional count selects
+more recent questions from each round, for example `--context 3`. This is report-only data and
+is never added to Guesser history or any later model request.
+
+The report reads validated terminal trial artifacts and generated publication data. It lists
+the subject, penalized question score, cumulative total cost, and output-contract break count
+for both models at each completed position. A combined final column presents both break counts
+in the same model order as the cost column. Subject and overall rows total the included breaks.
+Averages and costs use two decimal places. Candidate costs include superseded repair attempts.
+Subject-average rows state how many configured iterations are represented. The status section
+reports the exact live position and distinguishes active failures from repaired historical
+failures. A separate timing section reports active runtime and estimates remaining
+time from the candidate's own elapsed speed. It maps the live position and turn to the overall
+leader's actual per-trial timing, uses that point as the completed fraction of the leader's
+run, and projects the candidate's total and remaining runtime from that fraction. A separate
+linear estimate uses completed positions only. Both estimates show remaining duration and a
+finish timestamp in the system timezone; `--timezone` accepts an explicit IANA timezone. The
+script rejects a run whose benchmark, subject order, iteration count, seed, or scoring policy
+does not match the active published cohort.
 
 Official runs make one small, real call for each configured role before any trial starts. The
 Guesser, Oracle, and Guess Validator calls ask the exact model under its configured routing
@@ -82,7 +186,7 @@ Target selection and iteration flags are optional; `--model`, `--run-id`, and
 `--max-consecutive-infrastructure-failures` consecutive infrastructure failures (default 5) the
 run aborts with a typed `infrastructure_circuit_breaker_open` error instead of burning the
 remaining schedule; the execution can be resumed or repaired later. This minimal form runs the
-selected model against the complete subject catalog with the default three iterations:
+selected model against all active subjects with the default three iterations:
 
 ```bash
 uv run deep20 benchmark run B-0001 \
@@ -109,21 +213,76 @@ uv run deep20 benchmark repair B-0001 \
   --run-id BX-019-example
 ```
 
-To run the complete subject catalog for every registered model concurrently, use the repository
-wrapper:
+Experimental repairs may explicitly pass `--allow-oracle-contract-change` after an Oracle
+implementation or prompt fix. The original signed manifest, schedule, scored games and failed
+attempt costs remain intact. A signed resume event records the previous/current Oracle hashes,
+the current definition hash and the replacement history snapshot. Historical sources are
+cleared across this boundary, while the original cutoff and same-episode policy stay fixed.
+Later repairs use the recorded active contract; another change requires explicit opt-in again.
+This does not permit model, subject, game-policy, or configuration changes. The final result
+lists its contract revisions and retains an execution-level publication-ineligible flag.
+The independent publisher can accept explicitly authorized release revisions only after
+complete scoring coverage and its full contract checks; see `source/publication/README.md`.
+Mixed-contract executions never seed historical ASK inventories. Official repairs cannot use
+this exception. Prefer a fresh
+execution when a uniform factual contract is required for comparison.
+
+The batch wrapper requires the benchmark ID and execution mode explicitly. Preview a
+five-answer batch on all active subjects with:
 
 ```bash
-scripts/run-all-models.sh official 002 3
+scripts/run-all-models.sh B-0003 experimental 001 \
+  --exclude-model M-0013 \
+  --exclude-model M-0017 \
+  --dry-run
 ```
 
-The positional arguments are mode, three-digit batch sequence, and iterations (default `3`).
-The script starts every registered model concurrently, staggering launches by
-`DEEP20BENCH_STAGGER_SECONDS` (default 45 seconds) to decorrelate provider rate-limit bursts,
-and does not pass `--targets`, so every
-execution expands to all registered subjects. IDs follow `BX-YYYYMMDD-MODE-MNNNN-SSS`.
-Standard output and error are merged within a separate
-`benchmark-logs/BX-YYYYMMDD-MODE-ALL-SSS/M-NNNN.log` file for each model, so concurrent output
-does not interleave. Reusing the same sequence resumes those execution IDs.
+The example exclusions reflect the unresolved Qwen identity mismatch and unavailable Ox Alpha
+route checked on 7 September 2026; they are caller choices, not automatic catalog exclusions.
+Recheck the routes before selecting the actual batch. To select only particular models, repeat
+`--model`, for example `--model M-0001 --model M-0006`. Omitting selections starts from all
+registered models; `--exclude-model` then removes named registrations. Unknown IDs, duplicate
+selections, an empty selection, or incompatible benchmark/mode settings fail before launch.
+
+The positional arguments are benchmark ID, mode, optional three-digit sequence (default `001`),
+and optional iterations. Iterations come from the benchmark catalog when omitted: **3 for
+B-0003**. B-0001 also defaults to 3; B-0002 retains its separate default of 5. The former
+`scripts/run-all-models.sh experimental ...` syntax is rejected. Use `B-0001 official` explicitly
+for a standard official batch; B-0003 requires `experimental`.
+
+`--dry-run` validates local configuration and prints the commands without writing batch
+artifacts, checking live routes, running canaries, or starting games. Remove it to execute the
+batch. Full macOS batches must still run in detached `screen` sessions with
+`nohup /usr/bin/caffeinate -i ... </dev/null >>run.log 2>&1 &`. Verify screen, caffeinate,
+benchmark processes, startup canaries, manifests, and the first turn after launching.
+
+The wrapper defaults to per-subject history discovery for every model, matching direct runs.
+It can reuse newly completed games from concurrent runs without an extra option. History is
+discovered once per subject, so available answers can depend on process timing. Preview it with:
+
+```bash
+scripts/run-all-models.sh B-0003 experimental 002 \
+  --model M-0001 --model M-0006 --dry-run
+```
+
+Use `--oracle-history-before` for a shared, timezone-aware fixed cutoff, or `--no-oracle-cache`
+to disable all ASK reuse policies. `--refresh-oracle-history` remains an explicit spelling of
+the default. These options are mutually exclusive.
+A real launch saves its model selection, iterations, seed 0,
+and cache settings in `benchmark-logs/<batch-id>/batch.json`. Restarting the same batch reuses
+the recorded cutoff or refresh mode, including older fixed-cutoff batches; changing saved
+settings requires a fresh sequence. Keep source history artifacts immutable for a comparison
+with a fixed cutoff. Dry-run previews do not save a batch plan.
+
+Models run concurrently, with `DEEP20BENCH_STAGGER_SECONDS` (default 45 seconds) between starts.
+The benchmark CLI owns active-subject selection; the wrapper supplies no subject hints or target
+overrides. Startup canaries remain enabled. Execution IDs include the benchmark ID to avoid
+cross-profile collisions: `BX-YYYYMMDD-B-NNNN-MODE-MNNNN-SSS`. Batch logs live under
+`benchmark-logs/BX-YYYYMMDD-B-NNNN-MODE-ALL-SSS/`, with stdout and stderr merged into one
+append-only `M-NNNN.log` per model. A process lock prevents concurrent launches of the same batch.
+The wrapper waits for every child and returns a failure status if any child fails. An interrupted
+launcher terminates its remaining child process groups. `RUN_DATE=YYYYMMDD` selects the original
+batch date when restarting on another day; existing benchmark consistency and resume rules apply.
 
 Detached benchmark commands must be one-shot jobs. Do not submit them to a launchd service with
 `KeepAlive` enabled: launchd will restart a successfully completed execution. A direct `nohup`
@@ -256,11 +415,15 @@ reports, and console logs. Benchmark progress JSONL, including typed contract-vi
 is appended and `fsync`ed immediately;
 `state.yml` is replaced atomically after every progress event.
 
-If two Oracle retrieval attempts cannot support a deterministic closed or temporal fact, the
-trial records `oracle_research_exhausted` as an infrastructure failure. The retained failure
-diagnostic includes only the typed research classification and bounded query summary needed to
-distinguish retrieval exhaustion from a genuine factual `UNKNOWN`; provider responses and
-evidence remain excluded.
+If valid Oracle research remains inconclusive after recovery, the trial receives `UNKNOWN`
+and continues under the normal scoring rules. Question keywords never turn missing evidence
+into an infrastructure failure. Actual provider, schema, required-search, routing, and
+persistence failures retain their infrastructure classification. New research audits use
+`question_class: other`; historical labels and outcomes are not rewritten.
+
+The revised factual contract `oracle-factual-answer-v2-inconclusive-unknown` is included in
+benchmark definition hashes even when ASK caching is disabled. Fresh execution IDs are
+required, and historical-cache inventories from the previous contract are incompatible.
 
 ```text
 runs/
@@ -308,3 +471,6 @@ condensed line per resolved turn, one terminal trial line, and one final result 
 Lower-component diagnostics remain below the benchmark's routine output level. Prompts, raw
 responses, evidence excerpts, subject descriptions, credentials, headers, and environment
 values are never logged.
+
+Direct questions and collected regression cases can run through the same Oracle service with
+`deep20 benchmark test-oracle`. See [Direct Oracle question suites](../../../documentation/oracle-question-suites.md).

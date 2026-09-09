@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { editionRoute } from "@/lib/route-location";
 import { computed, onMounted, ref, watch } from "vue";
 import type { RouteLocationRaw } from "vue-router";
 
@@ -311,7 +312,7 @@ const roleGuide = runRoleOrder.map((role) => ({
               <dd>{{ role.description }}</dd>
             </div>
           </dl>
-          <RouterLink :to="{ name: 'methodology', hash: '#answer-checks' }">
+          <RouterLink :to="editionRoute('methodology', { hash: '#answer-checks' })">
             Read the role and answer-checking method →
           </RouterLink>
         </div>

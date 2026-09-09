@@ -3,7 +3,11 @@ from __future__ import annotations
 from decimal import Decimal
 
 from .models import (
+    EditionRunReference,
+    PublicationConfig,
     PublicationDataBundle,
+    PublicationEditionReference,
+    PublicationEditionsDocument,
     PublicationEpisodeDocument,
     PublicationLeaderboardDocument,
     PublicationManifestDocument,
@@ -34,6 +38,7 @@ def _run_reference(run: PublicRun) -> PublicationRunReference:
 def _subject_document(
     run: PublicRun,
     subject: PublicSubject,
+    edition_id: str,
 ) -> PublicationSubjectDocument:
     episodes = tuple(trial.episode for trial in subject.trials if trial.episode is not None)
     if not episodes:
@@ -58,6 +63,7 @@ def _subject_document(
             f"published subject {run.execution_id}/{subject.target_id} has inconsistent names"
         )
     return PublicationSubjectDocument(
+        edition_id=edition_id,
         execution_id=run.execution_id,
         target_id=subject.target_id,
         profile=PublicationSubjectProfile(
@@ -110,8 +116,10 @@ def _repeat_averages(run: PublicRun) -> tuple[PublicRepeatAverage, ...]:
 
 def split_publication(dataset: PublishedDataset) -> PublicationDataBundle:
     ordered_runs = (*dataset.official_runs, *dataset.lab_runs)
+    edition_id = dataset.active_cohort.edition_id
     return PublicationDataBundle(
         manifest=PublicationManifestDocument(
+            edition_id=edition_id,
             dataset_schema_version=dataset.schema_version,
             site=dataset.site,
             score_policy=dataset.score_policy,
@@ -123,15 +131,18 @@ def split_publication(dataset: PublishedDataset) -> PublicationDataBundle:
             lab_runs=tuple(_run_reference(run) for run in dataset.lab_runs),
         ),
         leaderboard=PublicationLeaderboardDocument(
+            edition_id=edition_id,
             leaderboard=dataset.leaderboard,
         ),
         repeat_averages=PublicationRepeatAveragesDocument(
+            edition_id=edition_id,
             averages=tuple(
                 average for run in dataset.official_runs for average in _repeat_averages(run)
             ),
         ),
         runs=tuple(
             PublicationRunDocument(
+            edition_id=edition_id,
                 run=PublicRunSummary.model_validate(run, from_attributes=True),
                 subjects=tuple(
                     PublicSubjectSummary.model_validate(subject, from_attributes=True)
@@ -141,10 +152,11 @@ def split_publication(dataset: PublishedDataset) -> PublicationDataBundle:
             for run in ordered_runs
         ),
         subjects=tuple(
-            _subject_document(run, subject) for run in ordered_runs for subject in run.subjects
+            _subject_document(run, subject, edition_id) for run in ordered_runs for subject in run.subjects
         ),
         episodes=tuple(
             PublicationEpisodeDocument(
+            edition_id=edition_id,
                 execution_id=run.execution_id,
                 target_id=subject.target_id,
                 trial_id=trial.trial_id,
@@ -154,5 +166,33 @@ def split_publication(dataset: PublishedDataset) -> PublicationDataBundle:
             for subject in run.subjects
             for trial in subject.trials
             if trial.episode is not None
+        ),
+    )
+
+
+def edition_index(
+    config: PublicationConfig, datasets: tuple[PublishedDataset, ...],
+) -> PublicationEditionsDocument:
+    return PublicationEditionsDocument(
+        default_edition_id=config.default_edition_id,
+        built_at=datasets[0].provenance.built_at,
+        editions=tuple(
+            PublicationEditionReference(
+                edition_id=dataset.active_cohort.edition_id,
+                label=dataset.active_cohort.edition_label,
+                status=dataset.active_cohort.edition_status,
+                manifest_path=f"editions/{dataset.active_cohort.edition_id}/manifest.json",
+                leaderboard_path=f"editions/{dataset.active_cohort.edition_id}/leaderboard.json",
+                repeat_averages_path=f"editions/{dataset.active_cohort.edition_id}/repeat-averages.json",
+                runs=tuple(
+                    EditionRunReference(
+                        execution_id=run.execution_id,
+                        model_id=run.model_id,
+                        model_name=run.model_name,
+                        classification=run.classification,
+                        target_ids=run.target_ids,
+                    ) for run in dataset.official_runs
+                ),
+            ) for dataset in datasets
         ),
     )

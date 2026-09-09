@@ -26,6 +26,7 @@ from deep20_game.models import (
     ValidatorFailureRecord,
     ValidatorSuccessRecord,
 )
+from deep20_oracle.cache_contract import oracle_contract_hash
 from deep20_oracle.config import OracleConfig
 from deep20_oracle.models import (
     OracleCall,
@@ -36,10 +37,11 @@ from deep20_oracle.models import (
 )
 from deep20_oracle.provider_output import error_outputs_from_trace
 from deep20_oracle.sinks import OracleFailureRecord, OracleSuccessRecord
-from deep20_oracle.util import canonical_json, sha256_text, timestamp
+from deep20_oracle.util import canonical_json, load_yaml_unique, sha256_text, timestamp
 from pydantic import TypeAdapter
 
 from .aggregation import SUMMARY_USD_QUANTUM, round_summary_value
+from .history_models import OracleHistorySnapshot, OracleSubjectHistoryCheckpoint
 from .models import (
     ERROR_OUTPUT_PREVIEW_MAX_CHARACTERS,
     ArtifactFileReference,
@@ -61,6 +63,7 @@ from .models import (
     InfrastructureFailedTrialSummaryEntry,
     SubjectBenchmarkResult,
     SubjectId,
+    SubjectStartedEvent,
     SubjectSummaryEntry,
     TrialArtifactReferences,
     TrialAuditManifest,
@@ -97,6 +100,72 @@ class BenchmarkExecutionLocked(RuntimeError):
     """Raised when another process already owns one benchmark execution."""
 
     code = "benchmark_execution_locked"
+
+
+class ArtifactSubjectHistoryStore:
+    """Persist one subject inventory per signed execution policy, including empty inventories."""
+
+    def __init__(
+        self, store: ArtifactStore, request: BenchmarkRequest, *, resumed: bool = False,
+    ) -> None:
+        self.store = store
+        self.request = request
+        self.resumed = resumed
+
+    def _path(self, subject: Subject, parent: OracleHistorySnapshot) -> Path:
+        return self.store.subject_root(
+            self.request.model_id, self.request.execution_id, subject.target_id,
+        ) / f"oracle-history-{parent.snapshot_hash}.json"
+
+    def load(self, subject: Subject, parent: OracleHistorySnapshot) -> OracleHistorySnapshot | None:
+        path = self._path(subject, parent)
+        if not path.exists():
+            if self.resumed and any(
+                isinstance(event, SubjectStartedEvent) and str(event.target_id) == subject.target_id
+                for event in self.store.load_events(self.request.model_id, self.request.execution_id)
+            ):
+                raise ArtifactIntegrityError("missing saved Oracle subject history")
+            return None
+        raw: object = load_yaml_unique(path)
+        if not isinstance(raw, dict):
+            raise ArtifactIntegrityError("invalid Oracle subject history envelope")
+        _verify_signed(raw, "Oracle subject history")
+        checkpoint = OracleSubjectHistoryCheckpoint.model_validate_json(canonical_json(raw.get("payload")))
+        if (
+            checkpoint.parent_snapshot_hash != parent.snapshot_hash
+            or checkpoint.subject_hash != sha256_text(canonical_json(subject.model_dump(mode="json")))
+        ):
+            raise ArtifactIntegrityError("Oracle subject history context mismatch")
+        return checkpoint.snapshot
+
+    def save(
+        self, subject: Subject, parent: OracleHistorySnapshot, snapshot: OracleHistorySnapshot,
+    ) -> None:
+        checkpoint = OracleSubjectHistoryCheckpoint(
+            parent_snapshot_hash=parent.snapshot_hash,
+            subject_hash=sha256_text(canonical_json(subject.model_dump(mode="json"))),
+            snapshot=snapshot,
+        )
+        path = self._path(subject, parent)
+        if path.exists():
+            if self.load(subject, parent) != snapshot:
+                raise ArtifactIntegrityError("cannot replace an Oracle subject history inventory")
+            return
+        self.store._atomic_write(
+            path, canonical_json(_signed_payload({"payload": checkpoint.model_dump(mode="json")})) + "\n",
+        )
+
+
+def load_benchmark_result_file(path: Path) -> BenchmarkResult:
+    """Read a complete benchmark result and verify its recorded integrity."""
+    value = yaml.safe_load(path.read_text(encoding="utf-8"))
+    result = BenchmarkResult.model_validate(value)
+    unsigned = copy.deepcopy(value)
+    unsigned.pop("integrity_hash", None)
+    unsigned["artifacts"]["result"]["integrity_hash"] = None
+    if result.integrity_hash != sha256_text(canonical_json(unsigned)):
+        raise ArtifactIntegrityError("benchmark result integrity hash mismatch")
+    return result
 
 
 def _signed_payload(payload: dict[str, object]) -> dict[str, object]:
@@ -485,14 +554,7 @@ class ArtifactStore:
         path = self.run_root(model_id, execution_id) / "result.yml"
         if not path.exists():
             return None
-        value = yaml.safe_load(path.read_text(encoding="utf-8"))
-        result = BenchmarkResult.model_validate(value)
-        unsigned = copy.deepcopy(value)
-        unsigned.pop("integrity_hash", None)
-        unsigned["artifacts"]["result"]["integrity_hash"] = None
-        if result.integrity_hash != sha256_text(canonical_json(unsigned)):
-            raise ArtifactIntegrityError("benchmark result integrity hash mismatch")
-        return result
+        return load_benchmark_result_file(path)
 
     def build_benchmark_summary(self, result: BenchmarkResult) -> BenchmarkSummaryArtifact:
         run_root = self.run_root(result.run.model.model_id, result.run.execution_id)
@@ -573,6 +635,7 @@ class ArtifactStore:
         definition: BenchmarkDefinitionSnapshot,
         model: BenchmarkModelSnapshot,
         subject_catalog_hash: str,
+        oracle_cache: OracleHistorySnapshot | None = None,
     ) -> BenchmarkManifest:
         unsigned = {
             "schema_version": 3,
@@ -583,6 +646,9 @@ class ArtifactStore:
             "git_commit": self._git(["rev-parse", "HEAD"]),
             "created_at": timestamp(),
         }
+        unsigned["oracle_contract_hash"] = oracle_contract_hash(definition.oracle_configuration)
+        if oracle_cache is not None:
+            unsigned["oracle_cache"] = oracle_cache.model_dump(mode="json")
         return BenchmarkManifest.model_validate(_signed_payload(unsigned))
 
     def _write_envelope(self, path: Path, model: _ModelT) -> ArtifactFileReference:

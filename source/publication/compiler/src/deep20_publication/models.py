@@ -30,6 +30,10 @@ EXECUTION_ID_PATTERN = r"^BX-[A-Za-z0-9][A-Za-z0-9._-]{0,43}$"
 TRIAL_ID_PATTERN = r"^trial-[0-9]{3,5}$"
 RUN_ID_PATTERN = r"^BR-[0-9a-f]{40}$"
 CALL_ID_PATTERN = r"^(?:GC|OC|VC)-[0-9a-f]{32}$"
+EditionId = Annotated[str, Field(pattern=r"^[0-9]+\.[0-9]+$")]
+FactualAnswer = Literal["YES", "RATHER_YES", "RATHER_NO", "NO", "UNKNOWN"]
+IdentityAnswer = Literal["YES", "NO", "UNKNOWN"]
+STANDARD_ANSWERS: tuple[IdentityAnswer, ...] = ("YES", "NO", "UNKNOWN")
 
 
 class JsonObject(RootModel[dict[str, JsonValue]]):
@@ -209,14 +213,19 @@ OracleResearchResolutionSnapshot = Literal[
     "genuine_unknown_primary",
     "genuine_unknown_recovery",
     "retrieval_exhausted_unknown",
+    "bounded_unknown",
 ]
 
 
 class OracleResearchAttemptResultCallAuditSnapshot(FrozenModel):
+    basis: Literal["evidence", "other"] | None = Field(default=None, exclude_if=lambda v: v is None)
+    supporting_statement: str | None = Field(
+        default=None, min_length=1, max_length=600, exclude_if=lambda v: v is None,
+    )
     attempt_number: int = Field(ge=1, le=2)
     strategy: OracleResearchStrategySnapshot
     outcome: OracleResearchOutcomeSnapshot
-    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=8)
+    attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=30)
     query_provenance: Literal["model_reported"]
     evidence_count: int = Field(ge=0, le=3)
     prompt: ResultPromptAuditSnapshot
@@ -240,12 +249,19 @@ class OracleResearchResultCallAuditSnapshot(FrozenModel):
             raise ValueError("the first retained research attempt must be primary")
         if len(self.attempts) == 2 and self.attempts[1].strategy != "diversified_recovery":
             raise ValueError("the second retained research attempt must be recovery")
-        primary_resolutions = {"answered_primary", "genuine_unknown_primary"}
+        primary_resolutions = {"answered_primary", "genuine_unknown_primary", "bounded_unknown"}
         if (self.resolution in primary_resolutions) != (len(self.attempts) == 1):
             raise ValueError("retained research resolution differs from attempt count")
         for attempt in self.attempts:
-            if (attempt.outcome == "answered") != (attempt.evidence_count > 0):
-                raise ValueError("retained research outcome differs from evidence count")
+            if (attempt.basis is None) != (attempt.supporting_statement is None):
+                raise ValueError("decision basis and statement must occur together")
+            if attempt.basis is None:
+                if (attempt.outcome == "answered") != (attempt.evidence_count > 0):
+                    raise ValueError("retained research outcome differs from evidence count")
+            elif attempt.basis == "evidence" and (
+                attempt.outcome != "answered" or not attempt.evidence_count
+            ):
+                raise ValueError("evidence basis requires an answered result and excerpts")
         final_answered = self.attempts[-1].outcome == "answered"
         answered_resolution = self.resolution in {
             "answered_primary",
@@ -281,12 +297,49 @@ class OracleResearchResultCallAuditSnapshot(FrozenModel):
         return self
 
 
+class OracleCacheSourceSnapshot(FrozenModel):
+    policy: Literal["historical_ask_v1", "same_execution_ask_v1"]
+    normalization: Literal["casefold-ascii-spaces-v1"]
+    context_hash: str = Field(pattern=SHA256_PATTERN)
+    snapshot_hash: str = Field(pattern=SHA256_PATTERN)
+    execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
+    model_id: str = Field(pattern=MODEL_ID_PATTERN)
+    benchmark_id: str = Field(pattern=r"^B-[0-9]{4}$")
+    target_id: str = Field(pattern=r"^T-[0-9]{4}$")
+    trial_id: str = Field(pattern=r"^trial-[0-9]{3,5}$")
+    episode_id: str = Field(pattern=r"^EP-[0-9a-f]{32}$")
+    turn_number: int = Field(ge=1)
+    oracle_call_id: str = Field(pattern=r"^OC-[0-9a-f]{32}$")
+    question: str = Field(min_length=1, max_length=1_000)
+    answered_at: datetime
+    source_file: str = Field(min_length=1)
+    source_integrity_hash: str = Field(pattern=SHA256_PATTERN)
+
+
+class EpisodeOracleCacheSourceSnapshot(FrozenModel):
+    policy: Literal["same_episode_ask_v1"]
+    normalization: Literal["casefold-ascii-spaces-v1"]
+    run_id: str = Field(pattern=RUN_ID_PATTERN)
+    target_id: str = Field(pattern=TARGET_ID_PATTERN)
+    episode_id: str = Field(pattern=r"^EP-[0-9a-f]{32}$")
+    turn_number: int = Field(ge=1)
+    oracle_call_id: str = Field(pattern=r"^OC-[0-9a-f]{32}$")
+    question: str = Field(min_length=1, max_length=1_000)
+    answered_at: datetime
+
+
+OracleAnswerSourceSnapshot = Annotated[
+    OracleCacheSourceSnapshot | EpisodeOracleCacheSourceSnapshot, Field(discriminator="policy"),
+]
+
+
 class OracleResultCallAuditSnapshot(FrozenModel):
     component: Literal["oracle"]
     call_id: str = Field(pattern=r"^OC-[0-9a-f]{32}$")
     turn_number: int = Field(ge=1)
     status: Literal["success"]
     oracle: OracleRoleResultCallAuditSnapshot
+    cache_source: OracleAnswerSourceSnapshot | None = None
     research: OracleResearchResultCallAuditSnapshot | None = None
     reviewer: OracleRoleResultCallAuditSnapshot | None = None
     judge: OracleRoleResultCallAuditSnapshot | None = None
@@ -622,6 +675,10 @@ class OracleQualityAggregateSnapshot(FrozenModel):
     judge_yes_answers: int = Field(default=0, ge=0)
     judge_no_answers: int = Field(default=0, ge=0)
     judge_unknown_answers: int = Field(default=0, ge=0)
+    final_rather_yes_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    final_rather_no_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    judge_rather_yes_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    judge_rather_no_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
     reviewer_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
     judge_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
     quality_control_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
@@ -635,6 +692,7 @@ class OracleQualityAggregateSnapshot(FrozenModel):
             raise ValueError("every disagreement must invoke exactly one Judge")
         if (
             self.judge_yes_answers + self.judge_no_answers + self.judge_unknown_answers
+            + self.judge_rather_yes_answers + self.judge_rather_no_answers
             != self.judge_invocations
         ):
             raise ValueError("Judge answer distribution must match Judge invocations")
@@ -761,6 +819,9 @@ class BenchmarkRequestSnapshot(FrozenModel):
 class GamePolicySnapshot(FrozenModel):
     version: Literal[9] = 9
     benchmark_mode: Literal["official", "experimental"]
+    prompt_profile: Literal["standard", "concise_v1", "qualified_v1"] = Field(
+        default="standard", exclude_if=lambda value: value == "standard",
+    )
     max_questions: int = Field(ge=1)
     max_consecutive_contract_violations: int = Field(ge=1)
     reveal_entity_type: bool
@@ -789,7 +850,37 @@ class BenchmarkDefinitionSnapshot(FrozenModel):
         return values
 
 
+class OracleHistoryFileSnapshot(FrozenModel):
+    relative_path: str
+    size: int = Field(ge=0)
+    modified_ns: int = Field(ge=0)
+    changed_ns: int = Field(ge=0)
+    inode: int = Field(ge=0)
+
+
+class OracleHistoryExecutionSnapshot(FrozenModel):
+    manifest: OracleHistoryFileSnapshot
+    manifest_integrity_hash: str = Field(pattern=SHA256_PATTERN)
+    trials: tuple[OracleHistoryFileSnapshot, ...]
+
+
+class OracleHistoryInventorySnapshot(FrozenModel):
+    discovery_policy: Literal["per_subject_history_v1"] | None = Field(
+        default=None, exclude_if=lambda value: value is None,
+    )
+    execution_reuse_policy: Literal["same_execution_ask_v1"] | None = None
+    episode_reuse_policy: Literal["same_episode_ask_v1"] | None = None
+    policy: Literal["historical_ask_v1"]
+    normalization: Literal["casefold-ascii-spaces-v1"]
+    context_hash: str = Field(pattern=SHA256_PATTERN)
+    cutoff: datetime
+    sources: tuple[OracleHistoryExecutionSnapshot, ...]
+    snapshot_hash: str = Field(pattern=SHA256_PATTERN)
+
+
 class BenchmarkManifestArtifact(FrozenModel):
+    oracle_contract_hash: str | None = Field(default=None, pattern=SHA256_PATTERN)
+    oracle_cache: OracleHistoryInventorySnapshot | None = None
     schema_version: Literal[3] = 3
     request: BenchmarkRequestSnapshot
     definition: BenchmarkDefinitionSnapshot
@@ -868,16 +959,23 @@ class EpisodeEvidence(FrozenModel):
     source_url: HttpUrl
     excerpt: str = Field(min_length=1, max_length=2_000)
     validation: Literal["model_reported"]
+    kind: Literal["quotation", "source_summary"] = Field(
+        default="quotation", exclude_if=lambda value: value == "quotation",
+    )
 
 
 class EvidenceDecisionBasisSnapshot(StrEnum):
     EVIDENCE = "evidence"
     MODEL_KNOWLEDGE = "model_knowledge"
+    OTHER = "other"
 
 
 class EvidenceReviewDecisionSnapshot(FrozenModel):
-    answer: Literal["YES", "NO", "UNKNOWN"]
+    answer: FactualAnswer
     basis: EvidenceDecisionBasisSnapshot
+    supporting_statement: str | None = Field(
+        default=None, min_length=1, max_length=600, exclude_if=lambda v: v is None,
+    )
     evidence_indices: tuple[int, ...] = ()
 
     @field_validator("evidence_indices")
@@ -891,7 +989,11 @@ class EvidenceReviewDecisionSnapshot(FrozenModel):
 
     @model_validator(mode="after")
     def support_matches_answer(self) -> EvidenceReviewDecisionSnapshot:
-        if self.answer == "UNKNOWN" and self.evidence_indices:
+        if (
+            self.answer == "UNKNOWN"
+            and self.evidence_indices
+            and self.supporting_statement is None
+        ):
             raise ValueError("UNKNOWN must not identify supporting evidence")
         if self.answer == "UNKNOWN" and self.basis is EvidenceDecisionBasisSnapshot.MODEL_KNOWLEDGE:
             raise ValueError("UNKNOWN cannot use model knowledge as its decision basis")
@@ -907,13 +1009,13 @@ class EvidenceReviewDecisionSnapshot(FrozenModel):
 
 
 class OracleAdjudicationSnapshot(FrozenModel):
-    oracle_answer: Literal["YES", "NO", "UNKNOWN"]
+    oracle_answer: FactualAnswer
     question_type: OracleQuestionType = "other"
     reviewer: EvidenceReviewDecisionSnapshot | None = None
     judge: EvidenceReviewDecisionSnapshot | None = None
     disagreement: bool
     judge_invoked: bool
-    final_answer: Literal["YES", "NO", "UNKNOWN"]
+    final_answer: FactualAnswer
     decision_path: Literal[
         "oracle_unknown",
         "reviewer_agreement",
@@ -934,7 +1036,7 @@ class OracleAdjudicationSnapshot(FrozenModel):
                 raise ValueError("Oracle UNKNOWN must bypass review and remain final")
             return self
         if self.reviewer is None:
-            raise ValueError("Oracle YES and NO require a Reviewer decision")
+            raise ValueError("Directional Oracle answers require a Reviewer decision")
         expected_disagreement = self.reviewer.answer != self.oracle_answer
         if self.disagreement != expected_disagreement:
             raise ValueError("disagreement does not match Oracle and Reviewer decisions")
@@ -959,10 +1061,11 @@ class OracleAdjudicationSnapshot(FrozenModel):
 class EpisodeTurnAdjudication(FrozenModel):
     component: Literal["oracle", "guess_validator"]
     call_id: str = Field(pattern=CALL_ID_PATTERN)
-    answer: Literal["YES", "NO", "UNKNOWN"]
+    answer: FactualAnswer
     evidence: tuple[EpisodeEvidence, ...] = ()
     explanation: str | None = Field(default=None, max_length=2_000)
     oracle_quality: OracleAdjudicationSnapshot | None = None
+    cache_source: OracleAnswerSourceSnapshot | None = None
 
     @model_validator(mode="after")
     def details_match_component(self) -> EpisodeTurnAdjudication:
@@ -973,7 +1076,9 @@ class EpisodeTurnAdjudication(FrozenModel):
                 raise ValueError("Oracle adjudication requires quality-control decisions")
             if self.answer != self.oracle_quality.final_answer:
                 raise ValueError("Oracle turn answer must equal the final quality-control answer")
-        elif self.evidence or self.oracle_quality is not None:
+        elif self.answer not in STANDARD_ANSWERS:
+            raise ValueError("Guess Validator requires an identity answer")
+        elif self.evidence or self.oracle_quality is not None or self.cache_source is not None:
             raise ValueError(
                 "Guess Validator adjudication cannot contain Oracle evidence or quality data"
             )
@@ -988,6 +1093,14 @@ class EpisodeActionTurn(FrozenModel):
     counted: bool
     counted_questions: int = Field(ge=0)
     guesser_call_id: str = Field(pattern=CALL_ID_PATTERN)
+
+
+    @model_validator(mode="after")
+    def action_matches_adjudicator(self) -> EpisodeActionTurn:
+        expected = "oracle" if self.action.action == "ASK" else "guess_validator"
+        if self.adjudication.component != expected:
+            raise ValueError("action and adjudicator differ")
+        return self
 
 
 class EpisodeContractViolationTurn(FrozenModel):
@@ -1087,6 +1200,10 @@ class OracleQualityTotalsSnapshot(FrozenModel):
     judge_yes_answers: int = Field(default=0, ge=0)
     judge_no_answers: int = Field(default=0, ge=0)
     judge_unknown_answers: int = Field(default=0, ge=0)
+    final_rather_yes_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    final_rather_no_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    judge_rather_yes_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
+    judge_rather_no_answers: int = Field(default=0, ge=0, exclude_if=lambda value: value == 0)
     reviewer_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
     judge_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
     quality_control_cost_usd: Decimal = Field(default=Decimal(0), ge=0)
@@ -1100,6 +1217,7 @@ class OracleQualityTotalsSnapshot(FrozenModel):
             raise ValueError("every disagreement must invoke exactly one Judge")
         if (
             self.judge_yes_answers + self.judge_no_answers + self.judge_unknown_answers
+            + self.judge_rather_yes_answers + self.judge_rather_no_answers
             != self.judge_invocations
         ):
             raise ValueError("Judge answer distribution must match Judge invocations")
@@ -1125,6 +1243,7 @@ class EpisodeSummaryDetail(FrozenModel):
     guess_count: int = Field(ge=0)
     rejected_guess_count: int = Field(ge=0)
     oracle_unknown_count: int = Field(ge=0)
+    oracle_cache_hits: int = Field(default=0, ge=0)
     oracle_quality: OracleQualityTotalsSnapshot
     contract: ContractReliabilitySnapshot
     cache_status: Literal["not_applicable", "compliant", "noncompliant"]
@@ -1199,10 +1318,39 @@ class EvidenceReviewConfigurationSnapshot(FrozenModel):
 
 
 class OracleConfigurationSnapshot(EvidenceReviewConfigurationSnapshot):
+    prompt_profile: Literal["standard", "concise_v1", "qualified_v1"] = Field(
+        default="standard", exclude_if=lambda value: value == "standard",
+    )
+    adjudication_policy: Literal["profile_default", "judge_stable_knowledge_v1", "concise_knowledge_v1"] = Field(
+        default="profile_default", exclude_if=lambda value: value == "profile_default",
+    )
     parallel_search: bool
+    parallel_search_mode: Literal["basic", "fast", "turbo", "advanced"] = Field(
+        default="basic", exclude_if=lambda value: value == "basic",
+    )
     max_search_results: int = Field(ge=1)
+    research_query_target: int = Field(
+        default=3, strict=True, ge=1, le=28, exclude_if=lambda value: value == 3,
+    )
     reviewer: EvidenceReviewConfigurationSnapshot
     judge: EvidenceReviewConfigurationSnapshot
+
+    @property
+    def research_search_limit(self) -> int:
+        # Independent read contract: the configured target plus two shared bonus calls.
+        return self.research_query_target + 2
+
+    @model_validator(mode="after")
+    def configuration_policies_are_valid(self) -> OracleConfigurationSnapshot:
+        if self.adjudication_policy != "profile_default" and self.prompt_profile != "qualified_v1":
+            raise ValueError("non-default adjudication policy requires qualified_v1")
+        if self.adjudication_policy == "concise_knowledge_v1" and not self.parallel_search:
+            raise ValueError("concise knowledge requires bounded Parallel search")
+        if self.research_query_target != 3 and self.adjudication_policy != "concise_knowledge_v1":
+            raise ValueError("research_query_target requires concise_knowledge_v1")
+        if not self.parallel_search and self.parallel_search_mode != "basic":
+            raise ValueError("parallel_search_mode requires parallel_search: true")
+        return self
 
 
 class ModelLlmDetail(FrozenModel):
@@ -1257,6 +1405,58 @@ class EpisodeResultArtifact(FrozenModel):
 
     @model_validator(mode="after")
     def consistent_detail(self) -> EpisodeResultArtifact:
+        qualified = self.llm_details.oracle.configuration.prompt_profile == "qualified_v1"
+        judge_knowledge = (
+            self.llm_details.oracle.configuration.adjudication_policy == "judge_stable_knowledge_v1"
+        )
+        concise_knowledge = (
+            self.llm_details.oracle.configuration.adjudication_policy == "concise_knowledge_v1"
+        )
+        for turn in self.turns:
+            if not isinstance(turn, EpisodeActionTurn):
+                continue
+            quality = turn.adjudication.oracle_quality
+            answers = [turn.adjudication.answer]
+            if quality is not None:
+                answers.extend((quality.oracle_answer, quality.final_answer))
+                for role, decision in (("reviewer", quality.reviewer), ("judge", quality.judge)):
+                    if decision is not None:
+                        answers.append(decision.answer)
+                        if concise_knowledge:
+                            if (decision.supporting_statement is None
+                                or decision.basis not in {EvidenceDecisionBasisSnapshot.EVIDENCE,
+                                                          EvidenceDecisionBasisSnapshot.OTHER}):
+                                raise ValueError("concise decisions require evidence/other basis and support")
+                        elif decision.supporting_statement is not None or (
+                            decision.basis is EvidenceDecisionBasisSnapshot.OTHER
+                        ):
+                            raise ValueError("decision support requires concise knowledge policy")
+                        elif (qualified and decision.basis != EvidenceDecisionBasisSnapshot.EVIDENCE
+                              and (role != "judge" or not judge_knowledge)):
+                            raise ValueError("qualified review requires supplied evidence")
+                        if any(index > len(turn.adjudication.evidence)
+                               for index in decision.evidence_indices):
+                            raise ValueError("review evidence index is outside supplied evidence")
+            if not qualified and any(answer not in STANDARD_ANSWERS for answer in answers):
+                raise ValueError("standard episodes cannot contain qualified answers")
+        if self.audit is not None:
+            for research_call in self.audit.calls:
+                if not isinstance(research_call, OracleResultCallAuditSnapshot) or research_call.research is None:
+                    continue
+                for attempt in research_call.research.attempts:
+                    if concise_knowledge:
+                        if attempt.basis is None or attempt.supporting_statement is None:
+                            raise ValueError("concise research requires decision support")
+                        search_limit = self.llm_details.oracle.configuration.research_search_limit
+                        if (len(attempt.attempted_queries) > search_limit
+                            or attempt.provider.usage.search_count > search_limit):
+                            raise ValueError("concise research exceeds its search budget")
+                    elif attempt.basis is not None or attempt.supporting_statement is not None:
+                        raise ValueError("research support requires concise knowledge policy")
+                    elif len(attempt.attempted_queries) > 8:
+                        raise ValueError("research exceeds its query-report limit")
+                if concise_knowledge and len(research_call.research.attempts) != 1:
+                    raise ValueError("concise research requires one bounded attempt")
         if self.summary.total_turns != self.summary.guesser_call_count:
             raise ValueError("episode total turns differ from guesser call count")
         unresolved_terminal_attempts = self.summary.total_turns - len(self.turns)
@@ -1269,6 +1469,50 @@ class EpisodeResultArtifact(FrozenModel):
             raise ValueError("only an exceptional terminal attempt may remain unresolved")
         if self.failure is not None and self.outcome.success:
             raise ValueError("successful episode cannot carry terminal failure")
+        cached_turns = tuple(
+            turn for turn in self.turns
+            if isinstance(turn, EpisodeActionTurn) and turn.adjudication.cache_source is not None
+        )
+        if len(cached_turns) != self.summary.oracle_cache_hits:
+            raise ValueError("cache-hit count differs from marked turns")
+        if cached_turns and self.audit is None:
+            raise ValueError("cached turns require original role audits")
+        if self.audit is not None:
+            audits = {call.call_id: call for call in self.audit.calls}
+            for turn in self.turns:
+                if not isinstance(turn, EpisodeActionTurn):
+                    continue
+                source = turn.adjudication.cache_source
+                call = audits.get(turn.adjudication.call_id)
+                audit_source = call.cache_source if isinstance(call, OracleResultCallAuditSnapshot) else None
+                if source != audit_source:
+                    raise ValueError("turn and audit cache provenance differ")
+                if source is not None and source.target_id != self.run.subject.target_id:
+                    raise ValueError("cached answer subject differs from episode")
+                if isinstance(source, EpisodeOracleCacheSourceSnapshot):
+                    original = next((item for item in self.turns
+                                     if item.turn_number == source.turn_number), None)
+                    if (
+                        source.run_id != self.run.run_id or source.episode_id != self.run.episode_id
+                        or source.turn_number >= turn.turn_number
+                        or not isinstance(original, EpisodeActionTurn)
+                        or original.action.action != "ASK"
+                        or original.adjudication.cache_source is not None
+                        or original.adjudication.call_id != source.oracle_call_id
+                        or original.action.question != source.question
+                        or re.sub(r" {2,}", " ", source.question).casefold()
+                        != re.sub(r" {2,}", " ", turn.action.question or "").casefold()
+                        or original.adjudication.answer != turn.adjudication.answer
+                        or original.adjudication.evidence != turn.adjudication.evidence
+                        or original.adjudication.oracle_quality != turn.adjudication.oracle_quality
+                    ):
+                        raise ValueError("same-episode cache source must match an earlier live ASK")
+                    original_audit = audits.get(source.oracle_call_id)
+                    if (not isinstance(call, OracleResultCallAuditSnapshot)
+                        or not isinstance(original_audit, OracleResultCallAuditSnapshot)
+                        or call.model_copy(update={"call_id": original_audit.call_id,
+                            "turn_number": source.turn_number, "cache_source": None}) != original_audit):
+                        raise ValueError("same-episode cache audit differs from original")
         if self.audit is not None:
             expected_calls = (
                 self.summary.guesser_call_count + self.summary.ask_count + self.summary.guess_count
@@ -1279,6 +1523,7 @@ class EpisodeResultArtifact(FrozenModel):
 
 
 class CompletedTrialArtifact(FrozenModel):
+    oracle_judge_ignored_providers: tuple[str, ...] = ()
     status: Literal["completed"] = "completed"
     identity: TrialIdentity
     attempt_number: int = Field(default=1, ge=1)
@@ -1397,6 +1642,7 @@ class SubjectCatalogEntry(FrozenModel):
     entity_type: str = Field(min_length=1, max_length=80)
     description: str = Field(min_length=1, max_length=2_000)
     reference_url: HttpUrl | None = None
+    status: Literal["active", "inactive"] = "active"
 
 
 class SubjectCatalog(FrozenModel):
@@ -1436,7 +1682,7 @@ class ScorePolicy(FrozenModel):
     failure_penalty_offset: int = Field(default=1, ge=1, le=100)
 
 
-class CohortConfig(FrozenModel):
+class LegacyCohortConfig(FrozenModel):
     cohort_id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]{0,63}$")
     display_name: str = Field(min_length=1, max_length=160)
     active: bool = False
@@ -1467,23 +1713,103 @@ class CohortConfig(FrozenModel):
         return values
 
 
+class HistoricalEligibility(FrozenModel):
+    kind: Literal["historical_standard"] = "historical_standard"
+
+
+class ReleasePromptVersions(FrozenModel):
+    guesser: str = Field(min_length=1)
+    oracle: str = Field(min_length=1)
+    recovery: str = Field(min_length=1)
+    reviewer: str = Field(min_length=1)
+    judge: str = Field(min_length=1)
+    validator: str = Field(min_length=1)
+
+
+class ReleaseGameRules(FrozenModel):
+    max_consecutive_contract_violations: int = Field(ge=1)
+    reveal_entity_type: bool
+    final_guess_after_limit: bool
+
+
+class ReleaseSubjectIdentity(FrozenModel):
+    target_id: str = Field(pattern=TARGET_ID_PATTERN)
+    identity_hash: str = Field(pattern=SHA256_PATTERN)
+
+
+class ReleaseContract(FrozenModel):
+    prompts: ReleasePromptVersions
+    additional_prompt_versions: tuple[ReleasePromptVersions, ...] = Field(
+        default=(), exclude_if=lambda value: not value,
+    )
+    game_rules: ReleaseGameRules
+    subject_identities: tuple[ReleaseSubjectIdentity, ...] = Field(min_length=1)
+    oracle_configuration_hash: str = Field(pattern=SHA256_PATTERN)
+    oracle_contract_hash: str | None = Field(
+        default=None, pattern=SHA256_PATTERN, exclude_if=lambda value: value is None,
+    )
+    validator_configuration_hash: str = Field(pattern=SHA256_PATTERN)
+
+
+class AcceptedReleaseRevision(ReleaseContract):
+    revision_id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]{0,63}$")
+    oracle_contract_hash: str = Field(pattern=SHA256_PATTERN)
+
+
+class QualifiedEligibility(ReleaseContract):
+    kind: Literal["qualified_release"] = "qualified_release"
+    accepted_revisions: tuple[AcceptedReleaseRevision, ...] = Field(
+        default=(), exclude_if=lambda value: not value,
+    )
+
+    @model_validator(mode="after")
+    def unique_revision_ids(self) -> QualifiedEligibility:
+        ids = tuple(revision.revision_id for revision in self.accepted_revisions)
+        if len(ids) != len(set(ids)):
+            raise ValueError("accepted release revision IDs must be unique")
+        return self
+
+
+class CohortConfig(LegacyCohortConfig):
+    active: bool = Field(default=False, exclude=True)
+    edition_id: EditionId = "1.0"
+    edition_label: str = Field(default="1", min_length=1, max_length=20)
+    edition_status: Literal["current", "previous"] = "current"
+    eligibility: Annotated[
+        HistoricalEligibility | QualifiedEligibility, Field(discriminator="kind")
+    ] = Field(default_factory=HistoricalEligibility)
+
+    @model_validator(mode="after")
+    def release_subjects_match(self) -> CohortConfig:
+        if isinstance(self.eligibility, QualifiedEligibility):
+            for release in (self.eligibility, *self.eligibility.accepted_revisions):
+                identities = tuple(item.target_id for item in release.subject_identities)
+                if len(set(identities)) != len(identities) or set(identities) != set(self.target_ids):
+                    raise ValueError("release subject hashes must cover exactly the cohort targets")
+        return self
+
+
 class PublicationConfig(FrozenModel):
-    version: Literal[1] = 1
+    version: Literal[2] = 2
     site: PublicationSiteConfig
     score: ScorePolicy
+    default_edition_id: EditionId = "1.0"
     cohorts: tuple[CohortConfig, ...] = Field(min_length=1)
 
     @model_validator(mode="after")
-    def exactly_one_active_cohort(self) -> PublicationConfig:
-        if sum(cohort.active for cohort in self.cohorts) != 1:
-            raise ValueError("publication config requires exactly one active cohort")
+    def valid_editions(self) -> PublicationConfig:
         if len({cohort.cohort_id for cohort in self.cohorts}) != len(self.cohorts):
             raise ValueError("cohort IDs must be unique")
+        if len({cohort.edition_id for cohort in self.cohorts}) != len(self.cohorts):
+            raise ValueError("edition IDs must be unique")
+        current = tuple(c for c in self.cohorts if c.edition_status == "current")
+        if len(current) != 1 or current[0].edition_id != self.default_edition_id:
+            raise ValueError("the default edition must be the one current edition")
         return self
 
     @property
     def active_cohort(self) -> CohortConfig:
-        return next(cohort for cohort in self.cohorts if cohort.active)
+        return next(c for c in self.cohorts if c.edition_id == self.default_edition_id)
 
 
 class LoadedRun(FrozenModel):
@@ -1532,6 +1858,21 @@ class LoadedRun(FrozenModel):
         }
         if actual and actual != expected:
             raise ValueError("loaded episode details do not match completed summary trials")
+        profile = self.manifest.definition.game_policy.prompt_profile
+        oracle_profile = self.manifest.definition.oracle_configuration.root.get(
+            "prompt_profile", "standard"
+        )
+        if (profile == "qualified_v1") != (oracle_profile == "qualified_v1"):
+            raise ValueError("manifest Guesser and Oracle answer profiles differ")
+        if any(episode.result.llm_details.oracle.configuration.prompt_profile != oracle_profile
+               for episode in self.episodes):
+            raise ValueError("episode Oracle profile differs from manifest")
+        oracle_policy = self.manifest.definition.oracle_configuration.root.get(
+            "adjudication_policy", "profile_default"
+        )
+        if any(episode.result.llm_details.oracle.configuration.adjudication_policy != oracle_policy
+               for episode in self.episodes):
+            raise ValueError("episode adjudication policy differs from manifest")
         return self
 
 
@@ -1539,6 +1880,35 @@ class PublicEvidence(FrozenModel):
     source_url: HttpUrl
     excerpt: str
     validation: Literal["model_reported"]
+    kind: Literal["quotation", "source_summary"] = Field(
+        default="quotation", exclude_if=lambda value: value == "quotation",
+    )
+
+
+class PublicOracleCacheSource(FrozenModel):
+    """Allowlisted source attribution, without internal paths or provider call identifiers."""
+
+    scope: Literal["historical", "same_execution"] = Field(
+        default="historical", exclude_if=lambda v: v == "historical",
+    )
+    execution_id: str
+    model_id: str
+    benchmark_id: str
+    target_id: str
+    trial_id: str
+    episode_id: str
+    turn_number: int = Field(ge=1)
+    question: str
+    answered_at: datetime
+
+
+class PublicEpisodeOracleCacheSource(FrozenModel):
+    scope: Literal["same_episode"] = "same_episode"
+    target_id: str
+    episode_id: str
+    turn_number: int = Field(ge=1)
+    question: str
+    answered_at: datetime
 
 
 class PublicActionTurn(FrozenModel):
@@ -1549,12 +1919,25 @@ class PublicActionTurn(FrozenModel):
     guess_name: str | None
     guess_description: str | None
     adjudicator: Literal["oracle", "guess_validator"]
-    answer: Literal["YES", "NO", "UNKNOWN"]
+    answer: FactualAnswer
     validator_explanation: str | None
     counted: bool
     counted_questions: int
     evidence: tuple[PublicEvidence, ...]
     recorded_output: str | None
+    oracle_cache: PublicOracleCacheSource | PublicEpisodeOracleCacheSource | None = Field(default=None, exclude_if=lambda v: v is None)
+
+
+    @model_validator(mode="after")
+    def public_action_matches_answer(self) -> PublicActionTurn:
+        if self.action == "GUESS" and self.oracle_cache is not None:
+            raise ValueError("only ASK answers may come from history")
+        if self.action == "GUESS" and self.answer not in STANDARD_ANSWERS:
+            raise ValueError("public GUESS requires an identity answer")
+        expected = "oracle" if self.action == "ASK" else "guess_validator"
+        if self.adjudicator != expected:
+            raise ValueError("public action and adjudicator differ")
+        return self
 
 
 class PublicContractViolationTurn(FrozenModel):
@@ -1590,6 +1973,7 @@ class PublicRunModel(FrozenModel):
     resolved_providers: tuple[str, ...]
     reasoning_effort: str
     prompt_version: str | None
+    prompt_versions: tuple[str, ...] = Field(default=(), exclude_if=lambda value: not value)
     calls: int = Field(ge=0)
     cost_usd: Decimal = Field(ge=0)
     providers: tuple[ResolvedProviderUsageSnapshot, ...] = ()
@@ -1904,7 +2288,7 @@ class DatasetProvenance(FrozenModel):
 
 
 class PublishedDataset(FrozenModel):
-    schema_version: Literal[9] = 9
+    schema_version: Literal[10] = 10
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig
@@ -1925,8 +2309,9 @@ class PublicationRunReference(FrozenModel):
 
 class PublicationManifestDocument(FrozenModel):
     document_type: Literal["manifest"] = "manifest"
-    schema_version: Literal[1] = 1
-    dataset_schema_version: Literal[9] = 9
+    schema_version: Literal[2] = 2
+    edition_id: EditionId = "1.0"
+    dataset_schema_version: Literal[10] = 10
     site: SiteMetadata
     score_policy: ScorePolicy
     active_cohort: CohortConfig
@@ -1952,7 +2337,8 @@ class PublicationAppBuildDocument(FrozenModel):
 
 class PublicationLeaderboardDocument(FrozenModel):
     document_type: Literal["leaderboard"] = "leaderboard"
-    schema_version: Literal[3] = 3
+    schema_version: Literal[4] = 4
+    edition_id: EditionId = "1.0"
     leaderboard: tuple[LeaderboardRow, ...]
 
 
@@ -1974,7 +2360,8 @@ class PublicRepeatAverage(FrozenModel):
 
 class PublicationRepeatAveragesDocument(FrozenModel):
     document_type: Literal["repeat_averages"] = "repeat_averages"
-    schema_version: Literal[1] = 1
+    schema_version: Literal[2] = 2
+    edition_id: EditionId = "1.0"
     averages: tuple[PublicRepeatAverage, ...]
 
     @model_validator(mode="after")
@@ -1989,7 +2376,8 @@ class PublicationRepeatAveragesDocument(FrozenModel):
 
 class PublicationRunDocument(FrozenModel):
     document_type: Literal["run"] = "run"
-    schema_version: Literal[3] = 3
+    schema_version: Literal[4] = 4
+    edition_id: EditionId = "1.0"
     run: PublicRunSummary
     subjects: tuple[PublicSubjectSummary, ...]
 
@@ -2009,7 +2397,8 @@ class PublicationSubjectProfile(FrozenModel):
 
 class PublicationSubjectDocument(FrozenModel):
     document_type: Literal["subject"] = "subject"
-    schema_version: Literal[1] = 1
+    schema_version: Literal[2] = 2
+    edition_id: EditionId = "1.0"
     execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
     target_id: str = Field(pattern=TARGET_ID_PATTERN)
     profile: PublicationSubjectProfile
@@ -2025,15 +2414,49 @@ class PublicationSubjectDocument(FrozenModel):
 
 class PublicationEpisodeDocument(FrozenModel):
     document_type: Literal["episode"] = "episode"
-    schema_version: Literal[2] = 2
+    schema_version: Literal[3] = 3
+    edition_id: EditionId = "1.0"
     execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
     target_id: str = Field(pattern=TARGET_ID_PATTERN)
     trial_id: str = Field(pattern=TRIAL_ID_PATTERN)
     episode: PublicEpisodeDetail
 
 
+class EditionRunReference(PublicationRunReference):
+    target_ids: tuple[str, ...]
+
+
+class PublicationEditionReference(FrozenModel):
+    edition_id: EditionId
+    label: str
+    status: Literal["current", "previous"]
+    manifest_path: str
+    leaderboard_path: str
+    repeat_averages_path: str
+    runs: tuple[EditionRunReference, ...]
+
+
+class PublicationEditionsDocument(FrozenModel):
+    document_type: Literal["editions"] = "editions"
+    schema_version: Literal[1] = 1
+    default_edition_id: EditionId
+    built_at: datetime
+    editions: tuple[PublicationEditionReference, ...]
+
+    @model_validator(mode="after")
+    def unique_edition_ownership(self) -> PublicationEditionsDocument:
+        ids = tuple(edition.edition_id for edition in self.editions)
+        if len(ids) != len(set(ids)) or self.default_edition_id not in ids:
+            raise ValueError("edition index requires unique editions and a valid default")
+        runs = tuple(run.execution_id for edition in self.editions for run in edition.runs)
+        if len(runs) != len(set(runs)):
+            raise ValueError("a published execution must belong to one edition")
+        return self
+
+
 PublicationDocument = Annotated[
     PublicationManifestDocument
+    | PublicationEditionsDocument
     | PublicationAppBuildDocument
     | PublicationLeaderboardDocument
     | PublicationRepeatAveragesDocument
@@ -2054,6 +2477,15 @@ class PublicationDataBundle(FrozenModel):
 
     @model_validator(mode="after")
     def matching_document_graph(self) -> PublicationDataBundle:
+        edition_id = self.manifest.edition_id
+        if edition_id != self.manifest.active_cohort.edition_id or any(
+            document_id != edition_id
+            for document_id in (self.leaderboard.edition_id, self.repeat_averages.edition_id,
+                                *(item.edition_id for item in self.runs),
+                                *(item.edition_id for item in self.subjects),
+                                *(item.edition_id for item in self.episodes))
+        ):
+            raise ValueError("publication documents disagree on edition identity")
         run_documents = {document.run.execution_id: document for document in self.runs}
         if len(run_documents) != len(self.runs):
             raise ValueError("publication data bundle run IDs must be unique")
@@ -2154,6 +2586,7 @@ class StaticRouteEntry(FrozenModel):
     browser_title: str = Field(min_length=1, max_length=200)
     description: str = Field(min_length=1, max_length=500)
     last_modified: datetime
+    edition_id: EditionId = "1.0"
     execution_id: str | None = Field(default=None, pattern=EXECUTION_ID_PATTERN)
     target_id: str | None = Field(default=None, pattern=TARGET_ID_PATTERN)
     trial_id: str | None = Field(default=None, pattern=TRIAL_ID_PATTERN)

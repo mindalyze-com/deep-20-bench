@@ -5,10 +5,28 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 from deep20_oracle.audit import RunAuditWriter
-from deep20_oracle.errors import OracleProtocolError
+from deep20_oracle.errors import AuditWriteError, OracleProtocolError
 from deep20_oracle.models import OracleRequest, OracleRole
 from deep20_oracle.prompt import PROMPT_VERSION, prompt_hash, render_messages
 from deep20_oracle.util import canonical_json, sha256_text
+
+
+@pytest.mark.parametrize("previous_hash", [None, "f" * 64])
+def test_run_rejects_missing_or_different_factual_contract(
+    previous_hash: str | None, audit_writer: RunAuditWriter,
+) -> None:
+    audit_writer.prepare_run("changed-contract")
+    path = audit_writer.runs_root / "changed-contract" / "manifest.json"
+    manifest = json.loads(path.read_text())
+    if previous_hash is None:
+        manifest.pop("oracle_contract_hash")
+    else:
+        manifest["oracle_contract_hash"] = previous_hash
+    manifest.pop("integrity_hash")
+    manifest["integrity_hash"] = sha256_text(canonical_json(manifest))
+    path.write_text(json.dumps(manifest))
+    with pytest.raises(AuditWriteError, match="different Oracle factual contract"):
+        audit_writer.prepare_run("changed-contract")
 
 
 def test_concurrent_records_are_complete_and_integrity_hashed(

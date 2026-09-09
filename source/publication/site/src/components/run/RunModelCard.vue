@@ -43,7 +43,11 @@ const routingLabel = (): string =>
         <dt>Resolved provider</dt>
         <dd>{{ model.resolved_providers.join(", ") }}</dd>
       </div>
-      <div v-if="model.prompt_version !== null">
+      <div v-if="model.prompt_versions?.length">
+        <dt>Prompt contracts</dt>
+        <dd><div v-for="version in model.prompt_versions" :key="version"><code>{{ version }}</code></div></dd>
+      </div>
+      <div v-else-if="model.prompt_version !== null">
         <dt>Prompt contract</dt>
         <dd><code>{{ model.prompt_version }}</code></dd>
       </div>

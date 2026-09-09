@@ -8,11 +8,13 @@ from typing import Any, Self
 
 import httpx
 from openrouter import OpenRouter
+from pydantic import TypeAdapter
 
-from .config import ModelRouteConfig, OracleConfig, ProviderRouting
+from .config import ModelRouteConfig, OracleConfig, ParallelSearchMode, ProviderRouting
 from .diagnostics import provider_failure_code
-from .errors import OracleProviderError
+from .errors import OracleProtocolError, OracleProviderError
 from .models import (
+    JsonObject,
     ProviderOutputCapture,
     ProviderTrace,
     ProviderUsage,
@@ -39,7 +41,7 @@ from .recovery import (
     logical_recovery_budget,
     recovery_reason_counts,
 )
-from .util import timestamp
+from .util import canonical_json, openrouter_provider_matches, timestamp
 
 _NO_RESULT_RETRY_DELAY_MS = 1_000
 
@@ -47,8 +49,13 @@ _NO_RESULT_RETRY_DELAY_MS = 1_000
 class _RecordingClient:
     """Capture the raw response because the generated SDK omits citation annotations."""
 
-    def __init__(self, timeout_seconds: int):
+    def __init__(
+        self, timeout_seconds: int,
+        search_mode: ParallelSearchMode = ParallelSearchMode.BASIC,
+    ):
         self._client = httpx.Client(timeout=timeout_seconds)
+        self._search_mode = search_mode
+        self.max_web_search_requests: int | None = None
         self.last_json: dict[str, Any] | None = None
         self.last_status_code: int | None = None
         self.last_response_cache_status: str | None = None
@@ -57,7 +64,34 @@ class _RecordingClient:
         self.retry_after_ms: int | None = None
 
     def build_request(self, *args: Any, **kwargs: Any) -> httpx.Request:
-        return self._client.build_request(*args, **kwargs)
+        request = self._client.build_request(*args, **kwargs)
+        if self._search_mode is ParallelSearchMode.BASIC and self.max_web_search_requests is None:
+            return request
+        # Restore typed server-tool controls omitted by the generated SDK.
+        payload: JsonObject = TypeAdapter(JsonObject).validate_json(request.content)
+        tools = payload.get("tools")
+        if not isinstance(tools, list) or len(tools) != 1:
+            raise ValueError("search controls require exactly one web search tool")
+        tool = tools[0]
+        if not isinstance(tool, dict) or tool.get("type") != "openrouter:web_search":
+            raise ValueError("search controls require the OpenRouter web search tool")
+        parameters = tool.get("parameters")
+        if not isinstance(parameters, dict) or parameters.get("engine") != "parallel":
+            raise ValueError("search controls require the Parallel search engine")
+        if self._search_mode is not ParallelSearchMode.BASIC:
+            selected_mode = parameters.get("mode")
+            if selected_mode is not None and selected_mode != self._search_mode.value:
+                raise ValueError("serialized search mode differs from configuration")
+            parameters["mode"] = self._search_mode.value
+        if self.max_web_search_requests is not None:
+            parameters["max_uses"] = self.max_web_search_requests
+            payload["max_tool_calls"] = self.max_web_search_requests
+        headers = request.headers.copy()
+        headers.pop("content-length", None)
+        return httpx.Request(
+            request.method, request.url, headers=headers,
+            content=canonical_json(payload).encode(), extensions=request.extensions,
+        )
 
     def send(self, *args: Any, **kwargs: Any) -> httpx.Response:
         budget = current_recovery_budget()
@@ -107,7 +141,12 @@ class OpenRouterProvider:
         self.config = config
         self.enable_web_search = enable_web_search
         self.ignored_providers = ignored_providers
-        self.http_client = _RecordingClient(config.timeout_seconds)
+        self.http_client = _RecordingClient(
+            config.timeout_seconds,
+            config.parallel_search_mode
+            if enable_web_search and isinstance(config, OracleConfig)
+            else ParallelSearchMode.BASIC,
+        )
         self.client = OpenRouter(
             api_key=api_key,
             x_open_router_title=title,
@@ -156,8 +195,19 @@ class OpenRouterProvider:
                 ):
                     while True:
                         try:
+                            if request.max_web_search_requests is not None:
+                                remaining = request.max_web_search_requests - prior_usage.search_count
+                                if remaining < 1:
+                                    raise OracleProtocolError(
+                                        "Oracle research budget exhausted before retry",
+                                        code="web_search_budget_exhausted",
+                                    )
+                                self.http_client.max_web_search_requests = remaining
+                            else:
+                                self.http_client.max_web_search_requests = None
                             response = self.client.chat.send(
-                                **provider_request,
+                                **{key: value for key, value in provider_request.items()
+                                   if key != "max_tool_calls"},
                                 retries=no_sdk_retry_config(),
                             )
                         except Exception as error:
@@ -174,6 +224,10 @@ class OpenRouterProvider:
                                 malformed_response=malformed_response,
                             )
                             if reason is None:
+                                raise
+                            # An uncertain transport/result failure may already have searched.
+                            # Only an explicit rate-limit rejection is safely replayable here.
+                            if request.max_web_search_requests is not None and status_code != 429:
                                 raise
                             retry_reasons.append(reason)
                             recovery_started = recovery_started or time.monotonic()
@@ -229,6 +283,16 @@ class OpenRouterProvider:
                             break
                         retry_reasons.append(reason)
                         recovery_started = recovery_started or time.monotonic()
+                        if (
+                            request.max_web_search_requests is not None
+                            and not self._bounded_no_result_has_allowance(
+                                raw_response,
+                                request.max_web_search_requests - prior_usage.search_count,
+                            )
+                        ):
+                            # Unknown usage or a route violation must not be hidden by replay.
+                            recovery_exhausted = True
+                            break
                         if not self._can_retry_no_result_response(
                             recovery_started,
                             no_result_retries,
@@ -310,7 +374,11 @@ class OpenRouterProvider:
                 code=(
                     "provider_output_limit_exceeded"
                     if finish_reason == "length"
-                    else "provider_incomplete_response"
+                    else (
+                        "provider_content_filtered"
+                        if finish_reason == "content_filter"
+                        else "provider_incomplete_response"
+                    )
                 ),
                 details={"provider_trace": trace.model_dump(mode="json")},
             )
@@ -360,6 +428,11 @@ class OpenRouterProvider:
             }
             if self.config.parallel_search:
                 search_parameters["engine"] = "parallel"
+                if self.config.parallel_search_mode is not ParallelSearchMode.BASIC:
+                    search_parameters["mode"] = self.config.parallel_search_mode.value
+            if request.max_web_search_requests is not None:
+                search_parameters["max_uses"] = request.max_web_search_requests
+                payload["max_tool_calls"] = request.max_web_search_requests
             payload["tools"] = [
                 {
                     "type": "openrouter:web_search",
@@ -373,6 +446,11 @@ class OpenRouterProvider:
             if enable_web_search:
                 assert isinstance(self.config, OracleConfig)
                 capability = "parallel" if self.config.parallel_search else "auto"
+                if (
+                    self.config.parallel_search
+                    and self.config.parallel_search_mode is not ParallelSearchMode.BASIC
+                ):
+                    capability += f"-{self.config.parallel_search_mode.value}"
             payload["prompt_cache_key"] = f"{request.prompt_cache_key}-{capability}"
         return payload
 
@@ -446,6 +524,29 @@ class OpenRouterProvider:
             ),
         )
 
+    def _bounded_no_result_has_allowance(
+        self, raw_response: dict[str, Any], remaining: int,
+    ) -> bool:
+        """Retry a completed response only with known usage on the intended route."""
+        if raw_response.get("model") != self.config.model:
+            return False
+        resolved_provider = raw_response.get("provider")
+        if resolved_provider is None:
+            metadata = raw_response.get("openrouter_metadata")
+            attempts = metadata.get("attempts") if isinstance(metadata, dict) else None
+            if isinstance(attempts, list) and attempts and isinstance(attempts[-1], dict):
+                resolved_provider = attempts[-1].get("provider_name") or attempts[-1].get("provider")
+        if not isinstance(resolved_provider, str) or (
+            self.config.provider_routing is ProviderRouting.EXACT
+            and not openrouter_provider_matches(self.config.provider, resolved_provider)
+        ):
+            return False
+        usage = raw_response.get("usage")
+        server_tools = usage.get("server_tool_use_details") if isinstance(usage, dict) else None
+        searches = server_tools.get("web_search_requests") if isinstance(server_tools, dict) else None
+        # Missing telemetry is not evidence of zero searches. bool is not a valid count.
+        return type(searches) is int and 0 <= searches < remaining
+
     def _can_retry_no_result_response(
         self,
         recovery_started: float,
@@ -482,6 +583,8 @@ class OpenRouterProvider:
             return None
         if finish_reason == "length":
             return RecoveryReason.OUTPUT_LIMIT_EXCEEDED
+        if finish_reason == "content_filter":
+            return RecoveryReason.CONTENT_FILTERED
         if finish_reason == "stop" and not raw_provider_output(raw_response):
             return RecoveryReason.EMPTY_RESPONSE
         if finish_reason != "stop":

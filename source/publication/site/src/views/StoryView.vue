@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { editionRoute } from "@/lib/route-location";
 import { onActivated } from "vue";
 
 import { setRouteContext } from "@/lib/route-context";
@@ -280,10 +281,10 @@ onActivated(applyRouteContext);
         <div>
           <p>Read the rules or inspect the current model runs.</p>
           <div class="button-row">
-            <RouterLink class="button button-primary" :to="{ name: 'methodology' }">
+            <RouterLink class="button button-primary" :to="editionRoute('methodology')">
               Method
             </RouterLink>
-            <RouterLink class="button button-secondary" :to="{ name: 'results' }">
+            <RouterLink class="button button-secondary" :to="editionRoute('results')">
               Results
             </RouterLink>
           </div>

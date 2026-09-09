@@ -7,7 +7,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Literal, Protocol, cast
 
-from deep20_oracle.config import OracleConfig
+from deep20_oracle.config import OracleConfig, PromptProfile, validate_prompt_profiles
 from deep20_oracle.diagnostics import diagnose_exception
 from deep20_oracle.errors import OracleError
 from deep20_oracle.models import (
@@ -15,27 +15,34 @@ from deep20_oracle.models import (
     OracleAdjudication,
     OracleAnswer,
     OracleCall,
+    OracleMetrics,
     OracleProviderRoleTrace,
     OracleQuestionType,
     OracleRequest,
+    OracleResearchResolution,
+    OracleResearchStrategy,
     OracleRole,
     ProviderTrace,
     ProviderUsage,
     RecoveryTotals,
     Subject,
 )
-from deep20_oracle.prompt import PROMPT_VERSION as ORACLE_PROMPT_VERSION
+from deep20_oracle.prompt import research_prompt_version
+from deep20_oracle.protocol import validate_answer
 from deep20_oracle.recovery import combine_recovery_totals
 from deep20_oracle.result_audit import provider_result_audit
 from deep20_oracle.service import Oracle
 from deep20_oracle.util import timestamp
 from pydantic import ValidationError
 
+from .answer_cache import normalized_question
 from .config import BenchmarkMode, GamePolicy, ModelConfig
 from .errors import GameError, GuesserProtocolError
 from .models import (
     ActionTurnResult,
     ActionType,
+    CachedOracleAnswer,
+    CachedOracleMetrics,
     CacheStatus,
     CallMetrics,
     ComponentCosts,
@@ -52,6 +59,7 @@ from .models import (
     EpisodeFinishedProgress,
     EpisodeLlmDetails,
     EpisodeModelVersions,
+    EpisodeOracleCacheSource,
     EpisodeOutcome,
     EpisodeResult,
     EpisodeResultAudit,
@@ -70,6 +78,7 @@ from .models import (
     GuesserSamplingDecision,
     GuessValidatorCall,
     LlmVersion,
+    OracleAnswerSource,
     OracleLlmDetails,
     OracleProviderUsage,
     OracleQualityTotals,
@@ -92,11 +101,11 @@ from .models import (
     guesser_contract_reliability,
 )
 from .prompt import (
-    GUESSER_PROMPT_VERSION,
     VALIDATOR_PROMPT_VERSION,
     append_visible_action,
     append_visible_format_error,
     append_visible_turn,
+    guesser_prompt_version,
     initial_guesser_messages,
     prompt_hash,
     validator_messages,
@@ -151,6 +160,10 @@ class GuesserClient(Protocol):
         messages: tuple[dict[str, str], ...],
         sampling: GuesserSamplingDecision,
     ) -> GuesserCall: ...
+
+
+class OracleAnswerCache(Protocol):
+    def lookup(self, request: OracleRequest) -> CachedOracleAnswer | None: ...
 
 
 class ValidatorClient(Protocol):
@@ -243,6 +256,10 @@ class _MutableTotals:
     judge_yes_answers: int = 0
     judge_no_answers: int = 0
     judge_unknown_answers: int = 0
+    final_rather_yes_answers: int = 0
+    final_rather_no_answers: int = 0
+    judge_rather_yes_answers: int = 0
+    judge_rather_no_answers: int = 0
     reviewer_cost_usd: Decimal = Decimal(0)
     judge_cost_usd: Decimal = Decimal(0)
     question_type_reviews: dict[OracleQuestionType, int] = field(default_factory=dict)
@@ -331,10 +348,14 @@ class _MutableTotals:
         self.judge_invocations += int(adjudication.judge_invoked)
         self.oracle_answers_changed += int(adjudication.oracle_answer_changed)
         self.final_unknown_answers += int(adjudication.final_answer is OracleAnswer.UNKNOWN)
+        self.final_rather_yes_answers += int(adjudication.final_answer is OracleAnswer.RATHER_YES)
+        self.final_rather_no_answers += int(adjudication.final_answer is OracleAnswer.RATHER_NO)
         if adjudication.judge is not None:
             self.judge_yes_answers += int(adjudication.judge.answer is OracleAnswer.YES)
             self.judge_no_answers += int(adjudication.judge.answer is OracleAnswer.NO)
             self.judge_unknown_answers += int(adjudication.judge.answer is OracleAnswer.UNKNOWN)
+            self.judge_rather_yes_answers += int(adjudication.judge.answer is OracleAnswer.RATHER_YES)
+            self.judge_rather_no_answers += int(adjudication.judge.answer is OracleAnswer.RATHER_NO)
         if call.metrics.reviewer is not None:
             self.reviewer_cost_usd += call.metrics.reviewer.cost_usd or Decimal(0)
             reviewer_audit = getattr(call.audit, "reviewer", None)
@@ -398,6 +419,10 @@ class _MutableTotals:
             judge_yes_answers=self.judge_yes_answers,
             judge_no_answers=self.judge_no_answers,
             judge_unknown_answers=self.judge_unknown_answers,
+            final_rather_yes_answers=self.final_rather_yes_answers,
+            final_rather_no_answers=self.final_rather_no_answers,
+            judge_rather_yes_answers=self.judge_rather_yes_answers,
+            judge_rather_no_answers=self.judge_rather_no_answers,
             reviewer_cost_usd=self.reviewer_cost_usd,
             judge_cost_usd=self.judge_cost_usd,
             quality_control_cost_usd=(self.reviewer_cost_usd + self.judge_cost_usd),
@@ -467,6 +492,8 @@ class GameEngine:
         *,
         guesser: GuesserClient,
         oracle: Oracle,
+        oracle_cache: OracleAnswerCache | None = None,
+        reuse_episode_answers: bool = False,
         validator: ValidatorClient,
         audit_writer: GameAuditSink,
         policy: GamePolicy,
@@ -475,8 +502,16 @@ class GameEngine:
         validator_config: ModelConfig,
         observer: ExecutionObserver | None = None,
     ):
+        if policy.benchmark_mode is BenchmarkMode.OFFICIAL and (
+            policy.prompt_profile is not PromptProfile.STANDARD
+            or oracle_config.prompt_profile is not PromptProfile.STANDARD
+        ):
+            raise ValueError("revised prompts require experimental benchmark mode")
+        validate_prompt_profiles(policy.prompt_profile, oracle_config.prompt_profile)
         self.guesser = guesser
         self.oracle = oracle
+        self.oracle_cache = oracle_cache
+        self.reuse_episode_answers = reuse_episode_answers
         self.validator = validator
         self.audit_writer = audit_writer
         self.policy = policy
@@ -486,6 +521,7 @@ class GameEngine:
         self.observer = observer or NullExecutionObserver()
 
     def play(self, request: GameRequest) -> EpisodeResult:
+        episode_answers: dict[str, CachedOracleAnswer] = {}
         episode_id = f"EP-{uuid.uuid7().hex}"
         started_at = timestamp()
         self.audit_writer.prepare_run(request.run_id)
@@ -517,6 +553,7 @@ class GameEngine:
             self.policy.max_questions,
             request.subject.entity_type,
             prompt_nonce,
+            self.policy.prompt_profile,
         )
         conversation = messages
         counted_questions = 0
@@ -566,7 +603,7 @@ class GameEngine:
                                     else ResultCallStatus.FAILURE
                                 ),
                                 prompt=ResultPromptAudit(
-                                    version=GUESSER_PROMPT_VERSION,
+                                    version=guesser_prompt_version(self.policy.prompt_profile),
                                     hash=prompt_hash(messages),
                                 ),
                                 provider=provider_result_audit(error_trace),
@@ -686,7 +723,7 @@ class GameEngine:
                                 turn_number=guesser_call_count,
                                 status=ResultCallStatus.FAILURE,
                                 prompt=ResultPromptAudit(
-                                    version=GUESSER_PROMPT_VERSION,
+                                    version=guesser_prompt_version(self.policy.prompt_profile),
                                     hash=prompt_hash(messages),
                                 ),
                                 provider=provider_result_audit(error_trace),
@@ -766,42 +803,80 @@ class GameEngine:
             if action.action is ActionType.ASK:
                 ask_count += 1
                 assert action.question is not None
-                try:
-                    oracle_call = self.oracle.ask(
-                        OracleRequest(
-                            run_id=request.run_id,
-                            subject=request.subject,
-                            question=action.question,
+                oracle_request = OracleRequest(
+                    run_id=request.run_id, subject=request.subject, question=action.question,
+                )
+                question_key = normalized_question(oracle_request.question)
+                cached = episode_answers.get(question_key)
+                if cached is None and self.oracle_cache is not None:
+                    cached = self.oracle_cache.lookup(oracle_request)
+                cache_source = None
+                if cached is not None:
+                    call_id = f"OC-{uuid.uuid7().hex}"
+                    answer = cached.adjudication.final_answer
+                    evidence = cached.result.evidence
+                    quality = cached.adjudication
+                    cache_source = cached.source
+                    adjudicator_metrics: OracleMetrics | CachedOracleMetrics = CachedOracleMetrics(
+                        cost_usd=Decimal(0), latency_ms=0, input_tokens=0,
+                        output_tokens=0, reasoning_tokens=0, search_count=0,
+                    )
+                    call_audits.append(cached.original_audit.model_copy(update={
+                        "call_id": call_id, "turn_number": guesser_call_count,
+                        "cache_source": cache_source,
+                    }))
+                else:
+                    try:
+                        oracle_call = self.oracle.ask(oracle_request)
+                    except OracleError as error:
+                        self._add_oracle_error_trace(totals["oracle"], error)
+                        return self._infrastructure_failure(
+                            request,
+                            episode_id,
+                            started_at,
+                            counted_questions,
+                            guesser_call_count,
+                            ask_count,
+                            guess_count,
+                            rejected_guess_count,
+                            oracle_unknown_count,
+                            cache.status,
+                            totals,
+                            turns,
+                            call_audits,
+                            conversation,
+                            error,
                         )
+                    totals["oracle"].add_oracle(oracle_call)
+                    if isinstance(oracle_call, OracleCall):
+                        call_audits.append(self._oracle_result_call_audit(
+                            oracle_call, turn_number=guesser_call_count,
+                        ))
+                    call_id = oracle_call.call_id
+                    answer = oracle_call.guesser_answer()
+                    evidence = oracle_call.result.evidence
+                    quality = oracle_call.adjudication
+                    adjudicator_metrics = oracle_call.metrics
+                validate_answer(answer, self.policy.prompt_profile)
+                if (cached is None and self.reuse_episode_answers
+                    and isinstance(oracle_call, OracleCall)
+                    and oracle_call.audit.research is not None
+                    and oracle_call.audit.research.resolution
+                    not in {OracleResearchResolution.RETRIEVAL_EXHAUSTED_UNKNOWN,
+                            OracleResearchResolution.BOUNDED_UNKNOWN}):
+                    episode_answers[question_key] = CachedOracleAnswer(
+                        result=oracle_call.result,
+                        adjudication=oracle_call.adjudication,
+                        source=EpisodeOracleCacheSource(
+                            run_id=request.run_id, episode_id=episode_id,
+                            target_id=request.subject.target_id, turn_number=guesser_call_count,
+                            oracle_call_id=oracle_call.call_id, question=oracle_request.question,
+                            answered_at=oracle_call.recorded_at,
+                        ),
+                        original_audit=self._oracle_result_call_audit(
+                            oracle_call, turn_number=guesser_call_count,
+                        ),
                     )
-                except OracleError as error:
-                    self._add_oracle_error_trace(totals["oracle"], error)
-                    return self._infrastructure_failure(
-                        request,
-                        episode_id,
-                        started_at,
-                        counted_questions,
-                        guesser_call_count,
-                        ask_count,
-                        guess_count,
-                        rejected_guess_count,
-                        oracle_unknown_count,
-                        cache.status,
-                        totals,
-                        turns,
-                        call_audits,
-                        conversation,
-                        error,
-                    )
-                totals["oracle"].add_oracle(oracle_call)
-                if isinstance(oracle_call, OracleCall):
-                    call_audits.append(
-                        self._oracle_result_call_audit(
-                            oracle_call,
-                            turn_number=guesser_call_count,
-                        )
-                    )
-                answer = oracle_call.guesser_answer()
                 counted_questions += 1
                 if answer is OracleAnswer.UNKNOWN:
                     oracle_unknown_count += 1
@@ -813,13 +888,14 @@ class GameEngine:
                     guesser_call,
                     turn_number=len(turns) + 1,
                     adjudicator="oracle",
-                    adjudicator_call_id=oracle_call.call_id,
+                    adjudicator_call_id=call_id,
                     answer=answer,
                     evidence=(
-                        oracle_call.result.evidence if self.policy.include_oracle_evidence else ()
+                        evidence if self.policy.include_oracle_evidence else ()
                     ),
                     explanation=None,
-                    oracle_quality=oracle_call.adjudication,
+                    oracle_quality=quality,
+                    cache_source=cache_source,
                     counted=True,
                     counted_questions=counted_questions,
                     cache_status=cache.status,
@@ -831,7 +907,7 @@ class GameEngine:
                         episode_id=episode_id,
                         turn=action_turn,
                         guesser_metrics=guesser_call.metrics,
-                        adjudicator_metrics=oracle_call.metrics,
+                        adjudicator_metrics=adjudicator_metrics,
                     )
                 )
                 continue
@@ -902,6 +978,7 @@ class GameEngine:
                 )
             )
             answer = validator_call.result.answer
+            validate_answer(answer, PromptProfile.STANDARD)
             counted = not final_opportunity and answer is not OracleAnswer.YES
             if counted:
                 counted_questions += 1
@@ -1108,6 +1185,10 @@ class GameEngine:
                 guess_count=guess_count,
                 rejected_guess_count=rejected_guess_count,
                 oracle_unknown_count=oracle_unknown_count,
+                oracle_cache_hits=sum(
+                    isinstance(turn, ActionTurnResult) and turn.adjudication.cache_source is not None
+                    for turn in turns
+                ),
                 oracle_quality=totals["oracle"].frozen_oracle_quality(),
                 contract=guesser_contract_reliability(
                     evaluated_outputs=totals["guesser"].evaluated_outputs,
@@ -1138,7 +1219,7 @@ class GameEngine:
                     resolved_models=tuple(sorted(totals["guesser"].resolved_models)),
                     resolved_providers=tuple(sorted(totals["guesser"].resolved_providers)),
                     reasoning_effort=self.guesser_config.reasoning_effort,
-                    prompt_version=GUESSER_PROMPT_VERSION,
+                    prompt_version=guesser_prompt_version(self.policy.prompt_profile),
                 ),
                 oracle=LlmVersion(
                     role="oracle",
@@ -1148,7 +1229,10 @@ class GameEngine:
                     resolved_models=tuple(sorted(totals["oracle"].resolved_models)),
                     resolved_providers=tuple(sorted(totals["oracle"].resolved_providers)),
                     reasoning_effort=self.oracle_config.reasoning_effort,
-                    prompt_version=ORACLE_PROMPT_VERSION,
+                    prompt_version=research_prompt_version(
+                        OracleResearchStrategy.PRIMARY, self.oracle_config.prompt_profile,
+                        policy=self.oracle_config.adjudication_policy,
+                    ),
                 ),
                 validator=LlmVersion(
                     role="validator",
@@ -1221,6 +1305,7 @@ class GameEngine:
         counted: bool,
         counted_questions: int,
         cache_status: CacheStatus,
+        cache_source: OracleAnswerSource | None = None,
     ) -> ActionTurnResult:
         turn = ActionTurnResult(
             turn_number=turn_number,
@@ -1232,6 +1317,7 @@ class GameEngine:
                 evidence=evidence,
                 explanation=explanation,
                 oracle_quality=oracle_quality,
+                cache_source=cache_source,
             ),
             counted=counted,
             counted_questions=counted_questions,
@@ -1294,6 +1380,8 @@ class GameEngine:
                             attempt_number=attempt.attempt_number,
                             strategy=attempt.strategy,
                             outcome=attempt.result.research_outcome,
+                            basis=attempt.result.basis,
+                            supporting_statement=attempt.result.supporting_statement,
                             attempted_queries=attempt.result.attempted_queries,
                             evidence_count=len(attempt.result.evidence),
                             prompt=ResultPromptAudit(

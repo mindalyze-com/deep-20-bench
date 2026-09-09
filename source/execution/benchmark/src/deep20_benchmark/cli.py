@@ -8,6 +8,7 @@ from typing import Annotated
 import typer
 from deep20_game.config import BenchmarkMode
 from deep20_oracle.catalog import load_subject_catalog
+from deep20_oracle.config import PromptProfile
 from deep20_oracle.credentials import CredentialLoadError, load_openrouter_api_key
 from deep20_oracle.diagnostics import diagnose_exception
 from deep20_oracle.util import repository_root
@@ -15,6 +16,7 @@ from deep20_oracle.util import repository_root
 from .artifacts import ArtifactStore
 from .canary import StartupCanaryResult, run_guesser_canary, run_startup_canaries
 from .catalog import load_benchmark_catalog, load_model_catalog
+from .history_cache import LazyOracleHistoryCache
 from .logging import configure_benchmark_logging
 from .models import (
     BenchmarkExecutionId,
@@ -26,6 +28,8 @@ from .models import (
     SubjectId,
     TrialRepairPolicy,
 )
+from .oracle_replay_cli import replay_oracle
+from .oracle_suite_cli import test_oracle
 from .power import prevent_idle_system_sleep
 from .preflight import (
     OpenRouterRouteMetadata,
@@ -35,6 +39,8 @@ from .runner import BenchmarkRunner
 from .runtime import LiveEpisodeExecutor
 
 benchmark_app = typer.Typer(help="Run and observe complete Deep20Bench suites.")
+benchmark_app.command("replay-oracle")(replay_oracle)
+benchmark_app.command("test-oracle")(test_oracle)
 logger = logging.getLogger("deep20.benchmark")
 
 
@@ -79,6 +85,8 @@ def _execute_suite(
     canary: bool,
     max_consecutive_infrastructure_failures: int,
     repair: TrialRepairPolicy | None,
+    oracle_cache: bool = True,
+    oracle_history_before: str | None = None,
 ) -> None:
     configure_benchmark_logging(log_level)
     with prevent_idle_system_sleep():
@@ -97,6 +105,13 @@ def _execute_suite(
             benchmarks = load_benchmark_catalog(
                 benchmarks_path or root / "config" / "benchmarks.yaml"
             )
+            benchmark = benchmarks.entry(request.benchmark_id)
+            revised_prompts = (
+                benchmark.game_policy.prompt_profile is not PromptProfile.STANDARD
+                or benchmark.oracle_configuration.prompt_profile is not PromptProfile.STANDARD
+            )
+            if revised_prompts and benchmark_mode is BenchmarkMode.OFFICIAL:
+                raise ValueError("revised prompts require experimental benchmark mode")
             store = ArtifactStore(root)
             existing_state = store.load_state(
                 request.model_id,
@@ -105,10 +120,18 @@ def _execute_suite(
             execution_is_completed = (
                 existing_state is not None and existing_state.status is ExecutionStatus.COMPLETED
             )
+            if not oracle_cache and oracle_history_before is not None:
+                raise ValueError("Oracle history cutoff requires --oracle-cache")
+            history_cache = LazyOracleHistoryCache(
+                root, before=oracle_history_before,
+                judge_ignored_providers=repair.judge_ignored_providers if repair else (),
+            ) if oracle_cache else None
             api_key = load_openrouter_api_key(root)
-            if benchmark_mode is BenchmarkMode.OFFICIAL and canary and not execution_is_completed:
+            if (
+                (benchmark_mode is BenchmarkMode.OFFICIAL or revised_prompts)
+                and canary and not execution_is_completed
+            ):
                 model = models.model(request.model_id)
-                benchmark = benchmarks.entry(request.benchmark_id)
                 canary_result = run_startup_canaries(
                     model,
                     benchmark,
@@ -131,7 +154,9 @@ def _execute_suite(
                 model_catalog=models,
                 benchmark_catalog=benchmarks,
                 subject_catalog=subjects,
+                oracle_cache=history_cache,
                 executor=LiveEpisodeExecutor(
+                    oracle_cache=history_cache,
                     api_key=api_key,
                     judge_ignored_providers=(
                         repair.judge_ignored_providers if repair is not None else ()
@@ -194,7 +219,10 @@ def run_benchmark(
         list[str] | None,
         typer.Option(
             "--targets",
-            help="Registered subject ID; repeat as needed. Omit to run all subjects.",
+            help=(
+                "Active subject ID; repeat as needed. Omit for all active subjects in a new "
+                "run, or the recorded subjects when resuming."
+            ),
         ),
     ] = None,
     iterations: Annotated[
@@ -234,9 +262,15 @@ def run_benchmark(
         bool,
         typer.Option(
             "--canary/--no-canary",
-            help="Official mode only: probe every configured LLM role before the run.",
+            help="Probe all roles for official runs and experimental revised prompts.",
         ),
     ] = True,
+    oracle_cache: Annotated[
+        bool, typer.Option("--oracle-cache/--no-oracle-cache", help="Reuse compatible historical and same-game ASK answers; new executions only."),
+    ] = True,
+    oracle_history_before: Annotated[
+        str | None, typer.Option(help="Freeze history at this ISO timestamp; otherwise discover completed games per subject."),
+    ] = None,
     max_consecutive_infrastructure_failures: Annotated[
         int,
         typer.Option(
@@ -261,6 +295,8 @@ def run_benchmark(
         subjects_path=subjects_path,
         canary=canary,
         max_consecutive_infrastructure_failures=max_consecutive_infrastructure_failures,
+        oracle_cache=oracle_cache,
+        oracle_history_before=oracle_history_before,
         repair=None,
     )
 
@@ -287,7 +323,7 @@ def repair_benchmark(
         list[str] | None,
         typer.Option(
             "--targets",
-            help="Registered subject ID; repeat as needed. Omit to run all subjects.",
+            help="Subject ID; repeat as needed. Omit to retain the recorded subjects.",
         ),
     ] = None,
     iterations: Annotated[
@@ -327,7 +363,7 @@ def repair_benchmark(
         bool,
         typer.Option(
             "--canary/--no-canary",
-            help="Official mode only: probe every configured LLM role before repair.",
+            help="Probe all roles for official repairs and experimental revised prompts.",
         ),
     ] = True,
     max_repair_attempts: Annotated[
@@ -339,6 +375,12 @@ def repair_benchmark(
             help="Total start attempts allowed per trial, including the original run.",
         ),
     ] = 3,
+    allow_oracle_contract_change: Annotated[
+        bool, typer.Option(
+            "--allow-oracle-contract-change",
+            help="Record a changed Oracle contract for experimental repair; excludes publication.",
+        ),
+    ] = False,
     judge_ignored_providers: Annotated[
         list[str] | None,
         typer.Option(
@@ -348,6 +390,12 @@ def repair_benchmark(
                 "repeat as needed."
             ),
         ),
+    ] = None,
+    oracle_cache: Annotated[
+        bool, typer.Option("--oracle-cache/--no-oracle-cache", help="Reuse compatible historical and same-game ASK answers; new executions only."),
+    ] = True,
+    oracle_history_before: Annotated[
+        str | None, typer.Option(help="Freeze history at this ISO timestamp; otherwise discover completed games per subject."),
     ] = None,
     max_consecutive_infrastructure_failures: Annotated[
         int,
@@ -378,8 +426,11 @@ def repair_benchmark(
         subjects_path=subjects_path,
         canary=canary,
         max_consecutive_infrastructure_failures=max_consecutive_infrastructure_failures,
+        oracle_cache=oracle_cache,
+        oracle_history_before=oracle_history_before,
         repair=TrialRepairPolicy(
             max_attempts_per_trial=max_repair_attempts,
+            allow_oracle_contract_change=allow_oracle_contract_change,
             judge_ignored_providers=tuple(judge_ignored_providers or ()),
         ),
     )

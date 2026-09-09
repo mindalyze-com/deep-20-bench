@@ -13,6 +13,7 @@ from deep20_oracle.openrouter_provider import OpenRouterOracleProviderSet
 from deep20_oracle.service import Oracle
 
 from .artifacts import BenchmarkTrialSink
+from .history_cache import LazyOracleHistoryCache
 from .models import (
     BenchmarkDefinitionSnapshot,
     BenchmarkModelSnapshot,
@@ -45,9 +46,11 @@ class LiveEpisodeExecutor:
         self,
         *,
         api_key: str,
+        oracle_cache: LazyOracleHistoryCache | None = None,
         judge_ignored_providers: tuple[str, ...] = (),
     ):
         self.api_key = api_key
+        self.oracle_cache = oracle_cache
         self.judge_ignored_providers = judge_ignored_providers
 
     def execute(
@@ -74,6 +77,10 @@ class LiveEpisodeExecutor:
         )
         try:
             engine = GameEngine(
+                oracle_cache=self.oracle_cache,
+                reuse_episode_answers=(self.oracle_cache is not None
+                    and self.oracle_cache.snapshot is not None
+                    and self.oracle_cache.snapshot.episode_reuse_policy == "same_episode_ask_v1"),
                 guesser=Guesser(
                     guesser_provider,
                     sink,

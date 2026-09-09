@@ -1,5 +1,52 @@
 # Oracle usage
 
+The current concise policy accepts exact quotations and explicitly labelled summaries of
+retrieved source facts. Each evidence item retains the existing 2,000-character allowance;
+longer context is not a protocol error and there is no additional word-count cap. Use
+`kind: quotation` for exact text, or `kind: source_summary` for faithful source context in the
+model's own words. Omitted kind retains the historical quotation meaning. Reviewer/Judge
+receive the source-summary label with the full numbered evidence and remain blind to earlier
+decisions. See `documentation/five-answer-experiment.md` for the evidence and version contract.
+
+To evaluate revised Oracle/Reviewer/Judge prompts on recorded benchmark questions without
+calling a Guesser, use [Oracle question replay](../../../documentation/oracle-question-replay.md).
+It calls this same service with fresh generation and keeps comparisons under `private/reviews/`.
+
+New B-0003 executions use `concise_knowledge_v1`: one research attempt requesting
+`research_query_target` queries (default 3), with an API ceiling calculated as the target plus
+two bonus calls. Valid completed answers within that ceiling retain normal independent
+evidence/knowledge decisions and private `evidence`/`other` basis plus a supporting statement. This policy permits source-free directional answers
+and retained UNKNOWN context; the earlier evidence/recovery rules below describe historical
+policies. See [the current policy](../../../documentation/five-answer-experiment.md#concise-evidenceknowledge-policy).
+
+For `concise_knowledge_v1`, Reviewer/Judge UNKNOWN accepts valid excerpt indices documenting
+uncertainty and either `evidence` or `other` basis, with the required supporting statement.
+Nothing is coerced into a different answer. Reviewer UNKNOWN continues to the blind Judge;
+Judge UNKNOWN is a final playable answer. Invalid references and genuinely invalid responses
+still fail after bounded recovery. Older policies retain their existing UNKNOWN contract.
+
+
+Benchmark executions support [historical Oracle answer reuse](../../../documentation/oracle-history-cache.md) under the explicit
+`historical_ask_v1`, `same_episode_ask_v1`, and `same_execution_ask_v1` policies. The benchmark
+lazily loads verified historical trials and adds eligible live answers from completed games in
+the current run for later repetitions. The engine also retains normalized repeats within one
+game. Repeats still count as questions. Reused ASK turns retain original evidence and marked
+source provenance, with no new adjudicator calls or cost. Each Guesser conversation starts
+fresh; cache metadata never enters it. Standalone commands keep fresh-call behavior. Cache
+hits bypass this Oracle service; its actual role calls always use fresh generation.
+
+
+The qualified_v1 profile permits YES, RATHER_YES, RATHER_NO, NO, and UNKNOWN. Every directional
+answer is blind-reviewed; any exact-token difference invokes the Judge. The Reviewer uses only
+supplied evidence. B-0003 explicitly selects `adjudication_policy: judge_stable_knowledge_v1`,
+which permits a bounded, labelled Judge knowledge fallback for otherwise unresolved missing
+facts. Omitting this setting retains the historical evidence-only Judge. Oracle UNKNOWN still
+bypasses both roles. See [Five-answer experiment](../../../documentation/five-answer-experiment.md).
+
+`OracleConfig.prompt_profile: concise_v1` selects the experimental concise research and
+evidence-review prompts as one aligned set. Default `standard` prompts remain unchanged.
+See [Concise prompt experiment](../../../documentation/concise-prompt-experiment.md).
+
 The `deep20-oracle` package answers one yes/no question about one configured subject. It makes
 one live-web research attempt and, for a retrieval-related failure, one independent diversified
 attempt. It blind-reviews every resulting `YES` or `NO` without web access and uses a separate
@@ -8,7 +55,9 @@ adjudication audit before returning. Reviewer and Judge use evidence first and h
 narrow model-knowledge fallback for stable closed facts. The Reviewer applies it conservatively
 because agreement bypasses the Judge.
 
-Run the examples below from the repository root.
+The detailed three-token schemas, Reviewer/Judge knowledge fallback, and examples below
+describe the default standalone standard profile. Qualified role permissions follow the
+five-answer specification above. Run the examples from the repository root.
 
 ## Prerequisites
 
@@ -48,6 +97,7 @@ provider: openai
 reasoning_effort: medium
 allow_fallbacks: false
 parallel_search: true
+parallel_search_mode: fast
 max_search_results: 5
 max_output_tokens: 4096
 timeout_seconds: 120
@@ -90,6 +140,7 @@ Configuration fields:
 | `allow_fallbacks` | Whether OpenRouter may route to a fallback endpoint. |
 | `token_limit_parameter` | Request field used for the output ceiling. The default is `max_completion_tokens`; use `max_tokens` when the selected endpoints require it. |
 | `parallel_search` | Whether OpenRouter web search explicitly uses the lower-cost Parallel engine. |
+| `parallel_search_mode` | Parallel mode: `basic`, `fast`, `turbo`, or `advanced`. Repository configs select `fast`; omitted fields retain legacy `basic`. Other modes require `parallel_search: true`. |
 | `max_search_results` | Maximum results available to web search, from 1 to 10. |
 | `max_output_tokens` | Provider output ceiling, from 128 to 65,536. |
 | `timeout_seconds` | Request timeout, from 1 to 600 seconds. |
@@ -134,12 +185,18 @@ date directly supports `NO` for "Is this person currently alive?" A bare profess
 interpreted as a documented professional or recognized biographical role, not any incidental
 appearance or activity.
 
-`ambiguous_question` and `open_world_not_provable` are genuine final `UNKNOWN` outcomes and do
-not invoke recovery. Two retrieval failures on a deterministic closed or temporal fact produce
-the infrastructure error `oracle_research_exhausted`; they do not silently become a factual
-`UNKNOWN`. Repeated retrieval failure for an open-world or other non-closed family remains a
-classified final `UNKNOWN`. Reviewer and Judge still receive only a decisive result's trusted
-subject, original question, and numbered evidence.
+`ambiguous_question` and `open_world_not_provable` are final `UNKNOWN` outcomes and do not
+invoke recovery. If valid research remains inconclusive after the recovery attempt, the final
+answer is also `UNKNOWN`, regardless of question wording. The application no longer uses
+keyword lists to decide whether missing evidence is an infrastructure failure. Technical
+provider, schema, required-search, routing, and persistence failures still fail the call.
+Reviewer and Judge receive only a directional result's trusted subject, original question,
+and numbered evidence; Oracle `UNKNOWN` bypasses both roles.
+
+New research audits use `question_class: other`. Earlier labels and failures remain readable
+without rewriting historical results. The revised factual contract is
+`oracle-factual-answer-v2-inconclusive-unknown`; standalone manifests and benchmark/cache
+contracts reject mixing it with the earlier behavior. Use fresh execution IDs.
 
 ## Subject catalog
 
@@ -162,6 +219,13 @@ subjects:
 Target IDs use `T-NNNN`. The description should identify the exact entity without becoming a
 general-purpose biography. Duplicate YAML keys, mismatched IDs, malformed URLs, duplicate
 aliases, and unexpected fields are rejected.
+
+Each catalog entry may also set `status: active` or `status: inactive`; omission means active.
+Inactive entries keep their IDs, aliases, and descriptions. New benchmark runs exclude them,
+while explicit standalone Oracle and game calls remain available for audits. Change the status
+back to `active` to include a subject in new benchmarks again. The catalog returns plain
+`Subject` values to components, so status never enters model requests or prompt caches.
+The subject-catalog identity hash excludes status; other catalog changes still affect it.
 
 ## Command-line usage
 
@@ -222,9 +286,20 @@ uv run deep20 oracle ask T-0001 \
   --no-parallel-search
 ```
 
-At the time this option was introduced, OpenRouter listed Parallel server-tool searches at
-$0.001 per request and passed native provider search pricing through separately. Model token
-costs remain additional. Check the
+The repository Oracle configuration and benchmark templates select `parallel_search_mode: fast`
+for new runs. Set it to `basic` for a Basic comparison. Omitted fields retain Basic, including
+its omitted tool mode and serialized configuration field, preserving historical manifests.
+`--no-parallel-search` also clears the configured Parallel mode when selecting automatic/native
+search. Non-default modes are recorded in the immutable configuration,
+sent to the search tool, and separated in primary/recovery prompt-cache namespaces. They do not
+change prompts, review rules, Guesser history, or the no-web Reviewer/Judge requests.
+The installed generated OpenRouter SDK omits the newer `mode` field. The adapter restores
+only the configured non-default mode after SDK serialization, verifies the expected Parallel
+tool, and checks this path with a real-SDK mock HTTP transport. Basic and no-web requests
+retain their existing transport behavior.
+
+On 6 September 2026, OpenRouter listed Basic/Advanced at $0.005 and Fast/Turbo at $0.001 per
+search request, including up to ten results. Model token costs remain additional. Check the
 [OpenRouter web-search documentation](https://openrouter.ai/docs/guides/features/server-tools/web-search)
 for current pricing before relying on projected savings.
 
@@ -505,12 +580,12 @@ Failures are typed and audited when a run context is available. Important codes 
 | --- | --- |
 | `provider_request_failed` | The OpenRouter request failed. |
 | `provider_incomplete_response` | The provider did not finish with a completed answer. |
+| `provider_content_filtered` | An Oracle-family provider response ended with `content_filter`; the actual filter rule may be undisclosed. |
 | `provider_output_limit_exceeded` | The provider stopped because the configured output ceiling was reached. |
 | `provider_empty_response` | The response had no structured textual content. |
 | `web_search_not_used` | Provider telemetry reported no web search. |
 | `resolved_model_mismatch` | The resolved model differed from the configured model. |
 | `invalid_structured_output` | JSON or domain validation failed. |
-| `oracle_research_exhausted` | Two research attempts failed to retrieve usable support for a deterministic closed or temporal fact. |
 | `audit_configuration_mismatch` | A run ID was reused with another Oracle configuration. |
 | `audit_catalog_mismatch` | A run ID was reused with another subject catalog. |
 | `audit_integrity_mismatch` | Existing run data failed its integrity check. |
@@ -519,11 +594,27 @@ Failures are typed and audited when a run context is available. Important codes 
 The adapters retry typed transient transport failures and explicit
 408/429/500/502/503/504/524/529 responses within the configured bounded backoff budget,
 honoring `Retry-After`. Empty and incomplete results receive the configured bounded no-result
-retry. Each role may retry invalid structured output under its own policy by replaying the exact
-request without adding validation feedback. These are transport or format retries. The Oracle's
+retry. For bounded Oracle research, this includes `content_filter` and `length` only when
+the intended route and explicit search usage are known and allowance remains. Both provider
+search caps decrease by actual usage; the messages stay identical. Missing telemetry or an
+uncertain transport outcome cannot restart the search budget. No-result and format retries
+share the total allowance, and all attempts remain in billing and recovery metrics. Exhaustion
+still fails the adjudication without an unchecked answer or synthetic `UNKNOWN`.
+Oracle and Reviewer calls append an eight-character random hexadecimal `question_id`
+after the factual input, with a fixed instruction to ignore it when answering. Their bounded
+format retry refreshes only this ID in the messages. Bounded Oracle research also reduces both
+provider search-limit fields by the searches already used, retaining both attempts in cost and
+recovery accounting. No malformed output, validation feedback, attempt number,
+or earlier decision is sent. Transport retries preserve the ID, while Judge format retries
+keep the exact request. Content variation does not set a provider seed or guarantee a different
+answer. The metadata policy is versioned as `question-id-v1` in the
+`oracle-factual-answer-v4-bounded-format-retry` contract hash, so
+use fresh run/execution IDs. Logical prompt hashes exclude random metadata; privileged provider
+traces retain the actual request. IDs never enter Guesser history or another role's request.
+These are transport or format retries. The Oracle's
 one research-recovery request is a separate semantic evidence-acquisition strategy and receives
 no prior-attempt content. Genuine Oracle, Reviewer, and Judge `UNKNOWN` values are valid
-decisions; transport, exhausted closed-fact research, exhausted schema recovery, search,
+decisions, including inconclusive research after recovery; transport, exhausted schema recovery, search,
 model-routing, and audit failures are exceptions. A required Reviewer or Judge failure fails
 the complete adjudication and never falls back to the provisional Oracle answer.
 
@@ -540,9 +631,12 @@ uv build --all-packages
 The paid live integration test is opt-in:
 
 ```bash
-DEEP20_RUN_LIVE_TEST=1 uv run pytest -m integration \
+DEEP20_RUN_LIVE_TEST=1 uv run pytest -m integration --run-paid-tests \
   source/execution/oracle/tests/test_live_openrouter.py
 ```
 
 It uses the same credential precedence as the CLI, makes a real provider request, and writes
 only to a temporary test run directory.
+
+For repeated direct questions and saved regression cases without a Guesser, see
+[Direct Oracle question suites](../../../documentation/oracle-question-suites.md).

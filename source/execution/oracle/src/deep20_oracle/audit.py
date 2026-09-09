@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from .artifacts import RunArtifactPolicy
+from .cache_contract import oracle_contract_hash
 from .config import OracleConfig
 from .diagnostics import diagnose_exception
 from .errors import AuditWriteError
@@ -220,6 +221,7 @@ class RunAuditWriter:
         path = run_root / "manifest.json"
         config_snapshot = self.config.model_dump(mode="json")
         config_hash = sha256_text(canonical_json(config_snapshot))
+        contract_hash = oracle_contract_hash(self.config)
         if path.exists():
             manifest = json.loads(path.read_text(encoding="utf-8"))
             self._validate_integrity_hash(manifest, "run manifest")
@@ -238,6 +240,11 @@ class RunAuditWriter:
                     "run already uses a different subject catalog",
                     code="audit_catalog_mismatch",
                 )
+            if manifest.get("oracle_contract_hash") != contract_hash:
+                raise AuditWriteError(
+                    "run already uses a different Oracle factual contract; use a fresh run ID",
+                    code="audit_configuration_mismatch",
+                )
             return
         if not self.artifact_policy.permits(path.name):
             return
@@ -251,6 +258,7 @@ class RunAuditWriter:
             ),
             "oracle_config": config_snapshot,
             "oracle_config_hash": config_hash,
+            "oracle_contract_hash": contract_hash,
             "subject_catalog_hash": self.subject_catalog_hash,
             "reproducibility": "artifact_replay_only_live_web_reruns_may_differ",
             "evidence_validation": "model_reported",

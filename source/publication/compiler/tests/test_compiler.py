@@ -1070,7 +1070,50 @@ def test_latest_qualified_timestamp_tie_is_rejected() -> None:
         _select_latest_qualified_runs((left, right), ("M-0001",))
 
 
-def test_qualification_requires_full_completed_trial_coverage_only() -> None:
+@pytest.mark.parametrize("role", ("guesser", "oracle"))
+def test_revised_prompts_cannot_qualify_even_with_full_trial_coverage(role: str) -> None:
+    loaded, cohort = _qualification_context()
+    definition = loaded.manifest.definition
+    if role == "guesser":
+        definition = definition.model_copy(update={
+            "game_policy": definition.game_policy.model_copy(
+                update={"prompt_profile": "concise_v1"},
+            ),
+        })
+    else:
+        definition = definition.model_copy(update={
+            "oracle_configuration": definition.oracle_configuration.model_copy(update={
+                "root": {**definition.oracle_configuration.root, "prompt_profile": "concise_v1"},
+            }),
+        })
+    changed = loaded.model_copy(update={
+        "manifest": loaded.manifest.model_copy(update={"definition": definition}),
+    })
+    assert _reason_codes(changed, cohort) == ("experimental_prompt_profile",)
+
+
+@pytest.mark.parametrize("run_limit", [40, 50])
+@pytest.mark.parametrize("cohort_limit", [40, 50])
+def test_qualification_requires_the_cohort_question_limit(
+    run_limit: int, cohort_limit: int,
+) -> None:
+    loaded, cohort = _qualification_context()
+    definition = loaded.manifest.definition
+    changed = loaded.model_copy(update={
+        "manifest": loaded.manifest.model_copy(update={
+            "definition": definition.model_copy(update={
+                "game_policy": definition.game_policy.model_copy(update={
+                    "max_questions": run_limit,
+                }),
+            }),
+        }),
+    })
+    selected_cohort = cohort.model_copy(update={"max_questions": cohort_limit})
+    expected = () if run_limit == cohort_limit else ("question_limit_mismatch",)
+    assert _reason_codes(changed, selected_cohort) == expected
+
+
+def test_qualification_requires_full_completed_trial_coverage() -> None:
     loaded, cohort = _qualification_context()
     assert loaded.manifest.definition.game_policy.version == 9
     assert not _reason_codes(loaded, cohort)
@@ -1158,7 +1201,7 @@ def test_compiler_uses_run_model_metadata_and_requires_all_trials() -> None:
         _read_yaml(REPOSITORY / "config" / "publication.yml"),
         "config/publication.yml",
     )
-    config = config.model_copy(update={"cohorts": (cohort,)})
+    config = config.model_copy(update={"cohorts": (cohort,), "default_edition_id": cohort.edition_id})
     subjects, subject_catalog_hash = parse_subject_catalog(
         _read_yaml(REPOSITORY / "config" / "subjects.yaml"),
         "subjects.yaml",
@@ -1193,6 +1236,7 @@ def test_compiler_uses_run_model_metadata_and_requires_all_trials() -> None:
     dataset = compile_publication(
         runs=(unqualified, loaded),
         config=config,
+        cohort=next(c for c in config.cohorts if c.edition_id == "1.0"),
         subject_catalog=subjects,
         subject_catalog_hash=subject_catalog_hash,
         built_at=datetime(2026, 7, 30, 12, 34, 56, tzinfo=UTC),
@@ -1249,11 +1293,52 @@ def test_compiler_uses_run_model_metadata_and_requires_all_trials() -> None:
     )
 
 
-def test_subject_catalog_hash_matches_benchmark_producer_contract() -> None:
-    subject_path = REPOSITORY / "config" / "subjects.yaml"
-    _, subject_hash = parse_subject_catalog(_read_yaml(subject_path), str(subject_path))
+@pytest.mark.parametrize("status", ["active", "inactive"])
+def test_subject_catalog_hash_matches_benchmark_producer_contract(status: str) -> None:
+    catalog, subject_hash = parse_subject_catalog({
+        "version": 1,
+        "subjects": {"T-0001": {
+            "target_id": "T-0001", "canonical_name": "Türfalle",
+            "entity_type": "thing", "description": "Door handle.", "status": status,
+        }},
+    }, "subject fixture")
 
-    assert subject_hash == "2cb28dee2ab7639a755940e30525b011f5683d3971fcc0d70bcb7cdd29baea0a"
+    assert catalog.subjects["T-0001"].status == status
+    assert subject_hash == "24f8603c7790a366788e4840fbd3f3b8ce91dce2b16e75a6b58f6fb9c60a4345"
+
+
+def test_source_summary_kind_survives_public_projection_and_v9() -> None:
+    from deep20_publication.compiler import _public_episode
+    from deep20_publication.legacy import LegacyPublicActionTurn, LegacyPublicEpisodeDetail
+    from deep20_publication.models import EpisodeActionTurn, EpisodeEvidence, PublicActionTurn
+
+    loaded, _ = _qualification_context()
+    episode = loaded.episodes[0]
+    turn = episode.result.turns[0]
+    assert isinstance(turn, EpisodeActionTurn)
+    evidence = EpisodeEvidence.model_validate({
+        "source_url": "https://example.test/fact", "excerpt": "Context and qualifications. " * 50,
+        "validation": "model_reported", "kind": "source_summary",
+    })
+    turn = turn.model_copy(update={
+        "adjudication": turn.adjudication.model_copy(update={"evidence": (evidence,)}),
+    })
+    # Test the projection independently of qualification; new contracts still need release approval.
+    episode = episode.model_copy(update={"result": episode.result.model_copy(update={
+        "turns": (turn, *episode.result.turns[1:]),
+    })})
+    public = _public_episode(episode)
+    public_turn = public.turns[0]
+    assert isinstance(public_turn, PublicActionTurn)
+    assert public_turn.evidence[0].kind == "source_summary"
+    assert public_turn.evidence[0].excerpt == evidence.excerpt
+    legacy = LegacyPublicEpisodeDetail.model_validate_json(public.model_dump_json())
+    legacy_turn = legacy.turns[0]
+    assert isinstance(legacy_turn, LegacyPublicActionTurn)
+    assert legacy_turn.evidence[0].kind == "source_summary"
+    old = {"source_url": "https://example.test/fact", "excerpt": "Original quote.",
+           "validation": "model_reported"}
+    assert EpisodeEvidence.model_validate(old).model_dump(mode="json") == old
 
 
 def test_public_run_model_defaults_to_exact_without_route_totals() -> None:
@@ -1347,9 +1432,9 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
     static_render_source = (
         REPOSITORY / "source" / "publication" / "site" / "scripts" / "prerender.mjs"
     ).read_text(encoding="utf-8")
-    assert "manifest.json" in static_render_source
-    assert "leaderboard.json" in static_render_source
-    assert "deep20bench-v9.json" in static_render_source
+    assert "manifest_path" in static_render_source
+    assert "leaderboard_path" in static_render_source
+    assert "editions.json" in static_render_source
     for private_source in (
         "guesser_conversation",
         "subject_snapshot",
@@ -1411,7 +1496,7 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
 
 
 def test_published_contract_violations_include_only_sanitized_guesser_text() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "editions" / "1.0" / "deep20bench-v10.json"
     dataset = PublishedDataset.model_validate_json(dataset_path.read_text(encoding="utf-8"))
     violations = tuple(
         turn
@@ -1533,7 +1618,7 @@ def test_cost_documentation_excludes_superseded_infrastructure_attempts() -> Non
 
 
 def test_generated_homepage_matches_the_official_result_state() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "editions" / "1.0" / "deep20bench-v10.json"
     dataset = json.loads(dataset_path.read_text(encoding="utf-8"))
     evaluated = [row for row in dataset["leaderboard"] if row["status"] == "evaluated"]
     homepage = (
@@ -1587,11 +1672,10 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     ).read_text(encoding="utf-8")
 
     assert "How well can AI models play Twenty Questions?" in homepage
-    assert "Prototype · Twenty Questions for AI models" in homepage
+    assert "Deep20Bench {{ manifest.active_cohort.edition_label }}" in homepage
     assert "more than the traditional twenty" in homepage
     assert "The game combines several abilities." in homepage
-    assert "The concept works and the first step is complete." in homepage_copy
-    assert "cost is the main constraint." in homepage_copy
+    assert "Each edition has its own comparison settings and results." in homepage_copy
     assert "small first step" not in homepage
     assert "not a definitive ranking" not in homepage
     assert "Use GitHub Discussions to suggest what we should test next." in homepage
@@ -1600,26 +1684,29 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "The Guesser asks. Three roles determine the answer." in homepage
     assert "The Guesser is the LLM under test" in homepage
     assert "the Oracle must search the live web and cite evidence" in homepage
-    assert "independent second decision on every YES or NO" in homepage
+    assert "independent second decision on every" in homepage
     assert "If the decisions disagree, a blind" in homepage
     assert "The Guesser is isolated from this process" in homepage
     assert "Read the full game and answer-checking method" in homepage
     assert "hash: '#answer-checks'" in homepage
     assert "Early runs exposed rare but basic Oracle errors" not in homepage
-    assert "From one round to a comparable score." in methodology
-    assert "<IllustrativeRoundExample />" in homepage
-    assert "<IllustrativeRoundExample />" in methodology
+    assert "Edition {{ manifest.active_cohort.edition_label }} method." in methodology
+    assert '<IllustrativeRoundExample :qualified="qualified" />' in homepage
+    assert '<IllustrativeRoundExample :qualified="qualified" />' in methodology
     assert "Question score (single round)" in illustrative_round
     assert "The correct guess is excluded." in illustrative_round
     assert "Questions and guesses follow separate paths." in methodology
-    assert "The Oracle must search the live web instead of relying on memory" in methodology
+    assert (
+        "For a fresh answer, the Oracle must search the live web instead of relying on memory"
+        in " ".join(methodology.split())
+    )
     assert "without seeing the Oracle answer" in methodology
     assert "without seeing either answer" in methodology
     assert "Oracle UNKNOWN" in methodology
     assert "Guess Validator" in methodology
     assert "The Guesser is fully isolated from adjudication." in methodology
     assert (
-        "contains only the broad category, its own prior actions, final YES, NO, or UNKNOWN"
+        'contains only the broad category, its own prior actions, final {{ answers.join(", ") }}'
         in methodology
     )
     assert "searches, evidence, citations, adjudicator" in methodology
@@ -1631,7 +1718,7 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "Every additional" in methodology
     assert "question increases the trial value" in methodology
     assert "Subject design and contamination" in methodology
-    assert "Seven subjects is too small for broad conclusions" in methodology
+    assert "This small subject set does not support broad conclusions" in methodology
     assert "does not claim that this public cohort is resistant" in methodology
     assert "Future cohorts will aim to include more subjects" in methodology
     assert "not a general ranking of model intelligence" in methodology
@@ -1643,7 +1730,7 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "number of subjects" in methodology
     assert "A score built from repeated trials." not in homepage
     assert "Each model completes the full subject set several times." not in homepage
-    assert "Only complete, comparable runs enter the leaderboard." in methodology
+    assert "Only complete runs with accepted settings enter the leaderboard." in methodology
     assert "Publication happens after play is finished." in methodology
     assert "Published data never returns to the Guesser." in methodology
     assert "questionScoreChartSummary" in homepage
@@ -1688,7 +1775,7 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
         assert "result-row--navigable" in homepage
     else:
         assert '<article v-else class="empty-results">' in homepage
-    assert "Pilot comparison in progress." in homepage
+    assert "<EmptyEditionResults />" in homepage
 
 
 def test_generated_drilldown_pages_keep_current_location_visible() -> None:
@@ -1746,7 +1833,7 @@ def test_drilldown_navigation_is_sticky_and_scroll_safe() -> None:
 
 
 def test_generated_question_scores_use_subject_averages_then_average() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "editions" / "1.0" / "deep20bench-v10.json"
     dataset = json.loads(dataset_path.read_text(encoding="utf-8"))
 
     assert dataset["score_policy"]["version"] == "average-then-average-v1"
@@ -1785,7 +1872,7 @@ def test_generated_question_scores_use_subject_averages_then_average() -> None:
 
 
 def test_generated_efficiency_distance_is_reproducible_from_public_decimals() -> None:
-    dataset_path = REPOSITORY / "docs" / "data" / "deep20bench-v9.json"
+    dataset_path = REPOSITORY / "docs" / "data" / "editions" / "1.0" / "deep20bench-v10.json"
     dataset = PublishedDataset.model_validate_json(dataset_path.read_text(encoding="utf-8"))
     rows = tuple(row for row in dataset.leaderboard if row.ideal_distance_rank is not None)
 
@@ -1872,14 +1959,20 @@ def test_pre_question_score_run_compiles_without_migration() -> None:
     dataset = compile_publication(
         runs=(loaded,),
         config=config,
+        cohort=next(c for c in config.cohorts if c.edition_id == "1.0"),
         subject_catalog=subjects,
         subject_catalog_hash=subject_hash,
         built_at=datetime(2026, 7, 30, 12, 34, 56, tzinfo=UTC),
     )
 
     assert tuple(run.execution_id for run in dataset.official_runs) == (execution_id,)
+    assert subjects.subjects["T-0003"].status == "inactive"
+    assert subjects.subjects["T-0007"].status == "inactive"
+    assert {subject.target_id for subject in dataset.official_runs[0].subjects} >= {
+        "T-0003", "T-0007",
+    }
     assert dataset.official_runs[0].question_score == Decimal("17.74285714285714285714285714")
-    assert dataset.schema_version == 9
+    assert dataset.schema_version == 10
     assert dataset.leaderboard[0].efficiency_rank == 1
     assert dataset.leaderboard[0].ideal_distance_rank == 1
     assert dataset.leaderboard[0].ideal_distance_score == 0
@@ -2353,8 +2446,8 @@ def test_homepage_and_method_share_one_typed_illustrative_round() -> None:
     story = (source_root / "views" / "StoryView.vue").read_text(encoding="utf-8")
 
     assert "satisfies IllustrativeRound" in shared_round
-    assert "<IllustrativeRoundExample />" in homepage
-    assert "<IllustrativeRoundExample />" in method
+    assert '<IllustrativeRoundExample :qualified="qualified" />' in homepage
+    assert '<IllustrativeRoundExample :qualified="qualified" />' in method
     assert 'from "@/lib/illustrative-round"' not in story
     assert "2 September 2026" in story
     assert "Claude Fable 5.1 (high) added." in story
@@ -2371,3 +2464,119 @@ def test_homepage_and_method_share_one_typed_illustrative_round() -> None:
     assert 'class="round-section"' not in story
     assert 'class="scope-section"' not in story
     assert 'class="apple-spotlight"' not in story
+
+
+@pytest.mark.parametrize("role", ("guesser", "oracle"))
+def test_five_answer_artifact_corruption_is_not_hidden_by_edition_filter(
+    tmp_path: Path, role: str,
+) -> None:
+    from deep20_publication.cli import _discover_runs
+    from deep20_publication.integrity import sha256_text
+
+    loaded, _ = _qualification_context()
+    manifest = loaded.manifest.model_dump(mode="json")
+    if role == "guesser":
+        manifest["definition"]["game_policy"]["prompt_profile"] = "qualified_v1"
+    else:
+        manifest["definition"]["oracle_configuration"]["prompt_profile"] = "qualified_v1"
+    manifest.pop("integrity_hash", None)
+    manifest["integrity_hash"] = sha256_text(json.dumps(
+        manifest, ensure_ascii=True, sort_keys=True, separators=(",", ":"),
+    ))
+    run = tmp_path / "runs/M-0022/BX-five-answer"
+    run.mkdir(parents=True)
+    (run / "manifest.json").write_text(json.dumps(manifest))
+    (run / "summary.yml").write_text("five-answer summary deliberately not loaded")
+    from deep20_publication.integrity import PublicationInputError
+    with pytest.raises(PublicationInputError, match="no adjacent manifest or state"):
+        _discover_runs(tmp_path)
+
+
+@pytest.mark.parametrize("scope", ["historical", "same_episode", "same_execution"])
+def test_cached_oracle_source_is_public_allowlist_and_v9_compatible(scope: str) -> None:
+    from test_result_audit_model import _provider_audit
+
+    from deep20_publication.compiler import _public_episode
+    from deep20_publication.legacy import LegacyPublicActionTurn, LegacyPublicEpisodeDetail
+    from deep20_publication.models import EpisodeActionTurn, OracleCacheSourceSnapshot
+
+    loaded, _ = _qualification_context()
+    same_episode = scope == "same_episode"
+    episode = loaded.episodes[0]
+    value = episode.result.model_dump(mode="json")
+    source = OracleCacheSourceSnapshot(
+        policy="same_execution_ask_v1" if scope == "same_execution" else "historical_ask_v1",
+        normalization="casefold-ascii-spaces-v1",
+        context_hash="a" * 64, snapshot_hash="b" * 64,
+        execution_id="BX-original", model_id="M-0001", benchmark_id="B-0001",
+        target_id=episode.identity.target_id, trial_id="trial-002",
+        episode_id="EP-" + "a" * 32, turn_number=5,
+        oracle_call_id="OC-" + "c" * 32, question="Original question?",
+        answered_at=datetime(2026, 1, 1, tzinfo=UTC),
+        source_file="runs/private-source/result.yml", source_integrity_hash="d" * 64,
+    )
+    turn = value["turns"][0]
+    assert isinstance(turn, dict)
+    turn["action"] = {"action": "ASK", "question": "Original question?", "name": None,
+                      "description": None}
+    turn["adjudication"] = {
+        "component": "oracle", "call_id": "OC-" + "e" * 32, "answer": "UNKNOWN", "evidence": [],
+        "oracle_quality": {"oracle_answer": "UNKNOWN", "disagreement": False, "judge_invoked": False,
+                           "final_answer": "UNKNOWN", "decision_path": "oracle_unknown"},
+        "cache_source": source.model_dump(mode="json"),
+    }
+    value["summary"]["ask_count"] = 1
+    value["summary"]["guess_count"] = 0
+    value["summary"]["oracle_cache_hits"] = 1
+    value["audit"] = {"schema_version": 1, "calls": [{
+        "component": "oracle", "call_id": "OC-" + "e" * 32, "turn_number": 1, "status": "success",
+        "cache_source": source.model_dump(mode="json"),
+        "oracle": {"role": "oracle", "prompt": {"version": "oracle-v1", "hash": "f" * 64},
+                   "provider": _provider_audit()},
+    }], "unavailable_call_count": 1}
+    value["guesser_conversation"] = []
+    if same_episode:
+        from copy import deepcopy
+
+        original = deepcopy(turn)
+        original["adjudication"].pop("cache_source")
+        original["adjudication"]["call_id"] = source.oracle_call_id
+        local_source = {
+            "policy": "same_episode_ask_v1", "normalization": "casefold-ascii-spaces-v1",
+            "run_id": value["run"]["run_id"], "episode_id": value["run"]["episode_id"],
+            "target_id": episode.identity.target_id, "turn_number": 1,
+            "oracle_call_id": source.oracle_call_id, "question": "Original question?",
+            "answered_at": source.answered_at.isoformat(),
+        }
+        turn["turn_number"] = 2
+        turn["counted_questions"] = 2
+        turn["guesser_call_id"] = "GC-" + "a" * 32
+        turn["adjudication"]["cache_source"] = local_source
+        value["turns"] = [original, turn]
+        value["summary"].update(total_turns=2, guesser_call_count=2, ask_count=2, counted_questions=2)
+        original_audit = deepcopy(value["audit"]["calls"][0])
+        original_audit.pop("cache_source")
+        original_audit["call_id"] = source.oracle_call_id
+        value["audit"]["calls"][0].update(turn_number=2, cache_source=local_source)
+        value["audit"]["calls"].insert(0, original_audit)
+        value["audit"]["unavailable_call_count"] = 2
+    result = EpisodeResultArtifact.model_validate(value)
+    assert isinstance(result.turns[0], EpisodeActionTurn)
+    public = _public_episode(episode.model_copy(update={"result": result}))
+    serialized = public.model_dump_json()
+    if scope == "same_execution":
+        assert '"scope":"same_execution"' in serialized
+    if same_episode:
+        assert '"scope":"same_episode"' in serialized and "BX-original" not in serialized
+        assert "Original question?" in serialized and '"turn_number":1' in serialized
+    else:
+        assert '"execution_id":"BX-original"' in serialized
+        assert "Original question?" in serialized and '"turn_number":5' in serialized
+    for forbidden in ("oracle_call_id", "source_file", "context_hash", "snapshot_hash",
+                      "source_integrity_hash", "OC-", "private-source"):
+        assert forbidden not in serialized
+    legacy_turn = LegacyPublicEpisodeDetail.model_validate_json(serialized).turns[-1]
+    assert isinstance(legacy_turn, LegacyPublicActionTurn) and legacy_turn.oracle_cache is not None
+    value["summary"]["oracle_cache_hits"] = 0
+    with pytest.raises(ValueError, match="cache-hit count"):
+        EpisodeResultArtifact.model_validate(value)

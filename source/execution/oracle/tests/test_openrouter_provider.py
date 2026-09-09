@@ -10,6 +10,7 @@ from deep20_oracle.config import (
     OPENROUTER_AUTO_PROVIDER,
     EvidenceReviewConfig,
     OracleConfig,
+    ParallelSearchMode,
     ProviderRouting,
     TokenLimitParameter,
 )
@@ -172,6 +173,79 @@ def test_openrouter_adapter_omits_engine_for_automatic_search() -> None:
         }
     ]
     assert sent["prompt_cache_key"] == "oracle-cache-key-auto"
+
+
+@pytest.mark.parametrize("mode,web", [
+    (ParallelSearchMode.BASIC, True), (ParallelSearchMode.FAST, True),
+    (ParallelSearchMode.FAST, False),
+])
+def test_real_sdk_transmits_search_mode_without_changing_visible_messages(
+    mode: ParallelSearchMode, web: bool,
+) -> None:
+    bodies: list[dict] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        bodies.append(json.loads(request.content))
+        assert int(request.headers["content-length"]) == len(request.content)
+        return httpx.Response(200, json={
+            "id": "test-response", "model": "openai/test-model", "provider": "openai",
+            "object": "chat.completion", "created": 0, "system_fingerprint": None,
+            "choices": [{"index": 0, "finish_reason": "stop", "message": {
+                "role": "assistant", "content": '{"answer":"UNKNOWN","evidence":[]}',
+            }}],
+            "usage": {
+                "prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15,
+                "cost": 0.001, "server_tool_use_details": {"web_search_requests": int(web)},
+            },
+        })
+
+    config = OracleConfig(
+        model="openai/test-model", provider="openai", parallel_search_mode=mode,
+    )
+    with OpenRouterProvider("test-key", config, enable_web_search=web) as provider:
+        provider.http_client._client.close()
+        provider.http_client._client = httpx.Client(transport=httpx.MockTransport(handle))
+        provider.complete(ProviderRequest(
+            messages=({"role": "user", "content": "current subject and question"},),
+            output_schema=OracleResult.model_json_schema(), prompt_cache_key="isolated-role",
+        ))
+    assert len(bodies) == 1
+    body = bodies[0]
+    assert body["messages"] == [{"role": "user", "content": "current subject and question"}]
+    if web:
+        parameters = body["tools"][0]["parameters"]
+        assert parameters.get("mode") == (None if mode is ParallelSearchMode.BASIC else mode.value)
+        assert parameters["engine"] == "parallel"
+        assert parameters["max_results"] == 5
+    else:
+        assert "tools" not in body
+        assert body["prompt_cache_key"] == "isolated-role-no-web"
+
+
+@pytest.mark.parametrize("mode", [
+    ParallelSearchMode.FAST, ParallelSearchMode.TURBO, ParallelSearchMode.ADVANCED,
+])
+@pytest.mark.parametrize("namespace", ["oracle-primary", "oracle-recovery"])
+def test_search_mode_changes_only_tool_mode_and_research_cache_namespace(
+    mode: ParallelSearchMode, namespace: str,
+) -> None:
+    provider = OpenRouterProvider.__new__(OpenRouterProvider)
+    provider.config = OracleConfig(model="openai/test-model", provider="openai")
+    request = ProviderRequest(
+        messages=({"role": "user", "content": "current subject and question"},),
+        output_schema=OracleResult.model_json_schema(),
+        prompt_cache_key=namespace,
+        session_id=f"{namespace}-session",
+    )
+    basic = provider._request_payload(request)
+    provider.config = OracleConfig(
+        model="openai/test-model", provider="openai", parallel_search_mode=mode,
+    )
+    selected = provider._request_payload(request)
+    assert selected["tools"][0]["parameters"].pop("mode") == mode.value
+    assert selected.pop("prompt_cache_key") == f"{namespace}-parallel-{mode.value}"
+    basic.pop("prompt_cache_key")
+    assert selected == basic
 
 
 def test_evidence_review_adapter_has_no_web_tool_and_uses_isolated_cache_suffix() -> None:
@@ -522,8 +596,9 @@ def test_oracle_adapter_retries_transport_disconnect_without_changing_request(
     assert exchange.trace.request_attempts == 2
 
 
+@pytest.mark.parametrize("include_question_id", (False, True))
 def test_oracle_adapter_retries_malformed_http_200_without_changing_request(
-    monkeypatch,
+    monkeypatch, include_question_id,
 ) -> None:
     raw_output = json.dumps({"answer": "UNKNOWN", "evidence": []})
     completed = {
@@ -582,6 +657,10 @@ def test_oracle_adapter_retries_malformed_http_200_without_changing_request(
         prompt_cache_key="oracle-cache-key",
     )
 
+    if include_question_id:
+        from deep20_oracle.request_variation import with_fresh_question_id
+
+        request = with_fresh_question_id(request)
     exchange = provider.complete(request)
 
     assert len(calls) == 2

@@ -1,11 +1,58 @@
-# Homepage creation and publication concept
+# Homepage creation and publication
 
-Status: implemented official-only publication architecture with latest-qualified-run selection.
+Status: implemented publication for benchmark editions 1 and 1.1, with separate
+latest-qualified-run selection and 1.1 as the GUI default.
+
+## Edition extension
+
+The edition-specific contract in [publication README](../source/publication/README.md#edition-contracts)
+defines qualification and public schemas. Edition 1 retains seven subjects, five rounds,
+and a 50-question limit; edition 1.1 declares ten subjects, three rounds, a 40-question limit,
+and four directional question answers plus UNKNOWN. Rankings and downloads are independent.
+Both use the existing compiler and Vue components. Every data loader and detail document
+carries edition identity. Schema v10 supports qualified transcripts; the v9 URL and schema
+remain maintained for edition 1.
+
+The persistent edition selector is a compact dropdown showing the selected version and its
+Current or Previous status. A native details disclosure contains ordinary edition links,
+the selected edition's subject/round/question settings, answer vocabulary, and What changed
+link. The panel works without JavaScript and uses the same controls on desktop and mobile.
+With JavaScript, mouse hover or keyboard focus on an edition previews its settings below.
+The active edition and checkmark change only after navigation. Moving into the settings keeps
+the preview; leaving or closing the panel restores the active edition's settings.
+Escape returns focus to the trigger; outside clicks and navigation close the panel after
+hydration. Controls have 44-pixel touch targets, and the panel fits narrow screens with its
+own scroll area on short viewports. The settings no longer occupy separate page-wide rows.
+The results header uses content-driven height and compact spacing above its title and tabs.
+The selector shares the dark header row on desktop, tablets, and phones. Phones show the
+version and status indicator; the full status remains in the accessible name and dropdown.
+Narrow phones use an icon-only Menu control. Header controls keep their touch targets,
+and the dropdown stays within the viewport.
+Previous editions keep a small amber indicator in the selector and a compact, muted notice
+below the header. The notice identifies the previous edition and uses plain text links to
+the latest edition and the methodology comparison. It uses the
+same destination rules as the selector, works without JavaScript, and stays visible until the
+current edition finishes loading. A polite live region announces the change without a dialog.
+Unversioned pages resolve to 1.1; canonical pages live below `/editions/<id>/`. Existing run
+URLs resolve their owner from the edition index. Switching a detail page preserves model and
+subject where available, with an explanation when a counterpart is missing. New editions with
+no qualifying results show their declared settings and an explicit empty state. Method and
+Data pages identify their edition and explain what changed. About has edition-scoped paths
+with shared content and canonical `/about/`, so it preserves the selected edition. While an
+edition loads, the selector continues to identify the displayed data and shows a loading label.
+No cross-edition ranking is shown.
+
+The Methodology comparison explains why 1.1 adds Rather yes and Rather no: preserve a direction
+supported by partial evidence without presenting it as settled. It defines both labels and
+Unknown, explains how the Guesser should use qualified clues, and distinguishes this intended
+benefit from a demonstrated improvement. Changes to subjects, repetitions, limits, and prompts
+prevent a cross-edition score difference from isolating the effect of the new answer classes.
+See [the five-answer rationale](five-answer-experiment.md#why-add-qualified-answers).
 
 ## Purpose
 
-Deep20Bench should publish a static GitHub Pages website derived from completed benchmark
-artifacts. The site should be useful both as an approachable leaderboard and as an
+Deep20Bench publishes a static GitHub Pages website derived from completed benchmark
+artifacts. The site provides an approachable leaderboard and an
 evidence-first research explorer. It must show a clearly defined winner without hiding success
 rates, subject-level variation, costs, provenance, or experimental results.
 
@@ -90,25 +137,25 @@ flowchart LR
     C["Typed publication<br/>cohort configuration"] --> B
     B --> D["Versioned public<br/>JSON and CSV"]
     D --> E["Vue and Vite<br/>static build"]
-    F["Repository Markdown<br/>documentation"] --> E
+    F["Handwritten Vue editorial views"] --> E
     E --> G["Generated committed<br/>docs/ directory"]
     G --> H["GitHub Pages"]
 ```
 
-The intended local command is:
+The local command is:
 
 ```bash
 uv run --project source/publication/compiler deep20-publication build
 ```
 
-It must not require `OPENROUTER_API_KEY` or any file under `private/`. It must not make network
-requests or run missing benchmarks implicitly. Running a paid benchmark and publishing finished
-artifacts remain separate explicit commands.
+It requires no `OPENROUTER_API_KEY` or file under `private/`. Once dependencies are installed,
+the build needs no network access. If Node dependencies are missing, the CLI runs `npm ci`.
+It never starts model calls or missing benchmarks. Running a paid benchmark and generating
+finished publication artifacts remain separate explicit commands.
 
-The CLI also accepts repeatable exact `--exclude-run-dir runs/M-…/BX-…` options for intentional,
-one-build curation. Exclusions are explicit presentation inputs: paths must resolve to existing
-run directories under `runs/`; the success log records their count, and the public provenance
-records the exact relative paths. They never change or delete source artifacts.
+`--repository` selects the repository root; otherwise it is discovered from the working
+directory. Eligibility and model selection come from `config/publication.yml`. The CLI has
+no per-run exclusion option, and malformed discovered artifacts fail the build.
 
 An additional verification mode rebuilds into a temporary directory and checks the committed
 site without replacing it:
@@ -169,27 +216,45 @@ Runs are auto-discovered from the canonical run hierarchy. There is no hand-main
 published execution IDs.
 
 Auto-discovery does not decide which run happens to become the homepage. A typed publication
-configuration defines the active leaderboard cohort. It fixes:
+configuration defines one leaderboard cohort per edition. It fixes:
 
 - Cohort ID and display name.
 - Selected subject set and required iteration count.
+- Question limit shared by every compared run.
 - Score policy version.
 - Included model IDs.
-- Whether it is the active homepage cohort.
+- Edition identity, current/previous status, and explicit eligibility requirements.
+
+The registry's `default_edition_id` selects the default GUI edition. All selection, ranking,
+uncertainty, and normalization operate separately within each cohort.
 
 A run enters an official cohort only when it:
 
 - Passes all integrity checks.
 - Is terminal.
+- Uses the active cohort's question limit.
 - Contains exactly the active subject set.
 - Contains every required completed trial number exactly once for each subject.
 
 A completed model-attributable failure is a completed scored trial. An infrastructure-failed or
-missing trial is not; it must be supplied by the execution retry before publication. There is no
-four-of-five fallback or trial sampling. Qualification deliberately does not compare historical
-benchmark version, seed, question limit, subject-catalog hash, publication-eligibility flags, or
+missing trial is not; an explicitly requested resume or repair must complete the schedule
+before it can qualify. Publication never launches a retry. There is no
+four-of-five fallback or trial sampling. A different question limit produces
+`question_limit_mismatch`: 40-question runs cannot enter the historical 50-question cohort, or
+vice versa. Historical edition 1 qualification deliberately does not compare
+benchmark version, seed, subject-catalog hash, publication-eligibility flags, or
 model configuration against current catalog values. Model metadata is projected from the
 selected signed run.
+
+Edition 1.1 additionally pins the paired qualified profiles, base seed, subject identity
+hashes, game rules, support-model configuration hashes, the Oracle factual-contract hash, and
+every role's prompt revision. The 8 September 2026 release decision accepts the current concise
+evidence/knowledge policy and three recorded revisions covering Gemini 3.8 Flash,
+GPT-6 Astra, and the completed Claude Opus repair. Each revision pins a complete contract
+and any observed role-version
+combinations; a run cannot mix pins from different contracts. The Method page states that
+adjudication and subject-description revisions can affect comparisons. Later execution changes
+do not silently change this definition. See the publication README for the full contract.
 
 If several official executions are complete for the same model, the leaderboard uses the one
 with the greatest typed `completed_at` value. It never chooses the best-scoring execution. Only
@@ -238,14 +303,16 @@ the scoring explanation. Cost is a separate comparison and may support a separat
 label; it is not a hidden tie-breaker. Recorded historical cost and dated catalog pricing must
 remain distinguishable.
 
-Version 7 shows a stratified 95% repeated-trial confidence interval beside every official model
+The publication shows a stratified 95% repeated-trial confidence interval beside every official model
 score. It estimates trial variation separately within each fixed subject, then combines those
 equally weighted variance estimates with a Welch–Satterthwaite t interval. A larger interval
 width indicates less repeatable performance on the current subjects. It does not estimate uncertainty
 from subject selection, model or provider changes, or future benchmark versions. Individual
 model intervals are not pairwise significance tests. The publication also retains subject
 averages and individual trial values; it does not remove outliers or create a cohort-relative
-composite score.
+composite score. For runs with historical answer reuse, this interpretation is conditional
+on the recorded cache policy and inventory; the calculation has no covariance correction for
+shared adjudicated answers. See [confidence intervals](confidence-intervals.md).
 
 The dedicated Stability result view orders models by the width of that 95% interval. Every
 model uses the same confidence level, so the level itself is not a ranking measure. Smaller
@@ -268,8 +335,8 @@ The site is a focused Vue publication with build-time static rendering and hydra
 - A static drill-down from an execution to its subjects and then to every completed episode.
 - An episode transcript headed by the disclosed hidden subject (for example, “Finding
   Garfield”), so the reader never loses the context of what the model was trying to identify.
-- Question-by-question typed actions beside the exact final `YES`, `NO`, or `UNKNOWN` token
-  returned by the factual-adjudication pipeline or Validator.
+- Question-by-question typed actions beside the edition's exact final factual token, including
+  `RATHER_YES` and `RATHER_NO` for qualified ASK turns. GUESS remains three-token.
 - Expandable Oracle trails containing the reported source URL and excerpt for each adjudicated
   question, with an explicit warning that this evidence is model-reported rather than
   independently certified.
@@ -278,7 +345,8 @@ The site is a focused Vue publication with build-time static rendering and hydra
   versions, token and cache totals, timestamps, and immutable episode/run identifiers.
 - Methodology, Guesser isolation, reproducibility, citation, licensing, and downloadable-data
   pages.
-- Rendered engineering documentation.
+- Links to engineering Markdown in the source repository. The build renders Vue editorial
+  pages; it does not convert `documentation/` into a second documentation website.
 
 Vue renders tables and explanations from the generated static JSON. Apache ECharts adds
 responsive SVG charts and tooltips. Every chart has an ARIA description and equivalent
@@ -296,15 +364,16 @@ resize only when dimensions change, and cached route activation resumes observat
 The document preloads the locally bundled normal Latin display and body fonts. Build-time URL
 resolution preserves the configured base path and content-hashed asset names.
 
-The homepage, eight editorial and result pages, each selected official run summary, and every
+Each edition homepage and its editorial/result pages, each selected official run summary, and every
 subject summary are rendered as complete HTML. Run pages include model identity, provider,
 reasoning effort, rank, question score and confidence interval, success and output-contract
 results, cost and timing, and links to every subject. Subject pages include the model and subject
 identity, aggregate score, trial summaries, and ordinary episode links. Vue intercepts internal
 navigation only after hydration.
 
-The sitemap contains the homepage, every editorial URL, every selected official run URL, and
-every subject summary URL. The route manifest determines the count, so a cohort change cannot
+The sitemap contains canonical edition homepages and editorial/result URLs, the shared About
+page, every selected official run URL, and every subject summary URL. Aliases and episode
+pages are excluded. The route manifest determines the count, so a cohort change cannot
 leave the sitemap contract or its tests tied to an old model count. Every listed page uses unique
 metadata, a self-referencing canonical URL, and the modification time of the generated
 publication. Listed pages omit robots meta tags, so search engines use their default `index,
@@ -425,7 +494,7 @@ successful publication build and one stable failure record with no private artif
 
 Implemented Python tests cover:
 
-- Strict parsing of the signed current protocol-v6 manifest contract and rejection of retired
+- Strict parsing of the signed current protocol-9 manifest contract and rejection of retired
   protocol versions.
 - Duplicate-key and integrity-tampering rejection.
 - Full completed-trial qualification and latest-qualified-run selection invariants.
@@ -448,6 +517,9 @@ uses the configured title, short title, and canonical domain-root URL alongside 
 Dataset node. That Dataset has a stable fragment ID and the canonical CC BY 4.0 license URL,
 shared with the Data page and footer. The Data page explains data reuse and distinguishes the
 software's source-available license. The domain root supports Google's site-name placement requirements.
+Static rendering and browser navigation share the same homepage JSON-LD generator. Edition
+switches update the Dataset identity, settings, and downloads. Other routes remove homepage
+markup, and late document loads cannot overwrite the current route's structured data.
 
 The static build performs strict Vue and TypeScript checks. Browser validation covers:
 
@@ -488,3 +560,21 @@ until they are retired. Publishing a holdout retires it from future secret evalu
 - [Apache ECharts ARIA guidance](https://echarts.apache.org/handbook/en/best-practices/aria/)
 - [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)
 - [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+## Historical answer provenance
+
+The optional `oracle_cache` public ASK field is an allowlisted attribution to an earlier
+execution, model, benchmark, subject, trial, episode, turn, question and answer timestamp.
+The transcript visibly labels reused answers and retains the original evidence. Provider call
+IDs, internal paths and cache context hashes remain private. Both v10 and the maintained v9
+standard-answer projection include this optional field when present. See
+[Historical Oracle answers](oracle-history-cache.md).
+
+Same-game sources use the optional `scope: same_episode` public variant. The transcript names
+the original turn in that game and provides a jump button, alongside the original evidence.
+Internal call IDs remain private. This variant is supported by both v10 and v9.
+
+Cross-game reuse within the current execution uses `scope: same_execution` with the historical
+source allowlist. The transcript labels the earlier game in this benchmark run and retains its
+trial, turn, original question, timestamp and evidence. Both v10 and v9 support this scope;
+internal paths, cache hashes, and provider call IDs remain private.

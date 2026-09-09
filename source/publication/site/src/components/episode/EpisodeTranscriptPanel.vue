@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { answerLabel } from "@/lib/use-edition-context";
 
 import { contractViolationDetails as violationDetails } from "@/lib/contract-violation-copy";
 import type { PublicEpisodeDetail } from "@/lib/types";
@@ -32,7 +33,7 @@ const turnMap = computed(() =>
     return {
       turnNumber: turn.turn_number,
       marker: turn.counted ? `Q${turn.counted_questions}` : "G",
-      answer: turn.answer,
+      answer: answerLabel(turn.answer),
       tone: turn.answer.toLowerCase(),
       label: `Turn ${turn.turn_number}: ${actionLabel}. ${turn.answer}`,
     };
@@ -44,11 +45,13 @@ const answerCounts = computed(() =>
     (counts, turn) => {
       if (turn.tone === "yes") counts.yes += 1;
       else if (turn.tone === "no") counts.no += 1;
+      else if (turn.tone === "rather_yes") counts.ratherYes += 1;
+      else if (turn.tone === "rather_no") counts.ratherNo += 1;
       else if (turn.tone === "unknown") counts.unknown += 1;
       else counts.format += 1;
       return counts;
     },
-    { yes: 0, no: 0, unknown: 0, format: 0 },
+    { yes: 0, no: 0, ratherYes: 0, ratherNo: 0, unknown: 0, format: 0 },
   ),
 );
 
@@ -136,12 +139,14 @@ const jumpToTurn = (turnNumber: number): void => {
             @click="jumpToTurn(turn.turnNumber)"
           >
             <span>{{ turn.marker }}</span>
-            <strong>{{ turn.answer }}</strong>
+            <strong>{{ answerLabel(turn.answer) }}</strong>
           </button>
         </li>
       </ol>
       <footer aria-label="Turn answer totals">
         <span><i class="tone-yes" aria-hidden="true"></i>{{ answerCounts.yes }} YES</span>
+        <span v-if="answerCounts.ratherYes > 0"><i class="tone-rather_yes" aria-hidden="true"></i>{{ answerCounts.ratherYes }} Rather yes</span>
+        <span v-if="answerCounts.ratherNo > 0"><i class="tone-rather_no" aria-hidden="true"></i>{{ answerCounts.ratherNo }} Rather no</span>
         <span><i class="tone-no" aria-hidden="true"></i>{{ answerCounts.no }} NO</span>
         <span
           ><i class="tone-unknown" aria-hidden="true"></i
@@ -190,6 +195,26 @@ const jumpToTurn = (turnNumber: number): void => {
             <h3>
               {{ turn.action === "ASK" ? turn.question : turn.guess_name }}
             </h3>
+            <aside v-if="turn.oracle_cache" class="cache-source" :aria-label="turn.oracle_cache.scope === 'same_episode' ? 'Earlier turn answer source' : turn.oracle_cache.scope === 'same_execution' ? 'Earlier game answer source' : 'Historical answer source'">
+              <strong v-if="turn.oracle_cache.scope === 'same_episode'">Answer reused from turn {{ turn.oracle_cache.turn_number }} of this game</strong>
+              <strong v-else-if="turn.oracle_cache.scope === 'same_execution'">Answer reused from an earlier game in this benchmark run</strong>
+              <strong v-else>Answer from an earlier test</strong>
+              <p>This answer and its Oracle evidence were reused. No new research or review was run for this turn.</p>
+              <details>
+                <summary>View original response</summary>
+                <dl>
+                  <template v-if="turn.oracle_cache.scope !== 'same_episode'">
+                  <div><dt>Execution</dt><dd>{{ turn.oracle_cache.execution_id }}</dd></div>
+                  <div><dt>Model / benchmark</dt><dd>{{ turn.oracle_cache.model_id }} / {{ turn.oracle_cache.benchmark_id }}</dd></div>
+                  <div><dt>Subject / trial / turn</dt><dd>{{ turn.oracle_cache.target_id }} / {{ turn.oracle_cache.trial_id }} / {{ turn.oracle_cache.turn_number }}</dd></div>
+                  </template>
+                  <div v-else><dt>Original turn</dt><dd><button type="button" @click="jumpToTurn(turn.oracle_cache.turn_number)">Go to turn {{ turn.oracle_cache.turn_number }}</button></dd></div>
+                  <div><dt>Episode</dt><dd>{{ turn.oracle_cache.episode_id }}</dd></div>
+                  <div><dt>Originally answered</dt><dd><time :datetime="turn.oracle_cache.answered_at">{{ turn.oracle_cache.answered_at }}</time></dd></div>
+                  <div><dt>Original question</dt><dd>{{ turn.oracle_cache.question }}</dd></div>
+                </dl>
+              </details>
+            </aside>
             <p v-if="turn.guess_description" class="guess-description">
               {{ turn.guess_description }}
             </p>
@@ -227,7 +252,11 @@ const jumpToTurn = (turnNumber: number): void => {
               <div class="evidence-list">
                 <article v-for="(item, index) in turn.evidence" :key="`${item.source_url}-${index}`">
                   <span>Source {{ String(index + 1).padStart(2, "0") }}</span>
-                  <blockquote>{{ item.excerpt }}</blockquote>
+                  <template v-if="item.kind === 'source_summary'">
+                    <p class="detail-note">Source summary (model-reported)</p>
+                    <p>{{ item.excerpt }}</p>
+                  </template>
+                  <blockquote v-else>{{ item.excerpt }}</blockquote>
                   <a :href="item.source_url" target="_blank" rel="noreferrer">
                     Open {{ sourceLabel(item.source_url) }}
                     <span aria-hidden="true">↗</span>
@@ -242,7 +271,7 @@ const jumpToTurn = (turnNumber: number): void => {
             <span>
               2 · {{ turn.adjudicator === "oracle" ? "Adjudication" : "Validator" }} returns
             </span>
-            <strong>{{ turn.answer }}</strong>
+            <strong>{{ answerLabel(turn.answer) }}</strong>
           </div>
         </template>
 
@@ -348,6 +377,27 @@ const jumpToTurn = (turnNumber: number): void => {
 </template>
 
 <style scoped>
+.cache-source {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-left: var(--border-emphasis-width) solid var(--blue);
+  background: var(--surface-accent-soft);
+  font-size: var(--text-small);
+  overflow-wrap: anywhere;
+}
+.cache-source p { margin: 0.5rem 0; line-height: 1.5; }
+.cache-source summary { cursor: pointer; padding-block: 0.5rem; }
+.cache-source dl { margin: 0; }
+.cache-source dl > div { margin-top: 0.6rem; }
+.cache-source dt { font-weight: var(--font-weight-bold); }
+.cache-source dd { margin: 0.2rem 0 0; }
+
+.tone-rather_yes { background: var(--surface-success-soft); color: var(--state-clean-ink); }
+.tone-rather_no { background: var(--surface-danger-soft); color: var(--state-danger-ink); }
+.answer-rather_yes { background: var(--surface-success-soft); color: var(--state-clean-ink); }
+.answer-rather_no { background: var(--surface-danger-soft); color: var(--state-danger-ink); }
+.answer-rather_yes strong, .answer-rather_no strong { font-size: var(--text-small); }
+
 .setup-disclosure {
   margin-bottom: 2rem;
 }

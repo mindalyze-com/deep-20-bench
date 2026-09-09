@@ -1,0 +1,3213 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260908-B-0003-experimental-M0023-001
+    model_id: M-0023
+    target_id: T-0004
+    trial_id: trial-002
+    trial_number: 2
+    episode_run_id: BR-c5d6aa20574dc40ae358a480f77531888c044fd9
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-c5d6aa20574dc40ae358a480f77531888c044fd9
+      episode_id: EP-01a0827f0e3b7779816b25a137174b45
+      subject:
+        target_id: T-0004
+        canonical_name: Garfield
+        aliases:
+        - Garfield the Cat
+        entity_type: fictional_character
+        description: Garfield, the fictional orange cat created by Jim Davis and protagonist
+          of the Garfield comic strip, identified by Wikidata entity Q767120. The
+          target is the character within his fictional setting, not the comic strip
+          as a work, the franchise, a real cat, or a physical toy. No particular adaptation
+          is specified.
+        reference_url: https://en.wikipedia.org/wiki/Garfield_(character)
+      started_at: '2026-09-08T19:29:19.931949+00:00'
+      completed_at: '2026-09-08T19:30:37.950321+00:00'
+      duration_ms: 78018
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: false
+    summary:
+      total_turns: 10
+      counted_questions: 9
+      guesser_call_count: 10
+      ask_count: 8
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      oracle_cache_hits: 2
+      oracle_quality:
+        reviewed_questions: 6
+        agreements: 6
+        disagreements: 0
+        judge_invocations: 0
+        oracle_answers_changed: 0
+        final_unknown_answers: 0
+        judge_yes_answers: 0
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0071751'
+        judge_cost_usd: '0'
+        quality_control_cost_usd: '0.0071751'
+        question_types:
+        - question_type: other
+          reviewed_questions: 6
+          disagreements: 0
+      contract:
+        evaluated_outputs: 10
+        valid_outputs: 9
+        violations: 1
+        counted_penalties: 1
+        affected_trials: 1
+        compliance_rate: '0.9'
+        status: breached
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.000378515'
+        oracle: '0.0197291899999999998'
+        validator: '0.0001732'
+        total: '0.0202809049999999998'
+      tokens:
+        guesser: 9595
+        oracle: 39920
+        validator: 671
+        total: 50186
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0023
+        requested_model: z-ai/glm-5.3-flash
+        requested_provider: z-ai
+        resolved_models:
+        - z-ai/glm-5.3-flash
+        resolved_providers:
+        - Z.AI
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v16-five-answer-category-guide
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v17-labelled-source-context
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v2-generic-kinds
+    turns:
+    - turn_type: contract_violation
+      turn_number: 1
+      violation_code: invalid_guesser_output
+      violation_kind: invalid_action
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-01a0827f0e3c740ba60a40431669d114
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is this fictional character primarily from a book or comic rather
+          than a film or television show?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0827f1ebd76019168d6c0dbe8205a
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Garfield
+          excerpt: Garfield is an American comic strip and media franchise created
+            by Jim Davis. Originally published locally as Jon in 1976 (later changed
+            to Garfield in 1977), then in nationwide syndication from 1978, it chronicles
+            the life of the title character Garfield.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://time.com/6981294/garfield-movie-story-behind-comic
+          excerpt: 'Garfield debuted June 19, 1978, in 41 newspapers. By 2004, Garfield
+            was a movie star, with Bill Murray voicing the character in Garfield:
+            The Movie.'
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Garfield is an American comic strip character created
+              by Jim Davis, debuting in newspapers in 1978, which establishes that
+              the character originates primarily from a comic rather than a film or
+              television show.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-01a0827f176876bca795f1e57d523146
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is this character from a comic (including manga) rather than a prose
+          novel?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0827f4d077312a3202ac9521e527f
+        answer: 'YES'
+        evidence:
+        - source_url: https://time.com/6981294/garfield-movie-story-behind-comic/
+          excerpt: The Garfield Movie adapts Jim Davis' long-running comic strip about
+            America's laziest cat... Garfield debuted June 19, 1978, in 41 newspapers.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.theguardian.com/books/2018/jun/19/garfield-jim-davis-40-years
+          excerpt: Forty years ago this Tuesday, an orange tabby cat peered lugubriously
+            at the world from the panels of his first comic strip.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.gocomics.com/garfield/2007/09/02
+          excerpt: Read Garfield—a comic strip by creator Jim Davis...
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The evidence establishes that Garfield originates
+              from a comic strip rather than a prose novel.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-01a0827f444d73d3bca46fd197a3daf7
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is the character from a Japanese manga rather than a Western comic?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0827f8544778f9a13ab75cb604159
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Garfield
+          excerpt: Garfield is an American comic strip and media franchise created
+            by Jim Davis.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.si.edu/object/camera-ready-comic-art-drawing-garfield:nmah_1367415
+          excerpt: Garfield (1978- ) is a comic strip which looks at the life of the
+            title character, a tabby cat. In 1978 he launched Garfield for United
+            Features.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Excerpts 1 and 2 establish that Garfield is an American
+              comic strip created by Jim Davis, rather than being from a Japanese
+              manga.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-01a0827f7f20762cbb5628feb64fd9b2
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is this character a superhero?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0827fa87977a7afde2efa1b5c98e8
+        answer: 'NO'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Garfield_%28character%29
+          excerpt: The source describes Garfield as a fictional American cat and the
+            protagonist of Jim Davis's comic strip, portrayed as a lazy, fat, cynical,
+            self-absorbed orange tabby Persian cat.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.britannica.com/topic/Garfield
+          excerpt: Britannica describes Garfield as a round-bodied orange-and-black
+            tabby cat who loves fatty foods, especially lasagna, and causes trouble
+            with his human companion Jon Arbuckle.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://comicsalliance.com/garfield-comic-book-superhero/
+          excerpt: A 2012 comic-book preview describes a superhero parody starring
+            Garfield as the Lasagnator, on a quest to find stolen lasagna.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Garfield is a lazy, fat, and cynical fictional cat
+              and comic strip protagonist rather than a superhero, notwithstanding
+              a single superhero parody appearance as the Lasagnator.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0004
+          episode_id: EP-01a0827da118724fa9084eceadfdb9be
+          turn_number: 5
+          oracle_call_id: OC-01a0827e268e74779287125b7fcaf92d
+          question: Is this character a superhero?
+          answered_at: '2026-09-08T19:28:34.709671+00:00'
+          policy: same_execution_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: f94478cda54ed075f483e9dd794312a262752802a377b367748065ddcc27bf98
+          execution_id: BX-20260908-B-0003-experimental-M0023-001
+          model_id: M-0023
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0004/trials/trial-001/result.yml
+          source_integrity_hash: 242ad17b0981d6727d1aff41474dacf4260f799577e30f736d822b47b09c9002
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-01a0827fa3617006a641a85f68f0fcb3
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is the character a human being?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0827fafb377e8ad4d5fd5842eae85
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.britannica.com/biography/Jim-Davis-American-cartoonist
+          excerpt: The strip’s titular character, a sardonic, lazy, lasagna-loving,
+            Monday-hating, orange tabby cat, became a worldwide sensation after being
+            introduced in 1978.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Excerpt 1 establishes that Garfield is an orange
+              tabby cat, meaning the character is not a human being.
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-01a0827fa87b7790a6d3749cd0fe2f36
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is the character an animal or animal-like creature?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0827fd9d173ed9e16eae1abeecb1e
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Garfield_(character)
+          excerpt: Garfield is a fictional American cat and the protagonist of the
+            comic strip of the same name, created by Jim Davis. Garfield is portrayed
+            as a lazy, fat, cynical and self-absorbed orange tabby cat.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.britannica.com/topic/Garfield
+          excerpt: Garfield is a round-bodied, orange and black tabby cat who frequently
+            stands on two feet and communicates via cartoon “thought bubbles.”
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Excerpts establish that Garfield is portrayed as
+              an orange tabby cat, making him an animal or animal-like creature.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-01a0827fd02b72e5b4b1316b7bb9d229
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Does the character originate from a newspaper comic strip (as opposed
+          to a comic book series)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082800012743890a9993e50acfac3
+        answer: 'YES'
+        evidence:
+        - source_url: https://history.howstuffworks.com/american-history/garfield.htm
+          excerpt: Jim Davis's first Garfield comic strip debuted on June 19, 1978
+            in 41 newspapers.
+          validation: model_reported
+        - source_url: https://time.com/6981294/garfield-movie-story-behind-comic/
+          excerpt: Garfield debuted June 19, 1978, in 41 newspapers.
+          validation: model_reported
+        - source_url: https://en.wikipedia.org/wiki/Garfield
+          excerpt: Garfield is an American comic strip and media franchise created
+            by Jim Davis. Originally published locally as Jon in 1976, later changed
+            to Garfield in 1977, it entered nationwide syndication from 1978.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Excerpts establish that Garfield debuted in newspapers
+              as a comic strip on June 19, 1978, confirming he originates from a newspaper
+              comic strip.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-01a0827ff862732883ea5979cfa5fbae
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Is the character a cat?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a0828031007316b9a93f3b561470e9
+        answer: 'YES'
+        evidence:
+        - source_url: https://en.wikipedia.org/wiki/Garfield_(character)
+          excerpt: Garfield is a fictional American cat and the protagonist of the
+            comic strip of the same name, created by Jim Davis. Garfield is portrayed
+            as a lazy, fat, cynical and self-absorbed orange tabby cat.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Excerpt 1 states that Garfield is a fictional American
+              cat and an orange tabby cat.
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0004
+          episode_id: EP-01a08234e2a67695bf91a8cc1cdd5ff1
+          turn_number: 6
+          oracle_call_id: OC-01a08235d90076c3983e14d604d83335
+          question: Is the character a cat?
+          answered_at: '2026-09-08T18:09:28.598306+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: 16b7799b9f8ccea8f1803f07d5258c92b57ee737c6904cfa718380c096cf3dc1
+          execution_id: BX-20260908-B-0003-experimental-M0002-001
+          model_id: M-0002
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0002/BX-20260908-B-0003-experimental-M0002-001/subjects/T-0004/trials/trial-001/result.yml
+          source_integrity_hash: 43613c4797574ed46bc9fd9e58655d5b8cc16183f75d62ccb8aaa63fcc454526
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-01a0828027ab744ea9f84a1eb51c332d
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: GUESS
+        question: null
+        name: Garfield
+        description: The lazy, lasagna-loving orange tabby cat from Jim Davis's newspaper
+          comic strip
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a082803a1873e79aaf037b6b568169
+        answer: 'YES'
+        evidence: []
+        explanation: The proposal identifies Garfield, the fictional orange cat character
+          created by Jim Davis and featured in the comic strip.
+        oracle_quality: null
+      counted: false
+      counted_questions: 9
+      guesser_call_id: GC-01a08280310473febfd1df377c7c4dc6
+    guesser_conversation:
+    - role: system
+      content: "You are the Guesser in a Twenty Questions benchmark. Identify the\
+        \ hidden subject using as few\ncounted turns as possible. BEGIN provides only\
+        \ its broad category. The variation_token has no\nclues; do not interpret,\
+        \ mention, or repeat it.\n\nThe category in BEGIN has a broad meaning:\n-\
+        \ person: a real human, living or historical.\n- fictional_character: an invented\
+        \ character from a story, book, comic, film, television,\n  game, or another\
+        \ fictional work.\n- mythological_figure: a figure from mythology or traditional\
+        \ legend.\n- video_game_character: a character known from video games.\n-\
+        \ thing: a broad category covering natural and human-made entities, living\
+        \ or nonliving,\n  whole entities or parts of them. Possibilities include\
+        \ everyday objects, tools, machines,\n  materials, food, animals, plants,\
+        \ body parts, natural structures, geographical features,\n  celestial bodies,\
+        \ natural phenomena, and concepts. These possibilities are not exhaustive.\n\
+        \  The target may be a general kind or one particular instance.\n\nUse questions\
+        \ to narrow the supplied category. These definitions are not a list of targets.\n\
+        \nUse ASK for a factual question that distinguishes candidates. Never use\
+        \ ASK to confirm a\nspecific identity. Use GUESS with a name and short identifying\
+        \ description to name a candidate.\n\nASK has five possible replies:\n- YES\
+        \ or NO: the evidence establishes that answer to the exact question.\n- RATHER_YES\
+        \ or RATHER_NO: evidence leans that way, but is not strong enough for a firm\
+        \ answer.\n  Treat this as a clue; keep candidates fitting the opposite answer\
+        \ possible.\n- UNKNOWN: no reliable direction. It supports neither answer.\n\
+        \nAsk clear questions about verifiable properties. \"Can\", \"sometimes\"\
+        , \"usually\", \"always\", and\n\"mainly\" ask different things. Do not assume\
+        \ that one property proves another or rules out alternatives.\nQualified replies\
+        \ express uncertainty about your question, not how often a property applies.\n\
+        Before narrowing heavily, check your key assumption with a different property.\
+        \ After rejected\nguesses, reconsider earlier assumptions as well as candidates.\
+        \ Answers can be mistaken; check\nanother property when stuck. Do not ignore\
+        \ an answer merely because it conflicts with a\npreferred candidate.\n\nEach\
+        \ ASK, rejected GUESS, or format error before the limit costs one turn. A\
+        \ correct GUESS costs\nnone. After 40 counted turns, make one final GUESS;\
+        \ ASK is then forbidden. Identity\nvalidation uses only YES, NO, or UNKNOWN.\
+        \ UNKNOWN on GUESS ends the game without success.\n\nFORMAT_ERROR means your\
+        \ output broke the contract, was not checked for correctness, and cost\none\
+        \ turn. Retry using its displayed formats if a turn remains. Return only the\
+        \ required JSON\nobject with exactly one result action. No explanations, reasoning,\
+        \ or extra fields.\n"
+    - role: user
+      content: '{"category":"fictional_character","event":"BEGIN","variation_token":"BKXG3AZI"}'
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this fictional character primarily from a book or comic rather than a film
+        or television show?"}}'
+      turn_number: 2
+    - role: user
+      content: 'YES'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this character from a comic (including manga) rather than a prose novel?"}}'
+      turn_number: 3
+    - role: user
+      content: 'YES'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character from a Japanese manga rather than a Western comic?"}}'
+      turn_number: 4
+    - role: user
+      content: 'NO'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        this character a superhero?"}}'
+      turn_number: 5
+    - role: user
+      content: 'NO'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character a human being?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character an animal or animal-like creature?"}}'
+      turn_number: 7
+    - role: user
+      content: 'YES'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        the character originate from a newspaper comic strip (as opposed to a comic
+        book series)?"}}'
+      turn_number: 8
+    - role: user
+      content: 'YES'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        the character a cat?"}}'
+      turn_number: 9
+    - role: user
+      content: 'YES'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The lazy, lasagna-loving
+        orange tabby cat from Jim Davis''s newspaper comic strip","name":"Garfield","question":null}}'
+      turn_number: 10
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0023
+          gateway: openrouter
+          model: z-ai/glm-5.3-flash
+          provider: z-ai
+          reasoning_effort: high
+          structured_output_mode: json_object
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '0.075'
+            cached_input_usd_per_million: '0.015'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 10
+          cost_usd: '0.000378515'
+          latency_ms: 20318
+          total_tokens: 9595
+          input_tokens: 8933
+          cached_input_tokens: 7616
+          cache_write_tokens: 0
+          output_tokens: 662
+          reasoning_tokens: 336
+          estimated_cache_savings_usd: '0.00045696000'
+          recovery:
+            request_attempts: 10
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Z.AI
+            calls: 10
+            cost_usd: '0.000378515'
+            latency_ms: 20318
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          prompt_profile: qualified_v1
+          adjudication_policy: concise_knowledge_v1
+          parallel_search: true
+          parallel_search_mode: fast
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 6
+          cost_usd: '0.0197291899999999998'
+          latency_ms: 56359
+          total_tokens: 39920
+          input_tokens: 35435
+          cached_input_tokens: 14247
+          cache_write_tokens: 0
+          output_tokens: 4485
+          reasoning_tokens: 2145
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 12
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 6
+              cost_usd: '0.0125540899999999998'
+              latency_ms: 47690
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 6
+              cost_usd: '0.0071751'
+              latency_ms: 8669
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers: []
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0001732'
+          latency_ms: 1250
+          total_tokens: 671
+          input_tokens: 632
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 39
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.0001732'
+            latency_ms: 1250
+          unreported_calls: 0
+          fallback_calls: 0
+    audit:
+      schema_version: 1
+      calls:
+      - component: guesser
+        call_id: GC-01a0827f0e3c740ba60a40431669d114
+        turn_number: 1
+        status: contract_violation
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 2b86ba2eb5dd0aacadf0ce837a0ff191c637970f27f4e222547ac4d030da8b76
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:29:19.932156+00:00'
+          completed_at: '2026-09-08T19:29:22.276457+00:00'
+          latency_ms: 2344
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 664
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 65
+            reasoning_tokens: 34
+            search_count: 0
+            cost_usd: '0.00006605'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 114
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: guesser
+        call_id: GC-01a0827f176876bca795f1e57d523146
+        turn_number: 2
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 79dcef44562b4f9af7eba0d30da507f7969cb43d26de8c5d0e63a7393b1da373
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:29:22.280808+00:00'
+          completed_at: '2026-09-08T19:29:24.157294+00:00'
+          latency_ms: 1876
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 775
+            cached_input_tokens: 640
+            cache_write_tokens: 0
+            output_tokens: 43
+            reasoning_tokens: 5
+            search_count: 0
+            cost_usd: '0.000030475'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 169
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0827f1ebd76019168d6c0dbe8205a
+        turn_number: 2
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: b2453c509f4d01efcb177b8e65918efbd25ff14d95440f82592484a276928496
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:29:24.158709+00:00'
+            completed_at: '2026-09-08T19:29:31.973949+00:00'
+            latency_ms: 7815
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4118
+              cached_input_tokens: 1521
+              cache_write_tokens: 0
+              output_tokens: 420
+              reasoning_tokens: 76
+              search_count: 1
+              cost_usd: '0.00218337'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1241
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Garfield debuted as a comic strip created by Jim
+              Davis in 1978. Films and television adaptations came later, so the character
+              is primarily from a comic rather than originating in film or television.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Garfield fictional character originated comic strip created by Jim Davis
+              primarily comic rather than film or television show
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: b2453c509f4d01efcb177b8e65918efbd25ff14d95440f82592484a276928496
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:29:24.158709+00:00'
+              completed_at: '2026-09-08T19:29:31.973949+00:00'
+              latency_ms: 7815
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4118
+                cached_input_tokens: 1521
+                cache_write_tokens: 0
+                output_tokens: 420
+                reasoning_tokens: 76
+                search_count: 1
+                cost_usd: '0.00218337'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1241
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 141dc8dfcfe2231522f3416f0c1207d8ae53e7a242dc90cd509dcab4b6c9347c
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:29:31.974739+00:00'
+            completed_at: '2026-09-08T19:29:33.765120+00:00'
+            latency_ms: 1790
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1255
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 465
+              reasoning_tokens: 379
+              search_count: 0
+              cost_usd: '0.001539'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 325
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0827f444d73d3bca46fd197a3daf7
+        turn_number: 3
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 3c6d64df5fd6a09334c08eee29b3cd4029193582c4f35feaa8de0473afbef8cf
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:29:33.773870+00:00'
+          completed_at: '2026-09-08T19:29:36.006488+00:00'
+          latency_ms: 2232
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 816
+            cached_input_tokens: 768
+            cache_write_tokens: 0
+            output_tokens: 48
+            reasoning_tokens: 12
+            search_count: 0
+            cost_usd: '0.00002712'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 147
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0827f4d077312a3202ac9521e527f
+        turn_number: 3
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 41b0aa82694a8563e7c90483655c738be629374d0f64a3c2b10f5d22cdd1f6eb
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:29:36.007891+00:00'
+            completed_at: '2026-09-08T19:29:47.087112+00:00'
+            latency_ms: 11079
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4724
+              cached_input_tokens: 2851
+              cache_write_tokens: 0
+              output_tokens: 520
+              reasoning_tokens: 119
+              search_count: 1
+              cost_usd: '0.00214897'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1439
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Garfield is the fictional character introduced in
+              Jim Davis's Garfield comic strip, which debuted in 1978. The supplied
+              subject identifies him as the comic-strip protagonist, and retrieved
+              sources independently describe Garfield as a comic strip character.
+              No prose-novel origin is indicated.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Garfield fictional character created by Jim Davis comic strip character
+              from a comic rather than prose novel
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 41b0aa82694a8563e7c90483655c738be629374d0f64a3c2b10f5d22cdd1f6eb
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:29:36.007891+00:00'
+              completed_at: '2026-09-08T19:29:47.087112+00:00'
+              latency_ms: 11079
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4724
+                cached_input_tokens: 2851
+                cache_write_tokens: 0
+                output_tokens: 520
+                reasoning_tokens: 119
+                search_count: 1
+                cost_usd: '0.00214897'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1439
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: fc33a4d5c15a2016f261a42869d4c78010b0278f715037f10658b424860d6577
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:29:47.087893+00:00'
+            completed_at: '2026-09-08T19:29:48.824687+00:00'
+            latency_ms: 1736
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1236
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 439
+              reasoning_tokens: 399
+              search_count: 0
+              cost_usd: '0.0014683'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 183
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0827f7f20762cbb5628feb64fd9b2
+        turn_number: 4
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 183838b0e42932d6929d67e5fc61f31ee6b9357678dcc62c884b2bcd09eb8e5a
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:29:48.832653+00:00'
+          completed_at: '2026-09-08T19:29:50.404423+00:00'
+          latency_ms: 1571
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 855
+            cached_input_tokens: 768
+            cache_write_tokens: 0
+            output_tokens: 43
+            reasoning_tokens: 10
+            search_count: 0
+            cost_usd: '0.000028795'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 139
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0827f8544778f9a13ab75cb604159
+        turn_number: 4
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 71980f9296c4dae349699b7817aac2d99578f9f43f9b3a151b65a6aa5ee8cdb5
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:29:50.405809+00:00'
+            completed_at: '2026-09-08T19:29:56.861354+00:00'
+            latency_ms: 6455
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4694
+              cached_input_tokens: 2847
+              cache_write_tokens: 0
+              output_tokens: 460
+              reasoning_tokens: 153
+              search_count: 1
+              cost_usd: '0.00207039'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1108
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Garfield originated as the title character of Garfield,
+              an American comic strip created by American cartoonist Jim Davis. The
+              evidence supports the Western-comic branch and rejects the Japanese-manga
+              branch; no particular adaptation is being evaluated.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Garfield character created by Jim Davis American comic strip not Japanese
+              manga origin Western comic
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 71980f9296c4dae349699b7817aac2d99578f9f43f9b3a151b65a6aa5ee8cdb5
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:29:50.405809+00:00'
+              completed_at: '2026-09-08T19:29:56.861354+00:00'
+              latency_ms: 6455
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4694
+                cached_input_tokens: 2847
+                cache_write_tokens: 0
+                output_tokens: 460
+                reasoning_tokens: 153
+                search_count: 1
+                cost_usd: '0.00207039'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1108
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: b207e37bf3901983347472d6ec930e3f4b81ddb8c245f5741530d18f0172f561
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:29:56.862835+00:00'
+            completed_at: '2026-09-08T19:29:58.103222+00:00'
+            latency_ms: 1240
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1199
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 267
+              reasoning_tokens: 209
+              search_count: 0
+              cost_usd: '0.0010272'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 223
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0827fa3617006a641a85f68f0fcb3
+        turn_number: 5
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 5df0d5c55746c3ab66bed70671d0c3b8b823da063e1e6e8992801be5eb6a10b2
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:29:58.113332+00:00'
+          completed_at: '2026-09-08T19:29:59.416755+00:00'
+          latency_ms: 1303
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 891
+            cached_input_tokens: 832
+            cache_write_tokens: 0
+            output_tokens: 34
+            reasoning_tokens: 8
+            search_count: 0
+            cost_usd: '0.000025405'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 102
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0827fa87977a7afde2efa1b5c98e8
+        turn_number: 5
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: a8f3d08b3fc7fefaecfb03ceb30f953670fbcf85d1feffec534b92c5b3b5477f
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:28:20.623270+00:00'
+            completed_at: '2026-09-08T19:28:32.371017+00:00'
+            latency_ms: 11747
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 9010
+              cached_input_tokens: 5801
+              cache_write_tokens: 0
+              output_tokens: 652
+              reasoning_tokens: 221
+              search_count: 2
+              cost_usd: '0.0037002199999999997'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 9
+            url_citation_count: 9
+            raw_output_present: true
+            raw_output_characters: 1572
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0004
+          episode_id: EP-01a0827da118724fa9084eceadfdb9be
+          turn_number: 5
+          oracle_call_id: OC-01a0827e268e74779287125b7fcaf92d
+          question: Is this character a superhero?
+          answered_at: '2026-09-08T19:28:34.709671+00:00'
+          policy: same_execution_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: f94478cda54ed075f483e9dd794312a262752802a377b367748065ddcc27bf98
+          execution_id: BX-20260908-B-0003-experimental-M0023-001
+          model_id: M-0023
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0004/trials/trial-001/result.yml
+          source_integrity_hash: 242ad17b0981d6727d1aff41474dacf4260f799577e30f736d822b47b09c9002
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Garfield is ordinarily characterized as a fictional
+              orange cat and comic-strip protagonist, not as a superhero. A comic-book
+              parody has depicted him as the Lasagnator, but that temporary parody
+              role does not establish that Garfield himself is a superhero.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Garfield fictional character superhero Garfield cat superhero
+            - Garfield character is not a superhero Garfield superhero parody comics
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: a8f3d08b3fc7fefaecfb03ceb30f953670fbcf85d1feffec534b92c5b3b5477f
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:28:20.623270+00:00'
+              completed_at: '2026-09-08T19:28:32.371017+00:00'
+              latency_ms: 11747
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 9010
+                cached_input_tokens: 5801
+                cache_write_tokens: 0
+                output_tokens: 652
+                reasoning_tokens: 221
+                search_count: 2
+                cost_usd: '0.0037002199999999997'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 9
+              url_citation_count: 9
+              raw_output_present: true
+              raw_output_characters: 1572
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 8815a45179e2a4074316d001dedd4ea291ba7394d5650ce1aca70d2c0c45b2bf
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:28:32.373179+00:00'
+            completed_at: '2026-09-08T19:28:34.709671+00:00'
+            latency_ms: 2336
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1254
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 501
+              reasoning_tokens: 419
+              search_count: 0
+              cost_usd: '0.0016287'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 297
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0827fa87b7790a6d3749cd0fe2f36
+        turn_number: 6
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: ec786645458cf2aeabb7104638306fefd648cc199959b5cee32d7699f4908a3c
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:29:59.419861+00:00'
+          completed_at: '2026-09-08T19:30:01.266989+00:00'
+          latency_ms: 1847
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 920
+            cached_input_tokens: 832
+            cache_write_tokens: 0
+            output_tokens: 66
+            reasoning_tokens: 39
+            search_count: 0
+            cost_usd: '0.00003558'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 103
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0827fafb377e8ad4d5fd5842eae85
+        turn_number: 6
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 812a3be9f1756f673cbac9bb27337440a40b4198edd01fa3dedcc69a859b3b42
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:30:01.268368+00:00'
+            completed_at: '2026-09-08T19:30:08.434911+00:00'
+            latency_ms: 7166
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5287
+              cached_input_tokens: 1330
+              cache_write_tokens: 0
+              output_tokens: 291
+              reasoning_tokens: 59
+              search_count: 1
+              cost_usd: '0.00217635'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 794
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Garfield is identified as a fictional orange tabby
+              cat, not a human being. The source concerns the comic-strip character,
+              matching the supplied subject rather than the unrelated human James
+              A. Garfield.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Garfield fictional character cat not human being Jim Davis official
+              biography
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 812a3be9f1756f673cbac9bb27337440a40b4198edd01fa3dedcc69a859b3b42
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:30:01.268368+00:00'
+              completed_at: '2026-09-08T19:30:08.434911+00:00'
+              latency_ms: 7166
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5287
+                cached_input_tokens: 1330
+                cache_write_tokens: 0
+                output_tokens: 291
+                reasoning_tokens: 59
+                search_count: 1
+                cost_usd: '0.00217635'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 794
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 553d0e854b3ee41d573bab831adbf3777ea974845fe3743afe6c8577d2c1078c
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:30:08.435727+00:00'
+            completed_at: '2026-09-08T19:30:09.574579+00:00'
+            latency_ms: 1138
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1167
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 205
+              reasoning_tokens: 143
+              search_count: 0
+              cost_usd: '0.0008626'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 211
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0827fd02b72e5b4b1316b7bb9d229
+        turn_number: 7
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: ed6166ea84dc53a7cb2281873e3aa4a920edfda0afccf9bd9fa2532c287a89db
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:30:09.579358+00:00'
+          completed_at: '2026-09-08T19:30:12.048100+00:00'
+          latency_ms: 2468
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 950
+            cached_input_tokens: 896
+            cache_write_tokens: 0
+            output_tokens: 100
+            reasoning_tokens: 70
+            search_count: 0
+            cost_usd: '0.00004249'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 123
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0827fd9d173ed9e16eae1abeecb1e
+        turn_number: 7
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 86eb2973f04ac99eddc4f4bf5446fb108b946f065212e2254eda6a1b8c621646
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:30:12.050942+00:00'
+            completed_at: '2026-09-08T19:30:18.724429+00:00'
+            latency_ms: 6673
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4347
+              cached_input_tokens: 2844
+              cache_write_tokens: 0
+              output_tokens: 354
+              reasoning_tokens: 58
+              search_count: 1
+              cost_usd: '0.0018571299999999998'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1077
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Garfield is explicitly identified as a fictional
+              cat. A cat is an animal, so the character is an animal; the question
+              does not depend on a particular adaptation.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Garfield fictional character orange cat animal character Garfield the
+              Cat
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 86eb2973f04ac99eddc4f4bf5446fb108b946f065212e2254eda6a1b8c621646
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:30:12.050942+00:00'
+              completed_at: '2026-09-08T19:30:18.724429+00:00'
+              latency_ms: 6673
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4347
+                cached_input_tokens: 2844
+                cache_write_tokens: 0
+                output_tokens: 354
+                reasoning_tokens: 58
+                search_count: 1
+                cost_usd: '0.0018571299999999998'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1077
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 8bf85d18ce4b3b9577a8941311aac36830359e06795e95c863ea5bfd565824d7
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:30:18.726526+00:00'
+            completed_at: '2026-09-08T19:30:19.871158+00:00'
+            latency_ms: 1144
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1213
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 242
+              reasoning_tokens: 189
+              search_count: 0
+              cost_usd: '0.0009689'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 209
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0827ff862732883ea5979cfa5fbae
+        turn_number: 8
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 68f2cf782a2326389b48b015be0427b6ac460a3f699a21c05c9ea1dd7c067451
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:30:19.874975+00:00'
+          completed_at: '2026-09-08T19:30:21.842384+00:00'
+          latency_ms: 1967
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 983
+            cached_input_tokens: 896
+            cache_write_tokens: 0
+            output_tokens: 80
+            reasoning_tokens: 41
+            search_count: 0
+            cost_usd: '0.000039965'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 166
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082800012743890a9993e50acfac3
+        turn_number: 8
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 9b5a639770b8a8e9cc89c241b76f1b5da52e0f11b1be234dfd0837ad14a663ef
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:30:21.843881+00:00'
+            completed_at: '2026-09-08T19:30:30.346569+00:00'
+            latency_ms: 8502
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4948
+              cached_input_tokens: 2854
+              cache_write_tokens: 0
+              output_tokens: 448
+              reasoning_tokens: 70
+              search_count: 1
+              cost_usd: '0.00211788'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1346
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Garfield debuted as a comic strip in newspapers
+              on June 19, 1978, and was subsequently syndicated nationally. This establishes
+              newspaper-comic-strip origin; the question contrasts this with origin
+              as a comic book series.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Garfield character originated in a newspaper comic strip rather than
+              a comic book series Jim Davis
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 9b5a639770b8a8e9cc89c241b76f1b5da52e0f11b1be234dfd0837ad14a663ef
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:30:21.843881+00:00'
+              completed_at: '2026-09-08T19:30:30.346569+00:00'
+              latency_ms: 8502
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4948
+                cached_input_tokens: 2854
+                cache_write_tokens: 0
+                output_tokens: 448
+                reasoning_tokens: 70
+                search_count: 1
+                cost_usd: '0.00211788'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1346
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 12287eec841eb2d84c28f8aca621b768be175c10134910268c7a5f7342e8a45a
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:30:30.349548+00:00'
+            completed_at: '2026-09-08T19:30:31.970652+00:00'
+            latency_ms: 1621
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1247
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 374
+              reasoning_tokens: 291
+              search_count: 0
+              cost_usd: '0.0013091'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 267
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a0828027ab744ea9f84a1eb51c332d
+        turn_number: 9
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 8add3d0d7996c9ef0f0c0ffedf552b2dc16627478fb0e2d86bb8c048eecfc964
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:30:31.979559+00:00'
+          completed_at: '2026-09-08T19:30:34.367330+00:00'
+          latency_ms: 2387
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1025
+            cached_input_tokens: 960
+            cache_write_tokens: 0
+            output_tokens: 94
+            reasoning_tokens: 68
+            search_count: 0
+            cost_usd: '0.000042775'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 95
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a0828031007316b9a93f3b561470e9
+        turn_number: 9
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 2dde0466235d072350d5f50301d203b342e07e8553f0a8e37af2d3cdf9e20149
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T18:09:22.177659+00:00'
+            completed_at: '2026-09-08T18:09:27.486541+00:00'
+            latency_ms: 5308
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4094
+              cached_input_tokens: 2840
+              cache_write_tokens: 0
+              output_tokens: 269
+              reasoning_tokens: 34
+              search_count: 1
+              cost_usd: '0.0016928'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 804
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0004
+          episode_id: EP-01a08234e2a67695bf91a8cc1cdd5ff1
+          turn_number: 6
+          oracle_call_id: OC-01a08235d90076c3983e14d604d83335
+          question: Is the character a cat?
+          answered_at: '2026-09-08T18:09:28.598306+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: 16b7799b9f8ccea8f1803f07d5258c92b57ee737c6904cfa718380c096cf3dc1
+          execution_id: BX-20260908-B-0003-experimental-M0002-001
+          model_id: M-0002
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0002/BX-20260908-B-0003-experimental-M0002-001/subjects/T-0004/trials/trial-001/result.yml
+          source_integrity_hash: 43613c4797574ed46bc9fd9e58655d5b8cc16183f75d62ccb8aaa63fcc454526
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: Garfield is identified as a fictional cat and is
+              specifically described as an orange tabby cat. The question applies
+              to the character itself, not the comic strip, franchise, real cat, or
+              toy.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Garfield fictional character is a cat orange cat created by Jim Davis
+              character
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 2dde0466235d072350d5f50301d203b342e07e8553f0a8e37af2d3cdf9e20149
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T18:09:22.177659+00:00'
+              completed_at: '2026-09-08T18:09:27.486541+00:00'
+              latency_ms: 5308
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4094
+                cached_input_tokens: 2840
+                cache_write_tokens: 0
+                output_tokens: 269
+                reasoning_tokens: 34
+                search_count: 1
+                cost_usd: '0.0016928'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 804
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: bdda0fb49b34fb056ecd24af8712e22fcc24978d219486dcc005184977edd2ef
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T18:09:27.487370+00:00'
+            completed_at: '2026-09-08T18:09:28.598306+00:00'
+            latency_ms: 1110
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1158
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 235
+              reasoning_tokens: 177
+              search_count: 0
+              cost_usd: '0.0009349'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 192
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a08280310473febfd1df377c7c4dc6
+        turn_number: 10
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 8f2fed485bbba3e540d81023ea65c6bc6ecfde4031370528ace9071829d42800
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:30:34.372201+00:00'
+          completed_at: '2026-09-08T19:30:36.696136+00:00'
+          latency_ms: 2323
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1054
+            cached_input_tokens: 1024
+            cache_write_tokens: 0
+            output_tokens: 89
+            reasoning_tokens: 49
+            search_count: 0
+            cost_usd: '0.00003986'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 160
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a082803a1873e79aaf037b6b568169
+        turn_number: 10
+        status: success
+        prompt:
+          version: strict-guess-validator-v2-generic-kinds
+          hash: 7439ae7281f3c7efd0ab225b9687d04332d37bb06750b68171a2276bb2d7c543
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T19:30:36.697082+00:00'
+          completed_at: '2026-09-08T19:30:37.947984+00:00'
+          latency_ms: 1250
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 632
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 39
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.0001732'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 155
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      unavailable_call_count: 0
+  error_output_preview:
+    component: guesser
+    attempt_number: 1
+    finish_reason: stop
+    text: '{"action":"ASK","question":"Is this fictional character from a book or
+      novel (as opposed to film, TV, or games)?"}'
+    original_characters: 114
+    trailing_whitespace_characters: 0
+    truncated: false
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0004/trials/trial-002/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs:
+      relative_path: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0004/trials/trial-002/error-outputs.jsonl
+      record_count: 1
+      integrity_hash: 6669bfc503539fc451fd482910d4028c8999542209d7e5801d9a6b08e6d447a5
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: a3f2d67e92c81410b85f02af3ef13185841e9473b47c65535e62083f807e2ac9

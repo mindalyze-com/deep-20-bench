@@ -4,7 +4,6 @@ import json
 from decimal import Decimal
 
 import pytest
-from conftest import FakeProvider, make_oracle, provider_trace
 from deep20_oracle.audit import RunAuditWriter
 from deep20_oracle.config import (
     OPENROUTER_AUTO_PROVIDER,
@@ -16,6 +15,8 @@ from deep20_oracle.models import OracleAnswer, OracleRequest, OracleRole, Recove
 from deep20_oracle.provider import ProviderExchange, ProviderRequest
 from deep20_oracle.service import validate_oracle_provider_trace
 from deep20_oracle.util import canonical_json, sha256_text
+
+from conftest import FakeProvider, make_oracle, provider_trace
 
 YES_PAYLOAD = json.dumps(
     {
@@ -131,7 +132,7 @@ def test_success_uses_oracle_and_blind_reviewer_calls_and_audits_everything(
     assert manifest["evidence_validation"] == "model_reported"
 
 
-def test_invalid_oracle_output_is_retried_once_with_exact_request(
+def test_invalid_oracle_output_is_retried_once_with_fresh_question_id(
     oracle_request: OracleRequest,
     audit_writer: RunAuditWriter,
 ) -> None:
@@ -170,7 +171,11 @@ def test_invalid_oracle_output_is_retried_once_with_exact_request(
     provider = SequenceProvider()
     call = make_oracle(provider, audit_writer, audit_writer.config).ask(oracle_request)
 
-    assert provider.requests[0] == provider.requests[1]
+    first, retry = provider.requests
+    assert first.model_dump(exclude={"messages"}) == retry.model_dump(exclude={"messages"})
+    assert first.messages[:-1] == retry.messages[:-1]
+    assert first.messages[-1] != retry.messages[-1]
+    assert marker not in json.dumps(retry.messages)
     assert call.result.answer is OracleAnswer.YES
     assert call.metrics.input_tokens == 300
     assert call.metrics.recovery.request_attempts == 3
@@ -273,7 +278,7 @@ def test_search_mode_changes_only_oracle_private_state(
         native_config,
     ).ask(oracle_request.model_copy(update={"run_id": "native-search-run"}))
 
-    assert parallel_provider.requests[0].messages == native_provider.requests[0].messages
+    assert parallel_provider.requests[0].messages[:-1] == native_provider.requests[0].messages[:-1]
     assert parallel_call.guesser_answer() is OracleAnswer.YES
     assert native_call.guesser_answer() is OracleAnswer.YES
     assert parallel_call.guesser_answer() == native_call.guesser_answer()

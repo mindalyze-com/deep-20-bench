@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { editionRoute } from "@/lib/route-location";
 import { onActivated } from "vue";
 
 import { setRouteContext } from "@/lib/route-context";
@@ -25,8 +26,8 @@ onActivated(applyRouteContext);
     <h1>Page not found.</h1>
     <p>This page is not in the current publication build.</p>
     <div class="button-row">
-      <RouterLink class="button button-primary" :to="{ name: 'home' }">Go home</RouterLink>
-      <RouterLink class="button button-secondary" :to="{ name: 'results' }">
+      <RouterLink class="button button-primary" :to="editionRoute('home')">Go home</RouterLink>
+      <RouterLink class="button button-secondary" :to="editionRoute('results')">
         View results
       </RouterLink>
     </div>

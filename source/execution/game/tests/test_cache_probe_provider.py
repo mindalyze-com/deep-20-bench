@@ -8,6 +8,7 @@ from types import SimpleNamespace
 
 import httpx
 import pytest
+from deep20_game import cache_probe as cache_probe_module
 from deep20_game.audit import GameRunAuditWriter
 from deep20_game.cache_probe import (
     load_cache_probe,
@@ -20,7 +21,7 @@ from deep20_game.config import (
     ReasoningControl,
     StructuredOutputMode,
 )
-from deep20_game.errors import GameAuditError, GameProviderError
+from deep20_game.errors import GameAuditError, GameConfigurationError, GameProviderError
 from deep20_game.models import (
     GameProviderRequest,
     guesser_action_output_schema,
@@ -30,6 +31,7 @@ from deep20_game.openrouter_provider import (
     _provider_failure_code,
 )
 from deep20_game.service_util import validate_game_trace
+from deep20_oracle.config import PromptProfile
 from deep20_oracle.models import RecoveryReason
 from openrouter.errors import ResponseValidationError
 
@@ -49,11 +51,14 @@ def action_payload(question: str) -> str:
     )
 
 
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
 def test_cache_probe_proves_append_only_fresh_cache_read(
+    profile: PromptProfile,
     tmp_path: Path,
     model_config,
     policy,
 ) -> None:
+    policy = policy.model_copy(update={"prompt_profile": profile})
     provider = FakeGameProvider(
         model_config,
         [action_payload("First generated action?"), action_payload("Second generated action?")],
@@ -66,7 +71,7 @@ def test_cache_probe_proves_append_only_fresh_cache_read(
     artifact = run_cache_probe(provider, model_config, policy)
     path = tmp_path / "probe.json"
     write_cache_probe(path, artifact)
-    loaded = load_cache_probe(path, model_config)
+    loaded = load_cache_probe(path, model_config, profile)
 
     assert loaded.success is True
     assert loaded.second_trace is not None
@@ -76,6 +81,38 @@ def test_cache_probe_proves_append_only_fresh_cache_read(
     )
     assert provider.requests[0].session_id == provider.requests[1].session_id
     assert provider.requests[0].prompt_cache_key == provider.requests[1].prompt_cache_key
+
+
+@pytest.mark.parametrize(("profile", "previous_version"), [
+    (PromptProfile.STANDARD, "stateful-category-guesser-v10-unknown-evidence-guidance"),
+    (PromptProfile.CONCISE_V1, "stateful-category-guesser-v11-concise-reconsideration"),
+    (PromptProfile.QUALIFIED_V1, "stateful-category-guesser-v13-generic-five-answers"),
+])
+def test_category_guide_uses_a_new_cache_namespace_and_rejects_old_probes(
+    profile: PromptProfile, previous_version: str, tmp_path: Path, model_config, policy,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    selected = policy.model_copy(update={"prompt_profile": profile})
+    provider = FakeGameProvider(
+        model_config,
+        [action_payload("First action?"), action_payload("Second action?")] * 2,
+        traces=[
+            {"input_tokens": 200, "cache_write_tokens": 200},
+            {"input_tokens": 240, "cached_input_tokens": 200},
+        ] * 2,
+    )
+    current = run_cache_probe(provider, model_config, selected)
+    with monkeypatch.context() as context:
+        context.setattr(cache_probe_module, "guesser_prompt_version", lambda _profile: previous_version)
+        previous = run_cache_probe(provider, model_config, selected)
+    assert current.success and previous.success
+    assert current.prompt_version != previous.prompt_version
+    assert provider.requests[0].prompt_cache_key != provider.requests[2].prompt_cache_key
+    path = tmp_path / "previous-probe.json"
+    write_cache_probe(path, previous)
+    with pytest.raises(GameConfigurationError) as error:
+        load_cache_probe(path, model_config, profile)
+    assert error.value.code == "cache_probe_protocol_mismatch"
 
 
 def test_response_cache_replay_is_rejected(model_config) -> None:

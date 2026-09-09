@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { editionRoute } from "@/lib/route-location";
 import {
   computed,
   onActivated,
@@ -54,7 +55,7 @@ const applyRunContext = (): void => {
     level: "Run workspace",
     position: `${subjects.value.length} subjects`,
     crumbs: [
-      { label: "Results", to: { name: "results" } },
+      { label: "Results", to: editionRoute('results') },
       { label: current.model_name },
     ],
     previous: null,
@@ -91,7 +92,7 @@ subjectWorkspaceView.preload();
     <template v-else-if="run">
       <aside class="model-rail" aria-label="Run subjects">
         <div class="model-rail-heading">
-          <RouterLink class="rail-back" :to="{ name: 'results' }">
+          <RouterLink class="rail-back" :to="editionRoute('results')">
             <span aria-hidden="true">←</span>
             Official results
           </RouterLink>
@@ -444,12 +445,14 @@ subjectWorkspaceView.preload();
 }
 
 .benchmark-workspace.is-run-overview .subject-rail-list {
-  overflow-y: visible;
+  display: grid;
+  grid-auto-rows: minmax(44px, 1fr);
+  overflow-y: auto;
 }
 
 .benchmark-workspace.is-run-overview .subject-rail-list a {
-  height: 57px;
-  min-height: 57px;
+  height: auto;
+  min-height: 44px;
   padding-block: 0.45rem;
 }
 

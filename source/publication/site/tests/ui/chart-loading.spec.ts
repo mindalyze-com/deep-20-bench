@@ -12,7 +12,7 @@ test(
         rendererRequests.push(request.url());
       }
     });
-    await page.goto("http://127.0.0.1:4174/", { waitUntil: "networkidle" });
+    await page.goto("http://127.0.0.1:4174/editions/1.0/", { waitUntil: "networkidle" });
     const canvases = page.locator(".score-dot-plot-canvas");
     await expect(canvases).toHaveCount(2);
     await expect(canvases.locator("svg")).toHaveCount(0);
@@ -34,7 +34,7 @@ test(
       .getByRole("link", { name: "Method", exact: true }).click();
     await expect(page).toHaveURL(/\/methodology\/$/);
     await page.goBack();
-    await expect(page).toHaveURL("http://127.0.0.1:4174/");
+    await expect(page).toHaveURL("http://127.0.0.1:4174/editions/1.0/");
     await canvases.first().scrollIntoViewIfNeeded();
     await expect(canvases.locator("svg")).toHaveCount(2);
     await expect(firstLabel).toBeVisible();
@@ -50,7 +50,7 @@ test(
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.route("**/chart-registration-*.js", (route) => route.abort());
-    await page.goto("http://127.0.0.1:4174/", { waitUntil: "networkidle" });
+    await page.goto("http://127.0.0.1:4174/editions/1.0/", { waitUntil: "networkidle" });
     const chart = page.locator(".score-dot-plot-canvas").first();
     await chart.scrollIntoViewIfNeeded();
     await expect(page.getByRole("status").filter({ hasText: "The chart could not be loaded." }))

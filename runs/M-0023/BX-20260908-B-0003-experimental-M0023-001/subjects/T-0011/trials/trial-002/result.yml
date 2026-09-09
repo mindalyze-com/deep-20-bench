@@ -1,0 +1,4213 @@
+payload:
+  status: completed
+  identity:
+    execution_id: BX-20260908-B-0003-experimental-M0023-001
+    model_id: M-0023
+    target_id: T-0011
+    trial_id: trial-002
+    trial_number: 2
+    episode_run_id: BR-a3bbd3a88d4c37ccf01c97665a2c79bf218ba91c
+  attempt_number: 1
+  result:
+    schema_version: 9
+    run:
+      run_id: BR-a3bbd3a88d4c37ccf01c97665a2c79bf218ba91c
+      episode_id: EP-01a082e52a3972faa87c156ba48f0622
+      subject:
+        target_id: T-0011
+        canonical_name: Moon
+        aliases:
+        - The Moon
+        - Earth's Moon
+        - Luna
+        entity_type: thing
+        description: The Moon, Earth's natural satellite. The target is this specific
+          celestial body as a whole, not natural satellites as a general class, moonlight,
+          lunar material considered as a substance, or an individual feature on its
+          surface.
+        reference_url: https://en.wikipedia.org/wiki/Moon
+      started_at: '2026-09-08T21:20:51.769858+00:00'
+      completed_at: '2026-09-08T21:22:07.413137+00:00'
+      duration_ms: 75643
+    outcome:
+      success: true
+      terminal_reason: success
+      scoring_eligible: true
+      publication_eligible: false
+    summary:
+      total_turns: 13
+      counted_questions: 12
+      guesser_call_count: 13
+      ask_count: 11
+      guess_count: 1
+      rejected_guess_count: 0
+      oracle_unknown_count: 0
+      oracle_cache_hits: 5
+      oracle_quality:
+        reviewed_questions: 6
+        agreements: 6
+        disagreements: 0
+        judge_invocations: 0
+        oracle_answers_changed: 0
+        final_unknown_answers: 0
+        judge_yes_answers: 0
+        judge_no_answers: 0
+        judge_unknown_answers: 0
+        reviewer_cost_usd: '0.0067742'
+        judge_cost_usd: '0'
+        quality_control_cost_usd: '0.0067742'
+        question_types:
+        - question_type: other
+          reviewed_questions: 6
+          disagreements: 0
+      contract:
+        evaluated_outputs: 13
+        valid_outputs: 12
+        violations: 1
+        counted_penalties: 1
+        affected_trials: 1
+        compliance_rate: '0.9230769230769230769230769231'
+        status: breached
+      cache_status: compliant
+      costs_usd:
+        guesser: '0.000391445'
+        oracle: '0.0207247999999999998'
+        validator: '0.0001652'
+        total: '0.0212814449999999998'
+      tokens:
+        guesser: 12674
+        oracle: 44754
+        validator: 641
+        total: 58069
+    models:
+      under_test:
+        role: guesser
+        configuration_id: M-0023
+        requested_model: z-ai/glm-5.3-flash
+        requested_provider: z-ai
+        resolved_models:
+        - z-ai/glm-5.3-flash
+        resolved_providers:
+        - Z.AI
+        reasoning_effort: high
+        prompt_version: stateful-category-guesser-v16-five-answer-category-guide
+      oracle:
+        role: oracle
+        configuration_id: null
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: live-web-oracle-v17-labelled-source-context
+      validator:
+        role: validator
+        configuration_id: gpt-5.6-luna-validator
+        requested_model: openai/gpt-5.6-luna
+        requested_provider: openai
+        resolved_models:
+        - openai/gpt-5.6-luna
+        resolved_providers:
+        - OpenAI
+        reasoning_effort: medium
+        prompt_version: strict-guess-validator-v2-generic-kinds
+    turns:
+    - turn_type: contract_violation
+      turn_number: 1
+      violation_code: invalid_guesser_output
+      violation_kind: invalid_action
+      feedback_event: FORMAT_ERROR
+      counted: true
+      counted_questions: 1
+      guesser_call_id: GC-01a082e52a3a70ca93d9b703d81d9c7d
+    - turn_type: action
+      turn_number: 2
+      action:
+        action: ASK
+        question: Is it a living thing?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e534ea765485526a2c789a2e63
+        answer: 'NO'
+        evidence:
+        - source_url: http://www.timeanddate.com/astronomy/planets/earth
+          excerpt: The Moon is a barren, lifeless world.
+          validation: model_reported
+        - source_url: https://solarsystem.nasa.gov/moons/earths-moon/in-depth.amp
+          excerpt: Earth's Moon is the only place beyond Earth where humans have set
+            foot, so far. Earth's only natural satellite is simply called "the Moon"...
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: Excerpt 1 states that the Moon is a barren, lifeless
+              world, which establishes that it is not a living thing.
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0011
+          episode_id: EP-01a082e40f4077999d2cb08809c28862
+          turn_number: 2
+          oracle_call_id: OC-01a082e41a18777f87420967a838a3e6
+          question: Is it a living thing?
+          answered_at: '2026-09-08T21:19:49.945263+00:00'
+          policy: same_execution_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: f94478cda54ed075f483e9dd794312a262752802a377b367748065ddcc27bf98
+          execution_id: BX-20260908-B-0003-experimental-M0023-001
+          model_id: M-0023
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0011/trials/trial-001/result.yml
+          source_integrity_hash: 44c3ef58f8ac7eab2d8b444177a01fa549522915c5f50cfbe603e214936825f6
+      counted: true
+      counted_questions: 2
+      guesser_call_id: GC-01a082e52fd1706f9dfb3b10458bc3da
+    - turn_type: action
+      turn_number: 3
+      action:
+        action: ASK
+        question: Is it human-made?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e539ce740fb9498e6aab8a81a3
+        answer: 'NO'
+        evidence:
+        - source_url: https://simple.wikipedia.org/wiki/Moon
+          excerpt: The Moon, also known as Luna, is Earth's only natural satellite
+            (the only object which orbits the Earth and is not man-made).
+          validation: model_reported
+        - source_url: https://www.asc-csa.gc.ca/eng/multimedia/search/video/18445
+          excerpt: The Moon is a rocky body that orbits planet Earth. It likely formed
+            when a very large (Mars-sized) asteroid struck Earth 4.5 billion years
+            ago.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: The supplied evidence explicitly states that the
+              Moon is Earth's natural satellite and is not man-made.
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0011
+          episode_id: EP-01a08287f7f270a29a5da75fe5020444
+          turn_number: 2
+          oracle_call_id: OC-01a082884eae742fb0b31fbfdbfa80c4
+          question: Is it human-made?
+          answered_at: '2026-09-08T19:39:34.299455+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: 66a98cac774e3421aef6ab7d9e95ef66ef8c9695f645d97f9c187f984baf664a
+          execution_id: BX-20260908-B-0003-experimental-M0020-001
+          model_id: M-0020
+          benchmark_id: B-0003
+          trial_id: trial-003
+          source_file: runs/M-0020/BX-20260908-B-0003-experimental-M0020-001/subjects/T-0011/trials/trial-003/result.yml
+          source_integrity_hash: dcc9339f33efa465338eeeb0c87caf8dd4a2a3b7f103fa094f81c029e05b7abd
+      counted: true
+      counted_questions: 3
+      guesser_call_id: GC-01a082e534ec7543b2ec122f10b8bd18
+    - turn_type: action
+      turn_number: 4
+      action:
+        action: ASK
+        question: Is it a physical object that can be touched?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e540737526a5a0484b01652a8a
+        answer: 'YES'
+        evidence:
+        - source_url: https://science.nasa.gov/3d-resources/moon-apollo-astronaut-bootprint
+          excerpt: A close-up view of an astronaut's boot print in the lunar soil
+            photographed with a 70mm lunar surface camera during the Apollo 11 extravehicular
+            activity (EVA) on the moon.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://science.nasa.gov/resource/the-moons-surface/
+          excerpt: Between 1967 and 1972, a series of missions landed the first men
+            on the moon. ... Apollo astronauts documented their journey ... on the
+            ground ... through surveys conducted from lunar orbit and on the ground.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The Moon is a physical celestial body that humans
+              have landed on and walked upon, as evidenced by Apollo mission documentation
+              and surface interactions.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 4
+      guesser_call_id: GC-01a082e539d0762890a28f8f1eae4efa
+    - turn_type: action
+      turn_number: 5
+      action:
+        action: ASK
+        question: Is it larger than a typical car?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e56ac777a190959a5b92853a0a
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.esa.int/ESA_Multimedia/Images/2021/09/Moon_facts_Size
+          excerpt: The Moon is about one-quarter the size of Earth in diameter...
+            Moon has 3474 km in diameter, while the Earth is 12 756 km.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://teoricentralen.se/en/glossary/car-size
+          excerpt: An average passenger car is usually around 4-5 meters long, about
+            1.9 meters wide, and about 1.5 meters high. The exact dimensions may vary
+            depending on the model.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The Moon has a diameter of 3474 km, whereas a typical
+              passenger car is approximately 4 to 5 meters long, making the Moon vastly
+              larger than a typical car.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 5
+      guesser_call_id: GC-01a082e564dc779fadb00960948716eb
+    - turn_type: action
+      turn_number: 6
+      action:
+        action: ASK
+        question: Is it located on Earth?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e5a54f755ba7822f1710387881
+        answer: 'NO'
+        evidence:
+        - source_url: https://science.nasa.gov/moon/facts
+          excerpt: The Moon is Earth's only natural satellite. It goes around the
+            Earth at a distance of about 239,000 miles (385,000 kilometers).
+          validation: model_reported
+        - source_url: https://www.nasa.gov/stem-content/the-moon-earths-satellite/
+          excerpt: NASA identifies the Moon as Earth's satellite and presents it as
+            a distinct celestial body associated with Earth.
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: The Moon is a distinct celestial body that orbits
+              Earth at a distance of about 239,000 miles, so it is not located on
+              Earth.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 6
+      guesser_call_id: GC-01a082e59f537675a139cb40ad29c3e5
+    - turn_type: action
+      turn_number: 7
+      action:
+        action: ASK
+        question: Is it a celestial body such as a star, planet, or moon?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e5ce7376f1915599707df2648e
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.asc-csa.gc.ca/eng/multimedia/search/video/18445
+          excerpt: The Moon, the natural satellite of Earth. The Moon is a rocky body
+            that orbits planet Earth.
+          validation: model_reported
+          kind: source_summary
+        - source_url: https://www.merriam-webster.com/dictionary/moon
+          excerpt: the earth's natural satellite
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The supplied evidence confirms that the Moon is
+              Earth's natural satellite, establishing that it is a celestial body.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 7
+      guesser_call_id: GC-01a082e5c7fe777cab07dfb24850b1ed
+    - turn_type: action
+      turn_number: 8
+      action:
+        action: ASK
+        question: Is it a planet?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e5f5f370fa9b69556a5c288f6f
+        answer: 'NO'
+        evidence:
+        - source_url: https://www.nasa.gov/blogs/watch-the-skies/2009/07/10/is-the-moon-a-planettoo
+          excerpt: The IAU definition also excludes moons from being planets. ...
+            our moon ... may not be defined as a planet, but it definitely acts like
+            one.
+          validation: model_reported
+        - source_url: https://arcnav.psi.edu/urn:nasa:pds:context:target:satellite.earth.moon
+          excerpt: Our moon is the fifth largest of the 190+ moons orbiting planets
+            in our solar system. Earth's only natural satellite is simply called "the
+            Moon".
+          validation: model_reported
+          kind: source_summary
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: The supplied evidence states that the IAU definition
+              excludes moons from being planets and explicitly identifies Earth's
+              moon as a natural satellite, not a planet.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0011
+          episode_id: EP-01a082e1d6ea74b2bb354ecc74f4c242
+          turn_number: 9
+          oracle_call_id: OC-01a082e388d877a093aca38dfd936c21
+          question: Is it a planet?
+          answered_at: '2026-09-08T21:19:13.963179+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: 66a98cac774e3421aef6ab7d9e95ef66ef8c9695f645d97f9c187f984baf664a
+          execution_id: BX-20260908-B-0003-experimental-M0001-001
+          model_id: M-0001
+          benchmark_id: B-0003
+          trial_id: trial-003
+          source_file: runs/M-0001/BX-20260908-B-0003-experimental-M0001-001/subjects/T-0011/trials/trial-003/result.yml
+          source_integrity_hash: dae700818fbb3759d2f355674abc73cdb1173691ac78378b1713814dc4b7a079
+      counted: true
+      counted_questions: 8
+      guesser_call_id: GC-01a082e5f106759aa13104af083e5809
+    - turn_type: action
+      turn_number: 9
+      action:
+        action: ASK
+        question: Does it produce its own light (like a star)?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e5fb5a724f9c94441a4d69a089
+        answer: 'NO'
+        evidence:
+        - source_url: https://science.nasa.gov/moon/moonlight/
+          excerpt: The Moon does not make its own light. "Moonlight” is actually reflected
+            sunlight.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'NO'
+          question_type: other
+          reviewer:
+            answer: 'NO'
+            basis: evidence
+            supporting_statement: The Moon does not make its own light; moonlight
+              is actually reflected sunlight.
+            evidence_indices:
+            - 1
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'NO'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 9
+      guesser_call_id: GC-01a082e5f5f572879ddd1b3fd357f74f
+    - turn_type: action
+      turn_number: 10
+      action:
+        action: ASK
+        question: Is it located within our Solar System?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e61df473c5985e02231754fa00
+        answer: 'YES'
+        evidence:
+        - source_url: http://en.wikipedia.org/wiki/Moon
+          excerpt: Within the Solar System, it is larger and more massive than any
+            known dwarf planet, and the fifth-largest and fifth-most massive moon.
+          validation: model_reported
+        - source_url: https://astronomy.swin.edu.au/cosmos/M/Moon
+          excerpt: In a specific sense, the Moon is the only natural satellite of
+            Earth and the fifth largest such object in the Solar System.
+          validation: model_reported
+        - source_url: https://www.asc-csa.gc.ca/eng/multimedia/search/video/18445
+          excerpt: The Moon is a rocky body that orbits planet Earth. ... Other than
+            Earth, the Moon is the most explored celestial body in our solar system.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The provided excerpts explicitly state that the
+              Moon is located within the Solar System, describing it as the fifth-largest
+              moon in the Solar System and orbiting Earth.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0011
+          episode_id: EP-01a082844f6e76c688fbdc59962d01a1
+          turn_number: 6
+          oracle_call_id: OC-01a0828580057431b46de24b8bd57162
+          question: Is it located within our Solar System?
+          answered_at: '2026-09-08T19:36:29.944262+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: 66a98cac774e3421aef6ab7d9e95ef66ef8c9695f645d97f9c187f984baf664a
+          execution_id: BX-20260908-B-0003-experimental-M0020-001
+          model_id: M-0020
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0020/BX-20260908-B-0003-experimental-M0020-001/subjects/T-0011/trials/trial-001/result.yml
+          source_integrity_hash: 0401a2ffb78b665cdcc235d31658382361cc783f5114efce45c714cb50832a47
+      counted: true
+      counted_questions: 10
+      guesser_call_id: GC-01a082e6164571b79c06fd2f15c8805e
+    - turn_type: action
+      turn_number: 11
+      action:
+        action: ASK
+        question: Is it a moon (natural satellite) of a planet?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e6248873679c449681b0a020d3
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.asc-csa.gc.ca/eng/multimedia/search/video/18445
+          excerpt: The Moon, the natural satellite of Earth. The Moon is a rocky body
+            that orbits planet Earth.
+          validation: model_reported
+        - source_url: http://en.wikipedia.org/wiki/Moon
+          excerpt: The Moon is the only natural satellite of Earth.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: The supplied excerpts state that the Moon is the
+              natural satellite of Earth, which is a planet, directly establishing
+              the claim.
+            evidence_indices:
+            - 1
+            - 2
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+      counted: true
+      counted_questions: 11
+      guesser_call_id: GC-01a082e61df67641a423d40369817067
+    - turn_type: action
+      turn_number: 12
+      action:
+        action: ASK
+        question: Is it Earth's Moon?
+        name: null
+        description: null
+      adjudication:
+        component: oracle
+        call_id: OC-01a082e645f376b38a47979027a6cf15
+        answer: 'YES'
+        evidence:
+        - source_url: https://www.nasa.gov/stem-content/the-moon-earths-satellite/
+          excerpt: 'The Moon: Earth''s Satellite'
+          validation: model_reported
+        - source_url: https://solarsystem.nasa.gov/moons/earths-moon/in-depth.amp
+          excerpt: Earth's only natural satellite is simply called "the Moon" because
+            people didn't know other moons existed until Galileo Galilei discovered
+            four moons orbiting Jupiter in 1610.
+          validation: model_reported
+        - source_url: http://en.wikipedia.org/wiki/Moon
+          excerpt: The Moon is the only natural satellite of Earth.
+          validation: model_reported
+        explanation: null
+        oracle_quality:
+          oracle_answer: 'YES'
+          question_type: other
+          reviewer:
+            answer: 'YES'
+            basis: evidence
+            supporting_statement: Excerpts establish that the Moon is Earth's natural
+              satellite, confirming that it is Earth's Moon.
+            evidence_indices:
+            - 1
+            - 2
+            - 3
+          judge: null
+          disagreement: false
+          judge_invoked: false
+          final_answer: 'YES'
+          decision_path: reviewer_agreement
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0011
+          episode_id: EP-01a08197cf4376ab997c7207a8fa454e
+          turn_number: 9
+          oracle_call_id: OC-01a0819a6ffb70ad972a545692dae900
+          question: Is it Earth's Moon?
+          answered_at: '2026-09-08T15:19:46.346644+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: 66a98cac774e3421aef6ab7d9e95ef66ef8c9695f645d97f9c187f984baf664a
+          execution_id: BX-20260908-B-0003-experimental-M0015-001
+          model_id: M-0015
+          benchmark_id: B-0003
+          trial_id: trial-002
+          source_file: runs/M-0015/BX-20260908-B-0003-experimental-M0015-001/subjects/T-0011/trials/trial-002/result.yml
+          source_integrity_hash: 7865da6374126d1d2de38e22a028faf25d6f9b50dac24d193b5ab5da2baf5896
+      counted: true
+      counted_questions: 12
+      guesser_call_id: GC-01a082e641337733a346846b79fa3b7a
+    - turn_type: action
+      turn_number: 13
+      action:
+        action: GUESS
+        question: null
+        name: Earth's Moon
+        description: The natural satellite of Earth that orbits our planet
+      adjudication:
+        component: guess_validator
+        call_id: VC-01a082e64b7477dd8347429fb8a6d6f3
+        answer: 'YES'
+        evidence: []
+        explanation: The proposal identifies Earth's specific natural satellite, the
+          Moon, matching the target entity as a whole.
+        oracle_quality: null
+      counted: false
+      counted_questions: 12
+      guesser_call_id: GC-01a082e645f67356b857eedbeb41cc64
+    guesser_conversation:
+    - role: system
+      content: "You are the Guesser in a Twenty Questions benchmark. Identify the\
+        \ hidden subject using as few\ncounted turns as possible. BEGIN provides only\
+        \ its broad category. The variation_token has no\nclues; do not interpret,\
+        \ mention, or repeat it.\n\nThe category in BEGIN has a broad meaning:\n-\
+        \ person: a real human, living or historical.\n- fictional_character: an invented\
+        \ character from a story, book, comic, film, television,\n  game, or another\
+        \ fictional work.\n- mythological_figure: a figure from mythology or traditional\
+        \ legend.\n- video_game_character: a character known from video games.\n-\
+        \ thing: a broad category covering natural and human-made entities, living\
+        \ or nonliving,\n  whole entities or parts of them. Possibilities include\
+        \ everyday objects, tools, machines,\n  materials, food, animals, plants,\
+        \ body parts, natural structures, geographical features,\n  celestial bodies,\
+        \ natural phenomena, and concepts. These possibilities are not exhaustive.\n\
+        \  The target may be a general kind or one particular instance.\n\nUse questions\
+        \ to narrow the supplied category. These definitions are not a list of targets.\n\
+        \nUse ASK for a factual question that distinguishes candidates. Never use\
+        \ ASK to confirm a\nspecific identity. Use GUESS with a name and short identifying\
+        \ description to name a candidate.\n\nASK has five possible replies:\n- YES\
+        \ or NO: the evidence establishes that answer to the exact question.\n- RATHER_YES\
+        \ or RATHER_NO: evidence leans that way, but is not strong enough for a firm\
+        \ answer.\n  Treat this as a clue; keep candidates fitting the opposite answer\
+        \ possible.\n- UNKNOWN: no reliable direction. It supports neither answer.\n\
+        \nAsk clear questions about verifiable properties. \"Can\", \"sometimes\"\
+        , \"usually\", \"always\", and\n\"mainly\" ask different things. Do not assume\
+        \ that one property proves another or rules out alternatives.\nQualified replies\
+        \ express uncertainty about your question, not how often a property applies.\n\
+        Before narrowing heavily, check your key assumption with a different property.\
+        \ After rejected\nguesses, reconsider earlier assumptions as well as candidates.\
+        \ Answers can be mistaken; check\nanother property when stuck. Do not ignore\
+        \ an answer merely because it conflicts with a\npreferred candidate.\n\nEach\
+        \ ASK, rejected GUESS, or format error before the limit costs one turn. A\
+        \ correct GUESS costs\nnone. After 40 counted turns, make one final GUESS;\
+        \ ASK is then forbidden. Identity\nvalidation uses only YES, NO, or UNKNOWN.\
+        \ UNKNOWN on GUESS ends the game without success.\n\nFORMAT_ERROR means your\
+        \ output broke the contract, was not checked for correctness, and cost\none\
+        \ turn. Retry using its displayed formats if a turn remains. Return only the\
+        \ required JSON\nobject with exactly one result action. No explanations, reasoning,\
+        \ or extra fields.\n"
+    - role: user
+      content: '{"category":"thing","event":"BEGIN","variation_token":"BKXG3AZI"}'
+    - role: user
+      content: '{"event":"FORMAT_ERROR","message":"Your previous response broke the
+        structured-action contract and consumed one counted turn. It was not checked
+        for semantic correctness. Return only one valid response in a required format
+        and try again.","required_formats":{"ASK":{"result":{"action":"ASK","description":null,"name":null,"question":"<non-empty
+        yes-or-no property question>"}},"GUESS":{"result":{"action":"GUESS","description":"<non-empty
+        identifying description>","name":"<non-empty candidate name>","question":null}}}}'
+      turn_number: 1
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a living thing?"}}'
+      turn_number: 2
+    - role: user
+      content: 'NO'
+      turn_number: 2
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it human-made?"}}'
+      turn_number: 3
+    - role: user
+      content: 'NO'
+      turn_number: 3
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a physical object that can be touched?"}}'
+      turn_number: 4
+    - role: user
+      content: 'YES'
+      turn_number: 4
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it larger than a typical car?"}}'
+      turn_number: 5
+    - role: user
+      content: 'YES'
+      turn_number: 5
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it located on Earth?"}}'
+      turn_number: 6
+    - role: user
+      content: 'NO'
+      turn_number: 6
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a celestial body such as a star, planet, or moon?"}}'
+      turn_number: 7
+    - role: user
+      content: 'YES'
+      turn_number: 7
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a planet?"}}'
+      turn_number: 8
+    - role: user
+      content: 'NO'
+      turn_number: 8
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Does
+        it produce its own light (like a star)?"}}'
+      turn_number: 9
+    - role: user
+      content: 'NO'
+      turn_number: 9
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it located within our Solar System?"}}'
+      turn_number: 10
+    - role: user
+      content: 'YES'
+      turn_number: 10
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it a moon (natural satellite) of a planet?"}}'
+      turn_number: 11
+    - role: user
+      content: 'YES'
+      turn_number: 11
+    - role: assistant
+      content: '{"result":{"action":"ASK","description":null,"name":null,"question":"Is
+        it Earth''s Moon?"}}'
+      turn_number: 12
+    - role: user
+      content: 'YES'
+      turn_number: 12
+    - role: assistant
+      content: '{"result":{"action":"GUESS","description":"The natural satellite of
+        Earth that orbits our planet","name":"Earth''s Moon","question":null}}'
+      turn_number: 13
+    llm_details:
+      guesser:
+        configuration:
+          configuration_id: M-0023
+          gateway: openrouter
+          model: z-ai/glm-5.3-flash
+          provider: z-ai
+          reasoning_effort: high
+          structured_output_mode: json_object
+          allow_fallbacks: false
+          max_output_tokens: 32768
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '0.075'
+            cached_input_usd_per_million: '0.015'
+            cache_write_multiplier: '1.00'
+        metrics:
+          calls: 13
+          cost_usd: '0.000391445'
+          latency_ms: 19281
+          total_tokens: 12674
+          input_tokens: 11985
+          cached_input_tokens: 11328
+          cache_write_tokens: 0
+          output_tokens: 689
+          reasoning_tokens: 319
+          estimated_cache_savings_usd: '0.00067968000'
+          recovery:
+            request_attempts: 13
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: Z.AI
+            calls: 13
+            cost_usd: '0.000391445'
+            latency_ms: 19281
+          unreported_calls: 0
+          fallback_calls: 0
+      oracle:
+        configuration:
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          prompt_profile: qualified_v1
+          adjudication_policy: concise_knowledge_v1
+          parallel_search: true
+          parallel_search_mode: fast
+          max_search_results: 5
+          reviewer:
+            gateway: openrouter
+            model: google/gemini-3.5-flash-lite
+            provider: google-ai-studio
+            reasoning_effort: medium
+            allow_fallbacks: false
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+          judge:
+            gateway: openrouter
+            model: anthropic/claude-opus-5
+            provider: openrouter-auto
+            provider_routing: automatic
+            reasoning_effort: medium
+            allow_fallbacks: true
+            token_limit_parameter: max_tokens
+            max_output_tokens: 4096
+            timeout_seconds: 120
+            recovery:
+              max_elapsed_seconds: 300
+              max_request_attempts: 8
+              no_result_retries: 1
+              invalid_output_retries: 1
+              rate_limit_max_elapsed_seconds: 900
+              rate_limit_max_request_attempts: 20
+              retry_jitter_ms: 1000
+        metrics:
+          calls: 6
+          cost_usd: '0.0207247999999999998'
+          latency_ms: 54669
+          total_tokens: 44754
+          input_tokens: 40539
+          cached_input_tokens: 18480
+          cache_write_tokens: 0
+          output_tokens: 4215
+          reasoning_tokens: 2110
+          estimated_cache_savings_usd: '0'
+          recovery:
+            request_attempts: 12
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          oracle:
+            providers:
+            - provider: OpenAI
+              calls: 6
+              cost_usd: '0.0139505999999999998'
+              latency_ms: 46307
+            unreported_calls: 0
+            fallback_calls: 0
+          reviewer:
+            providers:
+            - provider: Google AI Studio
+              calls: 6
+              cost_usd: '0.0067742'
+              latency_ms: 8362
+            unreported_calls: 0
+            fallback_calls: 0
+          judge:
+            providers: []
+            unreported_calls: 0
+            fallback_calls: 0
+      validator:
+        configuration:
+          configuration_id: gpt-5.6-luna-validator
+          gateway: openrouter
+          model: openai/gpt-5.6-luna
+          provider: openai
+          reasoning_effort: medium
+          allow_fallbacks: false
+          max_output_tokens: 4096
+          timeout_seconds: 120
+          recovery:
+            max_elapsed_seconds: 300
+            max_request_attempts: 8
+            no_result_retries: 1
+            invalid_output_retries: 1
+            rate_limit_max_elapsed_seconds: 900
+            rate_limit_max_request_attempts: 20
+            retry_jitter_ms: 1000
+          seed_capability: unsupported
+          prompt_cache:
+            policy: best_effort
+            control: automatic
+            minimum_cacheable_tokens: 1024
+            ttl_seconds: 300
+            input_usd_per_million: '1.00'
+            cached_input_usd_per_million: '0.10'
+            cache_write_multiplier: '1.25'
+        metrics:
+          calls: 1
+          cost_usd: '0.0001652'
+          latency_ms: 1597
+          total_tokens: 641
+          input_tokens: 604
+          cached_input_tokens: 0
+          cache_write_tokens: 0
+          output_tokens: 37
+          reasoning_tokens: 0
+          estimated_cache_savings_usd: 0E-8
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+        provider_usage:
+          providers:
+          - provider: OpenAI
+            calls: 1
+            cost_usd: '0.0001652'
+            latency_ms: 1597
+          unreported_calls: 0
+          fallback_calls: 0
+    audit:
+      schema_version: 1
+      calls:
+      - component: guesser
+        call_id: GC-01a082e52a3a70ca93d9b703d81d9c7d
+        turn_number: 1
+        status: contract_violation
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 03dc6bef2f05cff98643fdf901070b77621422ed843d25a138156cc8321b6512
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:20:51.770108+00:00'
+          completed_at: '2026-09-08T21:20:53.198546+00:00'
+          latency_ms: 1428
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 662
+            cached_input_tokens: 640
+            cache_write_tokens: 0
+            output_tokens: 30
+            reasoning_tokens: 6
+            search_count: 0
+            cost_usd: '0.00001875'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 84
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: guesser
+        call_id: GC-01a082e52fd1706f9dfb3b10458bc3da
+        turn_number: 2
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 2420f42349984b8c4809d97a3fce4d7022029c47222092e771b41b50b78bd936
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:20:53.201828+00:00'
+          completed_at: '2026-09-08T21:20:54.505821+00:00'
+          latency_ms: 1303
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 773
+            cached_input_tokens: 768
+            cache_write_tokens: 0
+            output_tokens: 34
+            reasoning_tokens: 8
+            search_count: 0
+            cost_usd: '0.000020395'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 93
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e534ea765485526a2c789a2e63
+        turn_number: 2
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 6dbc37c4874d3bd4d4dd7975f4e11377152b48d14b23ce383217c30466484265
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:19:42.105808+00:00'
+            completed_at: '2026-09-08T21:19:48.590558+00:00'
+            latency_ms: 6484
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4571
+              cached_input_tokens: 1488
+              cache_write_tokens: 0
+              output_tokens: 340
+              reasoning_tokens: 54
+              search_count: 1
+              cost_usd: '0.00220821'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 980
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0011
+          episode_id: EP-01a082e40f4077999d2cb08809c28862
+          turn_number: 2
+          oracle_call_id: OC-01a082e41a18777f87420967a838a3e6
+          question: Is it a living thing?
+          answered_at: '2026-09-08T21:19:49.945263+00:00'
+          policy: same_execution_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: f94478cda54ed075f483e9dd794312a262752802a377b367748065ddcc27bf98
+          execution_id: BX-20260908-B-0003-experimental-M0023-001
+          model_id: M-0023
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0011/trials/trial-001/result.yml
+          source_integrity_hash: 44c3ef58f8ac7eab2d8b444177a01fa549522915c5f50cfbe603e214936825f6
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The subject is the Moon itself, a celestial body
+              and Earth's natural satellite. A retrieved source explicitly describes
+              it as a barren, lifeless world, which rejects the claim that it is a
+              living thing.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Moon Earth's natural satellite is it a living thing nonliving celestial
+              body NASA
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 6dbc37c4874d3bd4d4dd7975f4e11377152b48d14b23ce383217c30466484265
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:19:42.105808+00:00'
+              completed_at: '2026-09-08T21:19:48.590558+00:00'
+              latency_ms: 6484
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4571
+                cached_input_tokens: 1488
+                cache_write_tokens: 0
+                output_tokens: 340
+                reasoning_tokens: 54
+                search_count: 1
+                cost_usd: '0.00220821'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 980
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: GVA
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 65cc2ff42ee9d0a96f927438218a1a02d3c34c8cb929adae1fa278a27edcdaa7
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:19:48.591327+00:00'
+            completed_at: '2026-09-08T21:19:49.945263+00:00'
+            latency_ms: 1353
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1143
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 311
+              reasoning_tokens: 261
+              search_count: 0
+              cost_usd: '0.0011204'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 198
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e534ec7543b2ec122f10b8bd18
+        turn_number: 3
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 1ebd85d0a1cc903d40de926164eaf2112a25c2985d7d29e14fb6e99c1a188420
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:20:54.508510+00:00'
+          completed_at: '2026-09-08T21:20:55.757790+00:00'
+          latency_ms: 1249
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 802
+            cached_input_tokens: 768
+            cache_write_tokens: 0
+            output_tokens: 35
+            reasoning_tokens: 10
+            search_count: 0
+            cost_usd: '0.00002282'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 89
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e539ce740fb9498e6aab8a81a3
+        turn_number: 3
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 934ec58e757e9aedf5ac5d125ab560c49e0049a9220eea22ba853e8e57cd4b59
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:39:26.255337+00:00'
+            completed_at: '2026-09-08T19:39:33.530987+00:00'
+            latency_ms: 7275
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4052
+              cached_input_tokens: 2816
+              cache_write_tokens: 0
+              output_tokens: 370
+              reasoning_tokens: 80
+              search_count: 1
+              cost_usd: '0.00180902'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1042
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0011
+          episode_id: EP-01a08287f7f270a29a5da75fe5020444
+          turn_number: 2
+          oracle_call_id: OC-01a082884eae742fb0b31fbfdbfa80c4
+          question: Is it human-made?
+          answered_at: '2026-09-08T19:39:34.299455+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: 66a98cac774e3421aef6ab7d9e95ef66ef8c9695f645d97f9c187f984baf664a
+          execution_id: BX-20260908-B-0003-experimental-M0020-001
+          model_id: M-0020
+          benchmark_id: B-0003
+          trial_id: trial-003
+          source_file: runs/M-0020/BX-20260908-B-0003-experimental-M0020-001/subjects/T-0011/trials/trial-003/result.yml
+          source_integrity_hash: dcc9339f33efa465338eeeb0c87caf8dd4a2a3b7f103fa094f81c029e05b7abd
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The Moon is identified as Earth's natural satellite,
+              not an artificial or human-made satellite. Its reported formation from
+              a giant asteroid impact about 4.5 billion years ago also predates human
+              construction.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Moon Earth's natural satellite natural origin not human-made
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 934ec58e757e9aedf5ac5d125ab560c49e0049a9220eea22ba853e8e57cd4b59
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:39:26.255337+00:00'
+              completed_at: '2026-09-08T19:39:33.530987+00:00'
+              latency_ms: 7275
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4052
+                cached_input_tokens: 2816
+                cache_write_tokens: 0
+                output_tokens: 370
+                reasoning_tokens: 80
+                search_count: 1
+                cost_usd: '0.00180902'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1042
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: eba2dd8680acfa8ddc62eaa0248ab1b789bd67dc5509cd149eddd5ea596db3ba
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:39:33.533194+00:00'
+            completed_at: '2026-09-08T19:39:34.299455+00:00'
+            latency_ms: 766
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1164
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 41
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: '0.0004517'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 186
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e539d0762890a28f8f1eae4efa
+        turn_number: 4
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: b019a2ec6cd7cee5832e477de66fbdeaf627eeea61c904c7504733b18b14f13f
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:20:55.761011+00:00'
+          completed_at: '2026-09-08T21:20:57.458980+00:00'
+          latency_ms: 1697
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 830
+            cached_input_tokens: 768
+            cache_write_tokens: 0
+            output_tokens: 73
+            reasoning_tokens: 43
+            search_count: 0
+            cost_usd: '0.00003442'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 116
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e540737526a5a0484b01652a8a
+        turn_number: 4
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: eade8037e040f99224bcbea9e3a3fc1d2a7a9a6fc6fd5e3b3130cbd39388726f
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:20:57.460429+00:00'
+            completed_at: '2026-09-08T21:21:05.168557+00:00'
+            latency_ms: 7708
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4806
+              cached_input_tokens: 1492
+              cache_write_tokens: 0
+              output_tokens: 455
+              reasoning_tokens: 122
+              search_count: 1
+              cost_usd: '0.0024040399999999996'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1252
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The Moon is a physical celestial body with a rocky
+              surface, and Apollo astronauts physically contacted that surface, leaving
+              bootprints. Therefore the Moon, as a whole physical object, can be touched;
+              this does not confuse it with lunar material as a substance.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Moon physical object solid surface astronauts touched Moon surface NASA
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: eade8037e040f99224bcbea9e3a3fc1d2a7a9a6fc6fd5e3b3130cbd39388726f
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:20:57.460429+00:00'
+              completed_at: '2026-09-08T21:21:05.168557+00:00'
+              latency_ms: 7708
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4806
+                cached_input_tokens: 1492
+                cache_write_tokens: 0
+                output_tokens: 455
+                reasoning_tokens: 122
+                search_count: 1
+                cost_usd: '0.0024040399999999996'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1252
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: e9922d7d75791279526238a408645620a237e5b6264acee0ff24baa1ad05b1cc
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:21:05.170172+00:00'
+            completed_at: '2026-09-08T21:21:06.768920+00:00'
+            latency_ms: 1598
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1207
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 301
+              reasoning_tokens: 230
+              search_count: 0
+              cost_usd: '0.0011146'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 268
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e564dc779fadb00960948716eb
+        turn_number: 5
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 761ebb192752ff27c7d898dabf63faf78e67c2de60e80031b5c332d5876ea9be
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:21:06.780385+00:00'
+          completed_at: '2026-09-08T21:21:08.295079+00:00'
+          latency_ms: 1514
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 863
+            cached_input_tokens: 768
+            cache_write_tokens: 0
+            output_tokens: 56
+            reasoning_tokens: 28
+            search_count: 0
+            cost_usd: '0.000032645'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 104
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e56ac777a190959a5b92853a0a
+        turn_number: 5
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 8aedbf55ce0623415b3c34400e29af06d886f8f9baa9e9dbbff05d422b680041
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:21:08.296466+00:00'
+            completed_at: '2026-09-08T21:21:20.588494+00:00'
+            latency_ms: 12291
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 8856
+              cached_input_tokens: 5692
+              cache_write_tokens: 0
+              output_tokens: 531
+              reasoning_tokens: 147
+              search_count: 2
+              cost_usd: '0.00354159'
+              cache_discount_usd: null
+            web_search_requests: 2
+            annotation_count: 10
+            url_citation_count: 10
+            raw_output_present: true
+            raw_output_characters: 1172
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The Moon has a diameter of about 3,475 km, while
+              an average passenger car is usually about 4–5 m long. Thus, the specific
+              Moon is vastly larger than a typical car under the ordinary meaning
+              of size.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Moon diameter compared with typical car length or size Moon is larger
+              than a typical car
+            - typical passenger car length approximately 4 to 5 meters source
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 8aedbf55ce0623415b3c34400e29af06d886f8f9baa9e9dbbff05d422b680041
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:21:08.296466+00:00'
+              completed_at: '2026-09-08T21:21:20.588494+00:00'
+              latency_ms: 12291
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 8856
+                cached_input_tokens: 5692
+                cache_write_tokens: 0
+                output_tokens: 531
+                reasoning_tokens: 147
+                search_count: 2
+                cost_usd: '0.00354159'
+                cache_discount_usd: null
+              web_search_requests: 2
+              annotation_count: 10
+              url_citation_count: 10
+              raw_output_present: true
+              raw_output_characters: 1172
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: cddfbc45cfab92c7e6d34d19da6f80936d8bc081975e4cab1aaf2c19e9c8a7a2
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:21:20.589313+00:00'
+            completed_at: '2026-09-08T21:21:21.735613+00:00'
+            latency_ms: 1146
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1195
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 271
+              reasoning_tokens: 188
+              search_count: 0
+              cost_usd: '0.001036'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 270
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e59f537675a139cb40ad29c3e5
+        turn_number: 6
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: f44eb7eb9b26c6a68b0f89fdb44bd4189cd68a0aae307cc5da58d35ee73abc4a
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:21:21.747644+00:00'
+          completed_at: '2026-09-08T21:21:23.278803+00:00'
+          latency_ms: 1531
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 894
+            cached_input_tokens: 832
+            cache_write_tokens: 0
+            output_tokens: 50
+            reasoning_tokens: 24
+            search_count: 0
+            cost_usd: '0.00002963'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 95
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e5a54f755ba7822f1710387881
+        turn_number: 6
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 05fed3ceec044b2c9c259f3ca2e5f7de83afe0b78db2ce6f595b1bdd197f340c
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:21:23.280302+00:00'
+            completed_at: '2026-09-08T21:21:30.904837+00:00'
+            latency_ms: 7624
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4236
+              cached_input_tokens: 2819
+              cache_write_tokens: 0
+              output_tokens: 334
+              reasoning_tokens: 66
+              search_count: 1
+              cost_usd: '0.00181113'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 950
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The Moon is Earth's natural satellite and goes around
+              Earth at an average distance of about 385,000 km; it is not located
+              on Earth's surface.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Moon Earth's natural satellite located on Earth location NASA
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 05fed3ceec044b2c9c259f3ca2e5f7de83afe0b78db2ce6f595b1bdd197f340c
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:21:23.280302+00:00'
+              completed_at: '2026-09-08T21:21:30.904837+00:00'
+              latency_ms: 7624
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4236
+                cached_input_tokens: 2819
+                cache_write_tokens: 0
+                output_tokens: 334
+                reasoning_tokens: 66
+                search_count: 1
+                cost_usd: '0.00181113'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 950
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 3d4309606aa4861db30063c47a7a3e7c08e08a15d30f120b075de47f688fb907
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:21:30.905654+00:00'
+            completed_at: '2026-09-08T21:21:32.149909+00:00'
+            latency_ms: 1244
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1166
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 296
+              reasoning_tokens: 218
+              search_count: 0
+              cost_usd: '0.0010898'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 239
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e5c7fe777cab07dfb24850b1ed
+        turn_number: 7
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 358044c36e30ebe4221519741f9892c2d6396396064be60cab2c42b55afd1129
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:21:32.158839+00:00'
+          completed_at: '2026-09-08T21:21:33.810914+00:00'
+          latency_ms: 1652
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 923
+            cached_input_tokens: 832
+            cache_write_tokens: 0
+            output_tokens: 73
+            reasoning_tokens: 38
+            search_count: 0
+            cost_usd: '0.000037555'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 127
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e5ce7376f1915599707df2648e
+        turn_number: 7
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 9d98bbe569e1726426dfd79c1436c0c84e3ad1582d589956bba84fc20b8d0fc3
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:21:33.812444+00:00'
+            completed_at: '2026-09-08T21:21:40.954292+00:00'
+            latency_ms: 7141
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5114
+              cached_input_tokens: 2828
+              cache_write_tokens: 0
+              output_tokens: 388
+              reasoning_tokens: 114
+              search_count: 1
+              cost_usd: '0.0020933600000000003'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 947
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The named subject is Earth's Moon, which is a natural
+              satellite and therefore a celestial body. The moon branch of the inclusive
+              “star, planet, or moon” claim is directly supported; it is not necessary
+              for the Moon to be a star or planet.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Moon is a celestial body Earth's natural satellite definition source
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 9d98bbe569e1726426dfd79c1436c0c84e3ad1582d589956bba84fc20b8d0fc3
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:21:33.812444+00:00'
+              completed_at: '2026-09-08T21:21:40.954292+00:00'
+              latency_ms: 7141
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5114
+                cached_input_tokens: 2828
+                cache_write_tokens: 0
+                output_tokens: 388
+                reasoning_tokens: 114
+                search_count: 1
+                cost_usd: '0.0020933600000000003'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 947
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 9943d8b46bd24318c3b11909b4e4d636e29d5fdaf91ba479d6b848a439d37a23
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:21:40.955218+00:00'
+            completed_at: '2026-09-08T21:21:42.658623+00:00'
+            latency_ms: 1703
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1143
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 434
+              reasoning_tokens: 372
+              search_count: 0
+              cost_usd: '0.0014279'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 220
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e5f106759aa13104af083e5809
+        turn_number: 8
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 5f1297c50b90c25881d9e154cd1e499b2f46fc0a6d04564528f070dafab199bb
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:21:42.662486+00:00'
+          completed_at: '2026-09-08T21:21:43.922848+00:00'
+          latency_ms: 1260
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 961
+            cached_input_tokens: 896
+            cache_write_tokens: 0
+            output_tokens: 57
+            reasoning_tokens: 32
+            search_count: 0
+            cost_usd: '0.000032565'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 87
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e5f5f370fa9b69556a5c288f6f
+        turn_number: 8
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 82b719ab7c0c17ad8d2b612163528df414677331c4c27416e443221f31c7f96d
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:19:04.921536+00:00'
+            completed_at: '2026-09-08T21:19:12.659248+00:00'
+            latency_ms: 7737
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4569
+              cached_input_tokens: 2817
+              cache_write_tokens: 0
+              output_tokens: 397
+              reasoning_tokens: 85
+              search_count: 1
+              cost_usd: '0.00197044'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1117
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0011
+          episode_id: EP-01a082e1d6ea74b2bb354ecc74f4c242
+          turn_number: 9
+          oracle_call_id: OC-01a082e388d877a093aca38dfd936c21
+          question: Is it a planet?
+          answered_at: '2026-09-08T21:19:13.963179+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: 66a98cac774e3421aef6ab7d9e95ef66ef8c9695f645d97f9c187f984baf664a
+          execution_id: BX-20260908-B-0003-experimental-M0001-001
+          model_id: M-0001
+          benchmark_id: B-0003
+          trial_id: trial-003
+          source_file: runs/M-0001/BX-20260908-B-0003-experimental-M0001-001/subjects/T-0011/trials/trial-003/result.yml
+          source_integrity_hash: dae700818fbb3759d2f355674abc73cdb1173691ac78378b1713814dc4b7a079
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The Moon is Earth's natural satellite, and under
+              the IAU planet definition, moons are excluded from the category of planets.
+              NASA explicitly states that the IAU definition excludes moons from being
+              planets.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - NASA Moon Earth's natural satellite not a planet classification
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 82b719ab7c0c17ad8d2b612163528df414677331c4c27416e443221f31c7f96d
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:19:04.921536+00:00'
+              completed_at: '2026-09-08T21:19:12.659248+00:00'
+              latency_ms: 7737
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4569
+                cached_input_tokens: 2817
+                cache_write_tokens: 0
+                output_tokens: 397
+                reasoning_tokens: 85
+                search_count: 1
+                cost_usd: '0.00197044'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1117
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: d55a3090115c8725a3dd79a10360fab572e46db8ba3cf4a35deeebccfee76f34
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:19:12.660051+00:00'
+            completed_at: '2026-09-08T21:19:13.963179+00:00'
+            latency_ms: 1303
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1169
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 276
+              reasoning_tokens: 202
+              search_count: 0
+              cost_usd: '0.0010407'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 278
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e5f5f572879ddd1b3fd357f74f
+        turn_number: 9
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 1f12b4f8b6af66c5f6fd32178706327a324971a518649aef05cb55111e9d4d4f
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:21:43.925897+00:00'
+          completed_at: '2026-09-08T21:21:45.306153+00:00'
+          latency_ms: 1380
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 989
+            cached_input_tokens: 960
+            cache_write_tokens: 0
+            output_tokens: 62
+            reasoning_tokens: 30
+            search_count: 0
+            cost_usd: '0.000032075'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 116
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e5fb5a724f9c94441a4d69a089
+        turn_number: 9
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 7f27e58173fe2954a191c7de30c79db0b0d7c494e3057f80d9d16aba9619107d
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:21:45.307680+00:00'
+            completed_at: '2026-09-08T21:21:50.495635+00:00'
+            latency_ms: 5187
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5194
+              cached_input_tokens: 2824
+              cache_write_tokens: 0
+              output_tokens: 248
+              reasoning_tokens: 51
+              search_count: 1
+              cost_usd: '0.0019462799999999999'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 620
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The Moon does not produce its own light like a star;
+              NASA states that it does not make its own light and that moonlight is
+              reflected sunlight.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Moon does not produce its own light reflects sunlight like a star NASA
+            query_provenance: model_reported
+            evidence_count: 1
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 7f27e58173fe2954a191c7de30c79db0b0d7c494e3057f80d9d16aba9619107d
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:21:45.307680+00:00'
+              completed_at: '2026-09-08T21:21:50.495635+00:00'
+              latency_ms: 5187
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5194
+                cached_input_tokens: 2824
+                cache_write_tokens: 0
+                output_tokens: 248
+                reasoning_tokens: 51
+                search_count: 1
+                cost_usd: '0.0019462799999999999'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 620
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 17d37b74366d9165fd55560d02e2e707e06544bb5ec8dc4c2a6789a718452222
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:21:50.496448+00:00'
+            completed_at: '2026-09-08T21:21:52.190786+00:00'
+            latency_ms: 1694
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1117
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 375
+              reasoning_tokens: 340
+              search_count: 0
+              cost_usd: '0.0012726'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 162
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e6164571b79c06fd2f15c8805e
+        turn_number: 10
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 497e3f26889b9b6f77b83e98c522097a96269e4229f731169ab53cd2e7d407c8
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:21:52.197169+00:00'
+          completed_at: '2026-09-08T21:21:54.163791+00:00'
+          latency_ms: 1966
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1024
+            cached_input_tokens: 960
+            cache_write_tokens: 0
+            output_tokens: 93
+            reasoning_tokens: 65
+            search_count: 0
+            cost_usd: '0.00004245'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 110
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e61df473c5985e02231754fa00
+        turn_number: 10
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 65f5bbe77e324b7de9f348a1a7dad86d7a332926211e64a2d8ce160c2bed588e
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:36:22.278527+00:00'
+            completed_at: '2026-09-08T19:36:28.371919+00:00'
+            latency_ms: 6093
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 4548
+              cached_input_tokens: 2820
+              cache_write_tokens: 0
+              output_tokens: 397
+              reasoning_tokens: 49
+              search_count: 1
+              cost_usd: '0.0019645'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1306
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0011
+          episode_id: EP-01a082844f6e76c688fbdc59962d01a1
+          turn_number: 6
+          oracle_call_id: OC-01a0828580057431b46de24b8bd57162
+          question: Is it located within our Solar System?
+          answered_at: '2026-09-08T19:36:29.944262+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: 66a98cac774e3421aef6ab7d9e95ef66ef8c9695f645d97f9c187f984baf664a
+          execution_id: BX-20260908-B-0003-experimental-M0020-001
+          model_id: M-0020
+          benchmark_id: B-0003
+          trial_id: trial-001
+          source_file: runs/M-0020/BX-20260908-B-0003-experimental-M0020-001/subjects/T-0011/trials/trial-001/result.yml
+          source_integrity_hash: 0401a2ffb78b665cdcc235d31658382361cc783f5114efce45c714cb50832a47
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The Moon is Earth's natural satellite, and sources
+              explicitly identify it as an object in the Solar System. Therefore,
+              this specific celestial body is located within our Solar System.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Moon Earth's natural satellite located within the Solar System
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 65f5bbe77e324b7de9f348a1a7dad86d7a332926211e64a2d8ce160c2bed588e
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T19:36:22.278527+00:00'
+              completed_at: '2026-09-08T19:36:28.371919+00:00'
+              latency_ms: 6093
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 4548
+                cached_input_tokens: 2820
+                cache_write_tokens: 0
+                output_tokens: 397
+                reasoning_tokens: 49
+                search_count: 1
+                cost_usd: '0.0019645'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1306
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 3da3af5e3168481bee148e87502d04f5a97fefd76c6a9e8404dfecbd84c07466
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T19:36:28.372760+00:00'
+            completed_at: '2026-09-08T19:36:29.944262+00:00'
+            latency_ms: 1571
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1192
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 261
+              reasoning_tokens: 198
+              search_count: 0
+              cost_usd: '0.0010101'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 265
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e61df67641a423d40369817067
+        turn_number: 11
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 72d85f028c6aed30e33abd9f558c9cca55399de633bce4f7030e9d2ca49cb1bf
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:21:54.166462+00:00'
+          completed_at: '2026-09-08T21:21:55.847466+00:00'
+          latency_ms: 1680
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1055
+            cached_input_tokens: 1024
+            cache_write_tokens: 0
+            output_tokens: 60
+            reasoning_tokens: 28
+            search_count: 0
+            cost_usd: '0.000032685'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 117
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e6248873679c449681b0a020d3
+        turn_number: 11
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: cc73c09556b181a1e53b958ea9910dc94d4596a30660b2c88259e1919cc9cef6
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:21:55.848872+00:00'
+            completed_at: '2026-09-08T21:22:02.205198+00:00'
+            latency_ms: 6356
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5369
+              cached_input_tokens: 2825
+              cache_write_tokens: 0
+              output_tokens: 385
+              reasoning_tokens: 133
+              search_count: 1
+              cost_usd: '0.0021542'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 846
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The Moon is Earth's natural satellite, and Earth
+              is a planet. Therefore, the named Moon is a moon (natural satellite)
+              of a planet.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Moon Earth's natural satellite of the planet Earth natural satellite
+              source
+            query_provenance: model_reported
+            evidence_count: 2
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: cc73c09556b181a1e53b958ea9910dc94d4596a30660b2c88259e1919cc9cef6
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T21:21:55.848872+00:00'
+              completed_at: '2026-09-08T21:22:02.205198+00:00'
+              latency_ms: 6356
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5369
+                cached_input_tokens: 2825
+                cache_write_tokens: 0
+                output_tokens: 385
+                reasoning_tokens: 133
+                search_count: 1
+                cost_usd: '0.0021542'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 846
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: b821b273d75619f60bdfac941aa86266d2fb8dd414a1113c5845943458d55790
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T21:22:02.206017+00:00'
+            completed_at: '2026-09-08T21:22:03.183156+00:00'
+            latency_ms: 977
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1136
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 197
+              reasoning_tokens: 129
+              search_count: 0
+              cost_usd: '0.0008333'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 244
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: GVA
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e641337733a346846b79fa3b7a
+        turn_number: 12
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: b87257dcdb72e7da3d575dc930b5ac4d071b7604fa2cfeb6a22962d6bc97802f
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:22:03.187353+00:00'
+          completed_at: '2026-09-08T21:22:04.403205+00:00'
+          latency_ms: 1215
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1090
+            cached_input_tokens: 1024
+            cache_write_tokens: 0
+            output_tokens: 26
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.00002681'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 91
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: oracle
+        call_id: OC-01a082e645f376b38a47979027a6cf15
+        turn_number: 12
+        status: success
+        oracle:
+          role: oracle
+          prompt:
+            version: live-web-oracle-v17-labelled-source-context
+            hash: 49b92f0b6d3039644553b4fd0063b8144a3f6662666806b96f7b3735125aa8c7
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T15:19:37.213425+00:00'
+            completed_at: '2026-09-08T15:19:45.241554+00:00'
+            latency_ms: 8028
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: openai/gpt-5.6-luna
+            resolved_model: openai/gpt-5.6-luna
+            requested_provider: openai
+            resolved_provider: OpenAI
+            fallback_occurred: false
+            usage:
+              input_tokens: 5326
+              cached_input_tokens: 2818
+              cache_write_tokens: 0
+              output_tokens: 386
+              reasoning_tokens: 67
+              search_count: 1
+              cost_usd: '0.00214626'
+              cache_discount_usd: null
+            web_search_requests: 1
+            annotation_count: 5
+            url_citation_count: 5
+            raw_output_present: true
+            raw_output_characters: 1191
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline:
+              - stage_type: server_tools
+                name: server-tools
+                mode: null
+                tool_types: []
+        cache_source:
+          normalization: casefold-ascii-spaces-v1
+          target_id: T-0011
+          episode_id: EP-01a08197cf4376ab997c7207a8fa454e
+          turn_number: 9
+          oracle_call_id: OC-01a0819a6ffb70ad972a545692dae900
+          question: Is it Earth's Moon?
+          answered_at: '2026-09-08T15:19:46.346644+00:00'
+          policy: historical_ask_v1
+          context_hash: 2adcb8003746d1e9811ff381b9e429b98cab47e35c9351c7012cbc9f2b455b81
+          snapshot_hash: 66a98cac774e3421aef6ab7d9e95ef66ef8c9695f645d97f9c187f984baf664a
+          execution_id: BX-20260908-B-0003-experimental-M0015-001
+          model_id: M-0015
+          benchmark_id: B-0003
+          trial_id: trial-002
+          source_file: runs/M-0015/BX-20260908-B-0003-experimental-M0015-001/subjects/T-0011/trials/trial-002/result.yml
+          source_integrity_hash: 7865da6374126d1d2de38e22a028faf25d6f9b50dac24d193b5ab5da2baf5896
+        research:
+          question_class: other
+          resolution: answered_primary
+          attempts:
+          - basis: evidence
+            supporting_statement: The subject is explicitly identified as “The Moon,
+              Earth's natural satellite,” and authoritative sources describe the Moon
+              as Earth's natural satellite. Thus, this specific celestial body is
+              Earth's Moon.
+            attempt_number: 1
+            strategy: primary
+            outcome: answered
+            attempted_queries:
+            - Moon Earth's natural satellite Earth's Moon identity
+            query_provenance: model_reported
+            evidence_count: 3
+            prompt:
+              version: live-web-oracle-v17-labelled-source-context
+              hash: 49b92f0b6d3039644553b4fd0063b8144a3f6662666806b96f7b3735125aa8c7
+            provider:
+              schema_version: 1
+              requested_at: '2026-09-08T15:19:37.213425+00:00'
+              completed_at: '2026-09-08T15:19:45.241554+00:00'
+              latency_ms: 8028
+              http_status_code: 200
+              response_cache_status: null
+              finish_reason: stop
+              retry_after_ms: null
+              recovery:
+                request_attempts: 1
+                retried_calls: 0
+                recovered_calls: 0
+                exhausted_retries: 0
+                reasons: []
+                retry_usage:
+                  input_tokens: 0
+                  cached_input_tokens: 0
+                  cache_write_tokens: 0
+                  output_tokens: 0
+                  reasoning_tokens: 0
+                  search_count: 0
+                  cost_usd: null
+                  cache_discount_usd: null
+                retry_latency_ms: 0
+              requested_model: openai/gpt-5.6-luna
+              resolved_model: openai/gpt-5.6-luna
+              requested_provider: openai
+              resolved_provider: OpenAI
+              fallback_occurred: false
+              usage:
+                input_tokens: 5326
+                cached_input_tokens: 2818
+                cache_write_tokens: 0
+                output_tokens: 386
+                reasoning_tokens: 67
+                search_count: 1
+                cost_usd: '0.00214626'
+                cache_discount_usd: null
+              web_search_requests: 1
+              annotation_count: 5
+              url_citation_count: 5
+              raw_output_present: true
+              raw_output_characters: 1191
+              discarded_error_output_count: 0
+              router_metadata:
+                strategy: direct
+                region: ZRH
+                attempt: 1
+                is_byok: false
+                endpoint_count: 0
+                attempt_count: 0
+                pipeline:
+                - stage_type: server_tools
+                  name: server-tools
+                  mode: null
+                  tool_types: []
+        reviewer:
+          role: reviewer
+          prompt:
+            version: oracle-reviewer-v12-labelled-source-context
+            hash: 5b6a747c2ab1592d226ba35d084b343b89f72fbb043c13716bbae1e99511d438
+          provider:
+            schema_version: 1
+            requested_at: '2026-09-08T15:19:45.243948+00:00'
+            completed_at: '2026-09-08T15:19:46.346644+00:00'
+            latency_ms: 1102
+            http_status_code: 200
+            response_cache_status: null
+            finish_reason: stop
+            retry_after_ms: null
+            recovery:
+              request_attempts: 1
+              retried_calls: 0
+              recovered_calls: 0
+              exhausted_retries: 0
+              reasons: []
+              retry_usage:
+                input_tokens: 0
+                cached_input_tokens: 0
+                cache_write_tokens: 0
+                output_tokens: 0
+                reasoning_tokens: 0
+                search_count: 0
+                cost_usd: null
+                cache_discount_usd: null
+              retry_latency_ms: 0
+            requested_model: google/gemini-3.5-flash-lite
+            resolved_model: google/gemini-3.5-flash-lite
+            requested_provider: google-ai-studio
+            resolved_provider: Google AI Studio
+            fallback_occurred: false
+            usage:
+              input_tokens: 1161
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 203
+              reasoning_tokens: 148
+              search_count: 0
+              cost_usd: '0.0008558'
+              cache_discount_usd: null
+            web_search_requests: 0
+            annotation_count: 0
+            url_citation_count: 0
+            raw_output_present: true
+            raw_output_characters: 195
+            discarded_error_output_count: 0
+            router_metadata:
+              strategy: direct
+              region: ZRH
+              attempt: 1
+              is_byok: false
+              endpoint_count: 0
+              attempt_count: 0
+              pipeline: []
+        judge: null
+      - component: guesser
+        call_id: GC-01a082e645f67356b857eedbeb41cc64
+        turn_number: 13
+        status: success
+        prompt:
+          version: stateful-category-guesser-v16-five-answer-category-guide
+          hash: 90d352c897599c6afa873ee3c842606969a45dd2f0760674239d1b17a9f74673
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:22:04.406296+00:00'
+          completed_at: '2026-09-08T21:22:05.812353+00:00'
+          latency_ms: 1406
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: z-ai/glm-5.3-flash
+          resolved_model: z-ai/glm-5.3-flash
+          requested_provider: z-ai
+          resolved_provider: Z.AI
+          fallback_occurred: false
+          usage:
+            input_tokens: 1119
+            cached_input_tokens: 1088
+            cache_write_tokens: 0
+            output_tokens: 40
+            reasoning_tokens: 7
+            search_count: 0
+            cost_usd: '0.000028645'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 137
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: ZRH
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      - component: validator
+        call_id: VC-01a082e64b7477dd8347429fb8a6d6f3
+        turn_number: 13
+        status: success
+        prompt:
+          version: strict-guess-validator-v2-generic-kinds
+          hash: 517212141f72f68fba19b4922f2a4508c8c6b3f023b3266b15dca93a4be0e48c
+        provider:
+          schema_version: 1
+          requested_at: '2026-09-08T21:22:05.813241+00:00'
+          completed_at: '2026-09-08T21:22:07.410557+00:00'
+          latency_ms: 1597
+          http_status_code: 200
+          response_cache_status: null
+          finish_reason: stop
+          retry_after_ms: null
+          recovery:
+            request_attempts: 1
+            retried_calls: 0
+            recovered_calls: 0
+            exhausted_retries: 0
+            reasons: []
+            retry_usage:
+              input_tokens: 0
+              cached_input_tokens: 0
+              cache_write_tokens: 0
+              output_tokens: 0
+              reasoning_tokens: 0
+              search_count: 0
+              cost_usd: null
+              cache_discount_usd: null
+            retry_latency_ms: 0
+          requested_model: openai/gpt-5.6-luna
+          resolved_model: openai/gpt-5.6-luna
+          requested_provider: openai
+          resolved_provider: OpenAI
+          fallback_occurred: false
+          usage:
+            input_tokens: 604
+            cached_input_tokens: 0
+            cache_write_tokens: 0
+            output_tokens: 37
+            reasoning_tokens: 0
+            search_count: 0
+            cost_usd: '0.0001652'
+            cache_discount_usd: null
+          web_search_requests: 0
+          annotation_count: 0
+          url_citation_count: 0
+          raw_output_present: true
+          raw_output_characters: 141
+          discarded_error_output_count: 0
+          router_metadata:
+            strategy: direct
+            region: GVA
+            attempt: 1
+            is_byok: false
+            endpoint_count: 0
+            attempt_count: 0
+            pipeline: []
+      unavailable_call_count: 0
+  error_output_preview:
+    component: guesser
+    attempt_number: 1
+    finish_reason: stop
+    text: '{"action":"ASK","value":"Is it a living thing (or derived from a living
+      organism)?"}'
+    original_characters: 84
+    trailing_whitespace_characters: 0
+    truncated: false
+  superseded_attempts: []
+  artifacts:
+    trial_result:
+      relative_path: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0011/trials/trial-002/result.yml
+      record_count: 1
+      integrity_hash: null
+    error_outputs:
+      relative_path: runs/M-0023/BX-20260908-B-0003-experimental-M0023-001/subjects/T-0011/trials/trial-002/error-outputs.jsonl
+      record_count: 1
+      integrity_hash: 6b08323a99eb1e3f8c5f55b120304220355d6be8bc7793c3d6e22b6b3d92bf39
+    episode_result: null
+    audit_manifest: null
+    episode_events: null
+    guesser_calls: null
+    oracle_calls: null
+    validator_calls: null
+integrity_hash: 4f8a40b482be7f15b2adaf6c5ade2b34e8c8e64701ee239e253627f3b0465b35
