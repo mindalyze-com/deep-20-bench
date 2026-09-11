@@ -53,6 +53,7 @@ export default defineConfig(({ command, isSsrBuild }) => {
         ? (process.env.DEEP20_SSR_OUTPUT_DIR ?? "./.ssr")
         : (process.env.DEEP20_OUTPUT_DIR ?? "./dist"),
       sourcemap: false,
+      ssrManifest: !isSsrBuild,
     },
   };
 });

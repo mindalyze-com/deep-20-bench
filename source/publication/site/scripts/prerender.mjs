@@ -103,6 +103,10 @@ const parseRouteManifest = (value) => {
 
 const routes = parseRouteManifest(readJson(routeManifestPath));
 const clientTemplateSource = readFileSync(join(outputRoot, "index.html"), "utf8");
+const ssrManifest = objectValue(
+  readJson(join(outputRoot, ".vite", "ssr-manifest.json")),
+  "SSR asset manifest",
+);
 const editionsDocument = readJson(join(publicRoot, "data", "editions.json"));
 const editionManifests = new Map(editionsDocument.editions.map(edition => [edition.edition_id,
   readJson(join(publicRoot, "data", edition.manifest_path))]));
@@ -170,6 +174,29 @@ const clientTemplate = replaceUnique(
   `<meta property="og:site_name" content="${escapeHtml(manifestDocument.site.title)}" />`,
   "Open Graph site name",
 );
+
+// Async route styles must be present before the first paint of their static HTML.
+// Vite's manifest already includes the configured base and content-hashed filenames.
+const withPageStyles = (modules) => {
+  const included = new Set(
+    [...clientTemplate.matchAll(/<link\b[^>]*\brel="stylesheet"[^>]*\bhref="([^"]+)"/g)]
+      .map((match) => match[1]),
+  );
+  const links = [];
+  for (const module of modules) {
+    const assets = ssrManifest[module] ?? [];
+    if (!Array.isArray(assets)) throw new Error(`Invalid SSR assets for ${module}.`);
+    for (const value of assets) {
+      const asset = stringValue(value, "SSR asset");
+      if (!asset.endsWith(".css") || included.has(asset)) continue;
+      included.add(asset);
+      links.push(`    <link rel="stylesheet" crossorigin href="${escapeHtml(asset)}">`);
+    }
+  }
+  return links.length === 0
+    ? clientTemplate
+    : clientTemplate.replace("  </head>", `${links.join("\n")}\n  </head>`);
+};
 
 const routeUrl = (route) =>
   route.length === 0 ? canonicalUrl : `${canonicalUrl}${route}/`;
@@ -309,8 +336,8 @@ for (const route of routes) {
         route.route.length === 0 ? "/" : `/${route.route}/`,
         documents,
       )
-    : { appHtml: "" };
-  const html = metadataHtml(clientTemplate, route, rendered.appHtml, documents);
+    : { appHtml: "", modules: [] };
+  const html = metadataHtml(withPageStyles(rendered.modules), route, rendered.appHtml, documents);
   const output =
     route.route.length === 0
       ? join(outputRoot, "index.html")
@@ -365,4 +392,5 @@ if (canonicalAddress.pathname === "/") {
     writeFileSync(join(outputRoot, "CNAME"), `${canonicalAddress.hostname}\n`, "utf8");
   }
 }
+rmSync(join(outputRoot, ".vite"), { recursive: true, force: true });
 rmSync(serverRoot, { recursive: true, force: true });

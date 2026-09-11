@@ -60,6 +60,9 @@ test(
 
     const content = page.locator("#route-content.home-page");
     await expect(content).toBeVisible();
+    await expect(page.locator(".home-hero-inner")).toHaveCSS("display", "grid");
+    await expect(page.locator(".hero-details")).toHaveCSS("display", "grid");
+    await expect(page.locator(".round-example")).toHaveCSS("position", "relative");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "How well can AI models play Twenty Questions?",
     );
@@ -75,6 +78,69 @@ test(
     );
 
     await context.close();
+  },
+);
+
+test(
+  "homepage keeps its styled content while JavaScript is delayed and during hydration",
+  { tag: ["@static-fallback", "@both", "@smoke", "@editions"] },
+  async ({ page }) => {
+    const hydrationMessages: string[] = [];
+    page.on("console", (message) => {
+      if (/hydration|mismatch/i.test(message.text())) hydrationMessages.push(message.text());
+    });
+    await page.route("https://**/*", (route) => route.abort());
+    let releaseScripts = (): void => {};
+    const scriptsReady = new Promise<void>((resolve) => { releaseScripts = resolve; });
+    await page.route("**/_assets/*.js", async (route) => {
+      await scriptsReady;
+      await route.continue();
+    });
+
+    try {
+      await page.goto(new URL("editions/1.1/", staticBase).href, { waitUntil: "commit" });
+      const hero = page.locator(".home-hero");
+      await expect(hero).toBeVisible();
+      await expect(page.locator(".home-hero-inner")).toHaveCSS("display", "grid");
+      await expect(page.locator(".round-card")).toHaveCSS("border-radius", "10px");
+      await page.waitForFunction(() =>
+        [...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')]
+          .every((link) => link.sheet !== null),
+      );
+      // WebKit's fonts.ready also waits for document load, which is deliberately held here.
+      await page.evaluate(async () => {
+        await Promise.all(
+          [...document.querySelectorAll(".hero-copy h1, .hero-lead, .round-example")]
+            .map((element) => {
+              const style = getComputedStyle(element);
+              return document.fonts.load(`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`);
+            }),
+        );
+      });
+      const heading = await page.getByRole("heading", { level: 1 }).elementHandle();
+      if (heading === null) throw new Error("The initial heading is missing.");
+      const beforeHero = await hero.boundingBox();
+      const beforeHeading = await heading.boundingBox();
+      const beforeRound = await page.locator(".round-example").boundingBox();
+
+      releaseScripts();
+      await page.waitForFunction(() => {
+        const app = document.getElementById("app");
+        return app !== null && "__vue_app__" in app;
+      });
+
+      // Hydration reuses the visible content and preserves its geometry.
+      expect(await heading.evaluate((element) => element.isConnected)).toBe(true);
+      expect(await hero.boundingBox()).toEqual(beforeHero);
+      expect(await heading.boundingBox()).toEqual(beforeHeading);
+      expect(await page.locator(".round-example").boundingBox()).toEqual(beforeRound);
+      expect(hydrationMessages).toEqual([]);
+      await expect(page.locator("#route-content")).toHaveCount(1);
+      await page.getByRole("link", { name: "Explore pilot results" }).click();
+      await expect(page).toHaveURL(/\/editions\/1\.1\/results\/$/);
+    } finally {
+      releaseScripts();
+    }
   },
 );
 

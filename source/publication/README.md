@@ -254,9 +254,15 @@ The build uses Vue server rendering with a memory-history router, then hydrates 
 with a web-history router in the browser. The homepage, eight editorial and result pages, and
 every selected official run summary contain their real content and ordinary links in the
 initial HTML. Charts and interactive controls start after hydration. There is no separate
-fallback content tree or content-hiding script. Chart containers keep their declared height;
-the shared ECharts module downloads and SVG initialization starts only when a container is
-within 300 pixels of the viewport. Failed downloads show a reload notice while static results
+fallback content tree or content-hiding script. Every prerendered page links its rendered
+components' CSS in the initial HTML, using Vite's
+SSR asset manifest. Route styles therefore apply before the first paint, even with delayed or
+disabled JavaScript. Hydration reuses the styled content without a page-wide loading overlay.
+The asset manifest is build-only and is removed from the generated site.
+
+Chart containers keep their declared height; the shared ECharts module downloads and SVG
+initialization starts only when a container is within 300 pixels of the viewport.
+Failed downloads show a reload notice while static results
 and links remain available. Offscreen
 data-only updates are retained until the chart returns; already-rendered SVGs still follow
 viewport resizes. Data refreshes do not resize an unchanged chart, and cached routes reconnect

@@ -221,6 +221,24 @@ def _published_dataset(edition_id: str = "1.0") -> PublishedDataset:
     return PublishedDataset.model_validate_json(source.read_text(encoding="utf-8"))
 
 
+def test_generated_homepages_include_layout_styles_before_javascript() -> None:
+    docs = REPOSITORY / "docs"
+    for route in ("", "editions/1.0", "editions/1.1"):
+        entry = (docs / route / "index.html").read_text(encoding="utf-8")
+        head = entry.split("</head>", 1)[0]
+        stylesheets = re.findall(r'<link rel="stylesheet"[^>]*href="([^"]+)"', head)
+        assert len(stylesheets) == len(set(stylesheets))
+        styles = []
+        for href in stylesheets:
+            assert href.startswith("/_assets/")
+            styles.append((docs / href.lstrip("/")).read_text(encoding="utf-8"))
+        css = "\n".join(styles)
+        for selector in (".home-hero-inner", ".hero-details", ".round-card", ".round-score"):
+            assert selector in css
+        assert not re.search(r'<link[^>]*href="[^"]*echarts[^"]*\.js"', head)
+    assert not (docs / ".vite").exists()
+
+
 def test_static_route_manifest_covers_sitemap_and_evidence_routes() -> None:
     bundle = split_publication(_published_dataset())
     manifest = _static_route_manifest(bundle)

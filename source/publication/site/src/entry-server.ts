@@ -9,6 +9,7 @@ export { homepageStructuredData } from "./lib/structured-data";
 
 export interface RenderedPublicationPage {
   appHtml: string;
+  modules: string[];
 }
 
 export const renderPublicationPage = async (
@@ -24,5 +25,7 @@ export const renderPublicationPage = async (
   );
   await router.push(route);
   await router.isReady();
-  return { appHtml: await renderToString(app) };
+  const context: { modules?: Set<string> } = {};
+  const appHtml = await renderToString(app, context);
+  return { appHtml, modules: [...(context.modules ?? [])] };
 };

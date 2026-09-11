@@ -363,6 +363,11 @@ shows a reload notice without removing static results. Offscreen charts retain p
 resize only when dimensions change, and cached route activation resumes observation.
 The document preloads the locally bundled normal Latin display and body fonts. Build-time URL
 resolution preserves the configured base path and content-hashed asset names.
+Each prerendered page also links the CSS for its rendered Vue components directly in its head,
+using Vite's SSR asset manifest. The browser applies these styles before showing the initial
+content, so slow JavaScript cannot expose an unstyled intermediate layout. Complete content,
+ordinary links, and search metadata remain in the HTML, including without JavaScript.
+Hydration keeps that content in place. The asset manifest remains a build-only file.
 
 Each edition homepage and its editorial/result pages, each selected official run summary, and every
 subject summary are rendered as complete HTML. Run pages include model identity, provider,
