@@ -6,6 +6,50 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-09-27",
+    displayDate: "27 September 2026",
+    title: "Claude Opus 5.5 (high) added.",
+    summary:
+      "Edition 1.1 question score: 15.0 (lower is better). It completed 29 of 30 trials successfully.",
+    link: {
+      type: "run",
+      executionId: "BX-20260926-B-0003-official-M0030-001",
+    },
+  },
+  {
+    date: "2026-09-27",
+    displayDate: "27 September 2026",
+    title: "GPT-6 Sol (high) added.",
+    summary:
+      "Edition 1.1 question score: 18.0 (lower is better). It completed 30 of 30 trials successfully.",
+    link: {
+      type: "run",
+      executionId: "BX-20260926-B-0003-official-M0029-001",
+    },
+  },
+  {
+    date: "2026-09-27",
+    displayDate: "27 September 2026",
+    title: "GPT-6 Luna (high) added.",
+    summary:
+      "Edition 1.1 question score: 21.2 (lower is better). It completed 24 of 30 trials successfully.",
+    link: {
+      type: "run",
+      executionId: "BX-20260926-B-0003-official-M0028-001",
+    },
+  },
+  {
+    date: "2026-09-27",
+    displayDate: "27 September 2026",
+    title: "Grok 4.7 (high) added.",
+    summary:
+      "Edition 1.1 question score: 22.2 (lower is better). It completed 22 of 30 trials successfully.",
+    link: {
+      type: "run",
+      executionId: "BX-20260926-B-0003-official-M0027-001",
+    },
+  },
+  {
     date: "2026-09-05",
     displayDate: "5 September 2026",
     title: "GPT-6 Astra (high) added.",
