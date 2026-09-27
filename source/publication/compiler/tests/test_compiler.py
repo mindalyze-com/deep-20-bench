@@ -8,7 +8,7 @@ from typing import Literal
 
 import pytest
 
-from deep20_publication.cli import _load_run, _read_json, _read_yaml
+from deep20_publication.cli import _load_run, _read_json, _read_yaml, read_publication_config
 from deep20_publication.compiler import (
     _average,
     _public_run_comparison,
@@ -22,7 +22,6 @@ from deep20_publication.compiler import (
 )
 from deep20_publication.loader import (
     parse_guesser_violation_snapshot,
-    parse_publication_config,
     parse_subject_catalog,
 )
 from deep20_publication.models import (
@@ -1197,10 +1196,7 @@ def test_qualification_requires_full_completed_trial_coverage() -> None:
 
 def test_compiler_uses_run_model_metadata_and_requires_all_trials() -> None:
     loaded, cohort = _qualification_context()
-    config = parse_publication_config(
-        _read_yaml(REPOSITORY / "config" / "publication.yml"),
-        "config/publication.yml",
-    )
+    config = read_publication_config(REPOSITORY / "config/publication.yml")
     config = config.model_copy(update={"cohorts": (cohort,), "default_edition_id": cohort.edition_id})
     subjects, subject_catalog_hash = parse_subject_catalog(
         _read_yaml(REPOSITORY / "config" / "subjects.yaml"),
@@ -1567,7 +1563,7 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     assert "Exact Guesser provider text" in episode_source
     assert "1 · Guesser asks" in episode_source
     assert (
-        '2 · {{ turn.adjudicator === "oracle" ? "Adjudication" : "Validator" }} returns'
+        '2 · {{ turn.adjudicator === "oracle" ? "Answer check" : "Validator" }} returns'
         in episode_source
     )
     assert episode_source.index("Recorded Guesser output") < episode_source.rindex(
@@ -1610,11 +1606,11 @@ def test_cost_documentation_excludes_superseded_infrastructure_attempts() -> Non
 
     cost_copy = " ".join(cost_source.split())
     methodology_copy = " ".join(methodology_source.split())
-    assert "Superseded infrastructure attempts and support costs are excluded." in cost_copy
-    assert "do not increase the published model or benchmark cost" in cost_copy
+    assert "Earlier attempts replaced after test system failures and support costs are excluded." in cost_copy
+    assert "excluded from the cost comparison" in cost_copy
     assert "Excluded repair overhead" in cost_copy
     assert "Excluded repair overhead" in run_source
-    assert "do not increase public model or benchmark costs" in methodology_copy
+    assert "excluded from the public cost comparison" in methodology_copy
 
 
 def test_generated_homepage_matches_the_official_result_state() -> None:
@@ -1680,59 +1676,52 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "not a definitive ranking" not in homepage
     assert "Use GitHub Discussions to suggest what we should test next." in homepage
     assert "https://github.com/mindalyze-com/deep-20-bench/discussions" in homepage
-    assert "Use all prior questions and answers to plan the next question." in homepage
+    assert "Use all earlier questions and answers to plan the next question." in homepage
     assert "The Guesser asks. Three roles determine the answer." in homepage
-    assert "The Guesser is the LLM under test" in homepage
+    assert "The Guesser is the model being tested" in homepage
     assert "the Oracle must search the live web and cite evidence" in homepage
-    assert "independent second decision on every" in homepage
-    assert "If the decisions disagree, a blind" in homepage
-    assert "The Guesser is isolated from this process" in homepage
+    assert "A Reviewer checks every YES or NO" in homepage
+    assert "If their answers differ, a" in homepage
+    assert "The Guesser receives only the" in homepage
     assert "Read the full game and answer-checking method" in homepage
     assert "hash: '#answer-checks'" in homepage
     assert "Early runs exposed rare but basic Oracle errors" not in homepage
-    assert "Edition {{ manifest.active_cohort.edition_label }} method." in methodology
+    assert "How Deep20Bench works" in methodology
+    assert "Method · Edition {{ manifest.active_cohort.edition_label }}" in methodology
     assert '<IllustrativeRoundExample :qualified="qualified" />' in homepage
     assert '<IllustrativeRoundExample :qualified="qualified" />' in methodology
     assert "Question score (single round)" in illustrative_round
     assert "The correct guess is excluded." in illustrative_round
-    assert "Questions and guesses follow separate paths." in methodology
-    assert (
-        "For a fresh answer, the Oracle must search the live web instead of relying on memory"
-        in " ".join(methodology.split())
-    )
-    assert "without seeing the Oracle answer" in methodology
-    assert "without seeing either answer" in methodology
-    assert "Oracle UNKNOWN" in methodology
-    assert "Guess Validator" in methodology
-    assert "The Guesser is fully isolated from adjudication." in methodology
-    assert (
-        'contains only the broad category, its own prior actions, final {{ answers.join(", ") }}'
-        in methodology
-    )
-    assert "searches, evidence, citations, adjudicator" in methodology
-    assert "provider traces, or private artifacts" in methodology
-    assert "Early runs exposed rare but basic Oracle errors" in methodology
-    assert "One round becomes {{ totalTrials }} isolated trials." in methodology
-    assert "subject-independent" in methodology
-    assert "Twenty Questions names the game, not the scoring limit" in methodology
-    assert "Every additional" in methodology
-    assert "question increases the trial value" in methodology
-    assert "Subject design and contamination" in methodology
-    assert "This small subject set does not support broad conclusions" in methodology
-    assert "does not claim that this public cohort is resistant" in methodology
-    assert "Future cohorts will aim to include more subjects" in methodology
-    assert "not a general ranking of model intelligence" in methodology
-    assert "Question score is the average counted questions." in methodology
-    assert "questions used · failed trial = {{ penalty }}" in methodology
-    assert "One divided by T, times the sum of trial scores" in methodology
-    assert "One divided by S, times the sum of subject averages" in methodology
-    assert "number of trials for the subject" in methodology
-    assert "number of subjects" in methodology
+    methodology_copy = " ".join(methodology.split())
+    for required_explanation in (
+        "Check answers before giving a clue.",
+        "It must search instead of relying on memory.",
+        "without seeing the Oracle’s answer",
+        "It sees neither earlier answer",
+        "Unknown is final; every other answer needs a second check",
+        "Guess Validator",
+        "The Guesser cannot see the answer checks.",
+        "It sees the category, its own questions and guesses, and the final answers",
+        "provider logs, or private files",
+        "reveals nothing about the hidden subject",
+        "Every extra question raises the score",
+        "not random, balanced, or representative",
+        "do not rank general intelligence",
+        "training data; we cannot rule out an advantage",
+        "Future editions aim to include more subjects",
+        "Every subject has equal weight",
+        "questions used · failed trial = {{ penalty }}",
+        "One divided by T, times the sum of trial scores",
+        "One divided by S, times the sum of subject averages",
+        "number of trials for the subject",
+        "number of subjects",
+    ):
+        assert required_explanation in methodology_copy
     assert "A score built from repeated trials." not in homepage
     assert "Each model completes the full subject set several times." not in homepage
     assert "Only complete runs with accepted settings enter the leaderboard." in methodology
     assert "Publication happens after play is finished." in methodology
-    assert "Published data never returns to the Guesser." in methodology
+    assert "published data never returns to the Guesser." in methodology_copy
     assert "questionScoreChartSummary" in homepage
     assert "companion plot shows each exact" in result_chart
     assert "three bands divide the displayed width scale" in result_chart
@@ -1947,10 +1936,7 @@ def test_pre_question_score_run_compiles_without_migration() -> None:
             str(snapshot_path),
         ),
     )
-    config = parse_publication_config(
-        _read_yaml(REPOSITORY / "config" / "publication.yml"),
-        "config/publication.yml",
-    )
+    config = read_publication_config(REPOSITORY / "config/publication.yml")
     subjects, subject_hash = parse_subject_catalog(
         _read_yaml(REPOSITORY / "config" / "subjects.yaml"),
         "config/subjects.yaml",
@@ -2058,8 +2044,8 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "min: 0" in stacked_costs
     assert "scale: true" not in stacked_costs
     assert "row.values[segmentIndex] ?? 0" in stacked_costs
-    assert "Exact adjudication breakdown" in stacked_costs
-    assert "Exact adjudication costs by model" in stacked_costs
+    assert "Exact answer-checking costs" in stacked_costs
+    assert "Exact answer-checking costs by model" in stacked_costs
     assert 'scope="row"' in stacked_costs
     assert "Pareto-efficient" in efficiency_scatter
     assert "Diamond" in efficiency_marker_legend
@@ -2290,7 +2276,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "Total benchmark cost" in cost
     assert 'direction-label="Total benchmark cost by component"' in cost
     assert 'key: "adjudication"' in cost
-    assert 'label: "Adjudication"' in cost
+    assert 'label: "Answer checks"' in cost
     assert 'label: "Reviewer"' in cost
     assert 'label: "Judge"' in cost
     assert 'label: "Validator"' in cost
@@ -2327,8 +2313,8 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert ".result-chart-panel > .panel-heading" in app_css
     assert "@media (min-width: 761px)" in app_css
     assert "border-bottom: 0;" in app_css
-    assert "average penalized trial values" in efficiency
-    assert "normalized question score 0.06" in efficiency
+    assert "averages round scores, including the fixed scores for failed rounds" in efficiency
+    assert "scaled question score 0.06" in efficiency
     assert "Guesser cost range" in efficiency
     assert 'label="Ideal distance"' in efficiency
     assert 'label="Trade-off map"' in efficiency
@@ -2341,7 +2327,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "Close expanded graph" in efficiency
     assert "chart-expand-icon" in efficiency
     assert "border-bottom-color: currentColor" in efficiency
-    assert '<h3 id="tradeoff-title">Normalized cost and question score.</h3>' in efficiency
+    assert '<h3 id="tradeoff-title">Cost and question score on a shared scale.</h3>' in efficiency
     assert efficiency.count("result-chart-panel") == 1
     assert 'color="efficiency"' in efficiency
     assert "ideal_distance_rank" in efficiency

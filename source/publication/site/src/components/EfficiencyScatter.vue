@@ -196,7 +196,7 @@ const chartOption = (width: number): EChartsOption => {
     animationDuration: 480,
     aria: {
       enabled: true,
-      description: `Normalized cost and question-score trade-off. Lower and further left is better. Curves show equal ideal distance and diamonds mark Pareto-efficient models. ${props.items
+      description: `Cost and question score on a shared scale. Lower and further left is better. Curves show equal ideal distance and diamonds mark Pareto-efficient models. ${props.items
         .map(
           (item) =>
             `${item.label}, ideal distance ${item.distanceDisplay}, rank ${item.rank}, ${item.scoreDisplay} questions, ${item.costDisplay} per episode${item.paretoEfficient ? ", Pareto-efficient" : ""}`,
@@ -219,7 +219,7 @@ const chartOption = (width: number): EChartsOption => {
       ...chartValueAxis(
         theme,
         axisFontSize,
-        "Guesser cost per episode · normalized position",
+        "Guesser cost per episode · position on the shared scale",
         mobile ? 43 : 48,
         (value) => moneyEpisode(rawValueAt(value, costMinimum, costMaximum)),
       ),
@@ -232,7 +232,7 @@ const chartOption = (width: number): EChartsOption => {
       ...chartValueAxis(
         theme,
         axisFontSize,
-        "Question score · normalized position",
+        "Question score · position on the shared scale",
         mobile ? 40 : 51,
         (value) => number(rawValueAt(value, scoreMinimum, scoreMaximum), 2),
       ),

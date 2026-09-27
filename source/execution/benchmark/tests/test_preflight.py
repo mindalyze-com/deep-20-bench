@@ -14,7 +14,7 @@ from deep20_benchmark.preflight import (
 )
 from deep20_game.errors import GameProviderError
 from deep20_game.models import GameProviderExchange, GameProviderRequest
-from deep20_oracle.config import ProviderRouting, TokenLimitParameter
+from deep20_oracle.config import PromptProfile, ProviderRouting, TokenLimitParameter
 from deep20_oracle.models import ProviderTrace
 from deep20_oracle.util import canonical_json
 
@@ -383,7 +383,8 @@ class FakeCanaryProvider:
         self.closed = True
 
 
-def test_guesser_canary_accepts_a_valid_opening_action() -> None:
+@pytest.mark.parametrize("profile", tuple(PromptProfile))
+def test_guesser_canary_accepts_a_valid_opening_action(profile: PromptProfile) -> None:
     root = Path(__file__).parents[4]
     catalog = load_model_catalog(root / "config" / "models.yaml")
     entry = catalog.model(BenchmarkModelId("M-0001"))
@@ -400,14 +401,18 @@ def test_guesser_canary_accepts_a_valid_opening_action() -> None:
         )
     )
 
-    result = run_guesser_canary(entry, api_key="unused", provider=provider)
+    result = run_guesser_canary(entry, api_key="unused", provider=provider, profile=profile)
 
     assert result.valid is True
     assert result.action == "ASK"
     assert result.error_code is None
     assert provider.closed is True
     request = provider.requests[0]
-    assert request.prompt_cache_key == "deep20-guesser-canary-v1"
+    assert len(request.prompt_cache_key) <= 64
+    if profile is PromptProfile.STANDARD:
+        assert request.prompt_cache_key == "deep20-guesser-canary-v1"
+    else:
+        assert request.prompt_cache_key != "deep20-guesser-canary-v1"
     assert '"category":"synthetic_entity"' in request.messages[1]["content"]
     assert "PRIVATE" not in canonical_json(result.model_dump(mode="json"))
 

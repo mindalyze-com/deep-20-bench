@@ -127,7 +127,7 @@ const componentRows = [
   { key: "primary_oracle", label: "Primary Oracle", color: roleColors.oracle },
   {
     key: "adjudication",
-    label: "Adjudication",
+    label: "Answer checks",
     color: chartTheme.results.stability,
   },
 ] as const;
@@ -206,8 +206,9 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
                 <h2 id="cost-chart-title">Guesser cost across the run.</h2>
               </div>
               <p>
-                Each bar adds the recorded provider cost of Guesser calls in the retained terminal
-                attempts. Superseded infrastructure attempts and support costs are excluded.
+                Each bar adds the recorded provider cost of Guesser calls in each round's final
+                recorded attempt. Earlier attempts replaced after test system failures and
+                support costs are excluded.
               </p>
               <ResultHelp label="Cost metric explanations">
                 <InfoPopover label="Guesser and support cost">
@@ -218,16 +219,16 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
                 </InfoPopover>
                 <InfoPopover label="Per episode">
                   <p>
-                    Per-episode values divide the recorded run cost by the number of terminal
-                    episodes. This keeps runs comparable if cohort sizes change.
+                    Cost per round divides the recorded run cost by the number of finished rounds.
+                    This keeps runs comparable when they have different numbers of subjects or rounds.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="Repaired trials">
                   <p>
-                    A repaired trial publishes only its retained terminal attempt. Superseded
-                    infrastructure attempts remain in the signed benchmark audit but do not
-                    increase the published model or benchmark cost. Any excluded repair overhead
-                    is listed beneath the run total.
+                    A repaired round publishes only its final recorded attempt. Earlier attempts
+                    replaced after test system failures remain in the saved records but are
+                    excluded from the cost comparison. These extra repair costs are listed
+                    beneath the run total.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="How this page is ordered">
@@ -257,7 +258,7 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
               </div>
               <p>
                 Bar length shows the retained terminal attempts' benchmark cost. Color separates
-                the Guesser, Primary Oracle, and Adjudication. Expand the exact breakdown to
+                the Guesser, Primary Oracle, and answer checks. Expand the exact breakdown to
                 compare Reviewer, Judge, and Validator cost.
               </p>
             </header>
@@ -336,7 +337,7 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
 
         <p class="results-note">
           Costs are provider-reported values for retained terminal attempts in the selected
-          official runs. Superseded infrastructure attempts are excluded. A missing or unreported
+          official runs. Earlier attempts replaced after test system failures are excluded. A missing or unreported
           provider price can affect the comparison.
         </p>
     </ResultsContent>

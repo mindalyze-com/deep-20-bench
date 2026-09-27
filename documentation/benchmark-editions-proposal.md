@@ -1,5 +1,10 @@
 # Benchmark edition design record
 
+Edition 1.2 is an explicit, inactive [backend refactor draft](edition-1.2-draft.md).
+`config/editions.yaml` is the shared registry. It leaves 1.1 current and 1.0 previous.
+Private draft execution and preview do not activate a public edition or alter released
+qualification rules. Activation requires a separate publication decision.
+
 Status: implemented locally on 6 September 2026. This file preserves the original proposal,
 including its pre-implementation repository snapshot and planned work. It is a historical
 design record, not the current implementation guide. Present and future tense below refer
@@ -140,7 +145,11 @@ Make homepage examples, methodology, answer legends, scoring copy, result counts
 
 This change consumes completed results. It does not add edition labels to Guesser history, requests, variation tokens, provider metadata, sessions, or prompt caches. It does not rewrite signed runs or change game protocol 9 merely to display edition 1.1.
 
-The current execution configuration rejects `qualified_v1` in `official` mode. Publishing a validated completed run under a declared edition is separate from changing execution-mode rules. Preserve the recorded experimental mode in provenance; qualification follows the explicit release policy. Decide any future official-mode support in a separate execution change, with its own required specifications and isolation tests. Do not silently change modes or claim diagnostics were official executions.
+At the time of this proposal, execution rejected `qualified_v1` in `official` mode. The later
+edition-profile implementation now supports official edition 1.1 launches with five answers
+and three trials per subject; see the [benchmark README](../source/execution/benchmark/README.md).
+Historical experimental modes remain intact in signed provenance. Publication qualification
+still follows the explicit release policy; earlier diagnostics are not relabelled.
 
 Provider prompt caching is not applicable to this publication feature: no LLM call is added. Browser caching stores only generated public reports, isolated from execution. Keep the publication dependency and public-field allowlist tests. No prompt-policy, scoring, or runtime retry changes are part of this proposal.
 

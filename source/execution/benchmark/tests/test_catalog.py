@@ -212,6 +212,6 @@ def test_five_answer_experiment_keeps_models_and_limits_default_repetitions() ->
         type(variant).model_validate({
             **variant.model_dump(), "game_policy": original.game_policy,
         })
-    with pytest.raises(ValidationError, match="require experimental"):
-        catalog.benchmark(BenchmarkId("B-0003"), benchmark_mode=BenchmarkMode.OFFICIAL,
-            subject_ids=(SubjectId("T-0003"),))
+    release = catalog.benchmark(BenchmarkId("B-0003"), benchmark_mode=BenchmarkMode.OFFICIAL,
+                                subject_ids=(SubjectId("T-0001"),))
+    assert release.game_policy.benchmark_mode is BenchmarkMode.OFFICIAL

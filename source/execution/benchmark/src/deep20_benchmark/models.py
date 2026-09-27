@@ -24,6 +24,8 @@ from deep20_oracle.models import (
 )
 from pydantic import ConfigDict, Field, RootModel, field_validator, model_validator
 
+from .backend_config import RuntimeSnapshot
+from .edition_models import EditionExecution
 from .history_models import OracleHistoryLoad, OracleHistorySnapshot
 
 ERROR_OUTPUT_PREVIEW_MAX_CHARACTERS = 250
@@ -85,6 +87,7 @@ class BenchmarkEventId(_Identifier):
 
 
 class BenchmarkRequest(StrictModel):
+    edition: EditionExecution | None = Field(default=None, exclude_if=lambda v: v is None)
     benchmark_id: BenchmarkId
     execution_id: BenchmarkExecutionId
     model_id: BenchmarkModelId
@@ -94,6 +97,15 @@ class BenchmarkRequest(StrictModel):
     target_ids: tuple[SubjectId, ...] = ()
     iterations_override: int | None = Field(default=None, ge=1, le=100)
     base_seed: int = Field(default=0, ge=0, le=(2**31) - 1)
+    runtime: RuntimeSnapshot | None = Field(default=None, exclude_if=lambda v: v is None)
+
+    @model_validator(mode="after")
+    def runtime_is_experimental(self) -> BenchmarkRequest:
+        if self.runtime is not None and self.benchmark_mode is BenchmarkMode.OFFICIAL:
+            raise ValueError("draft runtime configurations require experimental mode")
+        if self.runtime is not None and self.runtime.edition.benchmark_id != str(self.benchmark_id):
+            raise ValueError("edition does not match the selected benchmark")
+        return self
 
     @model_validator(mode="before")
     @classmethod
@@ -131,8 +143,8 @@ class BenchmarkDefinitionSnapshot(StrictModel):
     @model_validator(mode="after")
     def experimental_prompts_only(self) -> BenchmarkDefinitionSnapshot:
         if self.game_policy.benchmark_mode is BenchmarkMode.OFFICIAL and (
-            self.game_policy.prompt_profile is not PromptProfile.STANDARD
-            or self.oracle_configuration.prompt_profile is not PromptProfile.STANDARD
+            self.game_policy.prompt_profile is PromptProfile.CONCISE_V1
+            or self.oracle_configuration.prompt_profile is PromptProfile.CONCISE_V1
         ):
             raise ValueError("revised prompts require experimental benchmark mode")
         validate_prompt_profiles(
@@ -217,7 +229,7 @@ class BenchmarkRunArtifactReferences(StrictModel):
 class BenchmarkManifest(StrictModel):
     oracle_contract_hash: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$", exclude_if=lambda v: v is None)
     oracle_cache: OracleHistorySnapshot | None = Field(default=None, exclude_if=lambda v: v is None)
-    schema_version: Literal[3] = 3
+    schema_version: Literal[3, 4] = 3
     request: BenchmarkRequest
     definition: BenchmarkDefinitionSnapshot
     model: BenchmarkModelSnapshot
@@ -228,13 +240,15 @@ class BenchmarkManifest(StrictModel):
 
     @model_validator(mode="after")
     def matching_benchmark_mode(self) -> BenchmarkManifest:
+        if (self.schema_version == 4) != (self.request.runtime is not None):
+            raise ValueError("manifest version 4 is required exactly for draft runtimes")
         if self.request.benchmark_mode is not self.definition.game_policy.benchmark_mode:
             raise ValueError("request benchmark_mode differs from definition game policy")
         return self
 
 
 class TrialAuditManifest(StrictModel):
-    schema_version: Literal[3] = 3
+    schema_version: Literal[3, 4] = 3
     identity: TrialIdentity
     subject_catalog_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     subject: Subject
@@ -587,6 +601,8 @@ class OracleContractRevision(StrictModel):
 
 
 class BenchmarkRun(StrictModel):
+    edition: EditionExecution | None = Field(default=None, exclude_if=lambda v: v is None)
+    runtime: RuntimeSnapshot | None = Field(default=None, exclude_if=lambda v: v is None)
     oracle_contract_revisions: tuple[OracleContractRevision, ...] = Field(
         default=(), exclude_if=lambda v: not v,
     )
@@ -610,7 +626,7 @@ class BenchmarkOutcome(StrictModel):
 
 
 class BenchmarkSummaryArtifact(StrictModel):
-    schema_version: Literal[3] = 3
+    schema_version: Literal[3, 4] = 3
     execution_id: BenchmarkExecutionId
     benchmark_id: BenchmarkId
     display_name: str = Field(min_length=1, max_length=160)
@@ -623,13 +639,19 @@ class BenchmarkSummaryArtifact(StrictModel):
 
 
 class BenchmarkResult(StrictModel):
-    schema_version: Literal[3] = 3
+    schema_version: Literal[3, 4] = 3
     run: BenchmarkRun
     outcome: BenchmarkOutcome
     summary: AggregateSummary
     subjects: tuple[SubjectBenchmarkResult, ...]
     artifacts: BenchmarkRunArtifactReferences
     integrity_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def runtime_version(self) -> BenchmarkResult:
+        if (self.schema_version == 4) != (self.run.runtime is not None):
+            raise ValueError("result version 4 is required exactly for draft runtimes")
+        return self
 
 
 class ExecutionStatus(StrEnum):

@@ -143,7 +143,7 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
                     repeated trials.
                   </p>
                   <p>
-                    It describes uncertainty in the aggregate mean. It is not a prediction
+                    It describes uncertainty in the average score. It is not a prediction
                     interval for an individual trial.
                   </p>
                 </InfoPopover>
@@ -242,7 +242,7 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
           <MetricDefinitionCard
             title="CI width."
             formula="CI width = upper 95% CI bound − lower 95% CI bound"
-            interpretation="A smaller CI width means the model produced more consistent aggregate results across the current repeated trials."
+            interpretation="A smaller CI width means the model produced more consistent average scores across the current repeated rounds."
             detail-summary="Steps, example, interpretation, and limits"
           >
             <ol>

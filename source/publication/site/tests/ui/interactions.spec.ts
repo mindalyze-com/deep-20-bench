@@ -49,18 +49,18 @@ test("tables and horizontal breakdowns expose accessible names and focus", { tag
 
   await page.goto("results/cost/");
   await waitForPublication(page);
-  await page.getByText("Exact adjudication breakdown", { exact: true }).click();
+  await page.getByText("Exact answer-checking costs", { exact: true }).click();
   const breakdown = page.locator(".stacked-chart-breakdown-table-wrap");
   await expect(breakdown).toHaveAttribute("tabindex", "0");
   await expect(breakdown).toHaveAttribute(
     "aria-label",
-    "Scrollable exact adjudication cost breakdown",
+    "Scrollable exact answer-checking costs",
   );
 
   await page.goto(episodePath);
   await waitForPublication(page);
   await page.getByRole("tab", { name: /Usage/ }).click();
-  await expect(page.locator(".telemetry-table caption")).toHaveText("Component telemetry");
+  await expect(page.locator(".telemetry-table caption")).toHaveText("Model usage totals");
 
   await page.goto("results/");
   await waitForPublication(page);
@@ -535,13 +535,13 @@ test("result navigation, tables, and charts use the shared results layout", { ta
   const stackedLegend = page.locator(".stacked-chart figcaption");
   await expect(stackedLegend).toContainText("Guesser");
   await expect(stackedLegend).toContainText("Primary Oracle");
-  await expect(stackedLegend).toContainText("Adjudication");
+  await expect(stackedLegend).toContainText("Answer checks");
   await expect(stackedLegend).not.toContainText("Reviewer");
   await expect(stackedLegend).not.toContainText("Judge");
   await expect(stackedLegend).not.toContainText("Validator");
   const adjudicationBreakdown = page.locator(".stacked-chart-breakdown");
   await expect(adjudicationBreakdown.locator("summary")).toHaveText(
-    "Exact adjudication breakdown",
+    "Exact answer-checking costs",
   );
   await expect(adjudicationBreakdown.locator("table")).toBeHidden();
   await adjudicationBreakdown.locator("summary").click();

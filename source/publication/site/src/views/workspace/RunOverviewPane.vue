@@ -272,7 +272,7 @@ const roleGuide = runRoleOrder.map((role) => ({
         />
 
         <section class="workspace-card provenance-card">
-          <p class="eyebrow">Provenance</p>
+          <p class="eyebrow">Run details</p>
           <dl>
             <div><dt>Execution</dt><dd><code>{{ run.execution_id }}</code></dd></div>
             <div><dt>Model ID</dt><dd><code>{{ run.model_id }}</code></dd></div>

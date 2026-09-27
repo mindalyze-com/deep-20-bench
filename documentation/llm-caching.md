@@ -1,5 +1,35 @@
 # LLM caching
 
+## Edition launch contracts
+
+Official edition 1.1 adds launch checks and provenance without changing prompts, sampling,
+sessions or prefix-cache keys. Edition metadata never enters model inputs. Existing prompt
+caching and ASK-reuse checks remain; no new response cache or measured savings are introduced.
+
+## Inactive edition 1.2
+
+The [draft backend architecture](edition-1.2-draft.md) retains OpenRouter's configured
+prefix-cache policy. Its exact-prefix keys additionally separate edition and role binding;
+Guesser keys contain no privileged role configuration. Oracle factual contracts include the
+draft role and research settings. Old default configurations omit these new namespace fields,
+preserving released hashes and request payloads.
+
+Ollama prefix caching is unmeasured, interactive model caching is outside the benchmark's
+control, and deterministic mocks need no cache. None adds padding or response caching.
+Record actual reported cache tokens and billing; local hardware and operator costs remain
+unknown. Synthetic and interactive executions cannot read or seed factual answer caches.
+Fully adjudicated automated reuse still requires the existing explicit policies and compatible
+contracts. Local model digests are pinned within an execution; cross-execution cache reuse
+also requires compatible model identity and must not assume an unchanged mutable model tag.
+
+Non-standard Guesser startup canaries now hash their role and prompt version into a
+64-character cache key. The qualified key previously contained 78 characters and OpenAI
+rejected it before generation (`string_above_max_length`). The standard canary key and game
+cache keys remain unchanged. The hash preserves separate canary/profile namespaces; prompts,
+schemas, sessions, sampling and game behavior do not change. This adds no response reuse,
+padding or claimed savings. The Luna direct-Codex experiment retains the rejected startup
+attempts in its private cost accounting and uses a fresh execution after this fix.
+
 The `per_subject_history_v1` discovery policy expands benchmark `historical_ask_v1` inputs to
 compatible completed games found when each subject starts. It changes discovery timing only:
 answer validation, blind projections, factual prompts, role schemas, routes, sessions, prices,
@@ -175,6 +205,13 @@ a paid launch. Changed lengths may affect eligibility. No padding, response reus
 savings are claimed; this revision has only local validation.
 
 ## Project rule
+
+The on-demand direct-Codex experiment identifies injected support providers as
+`codex_interactive`. It leaves the registered Gemini Guesser's automatic prefix caching,
+prompt, sampling, and telemetry unchanged. Codex support-role caching and tokens are not
+controlled or measured by the local adapter. It enables no ASK answer reuse, response caching,
+padding, or shared Guesser/support session. No savings are assumed. Its private protocol
+records the exact route assessment, actual Gemini usage, and unmetered support-cost limitation.
 
 The shared Guesser category guide changes the fixed prefix in all three profiles. Their
 versions are now `stateful-category-guesser-v14-category-guide`,
@@ -490,6 +527,39 @@ discounts, latency, and billed costs remain unmeasured. Recheck the route before
 The [Contributor tier](https://openrouter.ai/meta/muse-spark-1.3-contributor) permits Meta to use
 submitted prompts and outputs to improve its products; this registration retains that tier
 explicitly in its model slug and display name.
+
+Grok 4.7 (`M-0027`) uses `x-ai/grok-4.7` pinned to xAI with high reasoning, strict JSON
+Schema output, and provider seed support. On 26 September 2026, the
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/x-ai/grok-4.7/endpoints)
+advertised $1.60 input and $0.40 cache reads per million tokens on the standard xAI route,
+but no separate cache-write price, minimum prefix, or retention guarantee. The configuration
+therefore keeps automatic best-effort caching with the existing 1,024-token and 300-second
+observation defaults and a 1.00 write multiplier. No padding, explicit storage, or response
+reuse is added, and no cache saving is assumed. The opening-turn canary passed the exact route
+and strict action contract with 322 output tokens and 6,044 milliseconds of latency.
+
+GPT-6 Luna (`M-0028`) and GPT-6 Sol (`M-0029`) use their exact OpenAI slugs, pinned to
+OpenAI with high reasoning, strict JSON Schema output, and provider seed support. On
+26 September 2026, their
+[Luna](https://openrouter.ai/api/v1/models/openai/gpt-6-luna/endpoints) and
+[Sol](https://openrouter.ai/api/v1/models/openai/gpt-6-sol/endpoints) endpoint metadata
+advertised standard input/cache-read prices of $0.10/$0.01 and $2/$0.20 per million tokens.
+OpenAI documents cache writes at 1.25 times input and a 30-minute cache option for GPT-5.6 and
+later. Both configurations use a 1,024-token minimum, a 1,800-second observation window, and
+the 1.25 write multiplier. Keep the fixed prefix and append-only history without padding,
+explicit breakpoints, or response reuse. The opening-turn canaries passed the exact routes and
+strict action contract: Luna used 204 output tokens and 3,523 milliseconds; Sol used 143 output
+tokens and 4,870 milliseconds. These single calls do not measure prefix reuse or savings.
+
+Claude Opus 5.5 (`M-0030`) uses `anthropic/claude-opus-5.5` pinned to Anthropic with high
+reasoning, strict JSON Schema output, and no provider seed. Anthropic documents a 512-token
+minimum, five-minute cache writes at 1.25 times input, and cache reads at $0.20 per million
+tokens. OpenRouter advertised the matching $4 input and $0.20 cache-read prices on
+26 September 2026. The configuration uses `ephemeral_5m`, the documented 512-token minimum,
+a 300-second lifetime, and the 1.25 write multiplier. Keep the existing exact-prefix policy
+without padding or response reuse. The opening-turn canary passed the exact route and strict
+action contract with 100 output tokens and 5,354 milliseconds of latency. It does not establish
+cache reuse or savings.
 
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two

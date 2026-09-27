@@ -64,12 +64,13 @@ const accessibleLabel = computed(() => {
       label="How this is scored"
     >
       <p class="score-help-copy">
-        Trial values are averaged within each subject, then across subjects. A failed trial
-        receives the declared failure penalty.
+        Round scores are averaged for each subject, then across subjects. A failed round
+        receives the fixed failure score.
       </p>
       <p v-if="confidenceInterval !== null" class="score-help-copy">
-        The interval estimates repeated-trial uncertainty on the fixed benchmark subjects. It
-        uses a stratified Welch t interval over the trials within each subject.
+        The 95% confidence interval estimates uncertainty in the average score from repeated
+        rounds on these subjects. A wider interval means less consistent results. It does
+        not predict scores on new subjects.
       </p>
     </InfoPopover>
   </div>

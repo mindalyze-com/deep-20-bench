@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from decimal import Decimal
 
+from deep20_backends.models import Role
 from deep20_game.config import BenchmarkMode
 from deep20_game.models import (
     ActionType,
@@ -37,7 +38,10 @@ from .artifacts import (
     BenchmarkTrialSink,
     signed_trial_manifest,
 )
+from .backend_config import RuntimeSnapshot
+from .backend_resolution import resolved_definition, resolved_model
 from .catalog import BenchmarkCatalog, ModelCatalog
+from .edition_profiles import validate_execution
 from .history_cache import LazyOracleHistoryCache
 from .logging import BLANK_LINE_BEFORE_ATTRIBUTE
 from .models import (
@@ -322,10 +326,12 @@ class _TrialObserver(ExecutionObserver):
         runner: BenchmarkRunner,
         identity: TrialIdentity,
         attempt_number: int,
+        runtime: RuntimeSnapshot | None = None,
     ):
         self.runner = runner
         self.identity = identity
         self.attempt_number = attempt_number
+        self.runtime = runtime
         self._observed = _MutablePartialMetrics()
 
     def observe(self, event: GameProgressEvent) -> None:
@@ -431,6 +437,14 @@ class _TrialObserver(ExecutionObserver):
             state,
         )
         source = event.turn.adjudication.cache_source
+        if self.runtime is not None:
+            role = Role.ORACLE if event.turn.action.action is ActionType.ASK else Role.VALIDATOR
+            logger.info("benchmark.draft_turn turn=%d action=%s answer=%s backend=%s synthetic=%s "
+                        "searches=%d metering=reported_subtotal",
+                        event.turn.turn_number, event.turn.action.action.value, event.turn.adjudication.answer,
+                        self.runtime.roles.binding(role).implementation, self.runtime.roles.synthetic,
+                        getattr(event.adjudicator_metrics, "search_count", 0))
+            return
         source_part = " answer_source=live"
         if source is not None:
             if source.policy != "same_episode_ask_v1":
@@ -542,12 +556,16 @@ class BenchmarkRunner:
         if existing_manifest is not None and existing_manifest.oracle_cache is not None and self.oracle_cache is None:
             raise ValueError("cannot disable Oracle history on an existing cached execution")
         request = self._resolve_request(request, existing_manifest=existing_manifest)
+        if request.runtime is not None and not request.runtime.roles.factual_cache_eligible and self.oracle_cache is not None:
+            raise ValueError("factual caches require automated, non-synthetic roles and pinned local model digests")
         definition = self.benchmark_catalog.benchmark(
             request.benchmark_id,
             benchmark_mode=request.benchmark_mode,
             subject_ids=request.target_ids,
             iterations_override=request.iterations_override,
         )
+        if request.runtime is not None:
+            definition = resolved_definition(definition, request.runtime)
         current_definition_hash = definition.definition_hash
         if existing_manifest is not None and (
             definition.model_dump(exclude={"definition_hash"})
@@ -557,9 +575,13 @@ class BenchmarkRunner:
             # hash is accepted only by the explicit revision check below and recorded.
             definition = existing_manifest.definition
         model = self.model_catalog.model(request.model_id)
+        if request.runtime is not None:
+            model = resolved_model(model, request.runtime)
         subjects = tuple(
             self.subject_catalog.subject(str(target_id)) for target_id in definition.subject_ids
         )
+        if request.edition is not None:
+            validate_execution(request.edition, definition, subjects, request.base_seed)
         existing_result = self.store.load_benchmark_result(
             request.model_id,
             request.execution_id,
@@ -810,12 +832,14 @@ class BenchmarkRunner:
                 )
                 had_terminal_result = existing_trial is not None
                 context = TrialExecutionContext(
+                    edition=request.edition,
                     identity=identity,
                     definition=definition,
                     model=model,
                     subject=subject,
                     subject_catalog_hash=self.subject_catalog.content_hash(),
                     base_seed=request.base_seed,
+                    runtime=request.runtime,
                 )
                 sink = self._trial_sink(context)
                 existing_trial, materialized_interruption = (
@@ -871,7 +895,7 @@ class BenchmarkRunner:
                     and existing_trial.attempt_number < repair.max_attempts_per_trial
                 )
                 if materialized_interruption and not repair_attempt:
-                    logger.info(
+                    (logger.debug if request.runtime is not None else logger.info)(
                         "benchmark.trial_context trial=%s target=%s name=%s",
                         identity.trial_id,
                         subject.target_id,
@@ -941,7 +965,7 @@ class BenchmarkRunner:
                         attempt_number,
                         repair.max_attempts_per_trial if repair is not None else 0,
                     )
-                logger.info(
+                (logger.debug if request.runtime is not None else logger.info)(
                     "benchmark.trial_context trial=%s target=%s name=%s",
                     identity.trial_id,
                     subject.target_id,
@@ -949,10 +973,11 @@ class BenchmarkRunner:
                     extra={BLANK_LINE_BEFORE_ATTRIBUTE: True},
                 )
                 sink.prepare_run(str(identity.episode_run_id))
+                context = context.model_copy(update={"attempt_number": attempt_number})
                 trial = self._execute_trial(
                     context,
                     sink,
-                    _TrialObserver(self, identity, attempt_number),
+                    _TrialObserver(self, identity, attempt_number, runtime=request.runtime),
                 ).model_copy(update={"attempt_number": attempt_number})
                 if isinstance(trial, CompletedTrialResult) and repair is not None:
                     trial = trial.model_copy(update={
@@ -1238,7 +1263,10 @@ class BenchmarkRunner:
             request.execution_id,
         )
         provisional = BenchmarkResult(
+            schema_version=4 if request.runtime is not None else 3,
             run=BenchmarkRun(
+                edition=request.edition,
+                runtime=request.runtime,
                 execution_id=request.execution_id,
                 definition=definition,
                 model=model,
@@ -1259,6 +1287,7 @@ class BenchmarkRunner:
                 has_infrastructure_failures=has_infrastructure_failures,
                 publication_eligible=(
                     not has_infrastructure_failures
+                    and (request.edition is None or request.edition.classification == "standard")
                     and not revisions and revision is None
                     and all(
                         isinstance(trial, CompletedTrialResult)
@@ -1297,6 +1326,10 @@ class BenchmarkRunner:
             }
         )
         self.store.write_benchmark_result(result)
+        if request.runtime is not None:
+            from .backend_reporting import draft_run_report
+            self.store._atomic_write(self.store.run_root(model.model_id, request.execution_id) / "draft-report.json",
+                                     draft_run_report(result).model_dump_json(indent=2) + "\n")
         self.store.write_benchmark_summary(self.store.build_benchmark_summary(result))
         logger.info(
             "benchmark.result execution=%s model_id=%s trials=%d success_rate=%s "

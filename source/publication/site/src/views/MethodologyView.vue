@@ -6,19 +6,20 @@ import EditionComparison from "@/components/EditionComparison.vue";
 import { useEditionContext } from "@/lib/use-edition-context";
 import ErrorState from "@/components/ErrorState.vue";
 import IllustrativeRoundExample from "@/components/IllustrativeRoundExample.vue";
+import MethodDetails from "@/components/MethodDetails.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { getManifest, peekManifest } from "@/lib/api";
 import { usePageRouteContext } from "@/lib/route-context";
 import type { ManifestDocument } from "@/lib/types";
 import { usePublicationLoad } from "@/lib/use-publication-load";
 
-const { qualified, answers } = useEditionContext();
+const { qualified } = useEditionContext();
 const initialManifest = peekManifest();
 const manifest = ref<ManifestDocument | null>(initialManifest);
 usePageRouteContext({
   title: "Method",
   description:
-    "From one Twenty Questions round to repeated trials, scoring, official comparison, and publication.",
+    "How the game works, how answers are checked, and what the scores mean.",
 });
 const { loading, error } = usePublicationLoad(async () => {
   manifest.value = await getManifest();
@@ -44,317 +45,216 @@ const totalTrials = computed(() => {
       <section class="page-hero site-boundary-shell">
         <div class="page-hero-inner site-boundary">
           <div>
-            <p class="eyebrow">Methodology</p>
-            <h1>Edition {{ manifest.active_cohort.edition_label }} method.</h1>
+            <p class="eyebrow">Method · Edition {{ manifest.active_cohort.edition_label }}</p>
+            <h1>How Deep20Bench works</h1>
           </div>
           <p class="lede">
-            Start with one model playing Twenty Questions. Then repeat the same controlled game
-            across fixed subjects and convert the completed trials into one score.
+            Deep20Bench tests how well AI models find a hidden subject by asking questions.
+            Models play the same subjects repeatedly. Fewer questions and fewer failed rounds
+            give a better score.
           </p>
         </div>
       </section>
 
-      <EditionComparison />
       <div class="method-nav-shell site-boundary-shell">
         <nav class="method-nav site-boundary" aria-label="Methodology contents">
-          <a href="#game">01 · One round</a>
+          <a href="#game">01 · The game</a>
           <a href="#answer-checks">02 · Answer checks</a>
-          <a href="#repetition">03 · Repetition</a>
-          <a href="#scoring">04 · Scoring</a>
-          <a href="#reliability">05 · Reliability</a>
-          <a href="#eligibility">06 · Official runs</a>
-          <a href="#publication">07 · Publication</a>
+          <a href="#scoring">03 · The score</a>
+          <a href="#repetition">04 · Comparisons</a>
+          <a href="#publication">05 · Explore results</a>
         </nav>
       </div>
 
-      <aside class="build-story-shell site-boundary-shell" aria-labelledby="build-story-title">
-        <div class="build-story-panel site-boundary">
-          <div>
-            <p class="eyebrow">Build notes · Medium</p>
-            <h2 id="build-story-title">What went wrong while building Deep20Bench.</h2>
-          </div>
-          <p>
-            Read the first-person account of contradictory Oracle answers, blind review, format
-            failures, and the fixes that shaped the final benchmark.
-          </p>
-          <a
-            class="button build-story-link"
-            href="https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Read the build story on Medium (opens in a new tab)"
-          >
-            Read the build story on Medium ↗
-          </a>
-        </div>
-      </aside>
-
       <section id="game" class="content-section game-section">
         <div class="content-inner editorial-copy">
+          <div><p class="eyebrow">01 · The game</p></div>
           <div>
-            <p class="eyebrow">01 · One round</p>
-            <p class="section-note">Guesser = model under test</p>
-          </div>
-          <div>
-            <h2>One hidden subject. One adaptive conversation.</h2>
+            <h2>Find a hidden subject.</h2>
             <p class="lead">
-              The Guesser receives a broad category, but not the subject. It asks one yes-or-no
-              question at a time, uses every prior answer, and eventually makes an exact guess.
+              A subject is the person, character, or thing to identify. The model being tested,
+              called the Guesser, starts with only a broad category. It asks one question at a
+              time, uses the answers to narrow the possibilities, and makes a guess.
             </p>
             <div class="method-round">
               <IllustrativeRoundExample :qualified="qualified" />
             </div>
             <p>
-              In this illustrative round, three questions count. The correct guess does not. An
-              incorrect guess before the limit consumes one counted question and play continues.
+              This round scores three questions. The correct guess does not count. A wrong
+              guess counts as one question and play continues. The limit is
+              {{ manifest.active_cohort.max_questions }} counted questions, followed by one final guess.
             </p>
-            <dl class="fact-grid" aria-label="Single-round rules">
-              <div><dt>Starting clue</dt><dd>Broad category</dd></div>
-              <div><dt>Answer tokens</dt><dd>{{ answers.join(" · ") }}</dd></div>
-              <div><dt>Question limit</dt><dd>{{ manifest.active_cohort.max_questions }}</dd></div>
-              <div><dt>Final opportunity</dt><dd>Exact guess only</dd></div>
-            </dl>
-            <aside class="method-note">
-              <strong>Why “Twenty Questions” with a limit of
-                {{ manifest.active_cohort.max_questions }}?</strong>
-              <p>
-                Twenty Questions names the game, not the scoring limit. A hard stop at 20 would
-                hide the difference between a model that succeeds shortly after 20 and one that
-                never identifies the subject. The current policy therefore allows up to
-                {{ manifest.active_cohort.max_questions }} counted questions. Every additional
-                question increases the trial value and remains visible in the final average. A
-                model that still has not succeeded receives one final guess-only opportunity, and
-                a failure scores {{ penalty }}, one point worse than any successful trial.
+            <div class="answer-guide" aria-labelledby="answer-meanings-title">
+              <h3 id="answer-meanings-title">What the answers mean</h3>
+              <dl class="answer-meanings">
+                <div><dt>Yes</dt><dd>The information supports a clear Yes.</dd></div>
+                <div v-if="qualified"><dt>Rather yes</dt><dd>It points toward Yes, but an important gap remains.</dd></div>
+                <div v-if="qualified"><dt>Rather no</dt><dd>It points toward No, but an important gap remains.</dd></div>
+                <div><dt>No</dt><dd>The information supports a clear No.</dd></div>
+                <div><dt>Unknown</dt><dd>There is no clear direction, or unclear wording or conflicting evidence could change the answer.</dd></div>
+              </dl>
+              <p v-if="qualified">
+                Rather yes and Rather no are clues, not probabilities. The Guesser should keep
+                other possibilities open and check important assumptions with another question.
               </p>
-            </aside>
+            </div>
+            <MethodDetails title="Guess rules and the question limit" anchor="game-details">
+              <p>
+                A failed search alone does not justify No<template v-if="qualified"> or Rather no</template>.
+                <template v-if="qualified">Rather answers also do not measure how often something is true.</template>
+                Guesses receive only Yes, No, or Unknown. Only Yes ends a round successfully.
+              </p>
+              <p v-if="qualified">
+                A guess must identify a specific subject exactly. For a general kind of thing,
+                a recognized subtype or design also counts if it preserves the defining kind
+                and meets the subject’s stated restrictions. Extra detail alone does not
+                invalidate a match.
+              </p>
+              <p v-else>A guess must identify the exact subject; accepted alternative names count.</p>
+              <p>
+                Twenty Questions is the game’s name. A higher limit distinguishes a model that
+                succeeds after question 20 from one that never finds the subject. Every extra
+                question raises the score. At the limit, the model can only guess. Failure then
+                scores {{ penalty }}, one more than any successful round.
+              </p>
+            </MethodDetails>
           </div>
         </div>
       </section>
 
       <section id="answer-checks" class="content-section answer-checks-section">
         <div class="content-inner editorial-copy">
+          <div><p class="eyebrow">02 · Answer checks</p></div>
           <div>
-            <p class="eyebrow">02 · Answer checks</p>
-            <p class="section-note">Separate, blind roles</p>
-          </div>
-          <div>
-            <h2>Questions and guesses follow separate paths.</h2>
+            <h2>Check answers before giving a clue.</h2>
             <p class="lead">
-              Factual questions go through independent adjudication. Exact guesses go to a
-              separate Validator. The Guesser receives only the final answer token.
+              Other models know the hidden subject and answer the Guesser’s questions.
+              Each role has a separate job:
             </p>
-            <div class="answer-roles">
-              <article>
-                <span>01 · Oracle</span>
-                <h3>Search and cite evidence.</h3>
-                <p v-if="qualified">
-                  For a fresh answer, the Oracle searches the live web and retains relevant source
-                  context. The current policy also permits its own knowledge, with a private
-                  supporting statement. It proposes one of this edition’s question-answer tokens.
-                </p>
-                <p v-else>
-                  For a fresh answer, the Oracle must search the live web instead of relying
-                  on memory. It cites evidence and proposes one of this edition’s question-answer tokens.
-                </p>
-              </article>
-              <article>
-                <span>02 · Reviewer</span>
-                <h3>Make a blind second decision.</h3>
-                <p>
-                  For every directional Oracle answer, the no-web Reviewer uses the subject, question, and
-                  evidence without seeing the Oracle answer.
-                </p>
-              </article>
-              <article>
-                <span>03 · Judge</span>
-                <h3>Resolve disagreement.</h3>
-                <p>
-                  If the first two decisions differ, including Reviewer UNKNOWN, the no-web Judge
-                  decides from the same limited material without seeing either answer.
-                </p>
-              </article>
-              <article>
-                <span>04 · Guess Validator</span>
-                <h3>Check the proposed identity.</h3>
-                <p>
-                  The separate no-web Validator receives only the trusted subject and the
-                  structured guess, then returns YES, NO, or UNKNOWN.
-                </p>
-              </article>
-            </div>
-            <div class="decision-path" aria-label="Question and guess decision paths">
-              <article>
-                <span>ASK path</span>
-                <strong>Oracle → Reviewer for a directional answer → Judge on disagreement → final</strong>
-                <small>Oracle UNKNOWN is final and bypasses review.</small>
-              </article>
-              <article>
-                <span>GUESS path</span>
-                <strong>Guess Validator → final</strong>
-                <small>The factual-answer roles never evaluate the identity.</small>
-              </article>
-            </div>
-            <p v-if="qualified">Rather yes and Rather no indicate a direction supported by evidence
-              or knowledge with a material gap. They are not numerical probabilities.
-              Current runs allow the Oracle, Reviewer, and Judge to use evidence or their own
-              knowledge, with a private supporting statement. The earlier accepted revision
-              limits the Reviewer to supplied evidence and permits a bounded Judge knowledge fallback.
-              Each run retains its actual policy and prompt versions.
-              Any exact-token disagreement, including Yes versus Rather yes, invokes the blind Judge.
-              Guess validation still uses only Yes, No, or Unknown.</p>
-            <p v-if="qualified">For a particular entity, the Validator requires the same identity.
-              For a general kind, it also accepts a recognized subtype or design variant that preserves
-              the defining kind and satisfies the subject’s explicit restrictions. Extra detail alone
-              does not invalidate a match.</p>
-            <p v-else>For narrow, stable closed facts, Reviewer and Judge may use their documented
-              model-knowledge fallback when the evidence is insufficient.</p>
-            <div class="isolation-callout">
-              <h3>The Guesser is fully isolated from adjudication.</h3>
-              <p>
-                It never sees the hidden subject, searches, evidence, citations, adjudicator
-                prompts or decisions, provider traces, or private artifacts. Its visible history
-                contains only the broad category, its own prior actions, final {{ answers.join(", ") }}
-                tokens, and the fixed format reminder after its own invalid output.
-              </p>
-            </div>
-            <aside class="rationale-note">
-              <p>
-                Early runs exposed rare but basic Oracle errors. In one case, it answered YES to
-                “born before 1800?” while citing 1875. A full run asks hundreds of questions, so
-                even rare errors add up. Reviewer and Judge use different model families and
-                providers to reduce correlated mistakes.
-              </p>
-              <p>
-                <a
-                  href="https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Read the development story behind the adjudication system and structured-output
-                  recovery ↗
-                </a>
-              </p>
+            <ol class="answer-roles">
+              <li><h3>Oracle: find an answer.</h3>
+                <p>Searches for evidence and proposes an answer. Unknown is final; every other
+                  answer needs a second check.</p></li>
+              <li><h3>Reviewer: check independently.</h3>
+                <p>Checks the question without seeing the Oracle’s answer. If they agree,
+                  that answer is final.</p></li>
+              <li><h3>Judge: resolve disagreement.</h3>
+                <p>Decides whenever their answers differ, including Reviewer Unknown.
+                  It sees neither earlier answer.</p></li>
+            </ol>
+            <p>
+              Guesses go directly to a separate <strong>Guess Validator</strong>, which checks
+              the proposed identity. The Guesser receives only the final answer, with no explanation.
+            </p>
+            <aside class="isolation-callout">
+              <h3>The Guesser cannot see the answer checks.</h3>
+              <p>It sees the category, its own questions and guesses, and the final answers.
+                The hidden subject, searches, evidence, and other models’ conversations stay private.</p>
             </aside>
+            <p>
+              A matching question can reuse a previously checked answer. The transcript marks
+              these answers so readers can distinguish them from fresh web checks.
+            </p>
+            <MethodDetails title="What the checking models can see" anchor="check-details">
+              <p>
+                The Oracle receives the trusted subject and current question, without earlier
+                turns. For a fresh answer, it searches the live web and keeps source context.
+                <template v-if="qualified">The current policy also allows its own knowledge,
+                  with a private supporting statement.</template>
+                <template v-else>It must search instead of relying on memory.</template>
+              </p>
+              <p>
+                The Reviewer and Judge receive the subject, question, and numbered Oracle
+                evidence. They cannot search the web or see earlier answers or the game history.
+                <template v-if="qualified">Any exact answer difference, including Yes versus
+                  Rather yes, goes to the Judge.</template>
+                If a required check fails, the round has a test system failure; the Oracle’s
+                answer is never used as a fallback.
+              </p>
+              <p v-if="qualified">
+                Current runs let all three roles use evidence or their own knowledge, with a
+                private supporting statement. An earlier accepted revision limits the Reviewer
+                to supplied evidence and allows the Judge a limited knowledge fallback.
+                Each run records its actual rules and prompt versions.
+              </p>
+              <p v-else>
+                For narrow, stable facts, the Reviewer and Judge may use their documented
+                knowledge fallback when the supplied evidence is insufficient.
+              </p>
+              <p>
+                The Guess Validator receives only the trusted subject and structured guess,
+                with no web access. The Guesser receives no sources, private instructions,
+                checking decisions, provider logs, or private files. Its fixed instructions
+                and format reminder contain no subject information.
+              </p>
+              <p>
+                Early runs exposed basic Oracle errors: one answer said Yes to “born before
+                1800?” while citing 1875. The Reviewer and Judge use different model families
+                and providers to reduce shared mistakes.
+              </p>
+            </MethodDetails>
+            <MethodDetails title="When an earlier answer is reused" anchor="answer-reuse">
+              <p>
+                New benchmark runs enable answer reuse by default. A matching question may
+                reuse a fully checked answer from compatible completed rounds or an earlier
+                live answer in the same game. Standalone games use fresh checks. The recorded
+                rules and source history determine which answers qualify.
+              </p>
+              <p>
+                Reused answers keep their original evidence, answer time, and source label in
+                the transcript. They are past observations, not new web checks. The question
+                still counts, but no new answer-checking calls or cost are added. The Guesser
+                sees only the final answer. Comparisons should use matching reuse rules and
+                history cutoffs.
+              </p>
+            </MethodDetails>
           </div>
         </div>
       </section>
 
-      <section id="repetition" class="content-section repetition-section">
+      <section id="scoring" class="content-section scoring-section">
         <div class="content-inner editorial-copy">
+          <div><p class="eyebrow">03 · The score</p></div>
           <div>
-            <p class="eyebrow">03 · Repetition</p>
-            <p class="section-note">{{ manifest.active_cohort.display_name }}</p>
-          </div>
-          <div>
-            <h2>One round becomes {{ totalTrials }} isolated trials.</h2>
+            <h2>Fewer questions means a better score.</h2>
             <p class="lead">
-              Every model plays the same {{ manifest.active_cohort.target_ids.length }} subjects
-              in {{ manifest.active_cohort.iterations }} fresh trials per subject.
+              Average the round scores for each subject, then average those subject scores.
+              Every subject has equal weight. This is the model’s question score.
             </p>
-            <p>
-              Each trial starts a new Guesser conversation, without access to another trial's
-              transcript, evidence, or private adjudicator state. A versioned, subject-independent
-              variation token changes the repeated-call condition without revealing anything
-              about the hidden subject.
-            </p>
-            <aside id="answer-reuse" class="method-note">
-              <strong>Fresh conversations and reused answers</strong>
-              <p>
-                New benchmark executions enable answer reuse by default. A matching question
-                can reuse a fully checked answer from compatible completed trials or from an
-                earlier live answer in the same game. Standalone games use fresh adjudication.
-                The recorded policy and source history determine which answers are eligible.
-              </p>
-              <p>
-                Reused answers retain their original evidence, answer time, and a visible source
-                label in the published transcript. They are historical observations, not new
-                web checks. A repeat still counts as a question, but adds no new adjudicator
-                calls or cost. The Guesser receives only the final token, without the source label
-                or evidence. Comparisons should use matching reuse policies and history cutoffs.
-              </p>
-            </aside>
-            <dl class="fact-grid" aria-label="Benchmark repetition">
-              <div><dt>Subjects</dt><dd>{{ manifest.active_cohort.target_ids.length }}</dd></div>
-              <div><dt>Trials / subject</dt><dd>{{ manifest.active_cohort.iterations }}</dd></div>
-              <div><dt>Trials / model</dt><dd>{{ totalTrials }}</dd></div>
-              <div><dt>Base seed</dt><dd>{{ manifest.active_cohort.base_seed }}</dd></div>
+            <dl class="score-rules" aria-label="Round scoring">
+              <div><dt>Subject found</dt><dd>Counted questions used</dd></div>
+              <div><dt>Model fails to find it</dt><dd>{{ penalty }} questions</dd></div>
+              <div><dt>Test system fails</dt><dd>Unscored; the run stays incomplete</dd></div>
             </dl>
             <p>
-              Repetition matters because model outputs vary across fresh calls. Multiple trials
-              show whether a question strategy is consistently effective or succeeds only in
-              some rounds.
+              Each score has a <strong>95% confidence interval</strong>: an estimate of uncertainty
+              in the average from repeated rounds on these subjects. A narrower interval means
+              more consistent results, even if the score itself is poor. It does not describe
+              performance on new subjects.
             </p>
-            <div id="subject-design" class="subject-design">
-              <p class="eyebrow">Subject design and contamination</p>
-              <h3>The current subject set is small.</h3>
-              <p>
-                Each subject has a canonical identity, accepted aliases, a clear description,
-                and a public reference. Every model in an edition uses the same explicit
-                subject list. The subjects and their categories are listed in each published run.
-                This selection is not random, balanced, or representative.
-              </p>
-              <p>
-                This small subject set does not support broad conclusions. The size is mainly a cost
-                constraint: every additional subject adds repeated Guesser turns, live Oracle
-                searches, Reviewer calls, and sometimes Judge calls. Repeated trials per subject
-                help measure variation, but repetition does not make the small subject set more
-                representative.
-              </p>
-              <h4>Versioning and contamination</h4>
-              <p>
-                The cohort and protocol are versioned together. Official comparisons use the
-                same fixed cohort and protocol. Subject identities and transcripts become public
-                after publication, so a later model may have seen the subject list or earlier
-                runs. Deep20Bench does not claim that this public cohort is resistant to
-                benchmark contamination.
-              </p>
-              <h4>Future cohorts</h4>
-              <p>
-                Future cohorts will aim to include more subjects and broader entity types,
-                including places and objects. Their selection rules and identities will be fixed
-                before evaluation. A changed cohort or protocol receives a new version, and its
-                results will be reported separately instead of merged with the current
-                leaderboard.
-              </p>
-            </div>
-            <aside class="scope-note">
-              <strong>Scope of the result</strong>
-              <p>
-                The score describes this benchmark version on these fixed subjects. It is a
-                narrow task result, not a general ranking of model intelligence or a prediction
-                for unseen subjects.
-              </p>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      <section id="scoring" class="content-section dark-method">
-        <div class="content-inner editorial-copy">
-          <div>
-            <p class="eyebrow">04 · Scoring</p>
-            <p class="section-note">{{ manifest.score_policy.version }}</p>
-          </div>
-          <div>
-            <h2>Question score is the average counted questions.</h2>
-            <p class="lead">
-              Lower is better. A model failure counts as {{ penalty }}, one above the
-              {{ manifest.active_cohort.max_questions }}-question limit.
+            <p>
+              The <RouterLink :to="editionRoute('results-reliability')">Stability view</RouterLink>
+              ranks models by this interval’s width. Cost and time are reported separately
+              and do not change the question score.
             </p>
-            <div class="score-rules">
-              <article>
-                <span>Successful trial</span>
-                <strong>Counted questions used</strong>
-              </article>
-              <article>
-                <span>Model failure</span>
-                <strong>{{ penalty }} questions</strong>
-              </article>
-              <article>
-                <span>Infrastructure failure</span>
-                <strong>Not scored · incomplete run</strong>
-              </article>
-            </div>
+            <MethodDetails title="Format errors and failed rounds" anchor="reliability">
+              <p>
+                The Guesser must return one valid ASK or GUESS action. Before the question
+                limit, invalid output uses one counted turn and receives a fixed FORMAT_ERROR
+                reminder. The reminder gives no parser details, correctness feedback,
+                evidence, or subject information. Repeated violations can end the round as a
+                scored model failure. Invalid output at the final guess ends the round without
+                another retry or counted turn.
+              </p>
+              <p>
+                A later correct guess does not erase earlier violations. Round, subject, run,
+                and leaderboard pages report valid outputs divided by evaluated outputs,
+                violations, affected rounds, and counted penalties. The used turn already
+                affects the question score; there is no second penalty for the same error.
+              </p>
+            </MethodDetails>
+            <MethodDetails title="Scoring formulas and uncertainty" anchor="score-details">
+              <p>In the formulas, a trial means one round. Score policy: {{ manifest.score_policy.version }}.</p>
             <div class="formula" aria-label="Question score formula">
               <div>
                 <span>Trial score</span>
@@ -421,14 +321,12 @@ const totalTrials = computed(() => {
                 </strong>
               </div>
             </div>
-            <h3>Uncertainty across repeated trials</h3>
-            <p>
-              Each model score includes a 95% confidence interval for repeated seeded trials on
-              these fixed subjects. The calculation estimates the trial variance separately for
-              each subject, divides it by that subject’s trial count, and combines the equally
-              weighted variance estimates. It uses a Welch–Satterthwaite t interval so subjects
-              may have different trial variance.
-            </p>
+              <h3>How the interval is calculated</h3>
+              <p>
+                Estimate the variation between rounds separately for each subject, divide by
+                that subject’s round count, then combine the estimates with equal subject
+                weights. A Welch-Satterthwaite t interval allows different variation for each subject.
+              </p>
             <div class="formula" aria-label="Question score confidence interval formula">
               <div class="standard-error-formula">
                 <span>Standard error</span>
@@ -484,157 +382,156 @@ const totalTrials = computed(() => {
                 <strong>model score ± t critical value × standard error</strong>
               </div>
             </div>
-            <p>
-              A wider interval means the repeated trials were less consistent. The interval does
-              not cover new subjects, model or provider changes, or future benchmark versions.
-              It assumes separate seeded calls act as independent repetitions within each
-              subject. A unique seed supports that assumption but does not prove it. The interval
-              describes the mean score, not the range of individual trials. Individual model
-              intervals are not a pairwise significance test.
-            </p>
-            <p>
-              Reused adjudicated answers can create shared conditions across trials. For runs
-              using answer reuse, interpret the interval conditional on that policy and its
-              recorded source history. The calculation does not correct for dependence from
-              shared answers or estimate fresh-research variation for cached questions.
-            </p>
-            <p>
-              The <RouterLink :to="editionRoute('results-reliability')">Stability result view</RouterLink>
-              ranks the exact interval width from narrowest to widest. Every model uses the same
-              95% confidence level. Question score remains visible but does not affect this rank,
-              so a consistently poor model can still be highly repeatable.
-            </p>
+              <p>
+                The interval describes uncertainty in the mean, not the range of individual
+                rounds. It excludes new subjects, changes to models or providers, and future
+                editions. It assumes separate seeded calls act independently within a subject;
+                distinct seeds support this assumption but do not prove it. Individual model
+                intervals are not a pairwise significance test.
+              </p>
+              <p>
+                Reused answers can link rounds. The interval describes results under the
+                recorded reuse rules and source history; it does not adjust for these links or
+                estimate how fresh web research might change answers. Stability ranks use the
+                exact interval width at the same 95% confidence level for every model.
+              </p>
+            </MethodDetails>
           </div>
         </div>
       </section>
 
-      <section id="reliability" class="content-section">
+      <section id="repetition" class="content-section repetition-section">
         <div class="content-inner editorial-copy">
+          <div><p class="eyebrow">04 · Comparisons</p></div>
           <div>
-            <p class="eyebrow">05 · Reliability</p>
-            <p class="section-note">Structured action contract</p>
-          </div>
-          <div>
-            <h2>Success does not erase a broken contract.</h2>
+            <h2>Repeat the game on the same subjects.</h2>
             <p class="lead">
-              The Guesser must return exactly one valid ASK or GUESS action. Every invalid
-              response remains visible, even when the model later finds the subject.
-            </p>
-            <div class="reliability-grid">
-              <article>
-                <span>Turn consequence</span>
-                <strong>One counted turn before the limit</strong>
-              </article>
-              <article>
-                <span>Semantic feedback</span>
-                <strong>None · format only</strong>
-              </article>
-              <article>
-                <span>Published measure</span>
-                <strong>Valid ÷ evaluated outputs</strong>
-              </article>
-            </div>
-            <p>
-              Before the question limit, an invalid response consumes one counted turn and
-              receives the same fixed format reminder. The reminder contains no parser detail,
-              correctness feedback, evidence, or subject information.
+              In this edition, each model plays {{ manifest.active_cohort.target_ids.length }} subjects
+              {{ manifest.active_cohort.iterations }} times each: {{ totalTrials }} rounds in total.
+              Every round starts a fresh Guesser conversation. Repetition shows how much results vary.
             </p>
             <p>
-              Episode, subject, run, and leaderboard pages report compliance, violations,
-              affected trials, and counted penalties. The turn already affects the question
-              total, so reliability adds no second score penalty.
+              Only complete runs with accepted settings enter the leaderboard. If several runs
+              qualify for a model, it uses the newest completed run, never the best score.
             </p>
-          </div>
-        </div>
-      </section>
-
-      <section id="eligibility" class="content-section eligibility-section">
-        <div class="content-inner editorial-copy">
-          <div>
-            <p class="eyebrow">06 · Official runs</p>
-            <p class="section-note">Comparable evidence</p>
-          </div>
-          <div>
-            <h2>Only complete runs with accepted settings enter the leaderboard.</h2>
-            <p v-if="qualified" class="lead">
-              Edition 1.1 fixes the ten subjects, three rounds per subject, question limit,
-              game rules, and scoring policy. It includes explicitly accepted revisions of
-              adjudication and subject descriptions. These differences can affect scores as
-              well as the Guesser model; each run records its settings.
-            </p>
-            <p v-else class="lead">
-              The Guesser configuration changes between candidates. The subjects, game policy,
-              Oracle, Reviewer, Judge, Guess Validator, trial count, and scoring policy stay fixed.
-            </p>
-            <ul class="check-list">
-              <li>Signed run files pass integrity checks.</li>
-              <li>The run is terminal and contains every subject declared for this edition.</li>
-              <li>Every subject has every configured completed trial.</li>
-              <li>Completed model failures remain valid scored trials.</li>
-              <li>Missing or infrastructure-failed trials prevent qualification until an
-                explicitly requested resume or repair completes them.</li>
-            </ul>
             <p v-if="qualified">
-              Edition 1.1 also checks the declared prompt revisions, subject identities, seed,
-              game rules, support configurations, and retained role audits against one complete
-              accepted release contract. Unlisted revisions and incomplete diagnostic runs
-              do not qualify. Experimental execution provenance
-              remains visible in each published run.
+              Edition 1.1 includes accepted changes to answer checks and subject descriptions.
+              These can affect scores alongside the Guesser model. Each run shows its settings.
             </p>
-            <p>
-              If several current runs qualify for one model, the newest completed run is used.
-              The publisher never selects the best score. Invalid discovered input stops the
-              build.
-            </p>
-            <p>
-              Published cost comparisons use only each trial's retained terminal attempt.
-              Superseded infrastructure attempts remain in the signed repair ledger and gross
-              execution total, but do not increase public model or benchmark costs.
-            </p>
+            <aside class="scope-note">
+              <h3>What a comparison can tell you</h3>
+              <p>
+                These results describe a small, fixed set of subjects. They do not rank general
+                intelligence or predict performance on unseen subjects. Repetition does not make
+                the subjects more representative. Public subjects and transcripts may also have
+                appeared in a later model’s training data; we cannot rule out an advantage from this.
+              </p>
+            </aside>
+            <MethodDetails title="Subjects, repeated rounds, and future editions" anchor="subject-design">
+              <p>
+                Each subject has a main name, accepted alternative names, a clear description,
+                and a public reference. Every model in an edition uses the same list, shown with
+                categories in each run. The selection is not random, balanced, or representative.
+                Cost limits its size: each added subject needs repeated model turns and answer checks.
+              </p>
+              <p>
+                A round has no access to another round’s transcript, evidence, or private model
+                information. A starting code varies by round number, paired across models and
+                subjects, and reveals nothing about the hidden subject. Base seed:
+                {{ manifest.active_cohort.base_seed }}.
+              </p>
+              <p>
+                Future editions aim to include more subjects and kinds, including places and
+                objects. Selection rules and identities will be fixed before testing. Changes
+                to subjects or game rules receive a new version, with results reported separately.
+              </p>
+            </MethodDetails>
+            <MethodDetails title="Requirements for a published run" anchor="eligibility">
+              <p v-if="qualified">
+                Edition 1.1 fixes the subjects, rounds per subject, question limit, game rules,
+                and scoring rules. A run must match one complete accepted release contract:
+                prompt revisions, subject identities, seed, game rules, supporting model settings,
+                and saved records of their checks. Unlisted revisions and incomplete diagnostic
+                runs do not qualify. Published runs retain their experiment label where applicable.
+              </p>
+              <p v-else>
+                The Guesser configuration changes between candidates. The subjects, game rules,
+                Oracle, Reviewer, Judge, Guess Validator, round count, and scoring rules stay fixed.
+              </p>
+              <ul>
+                <li>Signed run files must pass checks for changes to the data.</li>
+                <li>The run must have ended, with every subject and every required round completed.</li>
+                <li>Completed model failures count as scored rounds. Missing rounds or test system
+                  failures keep a run out until a requested retry or repair completes it.</li>
+              </ul>
+              <p>Invalid input stops the site build.</p>
+              <p>
+                Published cost comparisons use each round’s final recorded attempt. Earlier
+                attempts replaced after test system failures remain in the repair records and
+                full spending total, but are excluded from the public cost comparison.
+              </p>
+            </MethodDetails>
           </div>
         </div>
       </section>
 
       <section id="publication" class="content-section publication-section">
         <div class="content-inner editorial-copy">
+          <div><p class="eyebrow">05 · Explore results</p></div>
           <div>
-            <p class="eyebrow">07 · Publication</p>
-            <p class="section-note">One-way reporting</p>
-          </div>
-          <div>
-            <h2>Publication happens after play is finished.</h2>
+            <h2>Follow a score back to the game.</h2>
             <p class="lead">
-              The static site reads completed, signed run artifacts. It never participates in a
-              trial and never sends published information back to the Guesser.
-            </p>
-            <div class="flow" aria-label="One-way publication data flow">
-              <span>Model calls</span><i aria-hidden="true">→</i>
-              <span>Signed artifacts</span><i aria-hidden="true">→</i>
-              <span>Public projection</span><i aria-hidden="true">→</i>
-              <span>Static site</span>
-            </div>
-            <p>
-              The publisher is a separate package. It does not import provider, prompt, session,
-              retry, or credential code. Published data never returns to the Guesser.
+              Open a model’s run to see its subjects and rounds. Each round shows the questions,
+              answers, guesses, and supporting evidence, along with format errors, usage, cost,
+              and timing.
             </p>
             <p>
-              Public pages connect each score to model runs, subjects, episodes, transcripts,
-              answer evidence, contract violations, usage, cost, and timing. Private prompts,
-              hidden reasoning, provider traces, and credentials remain excluded.
+              Answers are checked by models, not independently verified facts. The transcripts
+              let you inspect the evidence and spot mistakes.
             </p>
             <div class="button-row">
               <RouterLink class="button button-secondary" :to="editionRoute('data')">
                 View public data →
               </RouterLink>
             </div>
+            <MethodDetails title="How results reach this website" anchor="publication-details">
+              <p>
+                Publication happens after play is finished. The site is built from saved,
+                verified result files. It never takes part in a game, and published data never
+                returns to the Guesser.
+              </p>
+              <p>
+                The publisher is a separate package with no provider, prompt, session, retry,
+                or credential code imports. Public data excludes private prompts, hidden
+                reasoning, provider traces, and credentials.
+              </p>
+            </MethodDetails>
+            <p class="build-story">
+              For the development background,
+              <a
+                href="https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8"
+                target="_blank" rel="noreferrer"
+              >read the build story on Medium ↗</a>.
+            </p>
           </div>
         </div>
       </section>
+
+      <EditionComparison />
     </template>
   </div>
 </template>
 
 <style scoped>
+.page-hero {
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+
+.page-hero h1 {
+  max-width: 20ch;
+  font-size: clamp(2.75rem, 5vw, 5rem);
+}
+
 .method-nav-shell {
   border-bottom: var(--rule-default);
   background: var(--paper-bright);
@@ -642,17 +539,15 @@ const totalTrials = computed(() => {
 
 .method-nav {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   border-inline: var(--rule-default);
-  background: var(--paper-bright);
 }
 
 .method-nav a {
-  padding: 1.1rem clamp(0.6rem, 1.2vw, 1rem);
+  padding: 1rem clamp(0.6rem, 1.2vw, 1rem);
   border-right: var(--rule-default);
   font-size: var(--text-ui);
   font-weight: var(--font-weight-bold);
-  letter-spacing: 0.05em;
   text-decoration: none;
 }
 
@@ -660,52 +555,14 @@ const totalTrials = computed(() => {
   border-right: 0;
 }
 
-.build-story-shell {
-  padding-block: clamp(1.25rem, 3vw, 2.25rem);
-  border-bottom: var(--rule-default);
-  background: var(--paper-bright);
+.editorial-copy h2 {
+  max-width: 22ch;
 }
 
-.build-story-panel {
-  display: grid;
-  grid-template-columns: minmax(15rem, 0.8fr) minmax(18rem, 1fr) auto;
-  align-items: end;
-  gap: clamp(1.25rem, 3vw, 3rem);
-  padding: clamp(1.4rem, 3vw, 2.4rem);
-  border: var(--rule-strong);
-  background: var(--acid);
-}
-
-.build-story-panel .eyebrow {
-  margin-bottom: 0.55rem;
-}
-
-.build-story-panel h2 {
-  max-width: 15ch;
-  margin: 0;
+.editorial-copy h3 {
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3.2vw, 3rem);
+  font-size: var(--text-card-title);
   font-weight: var(--font-weight-medium);
-  letter-spacing: -0.035em;
-  line-height: 1;
-}
-
-.build-story-panel > p {
-  max-width: 35rem;
-  margin: 0;
-  line-height: 1.6;
-}
-
-.build-story-link {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: white;
-  white-space: nowrap;
-}
-
-.section-note {
-  color: var(--muted);
-  font-size: var(--text-small);
 }
 
 .lead {
@@ -719,277 +576,113 @@ const totalTrials = computed(() => {
   --method-round-padding: clamp(1rem, 3vw, 2rem);
 
   width: min(100%, calc(var(--round-example-max) + clamp(2rem, 6vw, 4rem)));
-  margin: 2.5rem 0;
+  margin: 1.75rem 0;
   padding: var(--method-round-padding);
   background: var(--ink);
 }
 
-.method-note {
-  padding: 1.2rem;
-  border-left: 4px solid var(--blue);
-  background: var(--surface-rail);
+.answer-guide {
+  margin-block: 1.75rem;
 }
 
-.method-note p,
-.rationale-note p {
-  margin: 0;
-  max-width: none;
-}
-
-.method-note strong {
-  display: block;
-  margin-bottom: 0.35rem;
-  color: var(--ink);
-}
-
-.fact-grid {
+.answer-meanings > div,
+.score-rules > div {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin: 2.5rem 0;
-  border: var(--rule-strong);
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 0.75rem;
+  border-bottom: var(--rule-default);
 }
 
-.fact-grid div {
-  display: flex;
-  min-height: 8rem;
-  padding: 1rem;
-  border-right: var(--rule-strong);
-  border-bottom: var(--rule-strong);
-  flex-direction: column;
-  justify-content: space-between;
+.answer-meanings dt,
+.score-rules dt {
+  font-weight: var(--font-weight-semibold);
 }
 
-.fact-grid div:nth-child(even) {
-  border-right: 0;
-}
-
-.fact-grid div:nth-last-child(-n + 2) {
-  border-bottom: 0;
-}
-
-.fact-grid dt,
-.formula span,
-.score-rules span,
-.reliability-grid span {
-  color: var(--muted);
-  font-size: var(--text-micro);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.fact-grid dd {
+.answer-meanings dd,
+.score-rules dd {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.35rem, 2.4vw, 2.35rem);
-  overflow-wrap: anywhere;
+  color: var(--text-secondary);
 }
 
-.answer-checks-section {
-  background: var(--paper-bright);
+.score-rules {
+  margin-block: 1.75rem;
 }
 
-.answer-roles {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  margin: 2.5rem 0 1rem;
-  border: var(--rule-default);
-  background: var(--line);
-  gap: 1px;
+.score-rules > div {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
-.answer-roles article {
-  min-height: 12rem;
-  padding: 1.2rem;
-  background: white;
-}
-
-.answer-roles span {
-  color: var(--muted);
-  font-size: var(--text-micro);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.answer-roles h3 {
-  margin: var(--space-3) 0 0.65rem;
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: var(--font-weight-medium);
-}
-
-.answer-roles p {
-  margin: 0;
-  color: var(--muted);
-  font-size: var(--text-small);
-  line-height: 1.5;
-}
-
-.decision-path {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  margin: 0 0 2rem;
-  border: var(--rule-strong);
-}
-
-.decision-path article {
-  display: flex;
-  min-height: 9rem;
-  margin: 0;
-  padding: 1rem;
-  border-right: var(--rule-strong);
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.decision-path article:last-child {
-  border-right: 0;
-}
-
-.decision-path strong,
-.decision-path span,
-.decision-path small {
-  font-size: var(--text-small);
-}
-
-.decision-path span {
-  color: var(--blue-ink);
-  font-weight: var(--font-weight-bold);
-}
-
-.decision-path small {
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.isolation-callout {
-  margin: 2.5rem 0;
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  background: var(--ink);
-  color: white;
-}
-
-.isolation-callout h3 {
-  margin: 0 0 var(--space-4);
-  color: var(--acid);
-  font-family: var(--font-display);
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
-  font-weight: var(--font-weight-medium);
-}
-
-.isolation-callout p {
-  margin: 0;
-  color: rgb(255 255 255 / 72%);
-  line-height: 1.65;
-}
-
-.rationale-note {
-  padding-top: 1.5rem;
-  border-top: var(--rule-strong);
-}
-
-.rationale-note p + p {
-  margin-top: 0.8rem;
-}
-
+.answer-checks-section,
 .repetition-section {
   background: var(--paper-bright);
 }
 
-.subject-design {
-  margin-top: 2.5rem;
-  padding-top: 2rem;
-  border-top: var(--rule-strong);
+.answer-roles {
+  margin-block: 1.5rem;
+  padding-left: 1.5rem;
 }
 
-.subject-design h3 {
-  margin-top: 0.4rem;
+.answer-roles li {
+  padding: 0.75rem 0 0.75rem 0.5rem;
+  border-bottom: var(--rule-default);
 }
 
-.subject-design h4 {
-  margin: 1.7rem 0 0.35rem;
-  font-size: var(--text-ui);
+.answer-roles li::marker {
+  color: var(--blue-ink);
+  font-weight: var(--font-weight-semibold);
 }
 
+.answer-roles h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.25rem;
+}
+
+.answer-roles p {
+  margin: 0;
+}
+
+.isolation-callout,
 .scope-note {
-  margin-top: 2.5rem;
-  padding: 1.4rem;
-  background: var(--acid);
-  color: var(--ink);
+  margin-block: 1.75rem;
+  padding: 1.25rem;
+  border-left: 3px solid var(--blue);
+  background: var(--surface-rail);
 }
 
-.scope-note > strong {
-  font-size: var(--text-ui);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+.isolation-callout h3,
+.scope-note h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
 }
 
+.isolation-callout p,
 .scope-note p {
-  margin-bottom: 0;
-  color: var(--ink);
-}
-
-.dark-method {
-  background: var(--ink);
-  color: white;
-}
-
-.dark-method :deep(.editorial-copy p),
-.dark-method .section-note {
-  color: rgb(255 255 255 / 63%);
-}
-
-.dark-method .lead {
-  color: white;
-}
-
-.score-rules {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin: 2.5rem 0;
-  border: var(--rule-inverse);
-}
-
-.score-rules article {
-  display: flex;
-  min-height: 8rem;
-  padding: 1rem;
-  border-right: var(--rule-inverse);
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.score-rules article:last-child {
-  border-right: 0;
-}
-
-.score-rules span {
-  color: rgb(255 255 255 / 58%);
-}
-
-.score-rules strong {
-  font-size: 0.86rem;
+  margin: 0;
 }
 
 .formula {
-  margin: 2.5rem 0;
-  border: var(--rule-inverse);
+  margin: 1.5rem 0;
+  border: var(--rule-default);
 }
 
-.formula div {
+.formula > div {
   display: flex;
   gap: 1rem;
   align-items: center;
   justify-content: space-between;
-  padding: 1.15rem;
-  border-bottom: var(--rule-inverse);
+  padding: 1rem;
+  border-bottom: var(--rule-default);
 }
 
-.formula div:last-child {
+.formula > div:last-child {
   border-bottom: 0;
-  background: var(--acid);
-  color: var(--ink);
+  background: var(--surface-rail);
+}
+
+.formula span {
+  color: var(--text-secondary);
+  font-size: var(--text-small);
 }
 
 .formula strong {
@@ -1012,102 +705,19 @@ const totalTrials = computed(() => {
   font-size: clamp(1.05rem, 2.4vw, 1.55rem);
 }
 
-.formula .score-average-formula {
-  gap: var(--space-1);
-}
-
 .math-expression .math-key {
-  max-width: 44rem;
-  color: rgb(255 255 255 / 68%);
-  font: var(--font-weight-medium) var(--text-caption)/1.35 var(--font-sans);
-  letter-spacing: 0;
+  color: var(--text-secondary);
+  font: var(--font-weight-medium) var(--text-caption)/1.5 var(--font-sans);
   text-wrap: balance;
-}
-
-.formula div:last-child .math-key {
-  color: rgb(11 16 25 / 68%);
-}
-
-.reliability-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin: 2.5rem 0;
-  border: var(--rule-default);
-}
-
-.reliability-grid article {
-  display: flex;
-  min-height: 9rem;
-  padding: 1rem;
-  border-right: var(--rule-default);
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.reliability-grid article:last-child {
-  border-right: 0;
-}
-
-.reliability-grid strong {
-  font-size: 0.85rem;
-}
-
-.eligibility-section {
-  background: var(--paper-bright);
-}
-
-.check-list {
-  margin: 2.5rem 0;
-  padding: 0;
-  list-style: none;
-  border-top: var(--rule-strong);
-}
-
-.check-list li {
-  position: relative;
-  padding: 1rem 1rem 1rem 2.6rem;
-  border-bottom: var(--rule-default);
-}
-
-.check-list li::before {
-  position: absolute;
-  top: 0.82rem;
-  left: 0;
-  display: grid;
-  width: 1.5rem;
-  height: 1.5rem;
-  border: var(--border-width) solid var(--blue);
-  color: var(--blue);
-  content: "✓";
-  place-items: center;
 }
 
 .publication-section {
   background: var(--surface-rail);
 }
 
-.flow {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
-  gap: 0.55rem;
-  align-items: center;
-  margin: 2rem 0;
-}
-
-.flow span {
-  display: grid;
-  min-height: 5rem;
-  padding: 0.7rem;
-  border: var(--rule-strong);
+.build-story {
+  margin-top: 1.5rem;
   font-size: var(--text-small);
-  font-weight: var(--font-weight-bold);
-  text-align: center;
-  place-items: center;
-}
-
-.flow i {
-  color: var(--blue);
-  font-style: normal;
 }
 
 @media (max-width: 760px) {
@@ -1116,8 +726,8 @@ const totalTrials = computed(() => {
   }
 
   .method-nav {
-    border-inline: 0;
     grid-template-columns: 1fr 1fr;
+    border-inline: 0;
   }
 
   .method-nav a {
@@ -1130,59 +740,32 @@ const totalTrials = computed(() => {
 
   .method-nav a:last-child {
     grid-column: 1 / -1;
-    border-right: 0;
     border-bottom: 0;
   }
 
-  .build-story-panel {
+  .formula > div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .formula strong {
+    text-align: left;
+  }
+
+  .formula .math-expression {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .answer-meanings > div {
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .score-rules > div {
     grid-template-columns: 1fr;
-    align-items: start;
-  }
-
-  .build-story-link {
-    justify-self: start;
-    white-space: normal;
-  }
-
-  .answer-roles,
-  .decision-path,
-  .flow,
-  .score-rules,
-  .reliability-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .answer-roles article,
-  .decision-path article,
-  .flow i {
-    border-right: 0;
-  }
-
-  .answer-roles article,
-  .decision-path article {
-    min-height: auto;
-    border-bottom: var(--rule-default);
-  }
-
-  .answer-roles article:last-child,
-  .decision-path article:last-child {
-    border-bottom: 0;
-  }
-
-  .flow i {
-    transform: rotate(90deg);
-    text-align: center;
-  }
-
-  .score-rules article,
-  .reliability-grid article {
-    border-right: 0;
-    border-bottom: var(--rule-default);
-  }
-
-  .score-rules article:last-child,
-  .reliability-grid article:last-child {
-    border-bottom: 0;
+    gap: 0.35rem;
   }
 }
 </style>

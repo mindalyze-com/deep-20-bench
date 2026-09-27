@@ -53,14 +53,128 @@ test("old deep links identify edition 1 and explain missing counterparts", { tag
 
 test("edition comparison remains accessible on narrow screens", { tag: ["@editions", "@both"] }, async ({ page }) => {
   await page.goto(new URL("editions/1.1/methodology/#editions", base).href);
+  await expect(page.locator(".edition-comparison-details")).toHaveAttribute("open", "");
+  await expect(page.locator("#editions table")).toBeVisible();
   await expect(page.locator("#editions")).toContainText("What changed in 1.1");
   await expect(page.locator("#editions")).toContainText("Version 1.1");
   await expect(page.locator("#editions")).toContainText("Version 1");
   await expectNoViewportOverflow(page);
   await page.locator(".edition-trigger").click();
-  const audit = await new AxeBuilder({ page }).include(".edition-bar").include("#editions")
+  const audit = await new AxeBuilder({ page }).include(".edition-bar").include(".edition-comparison")
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   expect(audit.violations).toEqual([]);
+});
+
+test("Method starts with the game and opens edition history only on request", { tag: ["@editions", "@both"] }, async ({ page }) => {
+  for (const id of ["1.0", "1.1"]) {
+    await page.goto(new URL(`editions/${id}/methodology/`, base).href);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("How Deep20Bench works");
+    await expect(page.locator(".method-nav-shell + #game")).toBeVisible();
+    await expect(page.locator(".method-details[open]")).toHaveCount(0);
+    await expect(page.locator("#game .answer-meanings dt")).toHaveText(
+      id === "1.1" ? ["Yes", "Rather yes", "Rather no", "No", "Unknown"] : ["Yes", "No", "Unknown"],
+    );
+    const details = page.locator(".edition-comparison-details");
+    const summary = details.locator("summary");
+    const table = details.locator("table");
+    await expect(details).not.toHaveAttribute("open", "");
+    await expect(table).toBeHidden();
+    await summary.focus();
+    await summary.press("Enter");
+    await expect(table).toBeVisible();
+    await summary.press("Enter");
+    await expect(table).toBeHidden();
+
+    // Cover client navigation, including the same hash after manually closing the panel.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      await page.locator(".edition-trigger").click();
+      await page.locator(".edition-changes").click();
+      await expect(page).toHaveURL(/methodology\/#editions$/);
+      await expect(table).toBeVisible();
+      await expect(details.getByRole("heading", { name: "What changed in 1.1", exact: true })).toBeInViewport();
+      if (attempt === 0) await summary.click();
+    }
+    await page.reload();
+    await expect(table).toBeVisible();
+    await expectNoViewportOverflow(page);
+  }
+});
+
+for (const javaScriptEnabled of [true, false]) {
+  test(`Method detail links work with JavaScript ${javaScriptEnabled ? "enabled" : "disabled"}`, { tag: ["@editions", "@both"] }, async ({ browser }, testInfo) => {
+    const context = await browser.newContext({
+      javaScriptEnabled,
+      viewport: testInfo.project.name.startsWith("mobile")
+        ? { width: 390, height: 844 } : { width: 1280, height: 720 },
+    });
+    const page = await context.newPage();
+    try {
+      for (const id of ["1.0", "1.1"]) {
+        for (const anchor of ["answer-reuse", "reliability", "score-details", "subject-design", "eligibility"]) {
+          await page.goto(new URL(`editions/${id}/methodology/#${anchor}`, base).href);
+          const body = page.locator(`#${anchor}`);
+          const details = page.locator(".method-details").filter({ has: body });
+          await expect(body).toBeVisible();
+          await expect(details).toHaveAttribute("open", "");
+          await expect(body).toBeInViewport();
+          await details.locator("summary").click();
+          await expect(body).toBeHidden();
+          await details.locator("summary").press("Enter");
+          await expect(body).toBeVisible();
+          await expectNoViewportOverflow(page);
+        }
+      }
+    } finally {
+      await context.close();
+    }
+  });
+}
+
+test("Method details and formulas remain accessible when expanded", { tag: ["@editions", "@both"] }, async ({ page }) => {
+  for (const id of ["1.0", "1.1"]) {
+    await page.goto(new URL(`editions/${id}/methodology/`, base).href);
+    for (const summary of await page.locator(".method-details summary").all()) await summary.click();
+    await expect(page.locator(".method-details[open]")).toHaveCount(8);
+    const audit = await new AxeBuilder({ page }).include(".methodology-page")
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+    expect(audit.violations).toEqual([]);
+    await expectNoViewportOverflow(page);
+  }
+});
+
+test("edition history can be opened and linked without JavaScript", { tag: ["@editions", "@both"] }, async ({ browser }, testInfo) => {
+  const mobile = testInfo.project.name.startsWith("mobile");
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 720 },
+  });
+  const page = await context.newPage();
+  try {
+    for (const id of ["1.0", "1.1"]) {
+      const url = new URL(`editions/${id}/methodology/`, base);
+      await page.goto(url.href);
+      const details = page.locator(".edition-comparison-details");
+      const summary = details.locator("summary");
+      const table = details.locator("table");
+      await expect(table).toBeHidden();
+      await expect(page.locator("#game .answer-guide")).toBeVisible();
+      await summary.click();
+      await expect(table).toBeVisible();
+      await summary.click();
+      await expect(table).toBeHidden();
+      await page.locator(".edition-trigger").click();
+      await page.locator(".edition-changes").click();
+      await expect(table).toBeVisible();
+      await expect(details.getByRole("heading", { name: "What changed in 1.1", exact: true })).toBeInViewport();
+      url.hash = "editions";
+      await page.goto(url.href);
+      await page.reload();
+      await expect(table).toBeVisible();
+      await expectNoViewportOverflow(page);
+    }
+  } finally {
+    await context.close();
+  }
 });
 
 test("the phone edition picker stays readable and large enough to tap", { tag: ["@editions", "@mobile"] }, async ({ page }) => {

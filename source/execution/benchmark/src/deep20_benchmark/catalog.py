@@ -106,6 +106,16 @@ class BenchmarkCatalog(StrictModel):
         iterations_override: int | None = None,
     ) -> BenchmarkDefinitionSnapshot:
         entry = self.entry(benchmark_id)
+        if benchmark_mode is BenchmarkMode.OFFICIAL and any(
+            route.gateway != "openrouter"
+            for route in (
+                entry.oracle_configuration,
+                entry.oracle_configuration.reviewer,
+                entry.oracle_configuration.judge,
+                entry.validator_configuration,
+            )
+        ):
+            raise ValueError("interactive adjudication requires experimental benchmark mode")
         iterations = iterations_override or entry.default_iterations
         game_policy = GamePolicy.model_validate(
             {**entry.game_policy.model_dump(), "benchmark_mode": benchmark_mode}
@@ -140,4 +150,22 @@ def load_model_catalog(path: Path) -> ModelCatalog:
 
 
 def load_benchmark_catalog(path: Path) -> BenchmarkCatalog:
-    return BenchmarkCatalog.model_validate(load_yaml_unique(path))
+    from .edition_profiles import load_profile, profile_policy
+
+    payload = load_yaml_unique(path)
+    if not isinstance(payload, dict) or not isinstance(payload.get("benchmarks"), dict):
+        raise TypeError("invalid benchmark catalog")
+    for key, entry in payload["benchmarks"].items():
+        if isinstance(entry, dict) and "edition_profile" in entry:
+            if set(entry) != {"edition_profile"} or not isinstance(entry["edition_profile"], str):
+                raise ValueError("edition-backed benchmarks cannot override profile fields")
+            profile = load_profile(path.parent / entry["edition_profile"])
+            payload["benchmarks"][key] = {
+                "benchmark_id": profile.cohort.benchmark_id,
+                "display_name": f"Deep20Bench Edition {profile.cohort.edition_label}",
+                "default_iterations": profile.cohort.iterations,
+                "game_policy": profile_policy(profile, BenchmarkMode.OFFICIAL).model_dump(),
+                "oracle_configuration": profile.oracle_configuration,
+                "validator_configuration": profile.validator_configuration,
+            }
+    return BenchmarkCatalog.model_validate(payload)

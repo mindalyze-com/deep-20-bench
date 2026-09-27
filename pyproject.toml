@@ -24,12 +24,14 @@ dev = [
 
 [tool.uv.workspace]
 members = [
+  "source/execution/backends",
   "source/execution/benchmark",
   "source/execution/game",
   "source/execution/oracle",
 ]
 
 [tool.uv.sources]
+deep20-backends = { workspace = true }
 deep20-game = { workspace = true }
 deep20-oracle = { workspace = true }
 deep20-benchmark = { workspace = true }
@@ -37,6 +39,7 @@ deep20-benchmark = { workspace = true }
 [tool.pytest.ini_options]
 addopts = "-m 'not integration'"
 testpaths = [
+  "source/execution/backends/tests",
   "source/execution/benchmark/tests",
   "source/execution/game/tests",
   "source/execution/oracle/tests",
@@ -53,6 +56,7 @@ target-version = "py314"
 python_version = "3.14"
 strict = true
 files = [
+  "source/execution/backends/src",
   "source/execution/benchmark/src",
   "source/execution/game/src/deep20_game/sinks.py",
   "source/execution/oracle/src/deep20_oracle/sinks.py",

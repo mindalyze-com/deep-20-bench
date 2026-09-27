@@ -617,7 +617,7 @@ def run_guesser_canary(
                 session_id=f"deep20-guesser-canary-{model.model_id}",
                 prompt_cache_key=(
                     "deep20-guesser-canary-v1" if profile is PromptProfile.STANDARD
-                    else f"deep20-guesser-canary-{guesser_prompt_version(profile)}"
+                    else sha256_text(f"deep20-guesser-canary-{guesser_prompt_version(profile)}")
                 ),
             )
         )

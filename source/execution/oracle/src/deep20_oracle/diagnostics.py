@@ -161,6 +161,7 @@ def _provider_diagnostics(value: object) -> ProviderFailureDiagnostics | None:
     error_type = _provider_error_type(trace.response)
     error_code, error_message = _provider_error_fields(trace.response)
     return ProviderFailureDiagnostics(
+        backend=trace.backend,
         http_status_code=trace.http_status_code,
         error_type=error_type,
         error_code=error_code,

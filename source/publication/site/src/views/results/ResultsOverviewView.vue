@@ -169,7 +169,7 @@ const { loading, error } = usePublicationLoad(async () => {
                   visual guide, not fixed quality thresholds.
                 </p>
                 <p>
-                  It describes uncertainty in the aggregate mean. It is not a prediction
+                  It describes uncertainty in the average score. It is not a prediction
                   interval for an individual trial.
                 </p>
               </InfoPopover>

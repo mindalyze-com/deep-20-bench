@@ -261,7 +261,7 @@ const scoreDomain = computed(() =>
 );
 const repeatCountLabel = computed(() => {
   if (props.repeatAveragesLoading) return "Loading repeat averages…";
-  if (props.repeatAverages === null) return "Five cohort-wide repeats";
+  if (props.repeatAverages === null) return "Repeated rounds across all subjects";
   const counts = new Map<string, number>();
   for (const average of props.repeatAverages) {
     counts.set(average.model_id, (counts.get(average.model_id) ?? 0) + 1);
@@ -360,7 +360,7 @@ const repeatTooltip = (parameter: CallbackDataParams): string => {
     ),
     `<span style="display:block;margin-top:6px;color:${theme.inkSoft};font-size:.78rem;font-weight: var(--font-weight-semibold)">${escapeHtml(repeatNumbers(group.averages))} · ${cohort}</span>`,
     `<span style="display:block;margin-top:4px;color:${theme.muted};font-size:.75rem">${escapeHtml(outcomes)}</span>`,
-    `<span style="display:block;margin-top:7px;color:${theme.muted};font-size:.75rem">Average of the same trial number across the fixed subject cohort</span>`,
+    `<span style="display:block;margin-top:7px;color:${theme.muted};font-size:.75rem">Average of the same trial number across the same subjects</span>`,
     chartTooltipRunLink(theme, true),
     "</div>",
   ].join("");
@@ -419,7 +419,7 @@ const scoreChartOption = (width: number): EChartsOption => {
     animationEasing: "cubicOut",
     aria: {
       enabled: true,
-      description: `${scoreCollectionLabel.value}. Each solid blue marker is the average question score, where lower is better. Each colored line is the 95 percent confidence interval of that average. Its color matches the three-band CI width companion plot.${showRepeatAverages.value ? " Grey diamonds show averages for each trial number across the fixed subject cohort; darker diamonds indicate equal repeat averages." : ""} The horizontal axis runs from ${scoreDomain.value.minimum} to ${scoreDomain.value.maximum}. ${props.items
+      description: `${scoreCollectionLabel.value}. Each solid blue marker is the average question score, where lower is better. Each colored line is the 95 percent confidence interval of that average. Its color matches the three-band CI width companion plot.${showRepeatAverages.value ? " Grey diamonds show averages for each trial number across the same subjects; darker diamonds indicate equal repeat averages." : ""} The horizontal axis runs from ${scoreDomain.value.minimum} to ${scoreDomain.value.maximum}. ${props.items
         .map(
           (item, index) => {
             const detail = confidenceDetailFor(item);

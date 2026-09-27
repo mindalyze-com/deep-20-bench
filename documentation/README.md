@@ -49,6 +49,15 @@ only the final token, never evidence, cache metadata, or another component's pri
 - [Custom domain](custom-domain-migration.md) - verified hosting state and deployment checks.
 - [Project README](../README.md) - concise project overview and quick start.
 
+## Experiment analyses
+
+- [Akinator question-count comparison](analysis/akinator/README.md) - Akinator with Oracle
+  and Codex answers, compared with saved LLM benchmark results.
+- [Codex versus regular Oracle](analysis/codex-as-oracle/comparison.md) - subject results
+  and model-ranking changes across eight direct-Codex experiments, with matched coverage.
+- [Codex as Oracle](analysis/codex-as-oracle/README.md) - experiment helpers and individual
+  model reports using fresh Codex answers.
+
 ## Proposals
 
 - [Community-funded runs](community-funded-runs.md) - proposed funding rules and a dated

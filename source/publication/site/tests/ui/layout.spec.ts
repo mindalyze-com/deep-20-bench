@@ -475,6 +475,8 @@ test("Method editorial content uses the shared wide-screen boundary", { tag: ["@
   await page.goto("methodology/");
   await waitForPublication(page);
 
+  await page.locator("#game .method-details summary").click();
+
   const layout = await page.evaluate(() => {
     const hero = document.querySelector<HTMLElement>(".page-hero-inner");
     const editorial = document.querySelector<HTMLElement>("#game .editorial-copy");
@@ -483,9 +485,9 @@ test("Method editorial content uses the shared wide-screen boundary", { tag: ["@
     const lead = editorial?.querySelector<HTMLElement>(".lead") ?? null;
     const round = editorial?.querySelector<HTMLElement>(".method-round") ?? null;
     const roundExample = editorial?.querySelector<HTMLElement>(".round-example") ?? null;
-    const methodNote = editorial?.querySelector<HTMLElement>(".method-note") ?? null;
-    const methodNoteParagraph = methodNote?.querySelector<HTMLElement>("p") ?? null;
-    const rationaleNote = document.querySelector<HTMLElement>(".rationale-note");
+    const methodNote = editorial?.querySelector<HTMLElement>(".method-details") ?? null;
+    const methodNoteParagraph = methodNote?.querySelector<HTMLElement>(".method-detail-body p") ?? null;
+    const rationaleNote = document.querySelector<HTMLElement>(".isolation-callout");
     const rationaleNoteParagraph = rationaleNote?.querySelector<HTMLElement>("p") ?? null;
     if (
       hero === null ||
@@ -559,9 +561,11 @@ test("Method editorial content uses the shared wide-screen boundary", { tag: ["@
   expect(layout.round.right).toBeLessThan(layout.main.right);
   expect(layout.lead.width).toBeLessThanOrEqual(layout.tokens.measure + 1);
   expect(layout.methodNote.right).toBeCloseTo(layout.main.right, 0);
-  expect(layout.methodNoteParagraph.right).toBeCloseTo(layout.methodNoteContentRight, 0);
+  expect(layout.methodNoteParagraph.width).toBeLessThanOrEqual(layout.tokens.measure + 1);
+  expect(layout.methodNoteParagraph.right).toBeLessThan(layout.methodNote.right);
   expect(layout.rationaleNote.right).toBeCloseTo(layout.main.right, 0);
-  expect(layout.rationaleNoteParagraph.right).toBeCloseTo(layout.rationaleNote.right, 0);
+  expect(layout.rationaleNoteParagraph.width).toBeLessThanOrEqual(layout.tokens.measure + 1);
+  expect(layout.rationaleNoteParagraph.right).toBeLessThan(layout.rationaleNote.right);
   expect(layout.main.width).toBeGreaterThan(layout.lead.width);
 });
 
@@ -576,14 +580,14 @@ test("Method role and isolation headings stay close to their related text", { ta
     await waitForPublication(page);
 
     const gaps = await page.evaluate(() => {
-      const roleGaps = Array.from(document.querySelectorAll(".answer-roles article")).map(
+      const roleGaps = Array.from(document.querySelectorAll(".answer-roles li")).map(
         (card) => {
-          const label = card.querySelector<HTMLElement>("span");
+          const body = card.querySelector<HTMLElement>("p");
           const heading = card.querySelector<HTMLElement>("h3");
-          if (label === null || heading === null) {
+          if (body === null || heading === null) {
             throw new Error("A methodology role card is incomplete.");
           }
-          return heading.getBoundingClientRect().top - label.getBoundingClientRect().bottom;
+          return body.getBoundingClientRect().top - heading.getBoundingClientRect().bottom;
         },
       );
       const calloutHeading = document.querySelector<HTMLElement>(".isolation-callout h3");
@@ -598,13 +602,13 @@ test("Method role and isolation headings stay close to their related text", { ta
       };
     });
 
-    expect(gaps.roles).toHaveLength(4);
+    expect(gaps.roles).toHaveLength(3);
     for (const gap of gaps.roles) {
-      expect(gap).toBeGreaterThanOrEqual(12);
-      expect(gap).toBeLessThanOrEqual(18);
+      expect(gap).toBeGreaterThanOrEqual(4);
+      expect(gap).toBeLessThanOrEqual(8);
     }
-    expect(gaps.callout).toBeGreaterThanOrEqual(15);
-    expect(gaps.callout).toBeLessThanOrEqual(17);
+    expect(gaps.callout).toBeGreaterThanOrEqual(11);
+    expect(gaps.callout).toBeLessThanOrEqual(13);
     await expectNoViewportOverflow(page);
   }
 });
@@ -877,12 +881,12 @@ test("detailed metric definitions stay contained", { tag: ["@layout", "@desktop"
   await waitForPublication(page);
   const definition = page.locator(".metric-definition-card");
   await expect(definition).toBeVisible();
-  await expect(definition).toContainText("Normalized ideal distance.");
+  await expect(definition).toContainText("Distance from the lowest score and cost.");
   await expect(page.locator(".definition-section")).toHaveCount(0);
   await definition.locator("summary").click();
   await expect(definition.locator("details")).toHaveAttribute("open", "");
   await expect(definition.locator(".metric-definition-toggle-open")).toBeVisible();
-  await expect(definition).toContainText("normalized question score 0.06");
+  await expect(definition).toContainText("scaled question score 0.06");
   await expectNoViewportOverflow(page);
 });
 

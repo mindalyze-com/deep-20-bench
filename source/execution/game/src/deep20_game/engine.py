@@ -31,7 +31,7 @@ from deep20_oracle.prompt import research_prompt_version
 from deep20_oracle.protocol import validate_answer
 from deep20_oracle.recovery import combine_recovery_totals
 from deep20_oracle.result_audit import provider_result_audit
-from deep20_oracle.service import Oracle
+from deep20_oracle.roles import OracleClient
 from deep20_oracle.util import timestamp
 from pydantic import ValidationError
 
@@ -198,6 +198,9 @@ class _MutableRoleProviderUsage:
         cost_usd: Decimal | None,
         latency_ms: int,
     ) -> None:
+        if (isinstance(trace, ProviderTrace) and trace.backend is not None
+            and trace.backend.inference_requests == 0):
+            return
         self.fallback_calls += int(getattr(trace, "fallback_occurred", None) is True)
         if trace.resolved_provider is None:
             self.unreported_calls += 1
@@ -491,7 +494,7 @@ class GameEngine:
         self,
         *,
         guesser: GuesserClient,
-        oracle: Oracle,
+        oracle: OracleClient,
         oracle_cache: OracleAnswerCache | None = None,
         reuse_episode_answers: bool = False,
         validator: ValidatorClient,
@@ -503,8 +506,8 @@ class GameEngine:
         observer: ExecutionObserver | None = None,
     ):
         if policy.benchmark_mode is BenchmarkMode.OFFICIAL and (
-            policy.prompt_profile is not PromptProfile.STANDARD
-            or oracle_config.prompt_profile is not PromptProfile.STANDARD
+            policy.prompt_profile is PromptProfile.CONCISE_V1
+            or oracle_config.prompt_profile is PromptProfile.CONCISE_V1
         ):
             raise ValueError("revised prompts require experimental benchmark mode")
         validate_prompt_profiles(policy.prompt_profile, oracle_config.prompt_profile)
@@ -518,6 +521,16 @@ class GameEngine:
         self.guesser_config = guesser_config
         self.oracle_config = oracle_config
         self.validator_config = validator_config
+        self.synthetic = any(route.gateway == "mock" for route in (
+            guesser_config, oracle_config, oracle_config.reviewer,
+            oracle_config.judge, validator_config,
+        ))
+        if self.synthetic and (oracle_cache is not None or reuse_episode_answers):
+            raise ValueError("synthetic roles cannot use factual answer caches")
+        if any(route.gateway == "interactive" for route in (
+            guesser_config, oracle_config, oracle_config.reviewer, oracle_config.judge, validator_config,
+        )) and (oracle_cache is not None or reuse_episode_answers):
+            raise ValueError("interactive roles cannot use factual answer caches")
         self.observer = observer or NullExecutionObserver()
 
     def play(self, request: GameRequest) -> EpisodeResult:
@@ -1134,6 +1147,7 @@ class GameEngine:
         error: Exception | None = None,
     ) -> EpisodeResult:
         completed_at = timestamp()
+        scoring_eligible = scoring_eligible and not self.synthetic
         publication_eligible = (
             self.policy.benchmark_mode is BenchmarkMode.OFFICIAL and scoring_eligible
         )
@@ -1176,6 +1190,7 @@ class GameEngine:
                 terminal_reason=terminal_reason,
                 scoring_eligible=scoring_eligible,
                 publication_eligible=publication_eligible,
+                synthetic=self.synthetic,
             ),
             summary=EpisodeSummary(
                 total_turns=guesser_call_count,

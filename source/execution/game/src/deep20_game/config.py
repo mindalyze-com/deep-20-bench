@@ -61,7 +61,9 @@ class ModelConfig(BaseModel):
         max_length=80,
         pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$",
     )
-    gateway: str = Field(default="openrouter", pattern=r"^openrouter$")
+    gateway: str = Field(
+        default="openrouter", pattern=r"^(openrouter|codex_interactive|ollama|interactive|mock)$",
+    )
     model: str = Field(min_length=1)
     provider: str = Field(min_length=1)
     reasoning_effort: str = Field(default="high", min_length=1)
@@ -79,10 +81,13 @@ class ModelConfig(BaseModel):
     recovery: RecoveryPolicy = Field(default_factory=RecoveryPolicy)
     seed_capability: SeedCapability = SeedCapability.UNSUPPORTED
     prompt_cache: PromptCacheConfig
+    cache_namespace: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{64}$", exclude_if=lambda v: v is None,
+    )
 
     @model_validator(mode="after")
     def exact_route(self) -> ModelConfig:
-        if "/" not in self.model:
+        if self.gateway in {"openrouter", "codex_interactive"} and "/" not in self.model:
             raise ValueError("model must be an exact provider/model slug")
         if (
             self.reasoning_control is ReasoningControl.GENERIC
@@ -111,7 +116,7 @@ class GamePolicy(BaseModel):
     @model_validator(mode="after")
     def experimental_prompt_only(self) -> GamePolicy:
         if (
-            self.prompt_profile is not PromptProfile.STANDARD
+            self.prompt_profile is PromptProfile.CONCISE_V1
             and self.benchmark_mode is BenchmarkMode.OFFICIAL
         ):
             raise ValueError("revised prompts require experimental benchmark mode")

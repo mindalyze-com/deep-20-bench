@@ -363,6 +363,10 @@ def test_repository_model_catalog_has_expected_active_ids() -> None:
         "M-0101",
         "M-0104",
         "M-0026",
+        "M-0027",
+        "M-0028",
+        "M-0029",
+        "M-0030",
     )
 
 
@@ -694,6 +698,58 @@ def test_ox_alpha_uses_json_object_output_mode() -> None:
             Decimal("0.15"),
             1_024,
         ),
+        (
+            "M-0027",
+            "Grok 4.7 (high)",
+            "x-ai/grok-4.7",
+            "xai",
+            "high",
+            32_768,
+            300,
+            "supported",
+            Decimal("1.60"),
+            Decimal("0.40"),
+            1_024,
+        ),
+        (
+            "M-0028",
+            "GPT-6 Luna (high)",
+            "openai/gpt-6-luna",
+            "openai",
+            "high",
+            32_768,
+            300,
+            "supported",
+            Decimal("0.10"),
+            Decimal("0.01"),
+            1_024,
+        ),
+        (
+            "M-0029",
+            "GPT-6 Sol (high)",
+            "openai/gpt-6-sol",
+            "openai",
+            "high",
+            32_768,
+            300,
+            "supported",
+            Decimal("2.00"),
+            Decimal("0.20"),
+            1_024,
+        ),
+        (
+            "M-0030",
+            "Claude Opus 5.5 (high)",
+            "anthropic/claude-opus-5.5",
+            "anthropic",
+            "high",
+            32_768,
+            300,
+            "unsupported",
+            Decimal("4.00"),
+            Decimal("0.20"),
+            512,
+        ),
     ],
 )
 def test_active_benchmark_model_routes_are_fully_pinned(
@@ -740,7 +796,8 @@ def test_active_benchmark_model_routes_are_fully_pinned(
     )
     expected_cache_control = (
         "ephemeral_5m"
-        if model_id in {"M-0005", "M-0006", "M-0013", "M-0014", "M-0018", "M-0020"}
+        if model_id
+        in {"M-0005", "M-0006", "M-0013", "M-0014", "M-0018", "M-0020", "M-0030"}
         else "automatic"
     )
     assert model.configuration.prompt_cache.control == expected_cache_control
@@ -772,6 +829,10 @@ def test_active_benchmark_model_routes_are_fully_pinned(
         "M-0101",
         "M-0104",
         "M-0026",
+        "M-0027",
+        "M-0028",
+        "M-0029",
+        "M-0030",
     ],
 )
 def test_active_model_configuration_stays_out_of_guesser_visible_projection(

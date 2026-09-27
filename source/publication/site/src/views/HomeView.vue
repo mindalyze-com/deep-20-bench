@@ -60,7 +60,7 @@ const applyRouteContext = (): void => {
   setRouteContext({
     title: "Deep20Bench",
     description:
-      "Compare AI models in a public Twenty Questions LLM benchmark measuring question strategy, multi-turn reasoning, state tracking, reliability, cost, and runtime.",
+      "Compare AI models playing Twenty Questions: how they choose questions, use earlier answers, follow the rules, and compare on score, cost, and time.",
     level: null,
     position: null,
     crumbs: [],
@@ -125,14 +125,15 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <h1>How well can AI models play Twenty Questions?</h1>
             <p class="hero-lead">
               Deep20Bench is a public benchmark for large language models (LLMs). It measures how
-              efficiently they identify a hidden subject through adaptive questions.
-              <template v-if="qualified">Answers give four directions - Yes, Rather yes,
-                Rather no, and No - plus Unknown when the evidence is unresolved.</template>
+              many questions they need to identify a hidden subject - a person, character, or
+              thing. Each question builds on earlier answers.
+              <template v-if="qualified">Answers are Yes, Rather yes, Rather no, or No,
+                with Unknown when there is not enough clear information to answer.</template>
               <template v-else>Answers are Yes, No, or Unknown.</template>
             </p>
             <div class="hero-actions">
               <RouterLink class="button button-primary" :to="editionRoute('results')">
-                Explore pilot results ↓
+                Explore results ↓
               </RouterLink>
             </div>
           </div>
@@ -150,7 +151,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
               </p>
             </article>
             <article class="hero-pilot-note">
-              <p class="hero-detail-label">Current pilot</p>
+              <p class="hero-detail-label">Current tests</p>
               <p v-if="evaluated.length > 0">
                 All results, game transcripts, and scoring data are public. This edition
                 compares {{ evaluated.length }} model versions and settings across
@@ -191,7 +192,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="content-inner">
           <header class="section-heading">
             <div>
-              <p class="eyebrow">What this pilot tests</p>
+              <p class="eyebrow">What the game tests</p>
               <h2>The game combines several abilities.</h2>
             </div>
             <p>Each answer should improve the model’s next question.</p>
@@ -209,12 +210,12 @@ const scoreDots = computed<ScoreDot[]>(() =>
             </article>
             <article>
               <span>03</span>
-              <h3>State tracking</h3>
-              <p>Use all prior questions and answers to plan the next question.</p>
+              <h3>Using earlier answers</h3>
+              <p>Use all earlier questions and answers to plan the next question.</p>
             </article>
             <article>
               <span>04</span>
-              <h3>Decision discipline</h3>
+              <h3>Knowing when to guess</h3>
               <p>Make an exact guess before the limit.</p>
             </article>
           </div>
@@ -225,18 +226,18 @@ const scoreDots = computed<ScoreDot[]>(() =>
             </div>
             <div class="adjudication-summary">
               <p v-if="qualified">
-                The Guesser is the LLM under test: it asks questions and makes the final guess.
-                Fresh answers use web research and, under the recorded policy, model knowledge.
-                Every directional answer, including Rather yes and Rather no, receives an
-                independent blind review. A blind Judge resolves any exact-token disagreement.
-                The Guesser receives only the final answer token.
+                The Guesser is the model being tested: it asks questions and makes the final guess.
+                For a new answer, the Oracle uses web research and, when the run's rules allow it, its
+                own knowledge. A Reviewer checks every answer except Unknown without seeing
+                the Oracle's answer. If their answers differ, a Judge decides without seeing
+                either answer. The Guesser receives only the final answer.
               </p>
               <p v-else>
-                The Guesser is the LLM under test: it asks yes-or-no questions and makes the final
+                The Guesser is the model being tested: it asks yes-or-no questions and makes the final
                 guess. For every question, the Oracle must search the live web and cite evidence
-                instead of relying on memory. A blind Reviewer uses that evidence to make an
-                independent second decision on every YES or NO. If the decisions disagree, a blind
-                Judge decides. The Guesser is isolated from this process and receives only the
+                instead of relying on memory. A Reviewer checks every YES or NO using that
+                evidence without seeing the Oracle's answer. If their answers differ, a
+                Judge decides without seeing either answer. The Guesser receives only the
                 final YES, NO, or UNKNOWN.
               </p>
               <RouterLink
@@ -255,10 +256,10 @@ const scoreDots = computed<ScoreDot[]>(() =>
           <header class="section-heading">
             <div>
               <p class="eyebrow">Edition {{ manifest.active_cohort.edition_label }} results</p>
-              <h2>{{ evaluated.length === 1 ? 'One evaluated model.' : 'How the runs compare.' }}</h2>
+              <h2>{{ evaluated.length === 1 ? 'One tested model.' : 'How the models compare.' }}</h2>
             </div>
             <p>
-              Lower is better. A failed trial contributes {{ failurePenalty }} questions.
+              Lower is better. A failed round scores {{ failurePenalty }} points.
             </p>
           </header>
 
@@ -268,8 +269,8 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 <p class="eyebrow">
                   {{
                     manifest.winner.joint
-                      ? "Joint lowest average scores in this pilot"
-                      : "Lowest average score in this pilot"
+                      ? "Joint lowest average scores in these tests"
+                      : "Lowest average score in these tests"
                   }}
                 </p>
                 <h3>{{ manifest.winner.display_names.join(" · ") }}</h3>
@@ -407,26 +408,26 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="content-inner">
           <header class="section-heading">
             <div>
-              <p class="eyebrow">How to read the pilot</p>
-              <h2>Comparable runs, limited conclusions.</h2>
+              <p class="eyebrow">How to read the results</p>
+              <h2>Same test setup, limited conclusions.</h2>
             </div>
-            <p>The cohort is small. Shared conditions and public records keep it inspectable.</p>
+            <p>We test only a small set of subjects. The setup and game records are public so you can check the results.</p>
           </header>
           <div class="trust-grid">
             <article>
               <span>01</span>
               <h3>Consistent setup</h3>
-              <p>The same subjects, trial count, question limit, and scoring policy apply.</p>
+              <p>Models in each edition use the same subjects, number of rounds, question limit, and scoring rules.</p>
             </article>
             <article>
               <span>02</span>
               <h3>Failures stay visible</h3>
-              <p>Failures receive a declared penalty. Invalid outputs consume turns.</p>
+              <p>Failed rounds receive a fixed score. Replies in the wrong format use up a turn.</p>
             </article>
             <article>
               <span>03</span>
               <h3>Public records</h3>
-              <p>Runs link to subjects, episodes, transcripts, evidence, usage, cost, and timing.</p>
+              <p>Each model's results link to its subjects, rounds, questions and answers, sources, costs, and times.</p>
             </article>
           </div>
         </div>

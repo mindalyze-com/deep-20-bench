@@ -862,6 +862,13 @@ class EpisodeOutcome(StrictModel):
     terminal_reason: TerminalReason
     scoring_eligible: bool
     publication_eligible: bool
+    synthetic: bool = Field(default=False, exclude_if=lambda v: not v)
+
+    @model_validator(mode="after")
+    def synthetic_results_are_unscored(self) -> EpisodeOutcome:
+        if self.synthetic and (self.scoring_eligible or self.publication_eligible):
+            raise ValueError("synthetic outcomes cannot be scored or publication eligible")
+        return self
 
 
 class EpisodeSummary(StrictModel):

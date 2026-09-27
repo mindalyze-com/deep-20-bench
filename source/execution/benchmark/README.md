@@ -1,5 +1,48 @@
 # Benchmark control plane
 
+## Released edition launches
+
+Edition **1.1 is official**: five ASK answers (YES, NO, UNKNOWN, RATHER_YES, RATHER_NO),
+three trials per subject, ten subjects, 40 questions and seed 0. GUESS remains three-token.
+`config/editions.yaml` selects the default; `config/edition-profiles/1.1.yaml` owns the shared
+execution/publication contract. `config/publication.yml` contains site settings only.
+
+Preview without credentials, writes or paid calls:
+
+```bash
+uv run deep20 benchmark run --edition 1.1 --model M-0027 \
+  --run-id BX-edition11-example --dry-run
+scripts/run-all-models.sh --edition 1.1 --model M-0027 --model M-0028 \
+  --sequence 002 --dry-run
+```
+
+Omitting `--edition` selects the current release and derives official mode. A positional
+benchmark ID must match it. Remove `--dry-run` only for an authorized live run; use the
+detached procedure below for full benchmarks. Batch children recheck the planned contract.
+
+Explicit `--iterations`, `--targets` and `--seed` overrides are recorded. Changed values create
+experimental variants excluded from the official leaderboard. Different answer rules or role
+configurations also require `--variant NAME`. Resume checks reject changed contracts before
+paid calls; use fresh IDs. Historical records remain readable and retain their original labels.
+Edition metadata never enters model inputs, sessions or prompt-cache keys.
+
+Compare recorded contracts offline:
+
+```bash
+uv run deep20 benchmark compare path/to/first/manifest.json path/to/second/manifest.json
+```
+
+Historical runs without edition metadata need manual contract checks. For controlled comparisons,
+also match the history cutoff or disable ASK reuse; live sources and providers may change.
+
+The inactive [edition 1.2 draft](../../../documentation/edition-1.2-draft.md) uses this same
+control plane with per-role OpenRouter, Ollama, interactive and mock implementations.
+Select it explicitly with `--edition 1.2`; role settings use `--runtime-config`.
+`preview` is offline. Draft paid runs require `--live --budget-usd N`; all-mock runs are
+offline. `work` operates the private request queue. Defaults remain three iterations and the
+released OpenRouter path. Draft artifacts use version 4 under `private/editions/1.2/`;
+released version-3 artifacts retain their existing paths and readers.
+
 For a Guesser-free replay of recorded questions against the current Oracle pipeline, use
 `deep20 benchmark replay-oracle`. See [Oracle question replay](../../../documentation/oracle-question-replay.md)
 for the Astra five-answer source, preview, filters, private comparison reports, and continuation.
@@ -29,7 +72,7 @@ for that subject do not rescan external history. Pass `--oracle-history-before` 
 subjects at one cutoff. Existing executions retain the discovery policy in their manifest.
 
 
-B-0003 adds an experimental five-answer qualified_v1 profile with three default repetitions and the same models. Its Guesser and Oracle profiles must match. Qualified tokens stay out of standard runs and the v9 publication. See [Five-answer experiment](../../../documentation/five-answer-experiment.md).
+B-0003 is the official edition 1.1 five-answer qualified_v1 profile with three default repetitions and the same models. Its Guesser and Oracle profiles must match. Qualified tokens stay out of standard runs and the v9 publication. See [Five-answer experiment](../../../documentation/five-answer-experiment.md).
 
 Earlier B-0003 definitions explicitly selected `adjudication_policy: judge_stable_knowledge_v1` in
 Oracle configuration. The versioned Judge fallback changes the immutable definition hash;
@@ -73,7 +116,7 @@ instructions, and is validated locally against the complete action contract with
 `config/benchmarks.yaml` registers benchmark policy templates by `B-…` ID and fixes:
 
 - Default iterations, normally three.
-- Game policy apart from the required per-run benchmark mode.
+- Game policy apart from the edition-derived benchmark mode.
 - Oracle, blind Reviewer, blind Judge, and Guess Validator configurations. Reviewer and Judge
   routes are nested under the Oracle configuration.
 
@@ -85,7 +128,7 @@ separate 40-question release cohort with its own prompt and configuration pins. 
 admits a different limit; current execution defaults do not change either release definition.
 
 `--model` is required and binds one immutable Guesser configuration to the run. With no target
-selection, a new execution selects every active subject in catalog order; explicit target lists
+selection, a released execution uses its exact profile subject list; explicit target lists
 preserve caller order and reject inactive subjects. Trials run numerically and execution is
 sequential. Failed trials are
 retained as infrastructure failures and are never silently replaced.
@@ -101,9 +144,8 @@ the subject identity hash or any component request, so status changes alone do n
 existing runs. Changes to subject identity, game policy, or other immutable context still fail
 the existing consistency checks. Historical publication cohorts retain their configured IDs.
 
-`--benchmark-mode` is also required and accepts exactly `official` or `experimental`. There is
-no implicit mode: omitting the option stops before credentials or providers are accessed and
-prints both valid choices.
+`--benchmark-mode` is optional. Released profiles derive `official`; deliberate variants and
+draft runtimes derive `experimental`. Explicit incompatible modes are rejected before spending.
 
 Public route metadata can be checked independently without paid model calls. This checks the
 complete registered Guesser catalog, but it does not decide whether an official run may start:
@@ -170,9 +212,9 @@ uv run deep20 benchmark canary --model M-0001
 ```
 
 ```bash
-uv run deep20 benchmark run B-0001 \
+uv run deep20 benchmark run --edition 1.1 \
   --model M-0001 \
-  --benchmark-mode experimental \
+  --variant diagnostic \
   --targets T-0001 \
   --targets T-0004 \
   --run-id BX-019-example \
@@ -181,17 +223,16 @@ uv run deep20 benchmark run B-0001 \
   --log-level INFO
 ```
 
-Target selection and iteration flags are optional; `--model`, `--run-id`, and
-`--benchmark-mode` are required. Every run enforces an infrastructure circuit breaker: after
+Target selection, iteration, and benchmark-mode flags are optional; `--model` and `--run-id`
+are required. Every run enforces an infrastructure circuit breaker: after
 `--max-consecutive-infrastructure-failures` consecutive infrastructure failures (default 5) the
 run aborts with a typed `infrastructure_circuit_breaker_open` error instead of burning the
 remaining schedule; the execution can be resumed or repaired later. This minimal form runs the
-selected model against all active subjects with the default three iterations:
+selected model against the profile's ten subjects with the default three iterations:
 
 ```bash
-uv run deep20 benchmark run B-0001 \
+uv run deep20 benchmark run --edition 1.1 \
   --model M-0001 \
-  --benchmark-mode experimental \
   --run-id BX-019-example
 ```
 
@@ -207,7 +248,7 @@ the executing Git commit in the signed benchmark event stream and final typed re
 repairs run startup canaries by default; pass `--no-canary` to skip those paid probes:
 
 ```bash
-uv run deep20 benchmark repair B-0001 \
+uv run deep20 benchmark repair --edition 1.1 \
   --model M-0001 \
   --benchmark-mode official \
   --run-id BX-019-example
@@ -227,11 +268,11 @@ Mixed-contract executions never seed historical ASK inventories. Official repair
 this exception. Prefer a fresh
 execution when a uniform factual contract is required for comparison.
 
-The batch wrapper requires the benchmark ID and execution mode explicitly. Preview a
-five-answer batch on all active subjects with:
+The batch wrapper derives the benchmark ID and official mode from the edition. Preview a
+five-answer batch on the profile's subjects with:
 
 ```bash
-scripts/run-all-models.sh B-0003 experimental 001 \
+scripts/run-all-models.sh --edition 1.1 --all-models --sequence 001 \
   --exclude-model M-0013 \
   --exclude-model M-0017 \
   --dry-run
@@ -244,24 +285,17 @@ Recheck the routes before selecting the actual batch. To select only particular 
 registered models; `--exclude-model` then removes named registrations. Unknown IDs, duplicate
 selections, an empty selection, or incompatible benchmark/mode settings fail before launch.
 
-The positional arguments are benchmark ID, mode, optional three-digit sequence (default `001`),
-and optional iterations. Iterations come from the benchmark catalog when omitted: **3 for
-B-0003**. B-0001 also defaults to 3; B-0002 retains its separate default of 5. The former
-`scripts/run-all-models.sh experimental ...` syntax is rejected. Use `B-0001 official` explicitly
-for a standard official batch; B-0003 requires `experimental`.
-
-`--dry-run` validates local configuration and prints the commands without writing batch
-artifacts, checking live routes, running canaries, or starting games. Remove it to execute the
-batch. Full macOS batches must still run in detached `screen` sessions with
-`nohup /usr/bin/caffeinate -i ... </dev/null >>run.log 2>&1 &`. Verify screen, caffeinate,
-benchmark processes, startup canaries, manifests, and the first turn after launching.
+Prefer `--edition`, `--sequence` and `--iterations` for new batches. Legacy positional
+benchmark/mode arguments remain consistency checks; they cannot bypass edition validation.
+Iteration defaults come from the selected edition, and explicit differences produce a variant.
+The old B-0003 experimental label remains only in historical execution IDs and artifacts.
 
 The wrapper defaults to per-subject history discovery for every model, matching direct runs.
 It can reuse newly completed games from concurrent runs without an extra option. History is
 discovered once per subject, so available answers can depend on process timing. Preview it with:
 
 ```bash
-scripts/run-all-models.sh B-0003 experimental 002 \
+scripts/run-all-models.sh --edition 1.1 --sequence 002 \
   --model M-0001 --model M-0006 --dry-run
 ```
 

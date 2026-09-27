@@ -16,8 +16,11 @@ import typer
 from pydantic import JsonValue
 
 from .compiler import compile_publication
+from .draft import load_draft, render_draft
+from .edition_registry import EditionRegistry
 from .integrity import (
     PublicationInputError,
+    canonical_json,
     parse_json_object,
     parse_yaml_object,
     sha256_text,
@@ -46,6 +49,7 @@ from .models import (
     PublicationManifestDocument,
     PublicRejectedOutput,
     PublishedDataset,
+    QualifiedEligibility,
     StaticRouteEntry,
     StaticRouteManifest,
 )
@@ -58,6 +62,26 @@ from .serialize import (
 from .split import edition_index, split_publication
 
 app = typer.Typer(help="Compile and render the independent Deep20Bench publication site.")
+
+
+@app.command("preview-draft")
+def preview_draft(
+    model_id: Annotated[str, typer.Option("--model")],
+    run_id: Annotated[str, typer.Option("--run-id")],
+    edition_id: Annotated[str, typer.Option("--edition")],
+    repository: Annotated[Path | None, typer.Option()] = None,
+) -> None:
+    """Render a local draft report under private/, without changing docs/."""
+    try:
+        root = _repository_root(repository or Path.cwd())
+        report = load_draft(root, edition_id=edition_id, model_id=model_id, run_id=run_id)
+        destination = root / "private" / "editions" / edition_id / "previews" / model_id / f"{run_id}.html"
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(render_draft(report), encoding="utf-8")
+        typer.echo(f"publication.draft_preview path={destination}")
+    except (OSError, ValueError, PublicationInputError):
+        typer.echo("publication.draft_preview_failed: invalid or missing local draft artifacts", err=True)
+        raise typer.Exit(1) from None
 
 
 @dataclass(frozen=True)
@@ -80,24 +104,23 @@ _EDITORIAL_PAGES = (
         route="results/reliability",
         browser_title="LLM Benchmark Stability and Reliability | Deep20Bench",
         description=(
-            "Compare repeated-trial stability, confidence-interval width, and output-contract "
-            "compliance across tested LLMs."
+            "Compare how consistent LLM scores are across repeated rounds, their confidence "
+            "intervals, and how often models follow the required reply format."
         ),
     ),
     _EditorialPage(
         route="results/cost",
         browser_title="LLM Benchmark Cost Comparison | Deep20Bench",
         description=(
-            "Compare recorded LLM benchmark costs by tested model, support component, run, "
-            "and episode."
+            "Compare recorded LLM benchmark costs by tested model, answer-checking model, run, "
+            "and round."
         ),
     ),
     _EditorialPage(
         route="results/time",
         browser_title="LLM Benchmark Runtime and Response Time | Deep20Bench",
         description=(
-            "Compare tested-model response time, latency per call, and end-to-end LLM "
-            "benchmark runtime."
+            "Compare tested-model response times, time per call, and total LLM benchmark time."
         ),
     ),
     _EditorialPage(
@@ -496,9 +519,8 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
         canonical_route="",
         browser_title="Deep20Bench: A Twenty Questions LLM Benchmark",
         description=(
-            f"Compare {evaluated_count} AI models in a public Twenty Questions LLM benchmark "
-            "measuring question strategy, multi-turn reasoning, state tracking, reliability, "
-            "cost, and runtime."
+            f"Compare {evaluated_count} AI models playing Twenty Questions: how they choose "
+            "questions, use earlier answers, follow the rules, and compare on score, cost, and time."
         ),
         last_modified=last_modified,
     )
@@ -691,6 +713,41 @@ def _build_site(
     )
 
 
+def read_publication_config(path: Path) -> PublicationConfig:
+    """Compose site settings with the same released profiles used before execution."""
+    from .models import PublicationSettings, ReleasedEditionProfile
+
+    value = _read_yaml(path)
+    if value.get("version") != 3:
+        return parse_publication_config(value, str(path))
+    settings = PublicationSettings.model_validate(value)
+    registry = EditionRegistry.model_validate(_read_yaml(path.parent / "editions.yaml"))
+    profiles = []
+    for edition in registry.editions:
+        if edition.status == "draft":
+            continue
+        if edition.profile_path is None:
+            raise ValueError("released edition has no shared profile")
+        profile = ReleasedEditionProfile.model_validate(_read_yaml(path.parent / edition.profile_path))
+        release = profile.cohort.eligibility
+        if (profile.oracle_configuration is not None and isinstance(release, QualifiedEligibility)
+            and (sha256_text(canonical_json(profile.oracle_configuration.model_dump(mode="json")))
+                != release.oracle_configuration_hash
+                or profile.validator_configuration is None
+                or sha256_text(canonical_json(profile.validator_configuration.model_dump(mode="json")))
+                != release.validator_configuration_hash)):
+            raise ValueError("edition configurations differ from their release pins")
+        profiles.append(profile)
+    if not profiles or any(p.score != profiles[0].score for p in profiles):
+        raise ValueError("released editions must declare the same score policy")
+    profiles.sort(key=lambda profile: profile.cohort.edition_id != registry.default_edition_id)
+    config = PublicationConfig(site=settings.site, score=profiles[0].score,
+                               default_edition_id=registry.default_edition_id,
+                               cohorts=tuple(p.cohort for p in profiles))
+    registry.validate_publication(config)
+    return config
+
+
 @app.command("build")
 def build(
     repository: Annotated[
@@ -708,7 +765,10 @@ def build(
         site_root = publication_root / "site"
         publication_path = root / "config" / "publication.yml"
         subject_path = root / "config" / "subjects.yaml"
-        config = parse_publication_config(_read_yaml(publication_path), str(publication_path))
+        config = read_publication_config(publication_path)
+        registry_path = root / "config" / "editions.yaml"
+        if registry_path.exists():
+            EditionRegistry.model_validate(_read_yaml(registry_path)).validate_publication(config)
         subjects, subject_hash = parse_subject_catalog(
             _read_yaml(subject_path),
             str(subject_path),

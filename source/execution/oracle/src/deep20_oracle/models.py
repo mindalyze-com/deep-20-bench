@@ -4,6 +4,7 @@ from decimal import Decimal
 from enum import StrEnum
 from typing import Literal
 
+from deep20_backends.models import BackendKind, BackendObservation
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -71,6 +72,7 @@ class OracleDecisionPath(StrEnum):
     ORACLE_UNKNOWN = "oracle_unknown"
     REVIEWER_AGREEMENT = "reviewer_agreement"
     JUDGE_DISAGREEMENT = "judge_disagreement"
+    REVIEW_BYPASSED = "review_bypassed"
 
 
 class OracleQuestionType(StrEnum):
@@ -318,6 +320,14 @@ class OracleAdjudication(StrictModel):
             ):
                 raise ValueError("Oracle UNKNOWN must bypass review and remain final")
             return self
+        if self.decision_path is OracleDecisionPath.REVIEW_BYPASSED:
+            if (
+                self.reviewer is not None or self.judge is not None
+                or self.disagreement or self.judge_invoked
+                or self.final_answer is not self.oracle_answer
+            ):
+                raise ValueError("review bypass must retain the Oracle answer without fake review")
+            return self
         if self.reviewer is None:
             raise ValueError("Oracle YES and NO require a Reviewer decision")
         expected_disagreement = self.reviewer.answer is not self.oracle_answer
@@ -364,7 +374,7 @@ class RecoveryReasonCount(StrictModel):
 class RecoveryMetrics(StrictModel):
     """Typed recovery accounting with no raw response or private-state channel."""
 
-    request_attempts: int = Field(default=1, ge=1)
+    request_attempts: int = Field(default=1, ge=0)
     retried_calls: int = Field(default=0, ge=0)
     recovered_calls: int = Field(default=0, ge=0)
     exhausted_retries: int = Field(default=0, ge=0)
@@ -404,7 +414,7 @@ class ProviderTrace(StrictModel):
     response_id: str | None = None
     response_cache_status: str | None = None
     finish_reason: str | None = None
-    request_attempts: int = Field(default=1, ge=1)
+    request_attempts: int = Field(default=1, ge=0)
     retry_after_ms: int | None = Field(default=None, ge=0)
     recovery: RecoveryMetrics = Field(default_factory=RecoveryMetrics)
     requested_model: str
@@ -418,11 +428,22 @@ class ProviderTrace(StrictModel):
     discarded_error_outputs: tuple[ProviderOutputCapture, ...] = ()
     annotations: tuple[JsonObject, ...] = ()
     usage: ProviderUsage = Field(default_factory=ProviderUsage)
+    backend: BackendObservation | None = Field(default=None, exclude_if=lambda v: v is None)
 
     @model_validator(mode="after")
     def matching_request_attempts(self) -> ProviderTrace:
         if self.request_attempts != self.recovery.request_attempts:
             raise ValueError("provider request attempts differ from recovery metrics")
+        if self.request_attempts == 0 and (
+            self.backend is None or self.backend.inference_requests != 0
+        ):
+            raise ValueError("zero inference attempts require explicit backend provenance")
+        if self.backend is not None and self.backend.kind is BackendKind.MOCK and (
+                self.request_attempts or self.usage.search_count or self.usage.input_tokens
+                or self.usage.output_tokens or self.usage.cost_usd != Decimal(0)
+                or self.resolved_model is not None or self.resolved_provider is not None
+        ):
+            raise ValueError("a mock cannot report provider activity or a resolved route")
         return self
 
     @field_validator("request", "response", "annotations", mode="before")
@@ -446,9 +467,16 @@ class OracleResearchAttemptSummary(DecisionSupport):
     outcome: OracleResearchOutcome
     attempted_queries: tuple[str, ...] = Field(min_length=1, max_length=MAX_SERVER_TOOL_CALLS)
     query_provenance: Literal["model_reported"] = "model_reported"
-    web_search_requests: int = Field(ge=1)
+    web_search_requests: int = Field(ge=0)
+    synthetic: bool = Field(default=False, exclude_if=lambda v: not v)
     annotation_count: int = Field(ge=0)
     evidence_count: int = Field(ge=0, le=3)
+
+    @model_validator(mode="after")
+    def real_research_requires_search(self) -> OracleResearchAttemptSummary:
+        if self.web_search_requests == 0 and not self.synthetic:
+            raise ValueError("real research requires recorded web search")
+        return self
 
 
 class OracleResearchSummary(StrictModel):
@@ -582,6 +610,8 @@ class OracleResearchAuditTrace(StrictModel):
                     supporting_statement=attempt.result.supporting_statement,
                     attempted_queries=attempt.result.attempted_queries,
                     web_search_requests=attempt.provider.usage.search_count,
+                    synthetic=(attempt.provider.backend is not None
+                               and attempt.provider.backend.kind is BackendKind.MOCK),
                     annotation_count=len(attempt.provider.annotations),
                     evidence_count=len(attempt.result.evidence),
                 )
@@ -625,6 +655,7 @@ class ProviderResultAudit(StrictModel):
     """Sanitized per-call provider facts retained in an episode result."""
 
     schema_version: Literal[1] = 1
+    backend: BackendObservation | None = Field(default=None, exclude_if=lambda v: v is None)
     requested_at: str
     completed_at: str
     latency_ms: int = Field(ge=0)
@@ -672,6 +703,7 @@ class FailureFrame(StrictModel):
 
 
 class ProviderFailureDiagnostics(StrictModel):
+    backend: BackendObservation | None = Field(default=None, exclude_if=lambda value: value is None)
     http_status_code: int | None = Field(default=None, ge=100, le=599)
     error_type: str | None = Field(default=None, max_length=200)
     error_code: str | None = Field(default=None, max_length=200)
@@ -684,7 +716,7 @@ class ProviderFailureDiagnostics(StrictModel):
     response_id: str | None = None
     response_cache_status: str | None = None
     finish_reason: str | None = None
-    request_attempts: int = Field(default=1, ge=1)
+    request_attempts: int = Field(default=1, ge=0)
     retry_after_ms: int | None = Field(default=None, ge=0)
     recovery: RecoveryMetrics = Field(default_factory=RecoveryMetrics)
     latency_ms: int = Field(ge=0)

@@ -90,7 +90,7 @@ const jumpToTurn = (turnNumber: number): void => {
       </div>
       <p>
         Turns appear in recorded order. Each action shows the Guesser first, followed by
-        the final adjudicated token.
+        the final checked answer.
       </p>
     </header>
 
@@ -116,7 +116,7 @@ const jumpToTurn = (turnNumber: number): void => {
           <pre>{{ episode.guesser_disclosure.begin_message }}</pre>
         </article>
         <p class="detail-note">
-          Valid recorded outputs are canonical structured actions. Rejected Guesser text
+          Valid replies are shown in the required format. Rejected Guesser text
           is published separately without provider or call identifiers.
         </p>
       </div>
@@ -227,7 +227,7 @@ const jumpToTurn = (turnNumber: number): void => {
               <summary>
                 <span>
                   <strong>Recorded Guesser output</strong>
-                  <small>Canonical structured JSON</small>
+                  <small>Required JSON format</small>
                 </span>
                 <span aria-hidden="true">View ↓</span>
               </summary>
@@ -269,7 +269,7 @@ const jumpToTurn = (turnNumber: number): void => {
 
           <div class="answer" :class="`answer-${turn.answer.toLowerCase()}`">
             <span>
-              2 · {{ turn.adjudicator === "oracle" ? "Adjudication" : "Validator" }} returns
+              2 · {{ turn.adjudicator === "oracle" ? "Answer check" : "Validator" }} returns
             </span>
             <strong>{{ answerLabel(turn.answer) }}</strong>
           </div>

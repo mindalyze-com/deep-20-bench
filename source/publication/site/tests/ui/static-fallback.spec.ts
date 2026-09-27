@@ -66,9 +66,9 @@ test(
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "How well can AI models play Twenty Questions?",
     );
-    await expect(content).toContainText("What this pilot tests");
-    await expect(content).toContainText("How to read the pilot");
-    await expect(content).toContainText("Comparable runs, limited conclusions.");
+    await expect(content).toContainText("What the game tests");
+    await expect(content).toContainText("How to read the results");
+    await expect(content).toContainText("Same test setup, limited conclusions.");
     await expect(page.locator(".site-footer")).toBeVisible();
     await expect(page.locator(".static-home, .static-route-fallback")).toHaveCount(0);
     await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(2);
@@ -136,7 +136,7 @@ test(
       expect(await page.locator(".round-example").boundingBox()).toEqual(beforeRound);
       expect(hydrationMessages).toEqual([]);
       await expect(page.locator("#route-content")).toHaveCount(1);
-      await page.getByRole("link", { name: "Explore pilot results" }).click();
+      await page.getByRole("link", { name: "Explore results" }).click();
       await expect(page).toHaveURL(/\/editions\/1\.1\/results\/$/);
     } finally {
       releaseScripts();

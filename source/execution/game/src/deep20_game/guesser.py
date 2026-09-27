@@ -78,6 +78,8 @@ class Guesser:
                 "prompt_version": guesser_prompt_version(self.policy.prompt_profile),
                 "schema_hash": schema_hash,
                 "max_questions": self.policy.max_questions,
+                **({"namespace": self.config.cache_namespace}
+                   if self.config.cache_namespace is not None else {}),
             }
         )
         cache_key = f"deep20-guesser-{sha256_text(cache_material)[:40]}"

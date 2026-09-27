@@ -20,9 +20,11 @@ from types import FrameType
 from typing import Literal, NoReturn
 
 from deep20_benchmark.catalog import load_benchmark_catalog, load_model_catalog
-from deep20_benchmark.models import BenchmarkId, BenchmarkModelId
+from deep20_benchmark.edition_models import EditionExecution
+from deep20_benchmark.launch import plan_summary, prepare_request, request_definition
+from deep20_benchmark.models import BenchmarkExecutionId, BenchmarkId, BenchmarkModelId
 from deep20_game.config import BenchmarkMode
-from deep20_oracle.config import PromptProfile
+from deep20_oracle.catalog import load_subject_catalog
 from deep20_oracle.models import StrictModel
 from pydantic import AwareDatetime, Field, ValidationError
 
@@ -30,8 +32,13 @@ LOGGER = logging.getLogger("deep20.batch")
 
 
 class BatchOptions(StrictModel):
-    benchmark_id: BenchmarkId
-    mode: BenchmarkMode
+    all_models: bool = False
+    edition_id: str | None = None
+    variant_name: str | None = None
+    base_seed: int | None = None
+    target_ids: tuple[str, ...] | None = None
+    benchmark_id: BenchmarkId | None = None
+    mode: BenchmarkMode | None = None
     sequence: str = Field(pattern=r"^[0-9]{3}$")
     iterations: int | None = Field(default=None, ge=1, le=100)
     model_ids: tuple[BenchmarkModelId, ...] = ()
@@ -44,7 +51,8 @@ class BatchOptions(StrictModel):
 
 
 class BatchPlan(StrictModel):
-    schema_version: Literal[1] = 1
+    schema_version: Literal[1, 2] = 2
+    edition: EditionExecution | None = None
     benchmark_id: BenchmarkId
     mode: BenchmarkMode
     sequence: str = Field(pattern=r"^[0-9]{3}$")
@@ -69,9 +77,21 @@ class BatchPlan(StrictModel):
         command = [
             "uv", "run", "deep20", "benchmark", "run", str(self.benchmark_id),
             "--model", str(model_id), "--benchmark-mode", self.mode.value,
-            "--run-id", self.execution_id(model_id), "--iterations", str(self.iterations),
-            "--seed", str(self.base_seed), "--canary",
+            "--run-id", self.execution_id(model_id), "--canary",
         ]
+        if self.edition is None:
+            raise ValueError("legacy batch has no edition contract; use a fresh sequence")
+        command.extend(["--edition", self.edition.edition_id,
+                        "--expected-comparison", self.edition.comparison_hash])
+        overrides = self.edition.overrides
+        if overrides.iterations is not None:
+            command.extend(["--iterations", str(overrides.iterations)])
+        if overrides.base_seed is not None:
+            command.extend(["--seed", str(overrides.base_seed)])
+        if overrides.variant_name is not None:
+            command.extend(["--variant", overrides.variant_name])
+        for target in overrides.target_ids or ():
+            command.extend(["--targets", target])
         if self.refresh_oracle_history:
             command.append("--oracle-cache")
         elif self.oracle_history_before is None:
@@ -90,14 +110,21 @@ class RunningJob:
 
 def parse_options(argv: Sequence[str]) -> BatchOptions:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("benchmark_id", metavar="B-NNNN")
-    parser.add_argument("mode", choices=[mode.value for mode in BenchmarkMode],
+    parser.add_argument("benchmark_id", nargs="?", metavar="B-NNNN")
+    parser.add_argument("mode", nargs="?", choices=[mode.value for mode in BenchmarkMode],
                         metavar="<official|experimental>")
-    parser.add_argument("sequence", nargs="?", default="001", help="Three-digit batch sequence.")
+    parser.add_argument("sequence", nargs="?", default=None, help="Three-digit batch sequence.")
     parser.add_argument("iterations", nargs="?", type=int,
-                        help="Iterations per subject/model; defaults to the benchmark catalog (B-0003: 3).")
+                        help="Trials per subject/model; defaults to the selected edition profile.")
+    parser.add_argument("--edition", default=None, help="Edition profile; defaults to the current release.")
+    parser.add_argument("--variant", default=None)
+    parser.add_argument("--sequence", dest="sequence_option", default=None)
+    parser.add_argument("--iterations", dest="iterations_option", type=int, default=None)
+    parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--targets", action="append", default=None)
+    parser.add_argument("--all-models", action="store_true", help="Explicitly select every registered model.")
     parser.add_argument("--model", action="append", default=[],
-                        help="Select one registered model; repeat as needed. Default: all models.")
+                        help="Select one registered model; repeat as needed, or use --all-models.")
     parser.add_argument("--exclude-model", action="append", default=[],
                         help="Exclude one registered model; repeat as needed.")
     cache = parser.add_mutually_exclusive_group()
@@ -109,8 +136,12 @@ def parse_options(argv: Sequence[str]) -> BatchOptions:
     args = parser.parse_args(argv)
     try:
         return BatchOptions(
-            benchmark_id=BenchmarkId(args.benchmark_id), mode=BenchmarkMode(args.mode),
-            sequence=args.sequence, iterations=args.iterations,
+            all_models=args.all_models, edition_id=args.edition, variant_name=args.variant, base_seed=args.seed,
+            target_ids=tuple(args.targets) if args.targets is not None else None,
+            benchmark_id=BenchmarkId(args.benchmark_id) if args.benchmark_id else None,
+            mode=BenchmarkMode(args.mode) if args.mode else None,
+            sequence=args.sequence_option or args.sequence or "001",
+            iterations=args.iterations_option if args.iterations_option is not None else args.iterations,
             model_ids=tuple(BenchmarkModelId(value) for value in args.model),
             excluded_model_ids=tuple(BenchmarkModelId(value) for value in args.exclude_model),
             oracle_cache=not args.no_oracle_cache,
@@ -128,13 +159,11 @@ def prepare_plan(options: BatchOptions, repository: Path, *, now: datetime) -> B
         not options.oracle_cache or options.oracle_history_before is not None
     ):
         raise ValueError("Per-subject history cannot use a fixed cutoff or disable ASK reuse.")
-    benchmark = load_benchmark_catalog(repository / "config/benchmarks.yaml").entry(options.benchmark_id)
-    if options.mode is BenchmarkMode.OFFICIAL and (
-        benchmark.game_policy.prompt_profile is not PromptProfile.STANDARD
-        or benchmark.oracle_configuration.prompt_profile is not PromptProfile.STANDARD
-    ):
-        raise ValueError("Revised prompt profiles require experimental benchmark mode.")
+    benchmarks = load_benchmark_catalog(repository / "config/benchmarks.yaml")
+    subjects = load_subject_catalog(repository / "config/subjects.yaml")
     catalog = load_model_catalog(repository / "config/models.yaml")
+    if not options.model_ids and not options.all_models and not options.excluded_model_ids:
+        raise ValueError("Select --model or --all-models explicitly.")
     registered = catalog.registered_model_ids()
     for identifier in (*options.model_ids, *options.excluded_model_ids):
         if identifier not in registered:
@@ -153,10 +182,24 @@ def prepare_plan(options: BatchOptions, repository: Path, *, now: datetime) -> B
     cutoff = options.oracle_history_before
     if cutoff is not None and cutoff > now:
         raise ValueError("The Oracle history cutoff must be in the past.")
+    requests = tuple(prepare_request(
+        repository, models=catalog, benchmarks=benchmarks, subjects=subjects,
+        model_id=model_id, execution_id=BenchmarkExecutionId("BX-batch-preflight"),
+        edition_id=options.edition_id, benchmark_id=str(options.benchmark_id) if options.benchmark_id else None,
+        mode=options.mode, iterations=options.iterations, target_ids=options.target_ids,
+        base_seed=options.base_seed, variant_name=options.variant_name,
+    ) for model_id in selected)
+    request = requests[0]
+    if request.edition is None:
+        raise ValueError("batch launch requires a released edition or named release variant")
+    if any(r.edition != request.edition for r in requests):
+        raise ValueError("batch models have different comparison contracts")
+    definition = request_definition(request, benchmarks, subjects)
+    LOGGER.info("benchmark.batch_plan %s", plan_summary(request, definition))
     plan = BatchPlan(
-        benchmark_id=options.benchmark_id, mode=options.mode, sequence=options.sequence,
-        run_date=run_date, iterations=options.iterations or benchmark.default_iterations,
-        model_ids=selected,
+        edition=request.edition, benchmark_id=request.benchmark_id, mode=request.benchmark_mode,
+        sequence=options.sequence, run_date=run_date, iterations=definition.iterations,
+        model_ids=selected, base_seed=request.base_seed,
         oracle_history_before=cutoff.astimezone(UTC) if cutoff is not None else None,
         refresh_oracle_history=options.oracle_cache and cutoff is None,
     )

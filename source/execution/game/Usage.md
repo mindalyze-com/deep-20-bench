@@ -1,5 +1,11 @@
 # Game usage
 
+The main benchmark can compose this engine with the inactive
+[edition 1.2 backend interfaces](../../../documentation/edition-1.2-draft.md).
+Standalone game defaults remain unchanged. Mock outcomes are synthetic and unscored;
+synthetic and interactive roles cannot use factual answer caches. Only final adjudicated
+protocol tokens return to the Guesser, including when another role is supplied interactively.
+
 New B-0003 executions use `concise_knowledge_v1`: one research attempt requesting
 `research_query_target` queries (default 3), with an API ceiling calculated as the target plus
 two bonus calls. Valid completed answers within that ceiling retain normal independent
@@ -19,7 +25,9 @@ cache metadata never enters it. Standalone commands keep fresh-call behavior. Gu
 Validator responses are never cached. Older manifests retain their recorded cache scope.
 
 
-The paired qualified_v1 game and Oracle profiles permit RATHER_YES/RATHER_NO for ASK in experimental mode. Identity validation remains three-valued. See [Five-answer experiment](../../../documentation/five-answer-experiment.md).
+The paired `qualified_v1` game and Oracle profiles permit RATHER_YES/RATHER_NO for ASK in
+official edition 1.1 and in explicit experimental variants. Identity validation remains
+three-valued. See [Five-answer profile](../../../documentation/five-answer-experiment.md).
 
 An experimental game policy may set `prompt_profile: concise_v1` for shorter instructions
 about overlapping roles, uncertainty, and reconsidering assumptions. The default `standard`

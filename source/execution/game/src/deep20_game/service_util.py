@@ -3,6 +3,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
+from deep20_backends.models import BackendKind
 from deep20_oracle.models import ProviderTrace
 from deep20_oracle.util import openrouter_provider_matches
 from pydantic import ValidationError
@@ -15,6 +16,8 @@ MILLION = Decimal(1_000_000)
 
 
 def estimated_cache_savings(trace: ProviderTrace, config: ModelConfig) -> Decimal:
+    if trace.backend is not None and trace.backend.kind is not BackendKind.OPENROUTER:
+        return Decimal(0)
     usage = trace.usage
     cache = config.prompt_cache
     base = cache.input_usd_per_million / MILLION
@@ -52,14 +55,19 @@ def metrics_from_trace(trace: ProviderTrace, config: ModelConfig) -> CallMetrics
 
 
 def validate_game_trace(trace: ProviderTrace, config: ModelConfig) -> None:
-    if trace.resolved_model != trace.requested_model:
+    backend = trace.backend
+    external = backend is not None and backend.kind is not BackendKind.OPENROUTER
+    if external and (backend is None or backend.kind.value != config.gateway):
+        raise GameProviderError("backend differs from the configured implementation",
+                                code="backend_mismatch")
+    if not external and trace.resolved_model != trace.requested_model:
         raise GameProviderError(
             "resolved model differs from the configured exact model",
             code="resolved_model_mismatch",
             details={"provider_trace": trace.model_dump(mode="json")},
         )
     if (
-        trace.resolved_provider is not None
+        not external and trace.resolved_provider is not None
         and not openrouter_provider_matches(
             trace.requested_provider,
             trace.resolved_provider,

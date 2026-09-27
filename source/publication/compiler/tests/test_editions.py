@@ -10,7 +10,7 @@ from pydantic import ValidationError
 from test_compiler import _qualification_context
 from test_result_audit_model import _provider_audit
 
-from deep20_publication.cli import _read_yaml
+from deep20_publication.cli import _read_yaml, read_publication_config
 from deep20_publication.compiler import (
     _oracle_prompt_versions_match,
     _public_versioned_run_model,
@@ -19,7 +19,7 @@ from deep20_publication.compiler import (
 )
 from deep20_publication.integrity import canonical_json, sha256_text
 from deep20_publication.legacy import legacy_dataset
-from deep20_publication.loader import parse_publication_config, parse_subject_catalog
+from deep20_publication.loader import parse_subject_catalog
 from deep20_publication.models import (
     AcceptedReleaseRevision,
     CohortConfig,
@@ -92,7 +92,7 @@ def _qualified_run() -> tuple[LoadedRun, CohortConfig]:
 
 
 def _config() -> PublicationConfig:
-    return parse_publication_config(_read_yaml(REPOSITORY / "config/publication.yml"), "test")
+    return read_publication_config(REPOSITORY / "config/publication.yml")
 
 
 def test_current_release_defaults_and_distinct_edition_identity() -> None:
@@ -324,3 +324,28 @@ def test_exact_token_disagreement_requires_judge() -> None:
     payload["judge"] = None
     with pytest.raises(ValidationError, match="Judge"):
         OracleAdjudicationSnapshot.model_validate(payload)
+
+
+def test_five_answer_release_accepts_new_official_execution() -> None:
+    run, cohort = _qualified_run()
+    payload = run.model_dump(mode='json')
+    payload['manifest']['request']['benchmark_mode'] = 'official'
+    payload['manifest']['definition']['game_policy']['benchmark_mode'] = 'official'
+    assert _reason_codes(LoadedRun.model_validate(payload), cohort) == ()
+
+
+def test_explicit_variant_cannot_enter_a_released_leaderboard() -> None:
+    run, cohort = _qualified_run()
+    payload = run.model_dump(mode='json')
+    release = cohort.eligibility
+    assert isinstance(release, QualifiedEligibility)
+    payload['manifest']['request']['edition'] = {
+        'schema_version': 1, 'edition_id': '1.1', 'revision': 'test-release',
+        'profile_hash': 'a' * 64, 'comparison_hash': 'b' * 64,
+        'classification': 'variant', 'overrides': {'variant_name': 'diagnostic'},
+        'differences': [], 'answer_tokens': ['YES', 'RATHER_YES', 'RATHER_NO', 'NO', 'UNKNOWN'],
+        'prompts': release.prompts.model_dump(mode='json'),
+        'subject_identities': [s.model_dump(mode='json') for s in release.subject_identities],
+        'score': {'version': 'average-then-average-v1', 'failure_penalty_offset': 1},
+    }
+    assert 'edition_variant' in _reason_codes(LoadedRun.model_validate(payload), cohort)

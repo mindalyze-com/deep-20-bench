@@ -7,6 +7,7 @@ from decimal import Decimal
 from typing import Any, Self
 
 import httpx
+from deep20_backends.budget import HttpSpendingGuard, backend_error_cause
 from openrouter import OpenRouter
 from pydantic import TypeAdapter
 
@@ -52,8 +53,11 @@ class _RecordingClient:
     def __init__(
         self, timeout_seconds: int,
         search_mode: ParallelSearchMode = ParallelSearchMode.BASIC,
+        guard: HttpSpendingGuard | None = None,
     ):
         self._client = httpx.Client(timeout=timeout_seconds)
+        if guard is not None:
+            self._client.event_hooks = {"request": [guard.before], "response": [guard.after]}
         self._search_mode = search_mode
         self.max_web_search_requests: int | None = None
         self.last_json: dict[str, Any] | None = None
@@ -131,7 +135,10 @@ class OpenRouterProvider:
         enable_web_search: bool = True,
         title: str = "Deep20Bench Oracle",
         ignored_providers: tuple[str, ...] = (),
+        http_guard: HttpSpendingGuard | None = None,
     ):
+        if config.gateway != "openrouter":
+            raise ValueError("OpenRouter provider requires an openrouter gateway")
         if not api_key:
             raise ValueError("OpenRouter API key is required")
         if enable_web_search and not isinstance(config, OracleConfig):
@@ -146,6 +153,7 @@ class OpenRouterProvider:
             config.parallel_search_mode
             if enable_web_search and isinstance(config, OracleConfig)
             else ParallelSearchMode.BASIC,
+            http_guard,
         )
         self.client = OpenRouter(
             api_key=api_key,
@@ -211,6 +219,8 @@ class OpenRouterProvider:
                                 retries=no_sdk_retry_config(),
                             )
                         except Exception as error:
+                            if blocked := backend_error_cause(error):
+                                raise blocked from None
                             transport_error = is_transport_error(error)
                             malformed_response = is_malformed_response_error(error)
                             raw_response = self.http_client.last_json
@@ -312,6 +322,8 @@ class OpenRouterProvider:
                         no_result_retries += 1
                         time.sleep(_NO_RESULT_RETRY_DELAY_MS / 1_000)
             except Exception as error:
+                if blocked := backend_error_cause(error):
+                    raise OracleProviderError(str(blocked), code=blocked.code) from None
                 raw_response = self.http_client.last_json
                 if isinstance(error, ProviderDeadlineExceeded):
                     retry_reasons.append(RecoveryReason.HARD_DEADLINE_EXCEEDED)

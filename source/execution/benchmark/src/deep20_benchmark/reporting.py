@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from decimal import Decimal
 
+from .backend_reporting import draft_report_lines
 from .models import (
     AggregateSummary,
     BenchmarkResult,
@@ -251,6 +252,12 @@ def render_benchmark(result: BenchmarkResult) -> str:
     lines = [
         f"# {result.run.definition.display_name}",
         "",
+        *draft_report_lines(result),
+        *([f"- Edition: `{result.run.edition.edition_id}` / `{result.run.edition.revision}`",
+           f"- Comparison classification: `{result.run.edition.classification}`",
+           f"- Explicit overrides: {', '.join(result.run.edition.differences) or 'none'}",
+           f"- Comparison contract: `{result.run.edition.comparison_hash}`"]
+          if result.run.edition is not None else []),
         f"- Execution: `{result.run.execution_id}`",
         f"- Benchmark: `{result.run.definition.benchmark_id}`",
         f"- Model: `{model.model_id}` - {model.display_name}",

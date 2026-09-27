@@ -4,6 +4,7 @@ requires-python = ">=3.14.6, <3.15"
 
 [manifest]
 members = [
+    "deep20-backends",
     "deep20-benchmark",
     "deep20-game",
     "deep20-oracle",
@@ -139,10 +140,28 @@ wheels = [
 ]
 
 [[package]]
+name = "deep20-backends"
+version = "0.1.0"
+source = { editable = "source/execution/backends" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.28" },
+    { name = "pydantic", specifier = ">=2.12" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
+]
+
+[[package]]
 name = "deep20-benchmark"
 version = "0.1.0"
 source = { editable = "source/execution/benchmark" }
 dependencies = [
+    { name = "deep20-backends" },
     { name = "deep20-game" },
     { name = "deep20-oracle" },
     { name = "pydantic" },
@@ -152,6 +171,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "deep20-backends", editable = "source/execution/backends" },
     { name = "deep20-game", editable = "source/execution/game" },
     { name = "deep20-oracle", editable = "source/execution/oracle" },
     { name = "pydantic", specifier = ">=2.12" },
@@ -164,6 +184,7 @@ name = "deep20-game"
 version = "0.1.0"
 source = { editable = "source/execution/game" }
 dependencies = [
+    { name = "deep20-backends" },
     { name = "deep20-oracle" },
     { name = "openrouter" },
     { name = "pydantic" },
@@ -173,6 +194,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "deep20-backends", editable = "source/execution/backends" },
     { name = "deep20-oracle", editable = "source/execution/oracle" },
     { name = "openrouter", specifier = ">=1.1.2" },
     { name = "pydantic", specifier = ">=2.12" },
@@ -185,6 +207,7 @@ name = "deep20-oracle"
 version = "0.1.0"
 source = { editable = "source/execution/oracle" }
 dependencies = [
+    { name = "deep20-backends" },
     { name = "openrouter" },
     { name = "pydantic" },
     { name = "pyyaml" },
@@ -193,6 +216,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "deep20-backends", editable = "source/execution/backends" },
     { name = "openrouter", specifier = ">=1.1.2" },
     { name = "pydantic", specifier = ">=2.12" },
     { name = "pyyaml", specifier = ">=6.0.3" },

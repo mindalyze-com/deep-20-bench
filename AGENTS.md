@@ -58,14 +58,15 @@ Read and follow the relevant detailed specification before changing these areas:
 - Keep reviews local and covered by the `/private/` Git ignore rule. Do not force-add them,
   include them in public Git commits or publication output, or recreate a top-level `reviews/`.
 
-## Benchmark iteration default
+## Benchmark editions
 
-- Use **3 iterations per subject and model** for new-game (`B-0003` / `qualified_v1`)
-  benchmarks unless the user specifies another count. Apply this default to planning, command
-  examples, and launches. The earlier five-repeat diagnostic is not the new-game default.
-- Keep the new-game catalog default and future benchmark definitions at 3 unless the user
-  requests a different default. Iterations belong to benchmark scheduling, not the one-game
-  engine.
+- Edition 1.1 (`B-0003` / `qualified_v1`) is official: five ASK answers, three trials per subject,
+  ten subjects, 40 questions. Trials belong to scheduling; change defaults only on request.
+- `config/editions.yaml` selects the default; `config/edition-profiles/1.1.yaml` is the shared
+  execution/publication contract. Preview launches with `--edition 1.1 --dry-run`.
+- Explicit overrides that change the contract are variants, excluded from official results.
+  Match recorded contracts and check the edition's published leaderboard before comparing.
+- Edition 1.0 is historical. Preserve signed records and their original execution labels.
 
 ## Long benchmark launches
 
@@ -78,7 +79,7 @@ Read and follow the relevant detailed specification before changing these areas:
 
 ## Highest-priority invariant: Guesser isolation
 
-- The user-authorized B-0003 experiment uses paired `qualified_v1` profiles. It adds only
+- The official edition 1.1 B-0003 benchmark uses paired `qualified_v1` profiles. It adds only
   `RATHER_YES` and `RATHER_NO` to the final ASK-token vocabulary below. Every directional token
   requires blind review; any exact-token disagreement invokes the Judge. GUESS remains
   `YES`/`NO`/`UNKNOWN`. All other isolation requirements still apply. Standard profiles keep

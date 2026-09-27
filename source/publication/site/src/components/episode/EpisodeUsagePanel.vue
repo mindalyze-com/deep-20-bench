@@ -94,9 +94,9 @@ const telemetryRows = computed<TelemetryRow[]>(() => [
           <span>Public post-run view</span>
           <strong>Published actions and rejected Guesser text</strong>
           <p>
-            Typed actions, canonical valid outputs, and rejected Guesser text are public.
-            Adjudicator prompts, hidden reasoning, private identifiers, and provider
-            payloads are excluded.
+            Questions, guesses, correctly formatted replies, and rejected Guesser text are public.
+            Answer-checking models' instructions, hidden reasoning, private IDs, and full
+            provider messages are excluded.
           </p>
         </article>
       </div>
@@ -104,10 +104,10 @@ const telemetryRows = computed<TelemetryRow[]>(() => [
       <div
         class="table-wrap telemetry-wrap"
         tabindex="0"
-        aria-label="Scrollable component telemetry"
+        aria-label="Scrollable model usage totals"
       >
         <table class="data-table telemetry-table">
-          <caption class="visually-hidden">Component telemetry</caption>
+          <caption class="visually-hidden">Model usage totals</caption>
           <thead>
             <tr>
               <th>Component</th>

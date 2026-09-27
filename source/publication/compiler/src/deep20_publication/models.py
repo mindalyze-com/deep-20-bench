@@ -798,6 +798,7 @@ class BenchmarkSummaryEnvelope(FrozenModel):
 
 
 class BenchmarkRequestSnapshot(FrozenModel):
+    edition: EditionExecutionSnapshot | None = Field(default=None, exclude_if=lambda v: v is None)
     benchmark_id: str = Field(pattern=BENCHMARK_ID_PATTERN)
     execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
     model_id: str = Field(pattern=MODEL_ID_PATTERN)
@@ -1810,6 +1811,44 @@ class PublicationConfig(FrozenModel):
     @property
     def active_cohort(self) -> CohortConfig:
         return next(c for c in self.cohorts if c.edition_id == self.default_edition_id)
+
+
+class PublicationSettings(FrozenModel):
+    version: Literal[3]
+    site: PublicationSiteConfig
+
+
+class ReleasedEditionProfile(FrozenModel):
+    version: Literal[1]
+    revision: str
+    launchable: bool
+    prompt_profile: Literal["standard", "qualified_v1"]
+    score: ScorePolicy
+    cohort: CohortConfig
+    oracle_configuration: OracleConfigurationSnapshot | None = None
+    validator_configuration: ModelConfigurationSnapshot | None = None
+
+
+class EditionOverridesSnapshot(FrozenModel):
+    iterations: int | None = Field(default=None, ge=1, le=100)
+    target_ids: tuple[str, ...] | None = None
+    base_seed: int | None = Field(default=None, ge=0, le=2**31 - 1)
+    variant_name: str | None = None
+
+
+class EditionExecutionSnapshot(FrozenModel):
+    schema_version: Literal[1]
+    edition_id: EditionId
+    revision: str
+    profile_hash: str = Field(pattern=SHA256_PATTERN)
+    comparison_hash: str = Field(pattern=SHA256_PATTERN)
+    classification: Literal["standard", "variant"]
+    overrides: EditionOverridesSnapshot
+    differences: tuple[str, ...] = ()
+    answer_tokens: tuple[FactualAnswer, ...]
+    prompts: ReleasePromptVersions
+    subject_identities: tuple[ReleaseSubjectIdentity, ...]
+    score: ScorePolicy
 
 
 class LoadedRun(FrozenModel):

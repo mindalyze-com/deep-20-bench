@@ -1,5 +1,12 @@
 # Deep20Bench publication
 
+[Edition 1.2 DRAFT](../../documentation/edition-1.2-draft.md) is local and inactive.
+Ordinary builds validate released edition metadata against `config/editions.yaml`; they
+exclude the private draft tree and preserve the 1.0/1.1 selector and v9 compatibility data.
+`deep20-publication preview-draft --edition 1.2 --model M-9900 --run-id BX-example`
+validates the signed draft projection and renders a private local HTML report. The preview
+reader is independent of execution packages and does not change `docs/`.
+
 Evidence may additionally carry `kind: source_summary`. The strict reader and public projection
 retain this label and the full evidence text. The site displays it as a model-reported source
 summary, outside quotation blocks. An omitted kind means quotation and preserves old serialized
@@ -51,7 +58,9 @@ source/publication/
 └── site/                            independent Vue 3 + Vue Router + Vite frontend
 ```
 
-The edition registry and site configuration live in `config/publication.yml` (version 2).
+The edition registry is `config/editions.yaml`. Shared release profiles under
+`config/edition-profiles/` own cohort settings and release pins. Site settings live in
+`config/publication.yml` (version 3).
 `default_edition_id` names the current cohort. Machine IDs are strings `1.0` and `1.1`;
 display labels are `1` and `1.1`. Edition identity is separate from artifact or dataset schemas.
 Subject catalog `status: inactive` affects new benchmark scheduling only. Publication keeps
@@ -83,7 +92,9 @@ Guesser/Oracle/Reviewer/Judge/recovery/Validator prompt versions from one comple
 release contract. Retained call audits must
 cover every invoked role and agree with the episode records. Changed prompts or subjects
 require an explicit publication-definition decision; profile name alone cannot admit a run.
-Execution `experimental` provenance is preserved. Execution official-mode rules are unchanged.
+Historical execution `experimental` provenance is preserved. New standard edition 1.1 runs
+use `official` execution mode. Explicit variants carry edition provenance and are rejected
+from released leaderboards even if their remaining coverage happens to match.
 The publication label means the run qualified for its declared edition.
 Configuration pins hash canonical JSON after parsing the publication's typed snapshots, which
 expand omitted defaults; they are not hashes of raw YAML or unnormalized execution JSON.
@@ -123,7 +134,9 @@ the singular `prompt_version` is null for such runs and unchanged for single-ver
 does not make a mixed-contract run eligible as an execution-time answer-cache source. Future
 unlisted revisions require another publication-definition decision.
 
-These checks run only after execution. They add no model calls and do not change Guesser-visible
+The publisher independently repeats these checks after execution. The launcher now validates
+the same shared primary release contract before credentials or paid canaries. Checks add no
+model calls and do not change Guesser-visible
 state, prompts, provider caching, answer reuse, or sessions.
 
 Latest-run selection, scores, confidence intervals, costs, and efficiency normalization run
@@ -174,6 +187,18 @@ comparison or switch to the current edition using the selector's same destinatio
 The notice is announced politely, works without JavaScript, and remains while a switch loads.
 The result header uses content-driven height and
 compact title/tab spacing. Data-load errors are separate from empty results.
+
+The Method page leads with the game concept and example under "How Deep20Bench works", with
+the selected edition in a small label. Five sections cover the game, answer checks, scoring,
+comparisons, and inspecting results. Essential rules and limitations stay visible; native
+details sections contain edge cases, formulas, checking permissions, and run requirements.
+Existing detail fragments remain available, including `#answer-reuse`, `#reliability`,
+`#subject-design`, and `#eligibility`. A small build-story link follows the main method,
+then a native details section labelled "What changed
+between editions?" contains the comparison and history. It is closed on ordinary visits.
+The existing `#editions` fragment targets content inside the disclosure, preserving native
+opening without JavaScript. Client fragment navigation reveals containing details before
+scrolling, including repeat visits to the same fragment after manually closing the panel.
 
 ## Build
 

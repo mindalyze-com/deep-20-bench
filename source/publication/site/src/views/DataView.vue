@@ -44,7 +44,7 @@ const { loading, error } = usePublicationLoad(async () => {
           </div>
           <div class="lede data-lede">
             <p>
-              Deep20Bench publishes the data behind its leaderboard, not only aggregate scores:
+              Deep20Bench publishes the data behind its leaderboard, not only average scores:
               runs, trials, transcripts, evidence, outcomes, cost, and timing.
             </p>
             <p>
@@ -77,7 +77,7 @@ const { loading, error } = usePublicationLoad(async () => {
             <article class="card download-card download-card--primary">
               <p class="file-type">JSON · schema v{{ manifest.dataset_schema_version }}</p>
               <h3>Full public dataset</h3>
-              <p>Cohort rules, models, runs, subjects, episodes, scores, and build details.</p>
+              <p>Edition rules, models, runs, subjects, rounds, scores, and build details.</p>
               <a
                 class="button button-primary"
                 :href="editionDownloadUrl('deep20bench-v10.json')"
@@ -101,7 +101,7 @@ const { loading, error } = usePublicationLoad(async () => {
             <article class="card download-card">
               <p class="file-type">JSON Schema · draft 2020-12</p>
               <h3>Public data schema</h3>
-              <p>Types, required fields, enums, and nested public objects for schema v10.</p>
+              <p>The file structure, required fields, and allowed values for data format v10.</p>
               <a
                 class="button button-secondary"
                 :href="editionDownloadUrl('deep20bench-v10.schema.json')"
@@ -119,7 +119,7 @@ const { loading, error } = usePublicationLoad(async () => {
           <h2>Existing v9 download</h2>
           <p>The <a :href="publicDownloadUrl('deep20bench-v9.json')">v9 dataset</a> and
             <a :href="publicDownloadUrl('deep20bench-v9.schema.json')">v9 schema</a> remain maintained
-            for edition 1. Version 9 cannot represent both editions or qualified-answer transcripts.
+            for edition 1. Version 9 cannot represent both editions or transcripts with Rather yes and Rather no answers.
             Edition 1.1 results are available in its schema 10 download above.</p>
         </div>
       </section>
@@ -149,7 +149,7 @@ const { loading, error } = usePublicationLoad(async () => {
               </div>
               <div>
                 <dt><code>trials[].episode</code></dt>
-                <dd>Typed transcripts, public evidence, usage, timing, and visible format violations.</dd>
+                <dd>Questions and answers, public evidence, usage, timing, and visible format errors.</dd>
               </div>
             </dl>
             <div class="query-example">
@@ -198,7 +198,7 @@ const { loading, error } = usePublicationLoad(async () => {
               </dd>
             </div>
             <div>
-              <dt>Active cohort</dt>
+              <dt>Comparison ID</dt>
               <dd>{{ manifest.active_cohort.cohort_id }}</dd>
             </div>
             <div class="release-checksum">
@@ -226,7 +226,7 @@ const { loading, error } = usePublicationLoad(async () => {
                 <article>
                   <h4>Excluded</h4>
                   <p>
-                    Adjudicator prompts, raw responses and internal decisions, hidden reasoning,
+                    Answer-checking models' instructions, raw responses and internal decisions, hidden reasoning,
                     full provider payloads, credentials, headers, sessions, and private subject
                     state. Owner-only diagnostic files are not published.
                   </p>

@@ -11,11 +11,6 @@ import {
 
 const wcagTags = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 const knownViolationTargets: Readonly<Record<string, readonly string[]>> = {
-  "methodology/": [
-    'div[aria-label="Question score formula"] > div:nth-child(1) > span',
-    'div[aria-label="Question score formula"] > div:nth-child(2) > span',
-    ".standard-error-formula > span",
-  ],
   [subjectPath]: [
     '.episode-list-heading > .rail-section-label.eyebrow > span[aria-hidden="true"]',
     ".episode-list-heading > strong",

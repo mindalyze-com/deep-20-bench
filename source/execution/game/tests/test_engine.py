@@ -1554,9 +1554,10 @@ def test_validator_output_limit_remains_infrastructure_failure(
         ("object", "Computer keyboard", "A physical keyboard for entering computer input."),
     ],
 )
+@pytest.mark.parametrize("benchmark_mode", [BenchmarkMode.EXPERIMENTAL, BenchmarkMode.OFFICIAL])
 def test_five_answer_game_preserves_qualified_tokens_and_scoring(
     audit_writer, model_config, validator_config, policy, subject,
-    entity_type: str, canonical_name: str, description: str,
+    entity_type: str, canonical_name: str, description: str, benchmark_mode: BenchmarkMode,
 ) -> None:
     subject = subject.model_copy(update={
         "entity_type": entity_type,
@@ -1565,7 +1566,17 @@ def test_five_answer_game_preserves_qualified_tokens_and_scoring(
         "aliases": ("PRIVATE_SUBJECT_ALIAS",),
         "reference_url": None,
     })
-    policy = policy.model_copy(update={"prompt_profile": PromptProfile.QUALIFIED_V1})
+    policy = policy.model_copy(update={
+        "prompt_profile": PromptProfile.QUALIFIED_V1, "benchmark_mode": benchmark_mode,
+    })
+    if benchmark_mode is BenchmarkMode.OFFICIAL:
+        model_config = model_config.model_copy(update={
+            "prompt_cache": model_config.prompt_cache.model_copy(
+                update={"policy": CachePolicy.REQUIRED},
+            ),
+        })
+        audit_writer.guesser_config = model_config
+        audit_writer.cache_probe_summary = {"success": True, "probe_id": "CP-offline"}
     audit_writer.game_policy = policy
     audit_writer.oracle_config = audit_writer.oracle_config.model_copy(
         update={"prompt_profile": PromptProfile.QUALIFIED_V1},
@@ -1598,6 +1609,7 @@ def test_five_answer_game_preserves_qualified_tokens_and_scoring(
         validator_config=validator_config)
     result = engine.play(GameRequest(run_id="qualified-game", subject=subject))
     assert result.success
+    assert result.publication_eligible is (benchmark_mode is BenchmarkMode.OFFICIAL)
     assert result.counted_questions == 2
     assert provider.requests[1].messages[-1] == {"role":"user", "content":"RATHER_YES"}
     assert provider.requests[2].messages[-1] == {"role":"user", "content":"RATHER_NO"}

@@ -1,14 +1,9 @@
-# Five-answer experiment
+# Five-answer profile
 
-B-0003 uses the opt-in `qualified_v1` profile for the Guesser, Oracle, recovery Oracle,
-Reviewer, and Judge. It retains the registered models, routes, sampling, scoring rule, action
-schema, and identity Validator. All benchmark templates now use a 40-turn limit. The early
-diagnostic runs were removed. New runs need fresh execution IDs and must record their
-definition and cache policy. B-0001 and B-0002 retain their three-answer profiles.
-
-The default is **3 iterations per subject and model**, set by `default_iterations: 3` in
-`config/benchmarks.yaml`. Use this count for new-game planning and launches unless the user
-specifies another count. Earlier five-repeat diagnostics do not change this default.
+B-0003 / `qualified_v1` is **official edition 1.1**: five ASK answers, three trials per subject,
+ten subjects and 40 questions. GUESS remains three-token. Execution and publication share
+`config/edition-profiles/1.1.yaml`; changed settings become explicit variants. Historical labels
+remain intact. See [launch and comparison checks](../source/execution/benchmark/README.md).
 
 ## Concise evidence/knowledge policy
 

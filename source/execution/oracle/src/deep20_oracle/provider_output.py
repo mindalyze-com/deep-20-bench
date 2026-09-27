@@ -61,13 +61,16 @@ def error_outputs_from_trace(
 
     outputs = list(trace.discarded_error_outputs)
     if include_current:
+        # Captures identify output order (renumbered below), not billed inference.
+        # An interactive or mock response exists even with zero inference requests.
+        output_number = max(1, trace.request_attempts)
         current = capture_provider_output(
             trace.response,
-            attempt_number=trace.request_attempts,
+            attempt_number=output_number,
         )
         if current is None and trace.raw_output:
             current = ProviderOutputCapture(
-                attempt_number=trace.request_attempts,
+                attempt_number=output_number,
                 response_id=trace.response_id,
                 finish_reason=trace.finish_reason,
                 output=trace.raw_output,

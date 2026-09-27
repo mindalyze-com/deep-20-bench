@@ -7,6 +7,7 @@ from decimal import Decimal
 from typing import Any, Self
 
 import httpx
+from deep20_backends.budget import HttpSpendingGuard, backend_error_cause
 from deep20_oracle.diagnostics import provider_failure_code as _provider_failure_code
 from deep20_oracle.models import (
     ProviderOutputCapture,
@@ -52,8 +53,10 @@ _NO_RESULT_RETRY_DELAY_MS = 1_000
 class _RecordingClient:
     """Capture credential-free response details omitted by generated SDK models."""
 
-    def __init__(self, timeout_seconds: int):
+    def __init__(self, timeout_seconds: int, guard: HttpSpendingGuard | None = None):
         self._client = httpx.Client(timeout=timeout_seconds)
+        if guard is not None:
+            self._client.event_hooks = {"request": [guard.before], "response": [guard.after]}
         self.last_json: dict[str, Any] | None = None
         self.last_status_code: int | None = None
         self.last_response_cache_status: str | None = None
@@ -94,11 +97,14 @@ class _RecordingClient:
 class OpenRouterGameProvider:
     """Exact-route JSON-output adapter with prompt caching and no web tools."""
 
-    def __init__(self, api_key: str, config: ModelConfig, *, title: str):
+    def __init__(self, api_key: str, config: ModelConfig, *, title: str,
+                 http_guard: HttpSpendingGuard | None = None):
+        if config.gateway != "openrouter":
+            raise ValueError("OpenRouter provider requires an openrouter gateway")
         if not api_key:
             raise ValueError("OpenRouter API key is required")
         self.config = config
-        self.http_client = _RecordingClient(config.timeout_seconds)
+        self.http_client = _RecordingClient(config.timeout_seconds, http_guard)
         self.client = OpenRouter(
             api_key=api_key,
             x_open_router_title=title,
@@ -152,6 +158,8 @@ class OpenRouterGameProvider:
                                 retries=no_sdk_retry_config(),
                             )
                         except Exception as error:
+                            if blocked := backend_error_cause(error):
+                                raise blocked from None
                             transport_error = is_transport_error(error)
                             malformed_response = is_malformed_response_error(error)
                             raw_response = self.http_client.last_json
@@ -245,6 +253,8 @@ class OpenRouterGameProvider:
                         no_result_retries += 1
                         time.sleep(_NO_RESULT_RETRY_DELAY_MS / 1_000)
             except Exception as error:
+                if blocked := backend_error_cause(error):
+                    raise GameProviderError(str(blocked), code=blocked.code) from None
                 raw_response = self.http_client.last_json
                 if isinstance(error, ProviderDeadlineExceeded):
                     retry_reasons.append(RecoveryReason.HARD_DEADLINE_EXCEEDED)

@@ -82,6 +82,10 @@ const restoreScroll = async (): Promise<void> => {
   if (hash) {
     const target = document.getElementById(decodeURIComponent(hash));
     if (target !== null) {
+      // Match native fragment navigation when the target is inside a closed disclosure.
+      for (let parent = target.parentElement; parent !== null; parent = parent.parentElement) {
+        if (parent instanceof HTMLDetailsElement) parent.open = true;
+      }
       target.scrollIntoView({ block: "start" });
       return;
     }

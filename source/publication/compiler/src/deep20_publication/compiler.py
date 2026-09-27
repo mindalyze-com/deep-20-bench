@@ -92,6 +92,12 @@ def _reason_codes(
     cohort: CohortConfig,
 ) -> tuple[str, ...]:
     reasons: list[str] = []
+    declared = run.manifest.request.edition
+    if declared is not None:
+        if declared.classification != "standard" or declared.differences or declared.overrides.variant_name:
+            reasons.append("edition_variant")
+        if declared.edition_id != cohort.edition_id:
+            reasons.append("edition_id_mismatch")
     expected_profile = (
         "qualified_v1" if isinstance(cohort.eligibility, QualifiedEligibility) else "standard"
     )

@@ -10,12 +10,11 @@ from deep20_publication.cli import (
     _application_build_document,
     _edition_route_manifest,
     _publication_build_time,
-    _read_yaml,
     _static_route_manifest,
     _write_public_data,
+    read_publication_config,
 )
 from deep20_publication.legacy import legacy_dataset_schema_json
-from deep20_publication.loader import parse_publication_config
 from deep20_publication.models import (
     PublicationAppBuildDocument,
     PublishedDataset,
@@ -35,7 +34,7 @@ def test_generated_data_is_not_stored_in_site_source() -> None:
 
 
 def test_search_files_follow_the_static_route_manifest() -> None:
-    config = parse_publication_config(_read_yaml(REPOSITORY / "config/publication.yml"), "publication")
+    config = read_publication_config(REPOSITORY / "config/publication.yml")
     bundles = tuple(
         split_publication(_published_dataset(cohort.edition_id)) for cohort in config.cohorts
     )
@@ -167,7 +166,7 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
     assert "og.png" not in entry
     assert "How well can AI models play Twenty Questions?" in entry
     assert "public benchmark for large language models (LLMs)" in entry
-    assert "What this pilot tests" in entry
+    assert "What the game tests" in entry
     assert "more than the traditional twenty" in entry_copy
     current = _published_dataset("1.1")
     if current.official_runs:
@@ -181,9 +180,9 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
     assert "not a definitive ranking" not in entry
     assert "https://github.com/mindalyze-com/deep-20-bench/discussions" in entry
     assert "Join discussion" in entry
-    assert "How to read the pilot" in entry
-    assert "Comparable runs, limited conclusions." in entry
-    assert "The Guesser receives only the final answer token." in entry_copy
+    assert "How to read the results" in entry
+    assert "Same test setup, limited conclusions." in entry
+    assert "The Guesser receives only the final answer." in entry_copy
     assert "Deep20Bench needs JavaScript" not in entry
     assert '<script type="application/ld+json">' in entry
     structured_data = [
@@ -498,7 +497,7 @@ def test_split_public_data_is_complete_and_removes_stale_files(
 
 
 def _published_routes() -> StaticRouteManifest:
-    config = parse_publication_config(_read_yaml(REPOSITORY / "config/publication.yml"), "publication")
+    config = read_publication_config(REPOSITORY / "config/publication.yml")
     datasets = tuple(PublishedDataset.model_validate_json(
         (REPOSITORY / "docs/data/editions" / cohort.edition_id / "deep20bench-v10.json")
         .read_text(encoding="utf-8")

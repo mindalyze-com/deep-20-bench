@@ -1,5 +1,11 @@
 # Deep20Bench architecture
 
+The inactive [edition 1.2 draft](edition-1.2-draft.md) adds typed backend adapters and
+per-role configuration to this same engine. OpenRouter remains the default. Local and
+interactive Oracle research uses managed tools; deterministic mocks are explicitly synthetic.
+The draft specification owns its opt-in queue, spending, artifact-version and cache contracts.
+The released editions retain the behavior described below.
+
 Concise research retains up to three evidence items and the existing 2,000-character allowance
 per item. `kind: quotation` identifies exact source text; `kind: source_summary` identifies a
 faithful account of retrieved source facts in the Oracle's own words. Omitted kind preserves
@@ -41,7 +47,7 @@ search guard; earlier discarded searches cannot substitute for it. Failure after
 remains `web_search_not_used`, with both calls and costs retained privately.
 
 
-B-0003 is a separate five-answer experiment. It extends ASK tokens only, preserves blind review and exact-token disagreement routing, and cannot enter the standard leaderboard. See [Five-answer experiment](five-answer-experiment.md).
+B-0003 is the official edition 1.1 five-answer profile. It extends ASK tokens only, preserves blind review and exact-token disagreement routing, and has its own released leaderboard. See [Five-answer experiment](five-answer-experiment.md).
 
 New B-0003 definitions select the explicit `judge_stable_knowledge_v1` adjudication policy.
 The Reviewer remains evidence-only. The Judge may use labelled stable knowledge only when
@@ -403,6 +409,14 @@ This prevents arbitrary web text from being forwarded to the Guesser. It does no
 that an adversarial question can never influence the Oracle's semantic decision.
 
 ## Typed benchmark control plane
+
+Explicit local experiments may identify support routes with `gateway: codex_interactive`.
+They require an injected provider and experimental mode; OpenRouter adapters reject this
+gateway before creating a client. The route is retained in the normal typed artifacts.
+Direct decisions from one Codex conversation are shared-context adjudication, not independent
+blind committee calls. Such experiments must document that distinction and any unmetered
+telemetry, preserve Guesser isolation, and remain outside the regular publication cohort.
+The default catalogs and live runtime continue to use independent OpenRouter support roles.
 
 `BenchmarkRunner.run(BenchmarkRequest) -> BenchmarkResult` returns the entire immutable tree
 for one model: benchmark run → subject → trial. The immutable model snapshot is part of the run.

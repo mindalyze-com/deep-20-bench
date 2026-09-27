@@ -78,7 +78,7 @@ const tooltip = (
     row.breakdown === undefined || row.breakdown.length === 0
       ? ""
       : [
-          `<span style="display:block;margin-top:9px;padding-top:7px;border-top:1px solid ${theme.border};color:${theme.inkSoft};font-size:.72rem;font-weight: var(--font-weight-bold);text-transform:uppercase">Adjudication breakdown</span>`,
+          `<span style="display:block;margin-top:9px;padding-top:7px;border-top:1px solid ${theme.border};color:${theme.inkSoft};font-size:.72rem;font-weight: var(--font-weight-bold);text-transform:uppercase">Answer-checking cost breakdown</span>`,
           ...row.breakdown.map(
             (entry) =>
               `<span style="display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:4px;color:${theme.muted};font-size:.75rem"><span>${escapeHtml(entry.label)}</span><strong style="color:${theme.inkSoft}">${escapeHtml(entry.display)}</strong></span>`,
@@ -275,15 +275,15 @@ watch(
     <ChartLoadNotice v-if="loadError" />
     <p class="chart-run-cue">Select a model row to view its full run.</p>
     <details v-if="breakdownLabels.length > 0" class="stacked-chart-breakdown">
-      <summary>Exact adjudication breakdown</summary>
+      <summary>Exact answer-checking costs</summary>
       <div
         class="stacked-chart-breakdown-table-wrap"
         tabindex="0"
-        aria-label="Scrollable exact adjudication cost breakdown"
+        aria-label="Scrollable exact answer-checking costs"
       >
         <table>
           <caption class="visually-hidden">
-            Exact adjudication costs by model
+            Exact answer-checking costs by model
           </caption>
           <thead>
             <tr>

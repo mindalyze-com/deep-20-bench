@@ -98,6 +98,7 @@ def provider_result_audit(trace: ProviderTrace) -> ProviderResultAudit:
         1 for annotation in trace.annotations if annotation.get("type") == "url_citation"
     )
     return ProviderResultAudit(
+        backend=trace.backend,
         requested_at=trace.requested_at,
         completed_at=trace.completed_at,
         latency_ms=trace.latency_ms,

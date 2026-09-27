@@ -68,7 +68,9 @@ class RecoveryPolicy(BaseModel):
 class ModelRouteConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, str_strip_whitespace=True)
 
-    gateway: str = Field(default="openrouter", pattern=r"^openrouter$")
+    gateway: str = Field(
+        default="openrouter", pattern=r"^(openrouter|codex_interactive|ollama|interactive|mock)$",
+    )
     model: str = Field(min_length=1)
     provider: str = Field(min_length=1)
     provider_routing: ProviderRouting = Field(
@@ -84,10 +86,13 @@ class ModelRouteConfig(BaseModel):
     max_output_tokens: int = Field(default=4_096, ge=128, le=65_536)
     timeout_seconds: int = Field(default=120, ge=1, le=600)
     recovery: RecoveryPolicy = Field(default_factory=RecoveryPolicy)
+    cache_namespace: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{64}$", exclude_if=lambda v: v is None,
+    )
 
     @model_validator(mode="after")
     def route_is_valid(self) -> Self:
-        if "/" not in self.model:
+        if self.gateway in {"openrouter", "codex_interactive"} and "/" not in self.model:
             raise ValueError("model must be an exact provider/model slug")
         if self.provider_routing is ProviderRouting.AUTOMATIC:
             if self.provider != OPENROUTER_AUTO_PROVIDER:

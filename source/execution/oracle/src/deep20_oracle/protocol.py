@@ -27,7 +27,7 @@ _JSON_OBJECT: TypeAdapter[JsonObject] = TypeAdapter(JsonObject)
 
 def validate_answer(answer: OracleAnswer, profile: PromptProfile) -> None:
     if profile is not PromptProfile.QUALIFIED_V1 and answer not in STANDARD_ANSWERS:
-        raise ValueError("qualified answers require the five-answer experimental profile")
+        raise ValueError("qualified answers require the five-answer profile")
 
 
 def permits_judge_knowledge(

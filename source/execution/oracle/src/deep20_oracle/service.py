@@ -4,6 +4,7 @@ import uuid
 from collections.abc import Callable
 from typing import TypeVar
 
+from deep20_backends.models import BackendKind
 from pydantic import ValidationError
 
 from .config import AdjudicationPolicy, ModelRouteConfig, OracleConfig, ProviderRouting
@@ -55,6 +56,19 @@ from .recovery import (
     merge_provider_traces,
 )
 from .request_variation import with_fresh_question_id
+from .roles import (
+    ApprovePrimary,
+    ConfiguredJudgeClient,
+    ConfiguredResearchClient,
+    ConfiguredReviewerClient,
+    EvidenceRoleCall,
+    EvidenceRoleRequest,
+    JudgeClient,
+    ResearchClient,
+    ResearchRoleCall,
+    ResearchRoleRequest,
+    ReviewerClient,
+)
 from .sinks import AuditFailure, OracleAuditSink, OracleFailureRecord, OracleSuccessRecord
 from .util import (
     canonical_json,
@@ -111,20 +125,25 @@ def validate_oracle_provider_trace(
             code="requested_route_mismatch",
             details={"provider_trace": trace.model_dump(mode="json")},
         )
-    if trace.resolved_model != trace.requested_model:
+    backend = trace.backend
+    external = backend is not None and backend.kind is not BackendKind.OPENROUTER
+    if external and (backend is None or backend.kind.value != config.gateway):
+        raise OracleProtocolError("backend differs from the configured implementation",
+                                  code="backend_mismatch")
+    if not external and trace.resolved_model != trace.requested_model:
         raise OracleProtocolError(
             "resolved model differs from the configured exact model",
             code="resolved_model_mismatch",
             details={"provider_trace": trace.model_dump(mode="json")},
         )
-    if config.provider_routing is ProviderRouting.AUTOMATIC:
+    if not external and config.provider_routing is ProviderRouting.AUTOMATIC:
         if trace.resolved_provider is None:
             raise OracleProtocolError(
                 "automatic routing did not report the resolved provider",
                 code="resolved_provider_missing",
                 details={"provider_trace": trace.model_dump(mode="json")},
             )
-    elif trace.resolved_provider is not None and not openrouter_provider_matches(
+    elif not external and trace.resolved_provider is not None and not openrouter_provider_matches(
         trace.requested_provider,
         trace.resolved_provider,
     ):
@@ -134,7 +153,8 @@ def validate_oracle_provider_trace(
             details={"provider_trace": trace.model_dump(mode="json")},
         )
     # Route/cache/budget faults must not be hidden by missing-search recovery.
-    if role is OracleRole.ORACLE and trace.usage.search_count < 1:
+    if (role is OracleRole.ORACLE and trace.usage.search_count < 1
+        and not (backend is not None and backend.kind is BackendKind.MOCK)):
         raise OracleProtocolError(
             "Oracle returned an answer without recorded web search",
             code="web_search_not_used",
@@ -152,12 +172,43 @@ class Oracle:
         judge_provider: OracleProvider,
         audit_writer: OracleAuditSink,
         config: OracleConfig,
+        *,
+        research_client: ResearchClient | None = None,
+        reviewer_client: ReviewerClient | None = None,
+        judge_client: JudgeClient | None = None,
     ):
         self.provider = provider
         self.reviewer_provider = reviewer_provider
         self.judge_provider = judge_provider
         self.audit_writer = audit_writer
         self.config = config
+        self.research_client = research_client or ConfiguredResearchClient(self._research_role)
+        self.reviewer_client = reviewer_client or ConfiguredReviewerClient(self._reviewer_role)
+        self.judge_client = judge_client or ConfiguredJudgeClient(self._judge_role)
+
+    def _research_role(self, request: ResearchRoleRequest) -> ResearchRoleCall:
+        result, trace = self._complete_structured_result(
+            provider=self.provider, provider_request=request.inference,
+            result_model=OracleResearchAttemptResult, config=self.config, role=OracleRole.ORACLE,
+        )
+        return ResearchRoleCall(result=result, trace=trace)
+
+    def _evidence_role(self, request: EvidenceRoleRequest, role: OracleRole) -> EvidenceRoleCall:
+        result, trace = self._complete_structured_result(
+            provider=self.reviewer_provider if role is OracleRole.REVIEWER else self.judge_provider,
+            provider_request=request.inference, result_model=EvidenceReviewResult,
+            config=self.config.reviewer if role is OracleRole.REVIEWER else self.config.judge,
+            role=role, validate=lambda decision: decision.validate_evidence_count(
+                len(request.factual.evidence)
+            ),
+        )
+        return EvidenceRoleCall(result=result, trace=trace)
+
+    def _reviewer_role(self, request: EvidenceRoleRequest) -> EvidenceRoleCall:
+        return self._evidence_role(request, OracleRole.REVIEWER)
+
+    def _judge_role(self, request: EvidenceRoleRequest) -> EvidenceRoleCall:
+        return self._evidence_role(request, OracleRole.JUDGE)
 
     def ask(self, request: OracleRequest) -> OracleCall:
         call_id = f"OC-{uuid.uuid7().hex}"
@@ -188,13 +239,10 @@ class Oracle:
                 messages=oracle_messages,
                 prompt_version=primary_prompt_version,
             )
-            attempt_result, oracle_trace = self._complete_structured_result(
-                provider=self.provider,
-                provider_request=oracle_provider_request,
-                result_model=OracleResearchAttemptResult,
-                config=self.config,
-                role=OracleRole.ORACLE,
+            primary_call = self.research_client.research(
+                ResearchRoleRequest(factual=request, inference=oracle_provider_request),
             )
+            attempt_result, oracle_trace = primary_call.result, primary_call.trace
             active_trace = oracle_trace
             role_traces.append(
                 OracleProviderRoleTrace(
@@ -234,13 +282,10 @@ class Oracle:
                     messages=active_messages,
                     prompt_version=active_prompt_version,
                 )
-                attempt_result, recovery_trace = self._complete_structured_result(
-                    provider=self.provider,
-                    provider_request=recovery_provider_request,
-                    result_model=OracleResearchAttemptResult,
-                    config=self.config,
-                    role=OracleRole.ORACLE,
+                recovery_call = self.research_client.research(
+                    ResearchRoleRequest(factual=request, inference=recovery_provider_request),
                 )
+                attempt_result, recovery_trace = recovery_call.result, recovery_call.trace
                 active_trace = recovery_trace
                 role_traces.append(
                     OracleProviderRoleTrace(
@@ -314,94 +359,92 @@ class Oracle:
                     messages=active_messages,
                     prompt_version=active_prompt_version,
                 )
-                reviewer_result, reviewer_trace = self._complete_structured_result(
-                    provider=self.reviewer_provider,
-                    provider_request=reviewer_provider_request,
-                    result_model=EvidenceReviewResult,
-                    config=self.config.reviewer,
-                    role=active_role,
-                    validate=lambda decision: decision.validate_evidence_count(
-                        len(review_request.evidence)
-                    ),
+                review_call = self.reviewer_client.review(
+                    EvidenceRoleRequest(factual=review_request, inference=reviewer_provider_request),
                 )
-                active_trace = reviewer_trace
-                role_traces.append(
-                    OracleProviderRoleTrace(
-                        role=OracleRole.REVIEWER,
-                        provider=reviewer_trace,
+                if isinstance(review_call, ApprovePrimary):
+                    if self.config.reviewer.gateway != "mock":
+                        raise OracleProtocolError("review bypass requires an explicit mock binding",
+                                                  code="review_bypass_not_configured")
+                    adjudication = OracleAdjudication(
+                        oracle_answer=result.answer, question_type=question_type,
+                        disagreement=False, judge_invoked=False, final_answer=result.answer,
+                        decision_path=OracleDecisionPath.REVIEW_BYPASSED,
                     )
-                )
-                reviewer_audit = EvidenceReviewAuditTrace(
-                    role=OracleRole.REVIEWER,
-                    prompt_version=active_prompt_version,
-                    prompt_hash=prompt_hash(active_messages),
-                    messages=active_messages,
-                    provider=reviewer_trace,
-                )
-                disagreement = reviewer_result.answer is not result.answer
-                judge_result: EvidenceReviewResult | None = None
-                if disagreement:
-                    active_role = OracleRole.JUDGE
-                    active_prompt_version = evidence_review_prompt_version(
-                        OracleRole.JUDGE, profile, policy=self.config.adjudication_policy,
-                    )
-                    active_messages = render_evidence_review_messages(
-                        review_request,
-                        role=OracleRole.JUDGE,
-                        profile=profile,
-                        policy=self.config.adjudication_policy,
-                    )
-                    judge_provider_request = self._review_provider_request(
-                        request=request,
-                        review_request=review_request,
-                        role=active_role,
-                        messages=active_messages,
-                        prompt_version=active_prompt_version,
-                    )
-                    judge_result, judge_trace = self._complete_structured_result(
-                        provider=self.judge_provider,
-                        provider_request=judge_provider_request,
-                        result_model=EvidenceReviewResult,
-                        config=self.config.judge,
-                        role=active_role,
-                        validate=lambda decision: decision.validate_evidence_count(
-                            len(review_request.evidence)
-                        ),
-                    )
-                    active_trace = judge_trace
+                else:
+                    reviewer_result, reviewer_trace = review_call.result, review_call.trace
+                    active_trace = reviewer_trace
                     role_traces.append(
                         OracleProviderRoleTrace(
-                            role=OracleRole.JUDGE,
-                            provider=judge_trace,
+                            role=OracleRole.REVIEWER,
+                            provider=reviewer_trace,
                         )
                     )
-                    judge_audit = EvidenceReviewAuditTrace(
-                        role=OracleRole.JUDGE,
+                    reviewer_audit = EvidenceReviewAuditTrace(
+                        role=OracleRole.REVIEWER,
                         prompt_version=active_prompt_version,
                         prompt_hash=prompt_hash(active_messages),
                         messages=active_messages,
-                        provider=judge_trace,
+                        provider=reviewer_trace,
                     )
-                    adjudication = OracleAdjudication(
-                        oracle_answer=result.answer,
-                        question_type=question_type,
-                        reviewer=reviewer_result,
-                        judge=judge_result,
-                        disagreement=True,
-                        judge_invoked=True,
-                        final_answer=judge_result.answer,
-                        decision_path=OracleDecisionPath.JUDGE_DISAGREEMENT,
-                    )
-                else:
-                    adjudication = OracleAdjudication(
-                        oracle_answer=result.answer,
-                        question_type=question_type,
-                        reviewer=reviewer_result,
-                        disagreement=False,
-                        judge_invoked=False,
-                        final_answer=result.answer,
-                        decision_path=OracleDecisionPath.REVIEWER_AGREEMENT,
-                    )
+                    disagreement = reviewer_result.answer is not result.answer
+                    judge_result: EvidenceReviewResult | None = None
+                    if disagreement:
+                        active_role = OracleRole.JUDGE
+                        active_prompt_version = evidence_review_prompt_version(
+                            OracleRole.JUDGE, profile, policy=self.config.adjudication_policy,
+                        )
+                        active_messages = render_evidence_review_messages(
+                            review_request,
+                            role=OracleRole.JUDGE,
+                            profile=profile,
+                            policy=self.config.adjudication_policy,
+                        )
+                        judge_provider_request = self._review_provider_request(
+                            request=request,
+                            review_request=review_request,
+                            role=active_role,
+                            messages=active_messages,
+                            prompt_version=active_prompt_version,
+                        )
+                        judge_call = self.judge_client.judge(
+                            EvidenceRoleRequest(factual=review_request, inference=judge_provider_request),
+                        )
+                        judge_result, judge_trace = judge_call.result, judge_call.trace
+                        active_trace = judge_trace
+                        role_traces.append(
+                            OracleProviderRoleTrace(
+                                role=OracleRole.JUDGE,
+                                provider=judge_trace,
+                            )
+                        )
+                        judge_audit = EvidenceReviewAuditTrace(
+                            role=OracleRole.JUDGE,
+                            prompt_version=active_prompt_version,
+                            prompt_hash=prompt_hash(active_messages),
+                            messages=active_messages,
+                            provider=judge_trace,
+                        )
+                        adjudication = OracleAdjudication(
+                            oracle_answer=result.answer,
+                            question_type=question_type,
+                            reviewer=reviewer_result,
+                            judge=judge_result,
+                            disagreement=True,
+                            judge_invoked=True,
+                            final_answer=judge_result.answer,
+                            decision_path=OracleDecisionPath.JUDGE_DISAGREEMENT,
+                        )
+                    else:
+                        adjudication = OracleAdjudication(
+                            oracle_answer=result.answer,
+                            question_type=question_type,
+                            reviewer=reviewer_result,
+                            disagreement=False,
+                            judge_invoked=False,
+                            final_answer=result.answer,
+                            decision_path=OracleDecisionPath.REVIEWER_AGREEMENT,
+                        )
 
             audit = OracleAuditTrace(
                 prompt_version=primary_prompt_version,
@@ -545,8 +588,8 @@ class Oracle:
             ),
         )
 
-    @staticmethod
     def _prompt_cache_key(
+        self,
         *,
         role: OracleRole,
         prompt_version: str,
@@ -565,10 +608,16 @@ class Oracle:
                         "role": role,
                         "prompt_version": prompt_version,
                         "subject": request.subject.model_dump(mode="json"),
+                        **({"namespace": self._role_config(role).cache_namespace}
+                           if self._role_config(role).cache_namespace is not None else {}),
                     }
                 )
             )[:40]
         )
+
+    def _role_config(self, role: OracleRole) -> ModelRouteConfig:
+        return {OracleRole.ORACLE: self.config, OracleRole.REVIEWER: self.config.reviewer,
+                OracleRole.JUDGE: self.config.judge}[role]
 
     def _complete_structured_result(
         self,
@@ -599,6 +648,10 @@ class Oracle:
                 validate_oracle_provider_trace(provider_trace, config=config, role=role)
                 return parse(exchange.raw_output), provider_trace
             except (ValidationError, ValueError, OracleProtocolError) as first_error:
+                if provider_trace.backend is not None and provider_trace.backend.kind in {
+                    BackendKind.MOCK, BackendKind.INTERACTIVE,
+                }:
+                    raise self._invalid_output_error(first_error, provider_trace, role=role) from first_error
                 if isinstance(first_error, OracleProtocolError) and not (
                     first_error.code == "web_search_not_used"
                     and self.config.adjudication_policy is AdjudicationPolicy.CONCISE_KNOWLEDGE_V1

@@ -168,6 +168,15 @@ def load_benchmark_result_file(path: Path) -> BenchmarkResult:
     return result
 
 
+def load_benchmark_manifest_file(path: Path) -> BenchmarkManifest:
+    """Read an immutable manifest for an offline comparison."""
+    value = load_yaml_unique(path)
+    if not isinstance(value, dict):
+        raise ArtifactIntegrityError("invalid manifest envelope")
+    _verify_signed(value, "benchmark manifest")
+    return BenchmarkManifest.model_validate(value)
+
+
 def _signed_payload(payload: dict[str, object]) -> dict[str, object]:
     unsigned = dict(payload)
     unsigned.pop("integrity_hash", None)
@@ -187,9 +196,9 @@ def _verify_signed(payload: dict[str, object], label: str) -> None:
 class ArtifactStore:
     """Own the complete artifact hierarchy for each single-model benchmark run."""
 
-    def __init__(self, repository: Path):
+    def __init__(self, repository: Path, *, runs_root: Path | None = None):
         self.repository = repository.resolve()
-        self.runs_root = self.repository / "runs"
+        self.runs_root = runs_root.resolve() if runs_root is not None else self.repository / "runs"
         self._event_logs: dict[Path, _EventLogCache] = {}
 
     def run_root(self, model_id: object, execution_id: object) -> Path:
@@ -559,6 +568,7 @@ class ArtifactStore:
     def build_benchmark_summary(self, result: BenchmarkResult) -> BenchmarkSummaryArtifact:
         run_root = self.run_root(result.run.model.model_id, result.run.execution_id)
         return BenchmarkSummaryArtifact(
+            schema_version=result.schema_version,
             execution_id=result.run.execution_id,
             benchmark_id=result.run.definition.benchmark_id,
             display_name=result.run.definition.display_name,
@@ -637,8 +647,8 @@ class ArtifactStore:
         subject_catalog_hash: str,
         oracle_cache: OracleHistorySnapshot | None = None,
     ) -> BenchmarkManifest:
-        unsigned = {
-            "schema_version": 3,
+        unsigned: dict[str, object] = {
+            "schema_version": 4 if request.runtime is not None else 3,
             "request": request.model_dump(mode="json"),
             "definition": definition.model_dump(mode="json"),
             "model": model.model_dump(mode="json"),
@@ -1088,8 +1098,8 @@ def signed_trial_manifest(
     oracle_configuration: OracleConfig,
     validator_configuration: ModelConfig,
 ) -> TrialAuditManifest:
-    unsigned = {
-        "schema_version": 3,
+    unsigned: dict[str, object] = {
+        "schema_version": 4 if model.configuration.cache_namespace is not None else 3,
         "identity": identity.model_dump(mode="json"),
         "subject_catalog_hash": subject_catalog_hash,
         "subject": subject.model_dump(mode="json"),

@@ -67,6 +67,8 @@ class GuessValidator:
         cache_material = canonical_json(
             {
                 "configuration_id": self.config.configuration_id,
+                **({"namespace": self.config.cache_namespace}
+                   if self.config.cache_namespace is not None else {}),
                 "prompt_version": VALIDATOR_PROMPT_VERSION,
                 "subject": subject.model_dump(mode="json"),
             }

@@ -1,0 +1,43 @@
+version: 1
+roles:
+  guesser:
+    implementation: mock
+    behavior: script
+    responses:
+      - result:
+          action: ASK
+          question: Is it commonly known?
+          name: null
+          description: null
+      - result:
+          action: GUESS
+          question: null
+          name: Example candidate
+          description: A configured synthetic candidate.
+  oracle:
+    implementation: mock
+    behavior: fixed
+    response:
+      answer: RATHER_YES
+      evidence: []
+      basis: other
+      supporting_statement: Configured synthetic answer; no research was performed.
+      research_outcome: answered
+      attempted_queries: [synthetic query one, synthetic query two, synthetic query three]
+  reviewer:
+    implementation: mock
+    behavior: approve_primary
+  judge:
+    implementation: mock
+    behavior: fixed
+    response:
+      answer: UNKNOWN
+      basis: other
+      supporting_statement: Configured synthetic judgment.
+      evidence_indices: []
+  validator:
+    implementation: mock
+    behavior: fixed
+    response:
+      answer: "YES"
+      explanation: Configured synthetic identity verdict.

@@ -1,5 +1,12 @@
 # Oracle usage
 
+The inactive [edition 1.2 draft](../../../documentation/edition-1.2-draft.md) composes
+Research, Reviewer and Judge through typed role interfaces. The default implementations
+retain the existing OpenRouter logic. The benchmark also supplies local, interactive and
+mock implementations. Reviewer `approve_primary` is an explicit synthetic control outcome,
+not a provider verdict. Standalone Oracle commands retain their defaults; draft managed
+Parallel tools use separate credentials and the benchmark's spending allowance.
+
 The current concise policy accepts exact quotations and explicitly labelled summaries of
 retrieved source facts. Each evidence item retains the existing 2,000-character allowance;
 longer context is not a protocol error and there is no additional word-count cap. Use

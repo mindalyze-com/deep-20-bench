@@ -126,8 +126,13 @@ class LazyOracleHistoryCache:
         *,
         before: str | None = None,
         judge_ignored_providers: tuple[str, ...] = (),
+        history_roots: tuple[Path, ...] | None = None,
     ) -> None:
         self.repository = repository.resolve()
+        self.history_roots = history_roots or (
+            self.repository / "runs", self.repository / "archive",
+            self.repository / "benchmark-logs/superseded-runs",
+        )
         if before is not None:
             cutoff = datetime.fromisoformat(before)
             if cutoff.tzinfo is None or cutoff > datetime.fromisoformat(timestamp()):
@@ -232,11 +237,7 @@ class LazyOracleHistoryCache:
         sources: list[HistoryExecution] = []
         discovered = skipped = 0
         contract_hash = oracle_contract_hash(definition.oracle_configuration)
-        for root in (
-            self.repository / "runs",
-            self.repository / "archive",
-            self.repository / "benchmark-logs/superseded-runs",
-        ):
+        for root in self.history_roots:
             for path in sorted(root.glob("**/manifest.json")):
                 discovered += 1
                 try:
@@ -560,7 +561,13 @@ class LazyOracleHistoryCache:
         quality = decision.oracle_quality
         question = turn.action.question
         if (
-            decision.cache_source is not None
+            trial.result.outcome.synthetic
+            or any(route.gateway in {"mock", "interactive"} for route in (
+                trial.result.llm.guesser.configuration, trial.result.llm.oracle.configuration,
+                trial.result.llm.oracle.configuration.reviewer, trial.result.llm.oracle.configuration.judge,
+                trial.result.llm.validator.configuration,
+            ))
+            or decision.cache_source is not None
             or audit.cache_source is not None
             or quality is None
             or question is None
@@ -636,6 +643,9 @@ class LazyOracleHistoryCache:
         providers.extend(
             role.provider for role in (audit.reviewer, audit.judge) if role is not None
         )
+        if any(provider.backend is not None and provider.backend.kind.value in {"mock", "interactive"}
+               for provider in providers):
+            return None
         if any(provider.finish_reason != "stop" for provider in providers):
             return None
         answered = max(datetime.fromisoformat(provider.completed_at) for provider in providers)

@@ -42,9 +42,19 @@ with shared content and canonical `/about/`, so it preserves the selected editio
 edition loads, the selector continues to identify the displayed data and shows a loading label.
 No cross-edition ranking is shown.
 
-The Methodology comparison explains why 1.1 adds Rather yes and Rather no: preserve a direction
-supported by partial evidence without presenting it as settled. It defines both labels and
-Unknown, explains how the Guesser should use qualified clues, and distinguishes this intended
+The Method page starts with "How Deep20Bench works" and a small selected-edition label.
+Five sections explain the game, answer checks, scoring, comparisons, and how to inspect results.
+The main text defines every available answer, describes answer reuse, and states the limits
+of the comparison. Native details sections hold edge cases, checking permissions, formulas,
+subject selection, and publication requirements. Existing fragments such as `#answer-reuse`,
+`#reliability`, `#subject-design`, and `#eligibility` still reveal their related detail.
+The build story is a small link after the main explanation. Edition history comes last in a
+native details section labelled "What changed between editions?", closed by default.
+The existing `#editions` target is inside the disclosure, so direct links reveal it without
+JavaScript. Client navigation opens its containing disclosure before scrolling to the target.
+
+The comparison explains why 1.1 adds Rather yes and Rather no: preserve a direction
+supported by partial evidence without presenting it as settled. It distinguishes this intended
 benefit from a demonstrated improvement. Changes to subjects, repetitions, limits, and prompts
 prevent a cross-edition score difference from isolating the effect of the new answer classes.
 See [the five-answer rationale](five-answer-experiment.md#why-add-qualified-answers).
@@ -58,6 +68,12 @@ rates, subject-level variation, costs, provenance, or experimental results.
 
 The website is a post-processing product. It never participates in a benchmark execution and
 must not become a source of Guesser context, session state, cache state, or retry input.
+
+Public copy uses plain language. Name the actual group: subjects, compared models, or edition
+rules, rather than "cohort". Prefer "answer checks", "run details", and "rounds" to
+"adjudication", "provenance", and "episodes" in general explanations. Define precise technical
+terms such as confidence intervals where readers encounter them. Keep published field names,
+research titles, recorded game text, and model-visible instructions unchanged by copy edits.
 
 The durable benchmark artifacts remain the source evidence. Generated website data and HTML are
 reproducible projections of that evidence, not a second benchmark result store.
@@ -583,3 +599,10 @@ Cross-game reuse within the current execution uses `scope: same_execution` with 
 source allowlist. The transcript labels the earlier game in this benchmark run and retains its
 trial, turn, original question, timestamp and evidence. Both v10 and v9 support this scope;
 internal paths, cache hashes, and provider call IDs remain private.
+
+
+## Shared released profiles
+
+Execution and publication share the profiles selected by `config/editions.yaml`;
+`config/publication.yml` (v3) contains site settings. Edition 1.1 is official; variants are excluded.
+Independent readers, historical labels and the v9 compatibility export remain intact.

@@ -42,7 +42,7 @@ const handleExpandedChartClose = (): void => {
 
 usePageRouteContext({
   title: "Efficiency results",
-  description: "Compare normalized distance from the lower-left cost and quality ideal.",
+  description: "Compare question score and cost, with both scaled from 0 to 1.",
 });
 
 const idealDistanceRank = (row: LeaderboardRow): number | null =>
@@ -98,10 +98,10 @@ const efficiencyBars = computed(() =>
     label: row.model.display_name,
     value: Number(row.ideal_distance_score),
     display: number(row.ideal_distance_score, 3),
-    detail: `${number(row.normalized_question_score, 3)} normalized questions · ${number(
+    detail: `${number(row.normalized_question_score, 3)} scaled question score · ${number(
       row.normalized_guesser_cost,
       3,
-    )} normalized cost`,
+    )} scaled cost`,
     link:
       row.execution_id === null ? undefined : `/runs/${row.execution_id}/`,
   })),
@@ -160,23 +160,23 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                 <h2 id="efficiency-title">Distance from the lower-left ideal.</h2>
               </div>
               <p>
-                Question score and Guesser cost are each normalized from 0 to 1 across
-                this cohort. The ranking measures equal-weight distance from their
-                combined minimum. Lower is better.
+                Question score and Guesser cost are each scaled from 0 to 1 across
+                the compared models. The ranking gives both equal weight and measures
+                distance from the lowest score and lowest cost. Lower is better.
               </p>
               <ResultHelp label="Efficiency ranking explanations">
                 <InfoPopover label="Ideal distance">
                   <p>
-                    A score of 0 would match the cohort's lowest question score and lowest
+                    A score of 0 would match the lowest question score and lowest
                     Guesser cost. The theoretical maximum is 1.414. The score changes when
-                    the compared cohort changes.
+                    the group of compared models changes.
                   </p>
                 </InfoPopover>
               </ResultHelp>
             </header>
             <MetricBars
               :items="efficiencyBars"
-              direction-label="Normalized distance · lower is better"
+              direction-label="Distance on the shared scale · lower is better"
               color="efficiency"
             />
           </section>
@@ -188,7 +188,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
             <div class="tradeoff-layout">
               <header class="tradeoff-copy">
                 <p class="eyebrow">Trade-off map</p>
-                <h3 id="tradeoff-title">Normalized cost and question score.</h3>
+                <h3 id="tradeoff-title">Cost and question score on a shared scale.</h3>
                 <p>
                   Both axes use the same 0-to-1 scale. Dashed curves mark equal distance
                   from the lower-left ideal.
@@ -196,9 +196,8 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                 <ResultHelp label="Trade-off map explanation">
                   <InfoPopover label="Trade-off map">
                     <p>
-                      The map uses the normalized values emitted by the compiler. Axis tick
-                      labels and tooltips show the original question score and Guesser cost per
-                      episode.
+                      The map places cost and score on a shared 0-to-1 scale. Axis labels and
+                      tooltips show the original question score and Guesser cost per round.
                     </p>
                   </InfoPopover>
                 </ResultHelp>
@@ -231,7 +230,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                 <div>
                   <p class="eyebrow">Expanded trade-off map</p>
                   <h2 id="expanded-tradeoff-title">
-                    Normalized cost and question score.
+                    Cost and question score on a shared scale.
                   </h2>
                 </div>
                 <p id="expanded-tradeoff-description">
@@ -363,32 +362,32 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
           </p>
 
           <MetricDefinitionCard
-            title="Normalized ideal distance."
-            formula="√(normalized question score² + normalized Guesser cost²)"
-            interpretation="Both measures have equal weight after cohort min/max normalization. Lower is better."
+            title="Distance from the lowest score and cost."
+            formula="√(scaled question score² + scaled Guesser cost²)"
+            interpretation="Both measures use a 0-to-1 scale and have equal weight. Lower is better."
             detail-summary="Steps and limits"
           >
             <ol>
               <li>
-                Normalize question score as (value − cohort minimum) ÷ cohort range.
+                Scale question score as (value − lowest value) ÷ (highest value − lowest value)
+                among the compared models.
               </li>
               <li>
-                Normalize Guesser cost per episode with the same calculation.
+                Scale Guesser cost per round with the same calculation.
               </li>
-              <li>Measure Euclidean distance from (0, 0). Lower is better.</li>
+              <li>Measure straight-line distance from (0, 0). Lower is better.</li>
             </ol>
             <p class="metric-example">
               <strong>
-                A model with normalized question score 0.06 and normalized cost 0.08
+                A model with scaled question score 0.06 and scaled cost 0.08
                 has distance √(0.06² + 0.08²) = 0.10.
               </strong>
             </p>
             <p>
-              Question score still uses the average penalized trial values. Failed trials
-              therefore remain part of the quality dimension.
+              Question score still averages round scores, including the fixed scores for failed rounds.
             </p>
             <p>
-              Adding or removing a model can change every normalized value and rank.
+              Adding or removing a model can change every scaled value and rank.
             </p>
           </MetricDefinitionCard>
     </ResultsContent>

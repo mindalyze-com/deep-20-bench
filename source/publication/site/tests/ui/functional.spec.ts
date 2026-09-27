@@ -245,16 +245,16 @@ test("homepage explains the game and keeps repeated-trial design on Method", { t
   await expect(explanation.getByRole("heading", { level: 2 })).toHaveText(
     "The game combines several abilities.",
   );
-  await expect(explanation).toContainText("What this pilot tests");
+  await expect(explanation).toContainText("What the game tests");
   await expect(explanation).toContainText(
-    "Use all prior questions and answers to plan the next question.",
+    "Use all earlier questions and answers to plan the next question.",
   );
-  await expect(explanation).toContainText("The Guesser is the LLM under test");
+  await expect(explanation).toContainText("The Guesser is the model being tested");
   await expect(explanation).toContainText(
     "the Oracle must search the live web and cite evidence instead of relying on memory",
   );
   await expect(explanation).toContainText(
-    "The Guesser is isolated from this process and receives only the final YES, NO, or UNKNOWN.",
+    "The Guesser receives only the final YES, NO, or UNKNOWN.",
   );
   await expect(page.getByText("A score built from repeated trials.", { exact: true })).toHaveCount(
     0,
@@ -262,118 +262,51 @@ test("homepage explains the game and keeps repeated-trial design on Method", { t
 
   const trust = page.locator(".trust-section");
   await expect(trust.getByRole("heading", { level: 2 })).toHaveText(
-    "Comparable runs, limited conclusions.",
+    "Same test setup, limited conclusions.",
   );
   await expect(trust).toContainText("Consistent setup");
   await expect(trust).toContainText("Public records");
 });
 
-test("Method builds from one round to repetition, scoring, and publication", { tag: ["@functional", "@both"] }, async ({
-  page,
-}, testInfo) => {
+test("Method explains the game before offering technical details", { tag: ["@functional", "@both"] }, async ({ page }) => {
   await page.goto("methodology/");
   await waitForPublication(page);
-
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Edition 1 method.",
-  );
-  await expect(page.locator(".methodology-page > .content-section")).toHaveCount(8);
-  if (!testInfo.project.name.startsWith("mobile")) {
-    const alignment = await page.evaluate(() => {
-      const methodNav = document.querySelector<HTMLElement>(".method-nav");
-      const hero = document.querySelector<HTMLElement>(".page-hero-inner");
-      if (methodNav === null || hero === null) {
-        throw new Error("The Method layout surfaces are missing.");
-      }
-      const methodNavBox = methodNav.getBoundingClientRect();
-      const heroBox = hero.getBoundingClientRect();
-      return {
-        methodNavLeft: methodNavBox.left,
-        methodNavRight: methodNavBox.right,
-        heroLeft: heroBox.left,
-        heroRight: heroBox.right,
-      };
-    });
-    expect(alignment.methodNavLeft).toBeCloseTo(alignment.heroLeft, 0);
-    expect(alignment.methodNavRight).toBeCloseTo(alignment.heroRight, 0);
-  }
-  expect(
-    await page
-      .locator(".methodology-page > .content-section")
-      .evaluateAll((sections) => sections.map((section) => section.id)),
-  ).toEqual([
-    "editions",
-    "game",
-    "answer-checks",
-    "repetition",
-    "scoring",
-    "reliability",
-    "eligibility",
-    "publication",
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("How Deep20Bench works");
+  expect(await page.locator(".methodology-page > .content-section")
+    .evaluateAll((sections) => sections.map((section) => section.id))).toEqual([
+    "game", "answer-checks", "scoring", "repetition", "publication", "edition-history",
   ]);
-
-  const game = page.locator("#game");
-  await expect(game.getByRole("heading", { name: "One hidden subject. One adaptive conversation." })).toBeVisible();
-  await expect(game.locator(".round-example")).toHaveAttribute(
-    "aria-label",
-    "Illustrative round: Garfield identified with a trial score of 3",
+  await expect(page.locator(".method-nav a")).toHaveCount(5);
+  await expect(page.locator(".method-nav-shell + #game")).toBeVisible();
+  await expect(page.locator("#publication + #edition-history")).toHaveCount(1);
+  await expect(page.locator(".method-details[open], .edition-comparison-details[open]")).toHaveCount(0);
+  await expect(page.locator("#game .answer-meanings dt")).toHaveText(["Yes", "No", "Unknown"]);
+  await expect(page.locator(".round-example")).toHaveAttribute(
+    "aria-label", "Illustrative round: Garfield identified with a trial score of 3",
   );
-  await expect(game).toContainText("Question score (single round)");
-  await expect(game).toContainText("Twenty Questions names the game, not the scoring limit.");
-  await expect(game).toContainText(
-    "Every additional question increases the trial value and remains visible in the final average.",
-  );
-
-  const checks = page.locator("#answer-checks");
-  await expect(checks).toContainText("Oracle");
-  await expect(checks).toContainText("Reviewer");
-  await expect(checks).toContainText("Judge");
-  await expect(checks).toContainText("Guess Validator");
-  await expect(checks).toContainText("The Guesser is fully isolated from adjudication.");
-  await expect(checks).toContainText(
-    "contains only the broad category, its own prior actions, final YES, NO, UNKNOWN tokens",
-  );
-  await expect(
-    checks.getByRole("link", {
-      name: /Read the development story behind the adjudication system and structured-output recovery/,
-    }),
-  ).toHaveAttribute(
-    "href",
-    "https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8",
+  await expect(page.locator("#game")).toContainText("50 counted questions, followed by one final guess");
+  await expect(page.locator(".answer-roles li")).toHaveCount(3);
+  await expect(page.locator(".isolation-callout")).toContainText("stay private");
+  await expect(page.locator("#answer-checks > .editorial-copy")).toContainText("fresh web checks");
+  await expect(page.locator(".score-rules")).toContainText("51 questions");
+  await expect(page.locator("#repetition .lead")).toContainText("7 subjects 5 times each: 35 rounds in total");
+  await expect(page.locator(".scope-note")).toContainText("do not rank general intelligence");
+  await expect(page.locator(".scope-note")).toContainText("training data");
+  await expect(page.locator("#publication")).toContainText("not independently verified facts");
+  await expect(page.getByRole("link", { name: "read the build story on Medium" })).toHaveAttribute(
+    "href", "https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8",
   );
 
-  const repetition = page.locator("#repetition");
-  await expect(repetition.getByRole("heading", { name: "One round becomes 35 isolated trials." })).toBeVisible();
-  await expect(repetition).toContainText(
-    "Every model plays the same 7 subjects in 5 fresh trials per subject.",
+  const formulas = page.locator(".method-details").filter({ has: page.locator("#score-details") });
+  await expect(formulas.locator("math").first()).toBeHidden();
+  await formulas.locator("summary").focus();
+  await formulas.locator("summary").press("Enter");
+  await expect(formulas.locator("math")).toHaveCount(3);
+  await expect(formulas.locator(".standard-error-formula math")).toBeVisible();
+  await expect(formulas.locator(".standard-error-formula math")).toHaveAttribute(
+    "aria-label", /sample trial variance divided by its trial count/,
   );
-  await expect(repetition).toContainText("Subject design and contamination");
-  await expect(repetition).toContainText("This small subject set does not support broad conclusions.");
-  await expect(repetition).toContainText(
-    "does not claim that this public cohort is resistant to benchmark contamination",
-  );
-  await expect(repetition).toContainText("Future cohorts will aim to include more subjects");
-  await expect(repetition).toContainText("not a general ranking of model intelligence");
-
-  const scoring = page.locator("#scoring");
-  await expect(scoring.getByRole("heading", { name: "Question score is the average counted questions." })).toBeVisible();
-  await expect(scoring).toContainText("A model failure counts as 51");
-  const standardErrorFormula = scoring.locator(".standard-error-formula");
-  await expect(standardErrorFormula.locator("math")).toHaveAttribute("display", "block");
-  await expect(standardErrorFormula.locator("math")).toHaveAttribute(
-    "aria-label",
-    /sample trial variance divided by its trial count/,
-  );
-  await expect(standardErrorFormula).toContainText("sample trial variance for subject");
-
-  const official = page.locator("#eligibility");
-  await expect(official).toContainText(
-    "The subjects, game policy, Oracle, Reviewer, Judge, Guess Validator, trial count, and scoring policy stay fixed.",
-  );
-
-  const publication = page.locator("#publication");
-  await expect(publication).toContainText("Publication happens after play is finished.");
-  await expect(publication).toContainText("Published data never returns to the Guesser.");
+  await expect(formulas).toContainText("not a pairwise significance test");
   await expectNoViewportOverflow(page);
 });
 

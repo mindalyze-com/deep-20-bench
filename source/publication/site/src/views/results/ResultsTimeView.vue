@@ -166,7 +166,7 @@ const benchmarkTimeBars = computed(() =>
                 <InfoPopover label="End-to-end time">
                   <p>
                     End-to-end time is the wall-clock runtime of the full benchmark run. It
-                    includes model calls, adjudication, scheduling, concurrency, and other
+                    includes model calls, answer checks, scheduling, overlapping work, and other
                     benchmark work.
                   </p>
                 </InfoPopover>
@@ -191,7 +191,7 @@ const benchmarkTimeBars = computed(() =>
               </div>
               <p>
                 Each bar is the wall-clock time from run creation to final status. It includes
-                model calls, adjudication, scheduling, concurrency, and other benchmark work.
+                model calls, answer checks, scheduling, overlapping work, and other benchmark work.
               </p>
             </header>
             <MetricBars

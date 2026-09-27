@@ -44,7 +44,7 @@ const supportModels = computed(() =>
       <header class="support-heading">
         <div>
           <p class="eyebrow">Game support</p>
-          <h3 id="support-models-title">Oracle and adjudication.</h3>
+          <h3 id="support-models-title">Answering and checking models.</h3>
         </div>
         <p>
           These models support the game. They are fixed across the run and are not under
