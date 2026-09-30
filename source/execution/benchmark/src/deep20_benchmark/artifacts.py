@@ -774,7 +774,10 @@ class ArtifactStore:
                         continue
                     existing = json.loads(line)
                     _verify_signed(existing, str(path))
-                    if existing.get("event_id") == identity or existing.get("call_id") == identity:
+                    if existing.get("event_id") == identity or (
+                        existing.get("call_id") == identity
+                        and existing.get("component") == payload.get("component")
+                    ):
                         raise ArtifactIntegrityError(f"duplicate durable record {identity}")
             with path.open("a", encoding="utf-8") as handle:
                 os.chmod(path, file_mode)

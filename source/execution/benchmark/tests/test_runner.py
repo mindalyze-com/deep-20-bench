@@ -2620,3 +2620,16 @@ def test_circuit_breaker_resets_on_a_scoring_eligible_trial(tmp_path: Path) -> N
     state = store.load_state(request.model_id, request.execution_id)
     assert state is not None
     assert state.status is ExecutionStatus.FAILED
+
+
+def test_error_output_records_distinguish_roles_and_reject_duplicates(tmp_path: Path) -> None:
+    path = tmp_path / "error-outputs.jsonl"
+    oracle = artifacts_module._signed_payload({"call_id": "shared", "component": "oracle"})
+    judge = artifacts_module._signed_payload({"call_id": "shared", "component": "judge"})
+    ArtifactStore._append_jsonl(path, oracle, identity="shared", file_mode=0o600)
+    ArtifactStore._append_jsonl(path, judge, identity="shared", file_mode=0o600)
+    assert len(path.read_text().splitlines()) == 2
+    with pytest.raises(ArtifactIntegrityError, match="duplicate durable record"):
+        ArtifactStore._append_jsonl(path, judge, identity="shared", file_mode=0o600)
+    assert len(path.read_text().splitlines()) == 2
+    assert stat.S_IMODE(path.stat().st_mode) == 0o600
