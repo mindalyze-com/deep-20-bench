@@ -43,12 +43,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/publication-unavailable/", name: "publication-unavailable",
     component: () => import("@/views/PublicationUnavailableView.vue"),
-    meta: { depth: 1, title: "Publication unavailable" },
+    meta: { depth: 1, title: "Publication unavailable", trackPageview: false },
   },
   {
     path: "/editions/:editionId/unavailable/", name: "edition-unavailable",
     component: () => import("@/views/EditionUnavailableView.vue"),
-    meta: { depth: 1, title: "Edition unavailable" },
+    meta: { depth: 1, title: "Edition unavailable", trackPageview: false },
   },
   {
     path: "/editions/:editionId?/",
@@ -178,7 +178,7 @@ const routes: RouteRecordRaw[] = [
     path: "/:pathMatch(.*)*",
     name: "not-found",
     component: () => import("@/views/NotFoundView.vue"),
-    meta: { depth: 1, nav: null, title: "Page not found" },
+    meta: { depth: 1, nav: null, title: "Page not found", trackPageview: false },
   },
 ];
 

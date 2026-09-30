@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { expect, test } from "@playwright/test";
 
-import { docsRoot, staticPaths } from "./support/publication";
+import { docsRoot, expectMinimumSize, expectNoViewportOverflow, staticPaths } from "./support/publication";
 
 interface OfficialRunReference {
   execution_id: string;
@@ -45,6 +45,38 @@ const representativeTargetId = representativeRun.subjects[0]?.target_id;
 if (representativeTargetId === undefined) {
   throw new Error("The publication needs a subject for static rendering tests.");
 }
+
+test(
+  "news archive remains available without JavaScript",
+  { tag: ["@static-fallback", "@both", "@smoke"] },
+  async ({ browser }, testInfo) => {
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      viewport: testInfo.project.name.startsWith("mobile")
+        ? { width: 390, height: 844 }
+        : { width: 1280, height: 720 },
+    });
+    try {
+      const page = await context.newPage();
+      await page.goto(new URL("about/", staticBase).href);
+      const news = page.locator("#news");
+      const entries = news.locator(".news-entry:visible");
+      const archive = news.locator("summary");
+      await expect(news.locator(".news-entry")).toHaveCount(14);
+      await expect(entries).toHaveCount(4);
+      await expect(archive).toHaveText("Older updates (10)");
+      await expectMinimumSize(archive, 44);
+      await archive.click();
+      await expect(entries).toHaveCount(14);
+      await expect(news.getByRole("link", { name: /Read article/ })).toBeVisible();
+      await expectNoViewportOverflow(page);
+      await archive.click();
+      await expect(entries).toHaveCount(4);
+    } finally {
+      await context.close();
+    }
+  },
+);
 
 test(
   "homepage remains complete without JavaScript",

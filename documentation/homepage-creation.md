@@ -379,6 +379,18 @@ shows a reload notice without removing static results. Offscreen charts retain p
 resize only when dimensions change, and cached route activation resumes observation.
 The document preloads the locally bundled normal Latin display and body fonts. Build-time URL
 resolution preserves the configured base path and content-hashed asset names.
+Umami page views follow successful router navigation after the initial route settles. Initial
+alias normalization and same-page query, anchor, or trailing-slash updates add no page view.
+Every route is tracked unless it explicitly sets `meta.trackPageview: false`; error and
+unavailable routes opt out. Search-engine indexing metadata is independent. Tracker loading
+is asynchronous and optional; queued visits retain their own URL, title, and referrer.
+Every page view uses the same lazy flow: read the visitor ID from local storage, create and
+save a random UUID only if missing or invalid, and attach it. The client identifies the visitor
+before the first view and whenever the stored ID changes. The ID identifies a browser profile
+on this origin until site storage is cleared; the next tracked view picks up storage changes
+without requiring a reload. Generation uses `crypto.randomUUID()` or falls back to
+`Math.random()`; denied storage limits persistence to the current page session. Identification
+does not add a page view or delay rendering.
 Each prerendered page also links the CSS for its rendered Vue components directly in its head,
 using Vite's SSR asset manifest. The browser applies these styles before showing the initial
 content, so slow JavaScript cannot expose an unstyled intermediate layout. Complete content,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { editionRoute } from "@/lib/route-location";
-import { onActivated } from "vue";
+import { computed, nextTick, onActivated, onMounted, ref } from "vue";
 
 import { setRouteContext } from "@/lib/route-context";
 
@@ -156,6 +156,46 @@ const newsEntries = [
   },
 ] as const;
 
+const newsBatchSize = 4;
+const orderedNewsEntries = [...newsEntries].sort((a, b) => b.date.localeCompare(a.date));
+const newsGroups = [
+  orderedNewsEntries.slice(0, newsBatchSize),
+  orderedNewsEntries.slice(newsBatchSize),
+].filter((group) => group.length > 0);
+const enhancedNews = ref(false);
+const visibleNewsCount = ref(Math.min(newsBatchSize, newsEntries.length));
+const nextNewsCount = computed(() =>
+  Math.min(newsBatchSize, newsEntries.length - visibleNewsCount.value),
+);
+const newsList = ref<HTMLElement | null>(null);
+const showOlderButton = ref<HTMLButtonElement | null>(null);
+
+onMounted(() => {
+  // Preserve an archive opened before hydration; reuse the same rendered entries.
+  if (newsList.value?.querySelector("details[open]")) {
+    visibleNewsCount.value = newsEntries.length;
+  }
+  enhancedNews.value = true;
+});
+
+const showOlderNews = async (): Promise<void> => {
+  const previousCount = visibleNewsCount.value;
+  const previousScroll = window.scrollY;
+  visibleNewsCount.value += nextNewsCount.value;
+  await nextTick();
+  newsList.value?.querySelectorAll<HTMLElement>(".news-entry")[previousCount]?.focus({
+    preventScroll: true,
+  });
+  window.scrollTo({ top: previousScroll, behavior: "instant" });
+};
+
+const showLatestNews = async (): Promise<void> => {
+  visibleNewsCount.value = Math.min(newsBatchSize, newsEntries.length);
+  await nextTick();
+  showOlderButton.value?.focus({ preventScroll: true });
+  showOlderButton.value?.scrollIntoView({ block: "nearest", behavior: "instant" });
+};
+
 const priorWork = [
   {
     year: "2018",
@@ -247,38 +287,80 @@ onActivated(applyRouteContext);
           </div>
           <p>Project updates, releases, and notes.</p>
         </header>
-        <div class="news-list">
-          <article
-            v-for="entry in newsEntries"
-            :key="`${entry.date}-${entry.title}`"
-            class="news-entry"
+        <div id="news-list" ref="newsList" class="news-list">
+          <component
+            :is="groupIndex === 0 || enhancedNews ? 'div' : 'details'"
+            v-for="(group, groupIndex) in newsGroups"
+            :key="groupIndex"
+            v-show="groupIndex === 0 || !enhancedNews || visibleNewsCount > newsBatchSize"
+            class="news-group"
           >
-            <time :datetime="entry.date">{{ entry.displayDate }}</time>
-            <div>
-              <h3>{{ entry.title }}</h3>
-              <p>{{ entry.summary }}</p>
-            </div>
-            <a
-              v-if="entry.link.type === 'external'"
-              class="news-link"
-              :href="entry.link.href"
-              target="_blank"
-              rel="noreferrer"
-              :aria-label="`${entry.link.label} (opens in a new tab)`"
+            <summary
+              v-if="groupIndex > 0 && !enhancedNews"
+              class="button button-secondary news-archive-summary"
             >
-              {{ entry.link.label }} ↗
-            </a>
-            <RouterLink
-              v-else
-              class="news-link"
-              :to="{
-                name: 'run',
-                params: { executionId: entry.link.executionId },
-              }"
+              Older updates ({{ group.length }})
+            </summary>
+            <article
+              v-for="(entry, entryIndex) in group"
+              :key="`${entry.date}-${entry.title}`"
+              v-show="!enhancedNews || groupIndex === 0 || entryIndex < visibleNewsCount - newsBatchSize"
+              class="news-entry"
+              tabindex="-1"
             >
-              View run →
-            </RouterLink>
-          </article>
+              <time :datetime="entry.date">{{ entry.displayDate }}</time>
+              <div>
+                <h3>{{ entry.title }}</h3>
+                <p>{{ entry.summary }}</p>
+              </div>
+              <a
+                v-if="entry.link.type === 'external'"
+                class="news-link"
+                :href="entry.link.href"
+                target="_blank"
+                rel="noreferrer"
+                :aria-label="`${entry.link.label} (opens in a new tab)`"
+              >
+                {{ entry.link.label }} ↗
+              </a>
+              <RouterLink
+                v-else
+                class="news-link"
+                :to="{
+                  name: 'run',
+                  params: { executionId: entry.link.executionId },
+                }"
+              >
+                View run →
+              </RouterLink>
+            </article>
+          </component>
+        </div>
+        <div v-if="enhancedNews" class="news-controls">
+          <p role="status" aria-live="polite" aria-atomic="true">
+            Showing {{ visibleNewsCount }} of {{ newsEntries.length }} updates
+          </p>
+          <div class="news-actions">
+            <button
+              v-if="nextNewsCount > 0"
+              ref="showOlderButton"
+              type="button"
+              class="button button-secondary"
+              aria-controls="news-list"
+              @click="showOlderNews"
+            >
+              Show {{ nextNewsCount }} older updates
+            </button>
+            <button
+              v-if="visibleNewsCount > newsBatchSize"
+              type="button"
+              class="button button-secondary"
+              aria-controls="news-list"
+              @click="showLatestNews"
+            >
+              Show latest only
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -440,6 +522,38 @@ onActivated(applyRouteContext);
 .news-list {
   display: grid;
   gap: 1rem;
+}
+
+div.news-group {
+  display: grid;
+  gap: 1rem;
+}
+
+details.news-group > .news-entry {
+  margin-top: 1rem;
+}
+
+.news-archive-summary {
+  width: fit-content;
+}
+
+.news-controls,
+.news-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.news-controls {
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.news-controls p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-small);
 }
 
 .news-entry {

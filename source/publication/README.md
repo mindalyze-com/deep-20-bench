@@ -200,6 +200,13 @@ The existing `#editions` fragment targets content inside the disclosure, preserv
 opening without JavaScript. Client fragment navigation reveals containing details before
 scrolling, including repeat visits to the same fragment after manually closing the panel.
 
+About shows the four newest news entries. After hydration, a count and "Show 4 older updates"
+button reveal successive batches, with a smaller final batch when needed. "Show latest only"
+collapses the list and restores focus to the expansion button. Expansion preserves the current
+scroll position and focuses the first newly revealed entry. All entries remain in the rendered
+HTML; without JavaScript, a native "Older updates" disclosure opens the complete archive.
+Dates sort newest first, retaining editorial order for entries on the same date.
+
 ## Build
 
 From the repository root:
@@ -321,8 +328,22 @@ emits `noindex, follow`.
 This repository publishes through GitHub Pages at `https://deep20bench.com/`, with base path `/`.
 The shared HTML template loads the optional Umami tracker asynchronously from
 `https://umami.me.mindalyze.com/script.js`. Tracking is limited to `deep20bench.com`, so local
-previews do not record visits. The application never awaits or calls the tracker. Unavailable
-analytics must leave rendering and navigation working without a visitor-facing notice.
+previews do not record visits. Automatic Umami page views are disabled. After initial routing
+settles, one shared router observer records the final page and every successful navigation to
+a different path, including browser back/forward. Query parameters, anchors, trailing-slash
+changes, and initial alias redirects do not add page views. Routes are tracked by default;
+only explicit `meta.trackPageview: false` excludes a route. The not-found and unavailable
+routes opt out. Search-engine `noindex` metadata does not exclude content from analytics.
+A late tracker receives queued visits with each visit's original URL, title, and referrer.
+Every page view lazily reads `deep20bench.visitor-id.v1` from local storage, creates and saves
+a random UUID only when no valid ID is stored, then attaches that ID. The client identifies
+the visitor before the first page view and again only when the stored ID changes.
+The ID is scoped to the site origin and browser profile; clearing site storage resets it on
+the next tracked view, including without a reload. Creating the reader does not access storage.
+Generation uses `crypto.randomUUID()` with a `Math.random()` fallback when crypto is unavailable.
+If storage is denied, the ID lasts for the current page session. Identification adds no page view.
+The application never waits for analytics. Unavailable analytics must leave rendering and
+navigation working without a visitor-facing notice.
 The tracker handles failed event requests internally; browsers may still show network failures
 in developer tools. Do not suppress unrelated application errors to hide analytics failures.
 

@@ -327,6 +327,10 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(news.getByRole("heading", { name: "Project news." })).toBeVisible();
   const entries = news.locator(".news-entry");
   await expect(entries).toHaveCount(14);
+  await expect(news.locator(".news-entry:visible")).toHaveCount(4);
+  await news.getByRole("button", { name: "Show 4 older updates" }).click();
+  await news.getByRole("button", { name: "Show 4 older updates" }).click();
+  await news.getByRole("button", { name: "Show 2 older updates" }).click();
   await expect(entries.nth(6).locator("time")).toHaveAttribute("datetime", "2026-09-05");
   await expect(entries.nth(6).locator("time")).toHaveText("5 September 2026");
   await expect(entries.nth(6)).toContainText("GPT-6 Astra (high) added.");
@@ -398,6 +402,45 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(page.locator(".round-section, .scope-section, .apple-spotlight")).toHaveCount(0);
   await expect(page.getByText("The Entity-Deduction Arena", { exact: true })).toHaveCount(1);
   await expectNoViewportOverflow(page);
+});
+
+test("news reveals older updates in batches and returns to the latest", { tag: ["@functional", "@both", "@smoke"] }, async ({ page }) => {
+  await page.goto("about/");
+  await waitForPublication(page);
+
+  const news = page.locator("#news");
+  const entries = news.locator(".news-entry");
+  const visibleEntries = news.locator(".news-entry:visible");
+  const status = news.getByRole("status");
+  const latestOnly = news.getByRole("button", { name: "Show latest only" });
+  await expect(entries).toHaveCount(14);
+  await expect(visibleEntries).toHaveCount(4);
+  await expect(status).toHaveText("Showing 4 of 14 updates");
+  await expect(latestOnly).toHaveCount(0);
+  await expect(entries.first()).toContainText("Claude Sonnet 5.5 (high) added.");
+  await expect(entries.nth(1)).toContainText("GPT-6.1 Sol (high) added.");
+
+  for (const [previousCount, batchSize, expectedCount] of [[4, 4, 8], [8, 4, 12], [12, 2, 14]]) {
+    const showOlder = news.getByRole("button", { name: `Show ${batchSize} older updates` });
+    await expectMinimumSize(showOlder, 44);
+    await showOlder.scrollIntoViewIfNeeded();
+    await showOlder.focus();
+    const previousScroll = await page.evaluate(() => window.scrollY);
+    await showOlder.press("Enter");
+    await expect(visibleEntries).toHaveCount(expectedCount);
+    await expect(status).toHaveText(`Showing ${expectedCount} of 14 updates`);
+    await expect(entries.nth(previousCount)).toBeFocused();
+    expect(Math.abs(await page.evaluate(() => window.scrollY) - previousScroll)).toBeLessThanOrEqual(1);
+    await expectNoViewportOverflow(page);
+  }
+
+  await expect(news.getByRole("button", { name: /older updates/ })).toHaveCount(0);
+  await expectMinimumSize(latestOnly, 44);
+  await latestOnly.click();
+  await expect(visibleEntries).toHaveCount(4);
+  await expect(status).toHaveText("Showing 4 of 14 updates");
+  await expect(news.getByRole("button", { name: "Show 4 older updates" })).toBeFocused();
+  await expect(latestOnly).toHaveCount(0);
 });
 
 test("Data provides schema guidance, reuse terms, and next steps", { tag: ["@functional", "@desktop"] }, async ({ page }) => {

@@ -5,6 +5,7 @@ import "@fontsource-variable/newsreader/wght-italic.css";
 
 import { seedEmbeddedPageState } from "./lib/page-state";
 import { resetPublicationData } from "./lib/api";
+import { installPageviewTracking } from "./lib/pageview-tracking";
 import { createPublicationApp } from "./publication-app";
 import "./styles/app.css";
 
@@ -21,4 +22,5 @@ const { app, router } = createPublicationApp(
   hydrate,
 );
 await router.isReady();
+installPageviewTracking(router);
 app.mount("#app");
