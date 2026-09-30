@@ -561,6 +561,31 @@ without padding or response reuse. The opening-turn canary passed the exact rout
 action contract with 100 output tokens and 5,354 milliseconds of latency. It does not establish
 cache reuse or savings.
 
+GPT-6.1 Sol (`M-0031`) uses `openai/gpt-6.1-sol` pinned to OpenAI with high
+reasoning, strict JSON Schema output, and provider seed support. On 29 September 2026,
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/openai/gpt-6.1-sol/endpoints)
+advertised standard OpenAI input/cache-read/cache-write prices of $2/$0.10/$2.50 per
+million tokens below the 272,000-token pricing tier. The configuration retains automatic
+best-effort caching, the existing 1,024-token minimum and 1,800-second observation window,
+and a 1.25 write multiplier. The threshold and window are observation settings inherited
+from GPT-6 Sol, not a new route-specific measurement. Keep the fixed prefix and append-only
+history without padding, explicit storage, or response reuse. The opening-turn canary passed
+the exact route and strict action contract with 90 output tokens and 4,413 milliseconds of
+latency. This single call does not establish prefix reuse or cache savings.
+
+Claude Sonnet 5.5 (`M-0032`) uses `anthropic/claude-sonnet-5.5` pinned to Anthropic
+with high reasoning, strict JSON Schema output, and no provider seed. On 30 September 2026,
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/anthropic/claude-sonnet-5.5/endpoints)
+advertised $2 input, $10 output, $0.20 cache reads, and $2.50 five-minute cache writes per
+million tokens. [Anthropic's caching documentation](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+sets a 512-token minimum. The configuration uses best-effort `ephemeral_5m`, that minimum,
+a 300-second lifetime, and a 1.25 write multiplier. Keep the fixed prefix and append-only
+visible history without padding or response reuse. The edition 1.1 `qualified_v1` opening-turn
+canary passed the exact route and strict action contract with one request, 1,570 input tokens,
+54 output tokens, 3,080 milliseconds of latency, and $0.004463 cost. It reported 1,566 cache-write
+tokens and zero cache-read tokens. This verifies cache creation, not prefix reuse, savings, or
+game performance. The supporting record remains under `private/reviews/sonnet55-smoke-20260930/`.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input

@@ -6,6 +6,28 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-09-30",
+    displayDate: "30 September 2026",
+    title: "Claude Sonnet 5.5 (high) added.",
+    summary:
+      "Edition 1.1 question score: 17.8 (lower is better). It completed 27 of 30 trials successfully.",
+    link: {
+      type: "run",
+      executionId: "BX-20260930-B-0003-official-M0032-001",
+    },
+  },
+  {
+    date: "2026-09-30",
+    displayDate: "30 September 2026",
+    title: "GPT-6.1 Sol (high) added.",
+    summary:
+      "Edition 1.1 question score: 15.2 (lower is better). It completed 29 of 30 trials successfully.",
+    link: {
+      type: "run",
+      executionId: "BX-20260929-B-0003-official-M0031-001",
+    },
+  },
+  {
     date: "2026-09-27",
     displayDate: "27 September 2026",
     title: "Claude Opus 5.5 (high) added.",
