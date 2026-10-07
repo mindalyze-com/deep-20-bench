@@ -398,20 +398,22 @@ ordinary links, and search metadata remain in the HTML, including without JavaSc
 Hydration keeps that content in place. The asset manifest remains a build-only file.
 
 Each edition homepage and its editorial/result pages, each selected official run summary, and every
-subject summary are rendered as complete HTML. Run pages include model identity, provider,
+subject summary and episode transcript are rendered as complete HTML. Run pages include model
+identity, provider,
 reasoning effort, rank, question score and confidence interval, success and output-contract
 results, cost and timing, and links to every subject. Subject pages include the model and subject
-identity, aggregate score, trial summaries, and ordinary episode links. Vue intercepts internal
-navigation only after hydration.
+identity, aggregate score, trial summaries, and ordinary episode links. Episode pages include
+their complete transcript and embedded public run, subject, and episode documents. Vue intercepts
+internal navigation only after hydration.
 
 The sitemap contains canonical edition homepages and editorial/result URLs, the shared About
-page, every selected official run URL, and every subject summary URL. Aliases and episode
-pages are excluded. The route manifest determines the count, so a cohort change cannot
+page, every selected official run URL, every subject summary URL, and every episode transcript
+URL. Aliases are excluded. The route manifest determines the count, so a cohort change cannot
 leave the sitemap contract or its tests tied to an old model count. Every listed page uses unique
 metadata, a self-referencing canonical URL, and the modification time of the generated
-publication. Listed pages omit robots meta tags, so search engines use their default `index,
-follow` behavior. Episode evidence and the `/story/` alias stay outside the sitemap. Episode
-pages and the generated 404 page emit `noindex, follow`.
+publication. All pages omit crawler directives and permit crawling and indexing, including
+episode transcripts, aliases, the generated 404 page, and local draft previews. Route manifests
+reject indexing exclusions. The `/story/` alias stays outside the sitemap.
 
 GitHub Pages hosts this repository at `https://deep20bench.com/`, with base path `/`.
 The prerenderer derives CNAME and robots files from the canonical URL on every rebuild. The root `robots.txt` allows
@@ -487,8 +489,8 @@ under `source/publication/site/`. The development server reads committed public 
 `docs/`.
 
 The Vite build uses the configured domain-root base path. The publisher writes full prerendered
-HTML for indexable homepage, editorial, run, and subject routes and entry shells for episode
-routes, so direct navigation and refresh work under GitHub Pages. Local verification uses an
+HTML for homepage, editorial, run, subject, and episode routes, so direct navigation and refresh
+work under GitHub Pages. Local verification uses an
 HTTP origin because clean history routes and later route-data requests do not support direct
 `file://` navigation.
 

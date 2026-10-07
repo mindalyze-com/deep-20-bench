@@ -109,10 +109,9 @@ test("explicit exclusions and aborted navigation do not count; returning to cont
   expect(new URL(delivered[1]!.referrer).pathname).toBe("/preview/excluded/");
 });
 
-test("browser history and content marked noindex remain tracked", async () => {
+test("browser history and episode content remain tracked", async () => {
   window.umami = { track };
   const router = await setup();
-  document.head.insertAdjacentHTML("beforeend", '<meta name="robots" content="noindex, follow">');
   await router.push("/episode/");
   router.back();
   await vi.waitFor(() => expect(track).toHaveBeenCalledTimes(3));

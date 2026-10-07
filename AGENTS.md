@@ -37,6 +37,9 @@ Read and follow the relevant detailed specification before changing these areas:
 
 ## Publication deployment
 
+- All public pages must permit crawling and indexing, including episode transcripts and the
+  404 page. Do not emit crawler exclusions in metadata, headers, or robots.txt. Prerender all
+  canonical content pages and include them in the sitemap; aliases stay outside the sitemap.
 - `deep20-publication build` regenerates the tracked GitHub Pages site in `docs/`. Any commit
   that changes publication source or generated output must include the complete regenerated
   `docs/` tree.

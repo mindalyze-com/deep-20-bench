@@ -213,6 +213,15 @@ export const peekSubject = (
     `runs/${encodeURIComponent(executionId)}/subjects/${encodeURIComponent(targetId)}.json`,
   );
 
+export const peekEpisode = (
+  executionId: string,
+  targetId: string,
+  trialId: string,
+): EpisodeDocument | null =>
+  peek<EpisodeDocument>(
+    `runs/${encodeURIComponent(executionId)}/subjects/${encodeURIComponent(targetId)}/episodes/${encodeURIComponent(trialId)}.json`,
+  );
+
 export const peekOfficialRuns = (): RunDocument[] | null => {
   const manifest = peekManifest();
   if (manifest === null) return null;

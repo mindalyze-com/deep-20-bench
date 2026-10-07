@@ -628,18 +628,22 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
                 f"episodes/{episode_document.trial_id}"
             ),
             kind="episode",
-            indexable=False,
-            sitemap_included=False,
+            indexable=True,
+            sitemap_included=True,
             canonical_route=(
                 f"runs/{episode_document.execution_id}/subjects/{episode_document.target_id}/"
                 f"episodes/{episode_document.trial_id}"
             ),
             browser_title=(
-                f"Episode evidence · "
-                f"{runs_by_execution[episode_document.execution_id].run.model_name} · "
-                "Deep20Bench"
+                f"{runs_by_execution[episode_document.execution_id].run.model_name} on "
+                f"{episode_document.episode.subject_name} - "
+                f"{episode_document.trial_id} | Deep20Bench"
             ),
-            description="Inspect one public Deep20Bench episode transcript and its evidence.",
+            description=(
+                "Questions, final answers, and Oracle evidence for "
+                f"{runs_by_execution[episode_document.execution_id].run.model_name} finding "
+                f"{episode_document.episode.subject_name} in {episode_document.trial_id}."
+            ),
             last_modified=last_modified,
             execution_id=episode_document.execution_id,
             target_id=episode_document.target_id,
@@ -834,14 +838,14 @@ def build(
                 output = root / "docs"
                 backup = staging_root / "previous-docs"
                 if output.exists():
-                    output.rename(backup)
+                    shutil.move(output, backup)
                 try:
                     shutil.copytree(candidate, output)
                 except BaseException:
                     if output.exists():
                         shutil.rmtree(output)
                     if backup.exists():
-                        backup.rename(output)
+                        shutil.move(backup, output)
                     raise
         typer.echo(
             f"{_timestamp()} INFO publication.result runs={len(runs)} "

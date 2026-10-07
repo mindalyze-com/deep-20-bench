@@ -10,7 +10,7 @@ import EpisodeSummary from "@/components/episode/EpisodeSummary.vue";
 import EpisodeTranscriptPanel from "@/components/episode/EpisodeTranscriptPanel.vue";
 import EpisodeUsagePanel from "@/components/episode/EpisodeUsagePanel.vue";
 import LoadingState from "@/components/LoadingState.vue";
-import { getEpisode } from "@/lib/api";
+import { getEpisode, peekEpisode } from "@/lib/api";
 import { formatCount, moneyEpisode } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import { episodeRoute, runRoute, subjectRoute } from "@/lib/route-location";
@@ -41,6 +41,7 @@ const { document: episodeDocument, loading, error } = useKeyedPublicationLoad({
     trialId.value,
   ],
   clearBeforeLoad: true,
+  initial: () => peekEpisode(executionId.value, targetId.value, trialId.value),
   fallbackError: "The episode could not be loaded.",
   onBeforeLoad: () => {
     activeTab.value = "transcript";
@@ -190,6 +191,7 @@ watch(
   () => route.query.violation,
   () => void revealLinkedViolation(),
 );
+applyRouteContext();
 onActivated(() => {
   applyRouteContext();
   void revealLinkedViolation();

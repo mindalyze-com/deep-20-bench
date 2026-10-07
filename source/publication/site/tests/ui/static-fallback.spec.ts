@@ -3,7 +3,8 @@ import path from "node:path";
 
 import { expect, test } from "@playwright/test";
 
-import { docsRoot, expectMinimumSize, expectNoViewportOverflow, staticPaths } from "./support/publication";
+import type { EpisodeDocument, SubjectDocument } from "../../src/lib/types";
+import { docsRoot, expectMinimumSize, expectNoViewportOverflow, staticPaths, waitForPublication } from "./support/publication";
 
 interface OfficialRunReference {
   execution_id: string;
@@ -45,6 +46,63 @@ const representativeTargetId = representativeRun.subjects[0]?.target_id;
 if (representativeTargetId === undefined) {
   throw new Error("The publication needs a subject for static rendering tests.");
 }
+const representativeSubject = JSON.parse(readFileSync(path.join(
+  docsRoot, "data", "runs", representativeExecutionId, "subjects", `${representativeTargetId}.json`,
+), "utf8")) as SubjectDocument;
+const representativeTrialId = representativeSubject.trials.find(
+  (trial) => trial.status !== "infrastructure_failure",
+)?.trial_id;
+if (representativeTrialId === undefined) {
+  throw new Error("The publication needs an episode for static rendering tests.");
+}
+const representativeEpisode = JSON.parse(readFileSync(path.join(
+  docsRoot, "data", "runs", representativeExecutionId, "subjects", representativeTargetId,
+  "episodes", `${representativeTrialId}.json`,
+), "utf8")) as EpisodeDocument;
+
+test(
+  "episode transcript remains complete without JavaScript and during hydration",
+  { tag: ["@static-fallback", "@both"] },
+  async ({ browser, page }, testInfo) => {
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      viewport: testInfo.project.name.startsWith("mobile")
+        ? { width: 390, height: 844 } : { width: 1280, height: 720 },
+    });
+    const initial = await context.newPage();
+    const episodeUrl = new URL(
+      `runs/${representativeExecutionId}/subjects/${representativeTargetId}/episodes/${representativeTrialId}/`,
+      staticBase,
+    ).href;
+    const hydrationMessages: string[] = [];
+    const dataRequests: string[] = [];
+    page.on("console", (message) => {
+      if (/hydration|mismatch/i.test(message.text())) hydrationMessages.push(message.text());
+    });
+    page.on("request", (request) => {
+      if (request.url().includes("/data/")) dataRequests.push(request.url());
+    });
+    await page.route("https://**/*", (route) => route.abort());
+    try {
+      await initial.goto(episodeUrl);
+      await expect(initial.locator("#transcript")).toBeVisible();
+      await expect(initial.locator(".turn-list > .turn"))
+        .toHaveCount(representativeEpisode.episode.turns.length);
+      await expect(initial.locator('meta[name="robots"]')).toHaveCount(0);
+      await expect(initial.locator("html")).toHaveAttribute("data-prerendered", "true");
+      const transcript = await initial.locator("#transcript").textContent();
+
+      await page.goto(episodeUrl);
+      await waitForPublication(page);
+      await expect(page.locator("#transcript")).toHaveText(transcript ?? "");
+      await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+      expect(hydrationMessages).toEqual([]);
+      expect(dataRequests).toEqual([]);
+    } finally {
+      await context.close();
+    }
+  },
+);
 
 test(
   "news archive remains available without JavaScript",

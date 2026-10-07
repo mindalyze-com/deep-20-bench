@@ -111,7 +111,7 @@ def render_draft(report: DraftReport) -> str:
         role.unmetered_calls,
     )) + "</tr>" for role in report.roles)
     return f"""<!doctype html><html lang="en"><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{escape(title)}</title><style>
 body{{font:16px/1.5 system-ui;margin:3rem auto;padding:0 1rem;max-width:80rem;color:#202b36;background:#f7f8fa}}
 h1{{font-size:1.7rem}}.notice{{padding:1rem;border-left:4px solid #b46b00;background:#fff4dc}}

@@ -46,9 +46,6 @@ export const applyPageMetadata = (
     setMeta("property", "og:url", canonicalUrl);
   }
 
-  if (metadata?.indexable === true) {
-    document.querySelector('meta[name="robots"]')?.remove();
-  } else {
-    setMeta("name", "robots", "noindex, follow");
-  }
+  document.querySelectorAll('meta[name="robots"], meta[name="googlebot"], meta[name="bingbot"]')
+    .forEach((element) => element.remove());
 };

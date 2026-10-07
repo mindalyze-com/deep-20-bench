@@ -50,6 +50,7 @@ def test_draft_preview_validates_signed_identity_and_escapes_html(tmp_path: Path
     assert "<script>" not in html
     assert "&lt;script&gt;" in html
     assert "Unmetered calls" in html
+    assert 'name="robots"' not in html
     assert not (tmp_path / "docs").exists()
 
 

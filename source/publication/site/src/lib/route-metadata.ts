@@ -4,7 +4,7 @@ export interface RouteMetadata {
   readonly canonical_route: string;
   readonly browser_title: string;
   readonly description: string;
-  readonly indexable: boolean;
+  readonly indexable: true;
 }
 
 export const parseRouteMetadata = (value: unknown): readonly RouteMetadata[] => {
@@ -25,7 +25,7 @@ export const parseRouteMetadata = (value: unknown): readonly RouteMetadata[] => 
       route.browser_title.trim().length === 0 ||
       !("description" in route) || typeof route.description !== "string" ||
       route.description.trim().length === 0 ||
-      !("indexable" in route) || typeof route.indexable !== "boolean"
+      !("indexable" in route) || route.indexable !== true
     ) {
       throw new Error("Static route metadata is invalid.");
     }

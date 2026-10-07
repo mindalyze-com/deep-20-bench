@@ -227,9 +227,8 @@ The build:
 4. records separate UTC publication and application build times in typed public metadata;
 5. writes `editions.json`, per-edition v10 JSON/schema/CSV and split documents, plus the
    maintained v9 edition 1 compatibility projection and schema;
-6. builds the Vue application, statically renders both edition homepages and editorial pages, every
-   selected official run summary, and every subject summary, and writes entry shells for episode
-   routes;
+6. builds the Vue application and statically renders both edition homepages, editorial pages,
+   every selected official run summary, every subject summary, and every episode transcript;
 7. uses the configured base path for clean direct URLs on GitHub Pages and normal static HTTP
    hosts;
 8. runs strict Vue/TypeScript checks and the static build;
@@ -277,15 +276,17 @@ The cross-browser script also includes the phone WebKit edition checks.
 The browser uses typed public documents embedded in each statically rendered page for its first
 hydration. It fetches one small run, subject, or episode document only when later navigation
 needs it. Subject pages embed their run and subject documents so their aggregate result and
-ordinary episode links exist in the initial HTML. The complete version 10 datasets and version 9
+ordinary episode links exist in the initial HTML. Episode pages also embed their episode document
+and render the transcript before JavaScript loads. The complete version 10 datasets and version 9
 compatibility JSON remain downloads and are not imported into the
 application bundle. Browser promise caching applies only to immutable public reporting files.
 It cannot affect model requests, benchmark execution, or Guesser-visible state.
 
 The build uses Vue server rendering with a memory-history router, then hydrates the same tree
 with a web-history router in the browser. The homepage, eight editorial and result pages, and
-every selected official run summary contain their real content and ordinary links in the
-initial HTML. Charts and interactive controls start after hydration. There is no separate
+every selected official run summary, subject summary, and episode transcript contain their real
+content and ordinary links in the initial HTML. Charts and interactive controls start after
+hydration. There is no separate
 fallback content tree or content-hiding script. Every prerendered page links its rendered
 components' CSS in the initial HTML, using Vite's
 SSR asset manifest. Route styles therefore apply before the first paint, even with delayed or
@@ -319,11 +320,11 @@ without an extra metadata request. Short navigation labels never write document 
 Homepage Dataset and WebSite JSON-LD use one shared generator for static HTML and browser
 navigation. Switching editions updates dataset identity, settings, and download URLs; leaving
 the homepage removes that markup. Late data loads cannot restore a previous page's markup.
-The sitemap contains the homepage, editorial URLs, every selected official run,
-and every subject summary. These pages do not emit a robots meta tag, so search engines use their
-default `index, follow` behavior. Episode evidence pages remain outside the sitemap and emit
-`noindex, follow`; aliases and downloads remain outside the sitemap. The generated 404 page also
-emits `noindex, follow`.
+The sitemap contains canonical edition homepages, editorial URLs, every selected official run,
+every subject summary, and every episode transcript. All pages permit crawling and indexing
+and omit crawler directives, including aliases and the generated 404 page. Route manifests
+reject indexing exclusions. Aliases and downloads remain outside the sitemap. Private draft
+previews also omit crawler directives and remain local under `private/`.
 
 This repository publishes through GitHub Pages at `https://deep20bench.com/`, with base path `/`.
 The shared HTML template loads the optional Umami tracker asynchronously from
@@ -333,7 +334,7 @@ settles, one shared router observer records the final page and every successful 
 a different path, including browser back/forward. Query parameters, anchors, trailing-slash
 changes, and initial alias redirects do not add page views. Routes are tracked by default;
 only explicit `meta.trackPageview: false` excludes a route. The not-found and unavailable
-routes opt out. Search-engine `noindex` metadata does not exclude content from analytics.
+routes opt out. Analytics tracking is independent of search metadata.
 A late tracker receives queued visits with each visit's original URL, title, and referrer.
 Every page view lazily reads `deep20bench.visitor-id.v1` from local storage, creates and saves
 a random UUID only when no valid ID is stored, then attaches that ID. The client identifies

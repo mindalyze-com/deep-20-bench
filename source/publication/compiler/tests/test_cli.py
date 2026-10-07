@@ -6,6 +6,9 @@ from datetime import UTC, datetime
 from pathlib import Path
 from xml.etree import ElementTree
 
+import pytest
+from pydantic import ValidationError
+
 from deep20_publication.cli import (
     _application_build_document,
     _edition_route_manifest,
@@ -77,14 +80,14 @@ def test_search_files_follow_the_static_route_manifest() -> None:
     )
     assert sum(
         "/runs/" in location for location in locations if location is not None
-    ) == sum(len(bundle.runs) + len(bundle.subjects) for bundle in bundles)
+    ) == sum(len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes) for bundle in bundles)
     assert (REPOSITORY / "docs" / "robots.txt").read_text(encoding="utf-8") == (
         f"User-agent: *\nAllow: /\n\nSitemap: {CANONICAL_URL}sitemap.xml\n"
     )
     assert (REPOSITORY / "docs" / "CNAME").read_text(encoding="utf-8") == "deep20bench.com\n"
 
 
-def test_sitemap_contains_editorial_run_and_subject_routes() -> None:
+def test_sitemap_contains_every_canonical_content_route() -> None:
     bundle = split_publication(_published_dataset())
     routes = _static_route_manifest(bundle).routes
     sitemap_routes = {entry.route for entry in routes if entry.sitemap_included}
@@ -99,9 +102,10 @@ def test_sitemap_contains_editorial_run_and_subject_routes() -> None:
         for subject in bundle.subjects
     }
 
-    assert sitemap_routes == editorial_routes | run_routes | subject_routes
+    episode_routes = {entry.route for entry in routes if entry.kind == "episode"}
+    assert sitemap_routes == editorial_routes | run_routes | subject_routes | episode_routes
     assert len(sitemap_routes) == (
-        len(editorial_routes) + len(bundle.runs) + len(bundle.subjects)
+        len(editorial_routes) + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes)
     )
 
 
@@ -255,10 +259,11 @@ def test_static_route_manifest_covers_sitemap_and_evidence_routes() -> None:
         for subject in bundle.subjects
     }
 
+    episode_routes = {entry.route for entry in routes.values() if entry.kind == "episode"}
     assert len(routes) == (10 + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes))
     assert {
         entry.route for entry in routes.values() if entry.sitemap_included
-    } == editorial_routes | run_routes | subject_routes
+    } == editorial_routes | run_routes | subject_routes | episode_routes
     assert all(routes[page].sitemap_included for page in (
         "", "results", "results/reliability", "results/cost", "results/time",
         "results/efficiency", "methodology", "about", "data",
@@ -271,12 +276,15 @@ def test_static_route_manifest_covers_sitemap_and_evidence_routes() -> None:
     assert routes["story"].canonical_route == "about"
     assert not routes["story"].sitemap_included
     assert all(
-        not entry.sitemap_included
+        entry.sitemap_included
         for entry in routes.values()
         if entry.kind == "episode"
     )
-    assert all(entry.indexable for entry in routes.values() if entry.kind == "subject")
-    assert all(not entry.indexable for entry in routes.values() if entry.kind == "episode")
+    assert all(entry.indexable for entry in routes.values())
+    with pytest.raises(ValidationError):
+        type(manifest.routes[0]).model_validate({
+            **manifest.routes[0].model_dump(), "indexable": False,
+        })
     assert len({entry.browser_title for entry in routes.values() if entry.kind == "run"}) == len(
         bundle.runs
     )
@@ -291,7 +299,7 @@ def test_static_route_manifest_covers_sitemap_and_evidence_routes() -> None:
     ) == len(bundle.subjects)
 
 
-def test_generated_run_and_subject_are_prerendered_and_episode_is_noindex() -> None:
+def test_generated_run_subject_and_episode_are_prerendered_and_indexable() -> None:
     bundle = split_publication(_published_dataset())
     run = bundle.runs[0]
     run_route = f"runs/{run.run.execution_id}"
@@ -351,12 +359,34 @@ def test_generated_run_and_subject_are_prerendered_and_episode_is_noindex() -> N
     episode_entry = (REPOSITORY / "docs" / episode_route / "index.html").read_text(
         encoding="utf-8"
     )
-    assert 'data-prerendered="true"' not in episode_entry
-    assert 'name="robots" content="noindex, follow"' in episode_entry
+    assert 'data-prerendered="true"' in episode_entry
+    assert 'name="robots"' not in episode_entry
+    assert 'id="transcript"' in episode_entry
+    assert "Questions and answers." in episode_entry
+    assert episode_document.episode.subject_name in episode_entry
+    page_state = re.search(
+        r'<script id="deep20-page-state" type="application/json">(.*?)</script>',
+        episode_entry,
+        re.DOTALL,
+    )
+    assert page_state is not None
+    assert {document["document_type"] for document in json.loads(page_state.group(1))["documents"]} == {
+        "editions", "manifest", "run", "subject", "episode",
+    }
 
     not_found = (REPOSITORY / "docs" / "404.html").read_text(encoding="utf-8")
     assert 'rel="canonical"' not in not_found
-    assert 'name="robots" content="noindex, follow"' in not_found
+    assert 'name="robots"' not in not_found
+
+
+def test_every_generated_page_is_free_of_crawler_restrictions() -> None:
+    for path in (REPOSITORY / "docs").rglob("*.html"):
+        html = path.read_text(encoding="utf-8")
+        assert not re.search(
+            r'<meta\b[^>]*name=["\x27](?:robots|googlebot|bingbot)["\x27]',
+            html,
+            re.IGNORECASE,
+        ), path
 
 
 def test_all_sitemap_pages_have_unique_metadata_and_a_static_referrer() -> None:
@@ -375,6 +405,10 @@ def test_all_sitemap_pages_have_unique_metadata_and_a_static_referrer() -> None:
     titles: list[str] = []
     descriptions: list[str] = []
     canonicals: list[str] = []
+    referrers: dict[str, set[str]] = {}
+    for route, html in html_by_route.items():
+        for href in re.findall(r'\bhref="([^"]+)"', html):
+            referrers.setdefault(href, set()).add(route)
 
     for entry in sitemap_routes:
         html = html_by_route[entry.route]
@@ -396,11 +430,7 @@ def test_all_sitemap_pages_have_unique_metadata_and_a_static_referrer() -> None:
         assert canonical.group(1) == expected_url
         assert 'name="robots"' not in html
         assert 'id="route-content"' in html
-        assert any(
-            any(f'href="{href}"' in referring_html for href in expected_hrefs)
-            for route, referring_html in html_by_route.items()
-            if route != entry.route
-        )
+        assert any(referrers.get(href, set()) - {entry.route} for href in expected_hrefs)
 
     assert len(titles) == len(set(titles)) == len(sitemap_routes)
     assert len(descriptions) == len(set(descriptions)) == len(sitemap_routes)

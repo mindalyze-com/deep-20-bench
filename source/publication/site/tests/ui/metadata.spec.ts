@@ -7,6 +7,10 @@ import { parseRouteMetadata } from "../../src/lib/route-metadata";
 import { docsRoot, staticPaths, waitForPublication } from "./support/publication";
 
 const staticBase = "http://127.0.0.1:4174/";
+test.beforeEach(async ({ page }) => {
+  await page.route("https://**/*", (route) => route.abort());
+});
+
 const routes = parseRouteMetadata(JSON.parse(
   readFileSync(path.join(docsRoot, "data", "routes.json"), "utf8"),
 ) as unknown);
@@ -64,7 +68,7 @@ test("initial SEO metadata survives hydration", { tag: ["@metadata", "@desktop"]
   }
 });
 
-test("client navigation keeps full metadata and restores indexing after an episode", { tag: ["@metadata", "@desktop"] }, async ({ page }) => {
+test("client navigation keeps full metadata and permits indexing on every page", { tag: ["@metadata", "@desktop"] }, async ({ page }) => {
   const owner = JSON.parse(readFileSync(path.join(
     docsRoot, "data", `${firstSubject.route.split("/subjects/")[0]}.json`,
   ), "utf8")) as { edition_id: string };
@@ -95,7 +99,7 @@ test("client navigation keeps full metadata and restores indexing after an episo
     expect(head.ogTitle).toBe(expected.browser_title);
     expect(head.ogSiteName).toBe("Deep20Bench");
     expect(head.twitterTitle).toBe(expected.browser_title);
-    expect(head.robots).toBe(expected.indexable ? null : "noindex, follow");
+    expect(head.robots).toBeNull();
   }
 });
 

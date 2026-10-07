@@ -63,11 +63,13 @@ const parseRouteManifest = (value) => {
     const route = objectValue(candidate, `routes[${index}]`);
     const kind = stringValue(route.kind, `routes[${index}].kind`);
     if (!supportedKinds.has(kind)) throw new Error(`Unsupported route kind ${kind}.`);
+    const indexable = booleanValue(route.indexable, `routes[${index}].indexable`);
+    if (!indexable) throw new Error("Every publication route must allow indexing.");
     return {
       route: stringValue(route.route, `routes[${index}].route`),
       editionId: stringValue(route.edition_id, `routes[${index}].edition_id`),
       kind,
-      indexable: booleanValue(route.indexable, `routes[${index}].indexable`),
+      indexable,
       sitemapIncluded: booleanValue(
         route.sitemap_included,
         `routes[${index}].sitemap_included`,
@@ -219,17 +221,21 @@ const pageDocuments = (route) => {
     const run = runDocuments.get(route.executionId);
     if (run === undefined) throw new Error(`Missing run data for ${route.route}.`);
     documents.push(run);
-  } else if (route.kind === "subject") {
+  } else if (route.kind === "subject" || route.kind === "episode") {
     const run = runDocuments.get(route.executionId);
     const subject = subjectDocuments.get(`${route.executionId}/${route.targetId}`);
     if (run === undefined || subject === undefined) throw new Error(`Missing subject data for ${route.route}.`);
     documents.push(run, subject);
+    if (route.kind === "episode") {
+      if (route.trialId === null) throw new Error(`Missing trial identity for ${route.route}.`);
+      documents.push(readJson(join(
+        publicRoot, "data", "runs", route.executionId, "subjects", route.targetId,
+        "episodes", `${route.trialId}.json`,
+      )));
+    }
   }
   return documents;
 };
-
-const renderable = (route) =>
-  ["home", "editorial", "run", "alias", "subject"].includes(route.kind);
 
 const metadataHtml = (template, route, appHtml, documents) => {
   const canonical = routeUrl(route.canonicalRoute);
@@ -301,42 +307,32 @@ const metadataHtml = (template, route, appHtml, documents) => {
       : "",
     "structured-data marker",
   );
-  if (!route.indexable) {
-    html = html.replace(
-      "</head>",
-      '    <meta name="robots" content="noindex, follow" />\n  </head>',
-    );
-  }
-  if (renderable(route)) {
-    html = replaceUnique(
-      html,
-      /<html lang="en">/g,
-      '<html lang="en" data-prerendered="true">',
-      "HTML root",
-    );
-    html = replaceUnique(
-      html,
-      /<div id="app"><\/div>/g,
-      `<div id="app">${appHtml}</div>`,
-      "application root",
-    );
-    const state = safeJson({ schema_version: 1, documents });
-    html = html.replace(
-      "</body>",
-      `<script id="deep20-page-state" type="application/json">${state}</script>\n  </body>`,
-    );
-  }
+  html = replaceUnique(
+    html,
+    /<html lang="en">/g,
+    '<html lang="en" data-prerendered="true">',
+    "HTML root",
+  );
+  html = replaceUnique(
+    html,
+    /<div id="app"><\/div>/g,
+    `<div id="app">${appHtml}</div>`,
+    "application root",
+  );
+  const state = safeJson({ schema_version: 1, documents });
+  html = html.replace(
+    "</body>",
+    `<script id="deep20-page-state" type="application/json">${state}</script>\n  </body>`,
+  );
   return html.replace(/[ \t]+$/gm, "");
 };
 
 for (const route of routes) {
   const documents = pageDocuments(route);
-  const rendered = renderable(route)
-    ? await renderPublicationPage(
-        route.route.length === 0 ? "/" : `/${route.route}/`,
-        documents,
-      )
-    : { appHtml: "", modules: [] };
+  const rendered = await renderPublicationPage(
+    route.route.length === 0 ? "/" : `/${route.route}/`,
+    documents,
+  );
   const html = metadataHtml(withPageStyles(rendered.modules), route, rendered.appHtml, documents);
   const output =
     route.route.length === 0
@@ -347,10 +343,6 @@ for (const route of routes) {
 }
 
 let notFound = clientTemplate;
-notFound = notFound.replace(
-  "</head>",
-  '    <meta name="robots" content="noindex, follow" />\n  </head>',
-);
 notFound = replaceUnique(
   notFound,
   /<link rel="canonical" href="[^"]*" \/>/g,

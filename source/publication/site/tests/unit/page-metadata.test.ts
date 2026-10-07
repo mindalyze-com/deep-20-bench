@@ -44,10 +44,10 @@ describe("publication page metadata", () => {
       .toBe(`${canonicalBase}${second.canonical_route}/`);
   });
 
-  test("restores indexability when leaving an episode and resolves an alias", () => {
-    applyPageMetadata({ ...subject, indexable: false }, canonicalBase);
-    expect(document.querySelector('meta[name="robots"]')?.getAttribute("content"))
-      .toBe("noindex, follow");
+  test("keeps episodes, aliases, and missing routes free of crawler directives", () => {
+    document.head.insertAdjacentHTML("beforeend", '<meta name="robots" content="index, follow">');
+    applyPageMetadata({ ...subject, route: `${subject.route}/episodes/trial-001` }, canonicalBase);
+    expect(document.querySelector('meta[name="robots"]')).toBeNull();
 
     applyPageMetadata({ ...subject, route: "legacy-subject" }, canonicalBase);
     expect(document.querySelector('meta[name="robots"]')).toBeNull();
@@ -57,14 +57,16 @@ describe("publication page metadata", () => {
     applyPageMetadata(undefined, canonicalBase);
     expect(document.querySelector('link[rel="canonical"]')).toBeNull();
     expect(document.querySelector('meta[property="og:url"]')).toBeNull();
-    expect(document.querySelector('meta[name="robots"]')?.getAttribute("content"))
-      .toBe("noindex, follow");
+    expect(document.querySelector('meta[name="robots"]')).toBeNull();
   });
 
   test("rejects malformed manifests and duplicate routes at the build boundary", () => {
     expect(() => parseRouteMetadata({ schema_version: 1, routes: [subject] })).toThrow();
     expect(() => parseRouteMetadata({
       schema_version: 2, routes: [{ ...subject, indexable: "false" }],
+    })).toThrow();
+    expect(() => parseRouteMetadata({
+      schema_version: 2, routes: [{ ...subject, indexable: false }],
     })).toThrow();
     expect(() => parseRouteMetadata({ schema_version: 2, routes: [subject, subject] }))
       .toThrow(/duplicate/);

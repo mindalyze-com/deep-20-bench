@@ -2619,7 +2619,7 @@ class PublicationDataBundle(FrozenModel):
 class StaticRouteEntry(FrozenModel):
     route: str
     kind: Literal["home", "editorial", "run", "alias", "subject", "episode"]
-    indexable: bool
+    indexable: Literal[True]
     sitemap_included: bool
     canonical_route: str
     browser_title: str = Field(min_length=1, max_length=200)
@@ -2650,8 +2650,6 @@ class StaticRouteEntry(FrozenModel):
             raise ValueError("static episode routes require a trial ID")
         if self.kind != "episode" and self.trial_id is not None:
             raise ValueError("only static episode routes may carry a trial ID")
-        if self.sitemap_included and not self.indexable:
-            raise ValueError("non-indexable static routes cannot enter the sitemap")
         if self.sitemap_included and self.route != self.canonical_route:
             raise ValueError("sitemap routes must be self-canonical")
         return self
