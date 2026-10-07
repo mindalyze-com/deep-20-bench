@@ -48,10 +48,14 @@ Read and follow the relevant detailed specification before changing these areas:
   data that can be represented by the v9 contract; do not leave it frozen, rename it, or remove
   it merely because v10 or a later schema exists. Keep its companion v9 schema available and
   document any data that cannot be represented in v9.
-- Unless the user explicitly requests it in the current request, do not commit, push, tag,
-  release, open a pull request, or publish externally. Treat requests to run or publish the
-  publication as local `docs/` generation. Never push feature or development branches; when
-  explicitly requested, push only the final revision on `main`.
+- Do not automatically commit, push, tag, release, open a pull request, or publish externally.
+  Requests to fix, build, test, or run the publication authorize local work only.
+- Always ask for separate, explicit confirmation before committing for publication, pushing,
+  or deploying, including GitHub Pages, even when deployment was requested. Prepare and verify
+  the local work first, then identify the exact action, final revision, and destination in the
+  confirmation question. Wait for the answer to that specific question. Approval of an
+  improvement or a generic "yes" is not deployment approval. Push only the final revision on
+  `main`; never push feature or development branches.
 - Never create, save, or deploy a Codex Sites project, `.openai/hosting.json`, or other Sites
   configuration for this repository.
 
