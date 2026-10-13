@@ -248,6 +248,30 @@ def test_search_mode_changes_only_tool_mode_and_research_cache_namespace(
     assert selected == basic
 
 
+@pytest.mark.parametrize("mode", list(ParallelSearchMode))
+def test_long_research_cache_namespaces_fit_provider_limit_and_stay_isolated(
+    mode: ParallelSearchMode,
+) -> None:
+    provider = OpenRouterProvider.__new__(OpenRouterProvider)
+    provider.config = OracleConfig(
+        model="openai/test-model", provider="openai", parallel_search_mode=mode,
+    )
+    keys = []
+    for role in ("o", "r"):
+        request = ProviderRequest(
+            messages=({"role": "user", "content": "current question"},),
+            output_schema=OracleResult.model_json_schema(),
+            prompt_cache_key=f"deep20-o-{role}-" + "a" * 40,
+        )
+        payload = provider._request_payload(request)
+        key = payload["prompt_cache_key"]
+        assert len(key) <= 64
+        assert provider._request_payload(request)["prompt_cache_key"] == key
+        assert payload["messages"] == list(request.messages)
+        keys.append(key)
+    assert keys[0] != keys[1]
+
+
 def test_evidence_review_adapter_has_no_web_tool_and_uses_isolated_cache_suffix() -> None:
     config = EvidenceReviewConfig(
         model="openai/test-reviewer",

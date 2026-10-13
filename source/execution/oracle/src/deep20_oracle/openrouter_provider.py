@@ -42,7 +42,7 @@ from .recovery import (
     logical_recovery_budget,
     recovery_reason_counts,
 )
-from .util import canonical_json, openrouter_provider_matches, timestamp
+from .util import canonical_json, openrouter_provider_matches, sha256_text, timestamp
 
 _NO_RESULT_RETRY_DELAY_MS = 1_000
 
@@ -463,7 +463,12 @@ class OpenRouterProvider:
                     and self.config.parallel_search_mode is not ParallelSearchMode.BASIC
                 ):
                     capability += f"-{self.config.parallel_search_mode.value}"
-            payload["prompt_cache_key"] = f"{request.prompt_cache_key}-{capability}"
+            cache_key = f"{request.prompt_cache_key}-{capability}"
+            # OpenAI routes reject keys longer than 64 characters. Hash the complete
+            # namespace so role, prompt, subject and search-mode separation survive.
+            payload["prompt_cache_key"] = (
+                cache_key if len(cache_key) <= 64 else sha256_text(cache_key)
+            )
         return payload
 
     def _trace(

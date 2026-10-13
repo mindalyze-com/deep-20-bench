@@ -2,6 +2,24 @@
 
 ## Edition launch contracts
 
+On 13 October 2026, edition 1.1 Oracle requests with the normal 51-character namespace
+and `-parallel-fast` suffix produced 65-character provider cache keys and HTTP 400 failures
+on OpenAI. A bounded diagnostic succeeded with the same route/schema and a shorter key,
+reporting one search and $0.00197813 cost. A second request with the normal key failed with
+HTTP 400 before generation. Oversized complete namespaces now use a deterministic 64-character
+SHA-256 key; keys already within the provider limit retain their original representation.
+Role, prompt-version, subject and search-mode inputs remain separated. Prompts, schemas,
+routes, search allowance, factual contracts, answer eligibility and Guesser-visible history
+are unchanged. Keep automatic prefix caching without padding or response reuse; namespace
+representation can affect cache locality, and no net savings are claimed.
+
+Repository-local artifact references may retain operator-created run-directory symlinks to
+external storage. The same-execution ASK cache reads those references with its existing
+file-fingerprint, integrity, adjudication and compatibility checks. Direct paths outside the
+repository and lexical traversal outside it remain rejected. Storage addressing changes no
+prompts, cache keys, answer eligibility, visible history, scoring or provider requests. No new
+response reuse or cache savings are introduced; this path handling is verified offline.
+
 Official edition 1.1 adds launch checks and provenance without changing prompts, sampling,
 sessions or prefix-cache keys. Edition metadata never enters model inputs. Existing prompt
 caching and ASK-reuse checks remain; no new response cache or measured savings are introduced.
@@ -585,6 +603,25 @@ canary passed the exact route and strict action contract with one request, 1,570
 54 output tokens, 3,080 milliseconds of latency, and $0.004463 cost. It reported 1,566 cache-write
 tokens and zero cache-read tokens. This verifies cache creation, not prefix reuse, savings, or
 game performance. The supporting record remains under `private/reviews/sonnet55-smoke-20260930/`.
+
+Muse Wonder (`M-0033`) uses `meta/muse-wonder` pinned to Meta with high reasoning,
+strict JSON Schema output, and no provider seed. On 13 October 2026,
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/meta/muse-wonder/endpoints)
+advertised $4 input, $20 output, and $0.20 cache reads per million tokens, with no
+separate cache-write price. The endpoint marked implicit caching as unsupported and did not
+publish a minimum prefix or retention guarantee. The 1,024-token and 300-second values are
+observation defaults inherited from the existing Meta registration; the 1.00 write multiplier
+is an accounting estimate, not a measured rate.
+
+Keep automatic best-effort exact-prefix caching with the fixed instructions and append-only
+visible transcript. The configuration ID separates its Guesser cache namespace. No padding,
+explicit cache storage, response reuse, or privileged state is added. The authorized edition
+1.1 `qualified_v1` opening-turn canary passed the exact Meta route and strict action contract
+with one request, 608 input tokens, 488 output tokens (446 reasoning), 7,086 milliseconds of
+latency, and $0.012192 cost. It finished with `stop` and reported zero cache-read/write tokens.
+This verifies route and contract operation, not prefix reuse, savings, or game performance.
+The supporting record remains under `private/reviews/muse-wonder-20261013/smoke.json`.
+No cache savings are assumed. Recheck the exact route before later paid launches.
 
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two

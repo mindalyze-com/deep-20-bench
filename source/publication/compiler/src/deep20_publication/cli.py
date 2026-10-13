@@ -193,6 +193,11 @@ def _read_json(path: Path) -> dict[str, JsonValue]:
     return parse_json_object(_read_text(path), str(path))
 
 
+def _repository_relative_path(path: Path, repository: Path) -> str:
+    """Retain operator-created storage symlinks and reject lexical path escapes."""
+    return Path(os.path.abspath(path)).relative_to(repository.resolve()).as_posix()
+
+
 def _publication_build_time(repository: Path, *, check: bool) -> datetime:
     if not check:
         return datetime.now(UTC)
@@ -223,7 +228,7 @@ def _load_run(
     if not manifest_path.is_file() or not state_path.is_file():
         raise PublicationInputError(f"{summary_path} has no adjacent manifest or state")
     try:
-        relative = summary_path.resolve().relative_to(repository.resolve()).as_posix()
+        relative = _repository_relative_path(summary_path, repository)
     except ValueError as error:
         raise PublicationInputError(f"{summary_path} is outside repository") from error
     loaded = parse_run(
@@ -251,15 +256,14 @@ def _load_episode_details(
     violation_snapshot: GuesserViolationSnapshot | None = None,
 ) -> tuple[LoadedEpisode, ...]:
     episodes: list[LoadedEpisode] = []
-    repository_root = repository.resolve()
     for subject in run.summary.subjects:
         for trial in subject.trials:
             if not isinstance(trial, CompletedTrialSummary):
                 continue
             reference = trial.artifacts.trial_result
-            source = (repository / reference.relative_path).resolve()
+            source = repository / reference.relative_path
             try:
-                relative = source.relative_to(repository_root).as_posix()
+                relative = _repository_relative_path(source, repository)
             except ValueError as error:
                 raise PublicationInputError(
                     f"episode detail is outside repository: {reference.relative_path}"
@@ -326,9 +330,9 @@ def _episode_diagnostic_records(
     reference = episode.artifacts.error_outputs
     if reference is None:
         return ()
-    source = (repository / reference.relative_path).resolve()
+    source = repository / reference.relative_path
     try:
-        source.relative_to(repository.resolve())
+        _repository_relative_path(source, repository)
     except ValueError as error:
         raise PublicationInputError(
             f"error-output diagnostic is outside repository: {reference.relative_path}"

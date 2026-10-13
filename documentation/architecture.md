@@ -473,6 +473,11 @@ model, component, per-episode, and benchmark cost comparisons.
 
 The benchmark owns one canonical artifact tree per model run:
 
+An operator may symlink a run directory to external storage. Artifact references retain its
+repository-relative path; signed reads and ASK-cache compatibility checks still validate the
+underlying files. Direct external paths and lexical traversal outside the repository are
+rejected. Storage references never enter model inputs or change answer eligibility.
+
 ```text
 runs/<model-id>/<execution-id>/
 ├── manifest.json

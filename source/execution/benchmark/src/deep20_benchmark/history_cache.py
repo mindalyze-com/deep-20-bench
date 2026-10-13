@@ -41,6 +41,7 @@ from deep20_oracle.util import canonical_json, sha256_text, timestamp
 from pydantic import JsonValue, TypeAdapter
 from yaml.constructor import ConstructorError
 
+from .artifact_paths import repository_relative_path
 from .history_models import (
     HistoryExecution,
     HistoryFile,
@@ -148,11 +149,10 @@ class LazyOracleHistoryCache:
         self._conflicts: dict[str, set[str]] = {}
 
     def _file(self, path: Path, stat: os.stat_result | None = None) -> HistoryFile:
-        if not path.resolve().is_relative_to(self.repository):
-            raise ValueError("history file escapes repository")
+        relative_path = repository_relative_path(self.repository, path)
         stat = stat or path.stat()
         return HistoryFile(
-            relative_path=path.relative_to(self.repository).as_posix(),
+            relative_path=relative_path,
             size=stat.st_size,
             modified_ns=stat.st_mtime_ns,
             changed_ns=stat.st_ctime_ns,

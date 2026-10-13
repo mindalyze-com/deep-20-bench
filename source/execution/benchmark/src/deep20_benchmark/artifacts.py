@@ -41,6 +41,7 @@ from deep20_oracle.util import canonical_json, load_yaml_unique, sha256_text, ti
 from pydantic import TypeAdapter
 
 from .aggregation import SUMMARY_USD_QUANTUM, round_summary_value
+from .artifact_paths import repository_relative_path
 from .history_models import OracleHistorySnapshot, OracleSubjectHistoryCheckpoint
 from .models import (
     ERROR_OUTPUT_PREVIEW_MAX_CHARACTERS,
@@ -714,7 +715,7 @@ class ArtifactStore:
         )
 
     def _relative(self, path: Path) -> str:
-        return path.resolve().relative_to(self.repository).as_posix()
+        return repository_relative_path(self.repository, path)
 
     @staticmethod
     def _line_count(path: Path) -> int:

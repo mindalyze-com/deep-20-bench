@@ -120,12 +120,12 @@ test(
       const news = page.locator("#news");
       const entries = news.locator(".news-entry:visible");
       const archive = news.locator("summary");
-      await expect(news.locator(".news-entry")).toHaveCount(14);
+      await expect(news.locator(".news-entry")).toHaveCount(15);
       await expect(entries).toHaveCount(4);
-      await expect(archive).toHaveText("Older updates (10)");
+      await expect(archive).toHaveText("Older updates (11)");
       await expectMinimumSize(archive, 44);
       await archive.click();
-      await expect(entries).toHaveCount(14);
+      await expect(entries).toHaveCount(15);
       await expect(news.getByRole("link", { name: /Read article/ })).toBeVisible();
       await expectNoViewportOverflow(page);
       await archive.click();

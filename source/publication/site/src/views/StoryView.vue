@@ -6,6 +6,20 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-10-13",
+    displayDate: "13 October 2026",
+    title: "Muse Wonder (high) added.",
+    summary:
+      "Muse Wonder completed 29 of 30 edition 1.1 games successfully, scoring 19.6 questions and placing 13th of 19 models. " +
+      "Its results varied by subject: it ranked 9th on Albert Schweitzer but 18th on Garfield. " +
+      "Garfield required 10, 22 and 30 questions, while Achilles took eight in every trial. " +
+      "These three-trial observations show how uneven question efficiency can be, even when the model finds the correct answer.",
+    link: {
+      type: "run",
+      executionId: "BX-20261013-B-0003-OFFICIAL-M0033-002",
+    },
+  },
+  {
     date: "2026-09-30",
     displayDate: "30 September 2026",
     title: "Claude Sonnet 5.5 (high) added.",

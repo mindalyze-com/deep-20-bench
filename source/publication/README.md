@@ -84,6 +84,11 @@ under the handwritten site source. The development server reads the latest commi
 | 1 | `core-v2` | B-0001 | 7 explicit IDs | 5 | 50 | 51 |
 
 Discovery validates every discovered artifact before edition selection, including diagnostics.
+Repository-relative references retain operator-created run-directory symlinks to external
+storage. Direct external paths and lexical traversal outside the repository remain rejected.
+Signed envelopes, referenced file hashes, owner-only diagnostic permissions and all release
+checks still apply. This storage addressing is publication-only and changes no model inputs,
+prompt caching, answer reuse or scoring.
 Edition 1.1 additionally requires paired `qualified_v1` profiles, the declared base seed,
 subject identity hashes, the declared game rules (category visibility, final-guess opportunity,
 and consecutive violation limit), normalized Oracle and Validator configuration hashes, the Oracle

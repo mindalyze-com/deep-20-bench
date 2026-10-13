@@ -326,75 +326,75 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   const news = page.locator("#news");
   await expect(news.getByRole("heading", { name: "Project news." })).toBeVisible();
   const entries = news.locator(".news-entry");
-  await expect(entries).toHaveCount(14);
+  await expect(entries).toHaveCount(15);
   await expect(news.locator(".news-entry:visible")).toHaveCount(4);
   await news.getByRole("button", { name: "Show 4 older updates" }).click();
   await news.getByRole("button", { name: "Show 4 older updates" }).click();
-  await news.getByRole("button", { name: "Show 2 older updates" }).click();
-  await expect(entries.nth(6).locator("time")).toHaveAttribute("datetime", "2026-09-05");
-  await expect(entries.nth(6).locator("time")).toHaveText("5 September 2026");
-  await expect(entries.nth(6)).toContainText("GPT-6 Astra (high) added.");
-  await expect(entries.nth(6)).toContainText("15.1 questions with 33 of 35 successful trials.");
-  await expect(entries.nth(6).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await news.getByRole("button", { name: "Show 3 older updates" }).click();
+  await expect(entries.nth(7).locator("time")).toHaveAttribute("datetime", "2026-09-05");
+  await expect(entries.nth(7).locator("time")).toHaveText("5 September 2026");
+  await expect(entries.nth(7)).toContainText("GPT-6 Astra (high) added.");
+  await expect(entries.nth(7)).toContainText("15.1 questions with 33 of 35 successful trials.");
+  await expect(entries.nth(7).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260904-official-M0022-001/",
   );
-  await expect(entries.nth(7).locator("time")).toHaveAttribute("datetime", "2026-09-04");
-  await expect(entries.nth(7).locator("time")).toHaveText("4 September 2026");
-  await expect(entries.nth(7)).toContainText("Gemini 3.8 Flash (high) added.");
-  await expect(entries.nth(7)).toContainText("13.1 questions with 35 of 35 successful trials.");
-  await expect(entries.nth(7).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(8).locator("time")).toHaveAttribute("datetime", "2026-09-04");
+  await expect(entries.nth(8).locator("time")).toHaveText("4 September 2026");
+  await expect(entries.nth(8)).toContainText("Gemini 3.8 Flash (high) added.");
+  await expect(entries.nth(8)).toContainText("13.1 questions with 35 of 35 successful trials.");
+  await expect(entries.nth(8).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260904-official-M0021-001/",
   );
-  await expect(entries.nth(8).locator("time")).toHaveAttribute("datetime", "2026-09-02");
-  await expect(entries.nth(8).locator("time")).toHaveText("2 September 2026");
-  await expect(entries.nth(8)).toContainText("Claude Fable 5.1 (high) added.");
-  await expect(entries.nth(8)).toContainText("12.1 questions with 34 of 35 successful trials.");
-  await expect(entries.nth(8).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(9).locator("time")).toHaveAttribute("datetime", "2026-09-02");
+  await expect(entries.nth(9).locator("time")).toHaveText("2 September 2026");
+  await expect(entries.nth(9)).toContainText("Claude Fable 5.1 (high) added.");
+  await expect(entries.nth(9)).toContainText("12.1 questions with 34 of 35 successful trials.");
+  await expect(entries.nth(9).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260902-official-M0020-001/",
   );
-  await expect(entries.nth(9).locator("time")).toHaveAttribute("datetime", "2026-08-30");
-  await expect(entries.nth(9).locator("time")).toHaveText("30 August 2026");
-  await expect(entries.nth(9)).toContainText("Behind Deep20Bench: the hard part wasn’t the game.");
-  await expect(entries.nth(9)).toContainText(
+  await expect(entries.nth(10).locator("time")).toHaveAttribute("datetime", "2026-08-30");
+  await expect(entries.nth(10).locator("time")).toHaveText("30 August 2026");
+  await expect(entries.nth(10)).toContainText("Behind Deep20Bench: the hard part wasn’t the game.");
+  await expect(entries.nth(10)).toContainText(
     "A first-person account of the Oracle errors, blind review, format failures, and design choices behind the benchmark.",
   );
-  await expect(entries.nth(9).getByRole("link", { name: /Read article/ })).toHaveAttribute(
+  await expect(entries.nth(10).getByRole("link", { name: /Read article/ })).toHaveAttribute(
     "href",
     "https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8",
   );
-  await expect(entries.nth(10).locator("time")).toHaveAttribute("datetime", "2026-08-23");
-  await expect(entries.nth(10).locator("time")).toHaveText("23 August 2026");
-  await expect(entries.nth(10)).toContainText("OpenRouter’s Ox Alpha (high) tested.");
-  await expect(entries.nth(10)).toContainText(
+  await expect(entries.nth(11).locator("time")).toHaveAttribute("datetime", "2026-08-23");
+  await expect(entries.nth(11).locator("time")).toHaveText("23 August 2026");
+  await expect(entries.nth(11)).toContainText("OpenRouter’s Ox Alpha (high) tested.");
+  await expect(entries.nth(11)).toContainText(
     "The Stealth-routed model won 32 of 35 trials and scored 17.6 questions, placing 12th of 15.",
   );
-  await expect(entries.nth(10).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(11).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260823-official-M0017-018/",
   );
-  await expect(entries.nth(11).locator("time")).toHaveAttribute("datetime", "2026-08-17");
-  await expect(entries.nth(11).locator("time")).toHaveText("17 August 2026");
-  await expect(entries.nth(11)).toContainText("Gemini 3.7 Flash (high) added.");
-  await expect(entries.nth(11)).toContainText("14.0 questions with 34 of 35 successful trials.");
-  await expect(entries.nth(11).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(12).locator("time")).toHaveAttribute("datetime", "2026-08-17");
+  await expect(entries.nth(12).locator("time")).toHaveText("17 August 2026");
+  await expect(entries.nth(12)).toContainText("Gemini 3.7 Flash (high) added.");
+  await expect(entries.nth(12)).toContainText("14.0 questions with 34 of 35 successful trials.");
+  await expect(entries.nth(12).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260817-official-M0016-015/",
   );
-  await expect(entries.nth(12).locator("time")).toHaveAttribute("datetime", "2026-08-15");
-  await expect(entries.nth(12).locator("time")).toHaveText("15 August 2026");
-  await expect(entries.nth(12)).toContainText("Grok 4.6 (high) added.");
-  await expect(entries.nth(12)).toContainText("14.3 questions with 35 of 35 successful trials.");
-  await expect(entries.nth(12).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(13).locator("time")).toHaveAttribute("datetime", "2026-08-15");
+  await expect(entries.nth(13).locator("time")).toHaveText("15 August 2026");
+  await expect(entries.nth(13)).toContainText("Grok 4.6 (high) added.");
+  await expect(entries.nth(13)).toContainText("14.3 questions with 35 of 35 successful trials.");
+  await expect(entries.nth(13).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260814-official-M0015-013/",
   );
-  await expect(entries.nth(13).locator("time")).toHaveAttribute("datetime", "2026-08-05");
-  await expect(entries.nth(13).locator("time")).toHaveText("5 August 2026");
-  await expect(entries.nth(13)).toContainText("Claude Fable 5 (high) added.");
-  await expect(entries.nth(13).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(14).locator("time")).toHaveAttribute("datetime", "2026-08-05");
+  await expect(entries.nth(14).locator("time")).toHaveText("5 August 2026");
+  await expect(entries.nth(14)).toContainText("Claude Fable 5 (high) added.");
+  await expect(entries.nth(14).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260805-official-M0014-011/",
   );
@@ -413,14 +413,14 @@ test("news reveals older updates in batches and returns to the latest", { tag: [
   const visibleEntries = news.locator(".news-entry:visible");
   const status = news.getByRole("status");
   const latestOnly = news.getByRole("button", { name: "Show latest only" });
-  await expect(entries).toHaveCount(14);
+  await expect(entries).toHaveCount(15);
   await expect(visibleEntries).toHaveCount(4);
-  await expect(status).toHaveText("Showing 4 of 14 updates");
+  await expect(status).toHaveText("Showing 4 of 15 updates");
   await expect(latestOnly).toHaveCount(0);
-  await expect(entries.first()).toContainText("Claude Sonnet 5.5 (high) added.");
-  await expect(entries.nth(1)).toContainText("GPT-6.1 Sol (high) added.");
+  await expect(entries.first()).toContainText("Muse Wonder (high) added.");
+  await expect(entries.nth(1)).toContainText("Claude Sonnet 5.5 (high) added.");
 
-  for (const [previousCount, batchSize, expectedCount] of [[4, 4, 8], [8, 4, 12], [12, 2, 14]]) {
+  for (const [previousCount, batchSize, expectedCount] of [[4, 4, 8], [8, 4, 12], [12, 3, 15]]) {
     const showOlder = news.getByRole("button", { name: `Show ${batchSize} older updates` });
     await expectMinimumSize(showOlder, 44);
     await showOlder.scrollIntoViewIfNeeded();
@@ -428,7 +428,7 @@ test("news reveals older updates in batches and returns to the latest", { tag: [
     const previousScroll = await page.evaluate(() => window.scrollY);
     await showOlder.press("Enter");
     await expect(visibleEntries).toHaveCount(expectedCount);
-    await expect(status).toHaveText(`Showing ${expectedCount} of 14 updates`);
+    await expect(status).toHaveText(`Showing ${expectedCount} of 15 updates`);
     await expect(entries.nth(previousCount)).toBeFocused();
     expect(Math.abs(await page.evaluate(() => window.scrollY) - previousScroll)).toBeLessThanOrEqual(1);
     await expectNoViewportOverflow(page);
@@ -438,7 +438,7 @@ test("news reveals older updates in batches and returns to the latest", { tag: [
   await expectMinimumSize(latestOnly, 44);
   await latestOnly.click();
   await expect(visibleEntries).toHaveCount(4);
-  await expect(status).toHaveText("Showing 4 of 14 updates");
+  await expect(status).toHaveText("Showing 4 of 15 updates");
   await expect(news.getByRole("button", { name: "Show 4 older updates" })).toBeFocused();
   await expect(latestOnly).toHaveCount(0);
 });

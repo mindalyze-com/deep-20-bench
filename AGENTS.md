@@ -123,6 +123,11 @@ Read and follow the relevant detailed specification before changing these areas:
   requests or state. Changes to prompts, history, provider requests, sessions, caches, tools,
   audits, reports, retries, or wiring must review this invariant and test the visible projection.
 
+## Project storage
+
+- Keep project code and benchmark results in this repository.
+- Use external storage for private investigation data and artifacts.
+
 ## General implementation
 
 - Treat every model and provider response as untrusted and validate it locally.
