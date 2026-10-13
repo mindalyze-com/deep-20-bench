@@ -1,96 +1,39 @@
 # Deep20Bench architecture
 
-The inactive [edition 1.2 draft](edition-1.2-draft.md) adds typed backend adapters and
-per-role configuration to this same engine. OpenRouter remains the default. Local and
-interactive Oracle research uses managed tools; deterministic mocks are explicitly synthetic.
-The draft specification owns its opt-in queue, spending, artifact-version and cache contracts.
-The released editions retain the behavior described below.
-
-Concise research retains up to three evidence items and the existing 2,000-character allowance
-per item. `kind: quotation` identifies exact source text; `kind: source_summary` identifies a
-faithful account of retrieved source facts in the Oracle's own words. Omitted kind preserves
-the historical quotation meaning and serialization. Longer evidence is valid; there is no
-additional word-count limit. Summaries preserve dates, quantities, negation, qualifications and
-counterevidence, and must not include the Oracle's decision, reasoning or remembered facts.
-Exact quotations remain supported, especially when source wording matters.
-
-Blind Reviewer/Judge inputs retain only the subject, current question and numbered evidence.
-Source summaries carry their kind label alongside the evidence text; the label reveals no
-earlier decision. Review instructions distinguish summaries from exact quotations. Both remain
-model-reported and unverified. Guesser input and final token vocabulary are unchanged. The
-research/Reviewer/Judge prompt versions and factual contract isolate earlier evidence packages.
-
-Oracle-family provider responses ending in `content_filter` now report the distinct
-`provider_content_filtered` failure/recovery code. This records the provider's reported
-finish reason, not the underlying filter rule. Existing bounded no-result retries, required
-review, search accounting and technical-stop rules still apply. Incomplete answers never
-become unchecked answer tokens or synthetic UNKNOWN decisions.
-
-New B-0003 executions use `concise_knowledge_v1`: one research attempt requesting
-`research_query_target` queries (default 3), with an API ceiling calculated as the target plus
-two bonus calls. Valid completed answers within that ceiling retain normal independent
-evidence/knowledge decisions and private `evidence`/`other` basis plus a supporting statement. This policy permits source-free directional answers
-and retained UNKNOWN context; the earlier evidence/recovery rules below describe historical
-policies. See [the current policy](five-answer-experiment.md#concise-evidenceknowledge-policy).
-
-Under this concise policy, Reviewer/Judge UNKNOWN may retain valid evidence indices explaining
-uncertainty with either `evidence` or `other` basis and a private supporting statement. This
-does not change the decision token: Reviewer UNKNOWN invokes the blind Judge, and Judge
-UNKNOWN returns only UNKNOWN to the Guesser. Missing fields, invalid indices, and actual
-required-role failures remain errors. Earlier policies still require empty UNKNOWN indices.
-
-A completed concise Oracle reply with explicit zero search usage may use its existing
-bounded invalid-output retry. Route, response-cache and budget faults remain fatal; absent
-telemetry is not zero usage. The retry retains the blind input, changes only the existing
-question ID, and shares the original search/request/time limits. Its own reply must pass the
-search guard; earlier discarded searches cannot substitute for it. Failure after that retry
-remains `web_search_not_used`, with both calls and costs retained privately.
-
-
-B-0003 is the official edition 1.1 five-answer profile. It extends ASK tokens only, preserves blind review and exact-token disagreement routing, and has its own released leaderboard. See [Five-answer experiment](five-answer-experiment.md).
-
-New B-0003 definitions select the explicit `judge_stable_knowledge_v1` adjudication policy.
-The Reviewer remains evidence-only. The Judge may use labelled stable knowledge only when
-missing factual coverage would otherwise force UNKNOWN and the evidence is not materially
-contradictory. It must first use any supported directional answer, including qualified ones.
-An omitted policy retains the historical evidence-only five-answer behavior. Role-specific
-schemas, local validation, saved configuration, and publication validation preserve this
-distinction. This changes neither blind inputs nor routing, and only the final answer token
-returns to the Guesser.
-
 ## Purpose and current boundary
 
-Standalone commands default to the standard profile. The three-token schemas and knowledge
-fallback descriptions below describe that profile unless qualified behavior is stated.
-`B-0002` enables an experimental concise prompt profile with the same information boundaries
-and adjudication flow. See
-[Concise prompt experiment](concise-prompt-experiment.md) for selection, versioning, and limits.
+Deep20Bench measures how well an LLM identifies a hidden subject by asking adaptive questions.
+Each benchmark run uses one registered model and plays it across the selected subjects and
+rounds (trials). Each round uses the one-game engine, the session-aware Guesser, the live-web
+Oracle with blind Reviewer and Judge checks, and the strict LLM Guess Validator. The control
+plane owns saved state, observation, logging, aggregation, and reports.
 
-Deep20Bench evaluates how effectively an LLM identifies a hidden subject through adaptive
-yes/no questions. Each benchmark run binds one registered model and schedules it across selected
-subjects and iterations. Each trial uses the one-game engine, session-aware Guesser,
-independent live-web Oracle with blind Reviewer/Judge quality control, and strict LLM Guess
-Validator. The control plane owns durable state, observation, logging, aggregation, and derived
-reporting.
+The Oracle researches each question on the live web. If the main research attempt finds no
+usable evidence, it may make one separate recovery attempt with a different strategy. The
+Oracle then returns one final result. A blind no-web Reviewer checks every final `YES` or `NO`.
+A blind no-web Judge gives the final answer only when the Oracle and Reviewer disagree. Both
+checking roles rely on evidence first and may use their own confident knowledge only for
+settled facts, with an explicit decision-basis label. The Reviewer uses this fallback more
+cautiously, because agreement skips the Judge. Neither checking role sees an earlier answer or
+the game history.
 
-The Oracle researches each question against the live web. A typed primary research attempt may
-trigger one separate, diversified recovery attempt when search returned no usable evidence.
-The Oracle emits one final result after that internal research workflow. Every final `YES` or
-`NO` is then checked by a blind no-web Reviewer. A blind no-web Judge produces the final answer
-only when the Oracle and Reviewer disagree. Both quality-control roles use evidence first and may use
-their own high-confidence knowledge only for stable closed facts, with an explicit
-decision-basis label. The Reviewer applies this fallback conservatively because agreement
-bypasses the Judge. Neither quality-control role receives either earlier answer or game history.
-New benchmark executions support [historical, same-game and same-execution ASK reuse](oracle-history-cache.md).
-A compatible cache hit returns a previously fully adjudicated token with original evidence and
-provenance in reports, without a new adjudicator call. Standalone commands use fresh calls.
+New benchmark runs can [reuse earlier ASK answers](oracle-history-cache.md) from earlier runs,
+the same game, or the same run. A compatible reused answer returns a previously checked token,
+with its original evidence and source shown in reports, and makes no new answer-checking call.
+Standalone commands always make new calls.
 
-New direct benchmarks discover completed games from other executions once per subject under
-`per_subject_history_v1`. The benchmark root saves each inventory before reuse and restores it
-on resume. Explicit cutoffs and older manifests retain frozen discovery. Only verified,
-fully adjudicated ASK answers qualify; the Guesser still receives only the final answer token.
-The [cache contract](oracle-history-cache.md#process-and-snapshot-behavior) defines persistence,
-concurrency, and comparison behavior. Provider requests and prompt-cache namespaces are unchanged.
+New direct benchmarks look up finished games from other runs once per subject, under
+`per_subject_history_v1`. The benchmark saves each lookup before using it and restores it when
+a run resumes. Explicit cutoffs and older manifests keep their fixed lookup. Only verified,
+fully checked ASK answers qualify, and the Guesser still gets only the final answer token. The
+[cache contract](oracle-history-cache.md#process-and-snapshot-behavior) defines saving,
+concurrency, and comparison rules. Provider requests and prompt-cache namespaces are unchanged.
+
+Standalone commands use the standard profile by default. Unless qualified behavior is stated,
+the three-token schemas and knowledge fallback below describe that profile. `B-0002` enables an
+experimental concise prompt profile with the same information boundaries and answer-check
+flow. See [Concise prompt experiment](concise-prompt-experiment.md) for selection, versions,
+and limits.
 
 ```mermaid
 flowchart LR
@@ -121,6 +64,45 @@ flowchart LR
     Observer --> Benchmark
     Benchmark --> Results["Typed result tree + hierarchical artifacts"]
 ```
+
+## Current policies
+
+- **Concise research (`concise_knowledge_v1`).** New B-0003 runs make one research attempt that
+  asks for `research_query_target` search queries (default 3), with an API limit of that
+  target plus two extra calls. A valid answer within that limit keeps its independent evidence
+  or knowledge decision, a private `evidence`/`other` basis, and a supporting statement. The
+  policy allows directional answers without sources and keeps context for UNKNOWN answers. The
+  older evidence and recovery rules below describe earlier policies. See
+  [the current policy](five-answer-experiment.md#concise-evidenceknowledge-policy).
+- **UNKNOWN under this policy.** Reviewer and Judge UNKNOWN may keep valid evidence indices that
+  explain the uncertainty, with an `evidence` or `other` basis and a private supporting
+  statement. The answer token does not change: Reviewer UNKNOWN goes to the blind Judge, and
+  Judge UNKNOWN returns only UNKNOWN to the Guesser. Missing fields, invalid indices, and real
+  failures of required roles are still errors. Earlier policies still require UNKNOWN to have
+  no indices.
+- **Evidence items.** Concise research keeps up to three evidence items of up to 2,000
+  characters each; there is no separate word limit. `kind: quotation` marks exact source text;
+  `kind: source_summary` marks a faithful summary of retrieved facts in the Oracle's own words.
+  Without `kind`, an item is a quotation, as before. Summaries must keep dates, quantities,
+  negations, qualifications, and counterevidence, and must not include the Oracle's decision,
+  reasoning, or remembered facts. Exact quotations are still supported, especially when the
+  source wording matters.
+- **What the Reviewer and Judge see.** Their blind inputs contain only the subject, the current
+  question, and the numbered evidence. Source summaries carry their `kind` label, which reveals
+  no earlier decision. The review instructions tell summaries and quotations apart; both remain
+  model-reported and unverified. Guesser input and the final answer tokens are unchanged. The
+  research, Reviewer, and Judge prompt versions and the answer contract keep earlier evidence
+  formats separate.
+- **Content filters.** An Oracle, Reviewer, or Judge response that ends with `content_filter`
+  reports the separate `provider_content_filtered` failure and retry code. It records the finish
+  reason the provider reported, not the filter rule behind it. The existing limited no-result
+  retries, required review, search accounting, and technical-stop rules still apply. An
+  incomplete answer never becomes an unchecked answer token or a made-up UNKNOWN.
+- **Edition 1.2 draft.** The inactive [edition 1.2 draft](edition-1.2-draft.md) adds typed
+  backend adapters and per-role settings to the same engine. OpenRouter remains the default.
+  Local and interactive Oracle research uses managed tools; deterministic mocks are explicitly
+  synthetic. The draft specification defines its own opt-in queue, spending, artifact-version,
+  and cache rules. Released editions keep the behavior described here.
 
 ## Domain contracts
 

@@ -174,3 +174,22 @@ export const reasoningEffortLabel = (value: string): string => {
 
 export const statusLabel = (value: string): string =>
   value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+const outcomeLabels: Readonly<Record<string, string>> = {
+  success: "Success",
+  model_failure: "Not found",
+  infrastructure_failure: "Test system failure",
+  limit_exhausted: "Question limit reached",
+  guesser_protocol_failure: "Too many format errors",
+  validator_unknown: "Guess not confirmed",
+};
+export const outcomeLabel = (value: string): string =>
+  outcomeLabels[value] ?? statusLabel(value);
+
+const contractStatusLabels: Readonly<Record<string, string>> = {
+  clean: "No errors",
+  breached: "Errors found",
+  not_evaluable: "Not checked",
+};
+export const contractStatusLabel = (value: string): string =>
+  contractStatusLabels[value] ?? statusLabel(value);

@@ -26,8 +26,7 @@ const supportModels = computed(() =>
         <h2 id="run-models-title">Models.</h2>
       </div>
       <p>
-        Model identity, prompt versions, routing, calls, and recorded cost for the full
-        run.
+        Models, prompt versions, providers, calls, and cost for the whole run.
       </p>
     </header>
 
@@ -43,12 +42,12 @@ const supportModels = computed(() =>
     <section class="support-section" aria-labelledby="support-models-title">
       <header class="support-heading">
         <div>
-          <p class="eyebrow">Game support</p>
+          <p class="eyebrow">Answer checks</p>
           <h3 id="support-models-title">Answering and checking models.</h3>
         </div>
         <p>
-          These models support the game. They are fixed across the run and are not under
-          test.
+          These models answer and check the Guesser's questions and guesses. They are the
+          same for every round and are not being tested.
         </p>
       </header>
 

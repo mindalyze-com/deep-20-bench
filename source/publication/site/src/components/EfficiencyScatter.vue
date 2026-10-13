@@ -123,7 +123,7 @@ const accessibleItems = computed<ChartAccessibleItem[]>(() =>
   props.items.map((item) => ({
     key: item.label,
     label: item.label,
-    description: `${item.label}: ${item.scoreDisplay} questions, ${item.costDisplay} Guesser cost per episode, ideal distance ${item.distanceDisplay}, rank ${item.rank}.${item.paretoEfficient ? " Pareto-efficient." : ""}`,
+    description: `${item.label}: ${item.scoreDisplay} questions, ${item.costDisplay} Guesser cost per round, ideal distance ${item.distanceDisplay}, rank ${item.rank}.${item.paretoEfficient ? " Pareto-efficient." : ""}`,
     link: item.link,
   })),
 );
@@ -159,7 +159,7 @@ const tooltip = (
     '<div style="min-width:190px;padding:3px 2px">',
     chartTooltipTitle(theme, item.label),
     chartTooltipPrimary(theme, `${item.scoreDisplay} questions`),
-    `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">${escapeHtml(item.costDisplay)} Guesser cost per episode</span>`,
+    `<span style="display:block;margin-top:5px;color:${theme.muted};font-size:.75rem">${escapeHtml(item.costDisplay)} Guesser cost per round</span>`,
     `<span style="display:block;margin-top:4px;color:${theme.muted};font-size:.75rem">Ideal distance ${escapeHtml(item.distanceDisplay)} · rank ${item.rank}</span>`,
     item.paretoEfficient
       ? `<span style="display:block;margin-top:4px;color:${theme.results.efficiency};font-size:.75rem;font-weight: var(--font-weight-bold)">Pareto-efficient</span>`
@@ -199,7 +199,7 @@ const chartOption = (width: number): EChartsOption => {
       description: `Cost and question score on a shared scale. Lower and further left is better. Curves show equal ideal distance and diamonds mark Pareto-efficient models. ${props.items
         .map(
           (item) =>
-            `${item.label}, ideal distance ${item.distanceDisplay}, rank ${item.rank}, ${item.scoreDisplay} questions, ${item.costDisplay} per episode${item.paretoEfficient ? ", Pareto-efficient" : ""}`,
+            `${item.label}, ideal distance ${item.distanceDisplay}, rank ${item.rank}, ${item.scoreDisplay} questions, ${item.costDisplay} per round${item.paretoEfficient ? ", Pareto-efficient" : ""}`,
         )
         .join(". ")}.`,
     },
@@ -219,7 +219,7 @@ const chartOption = (width: number): EChartsOption => {
       ...chartValueAxis(
         theme,
         axisFontSize,
-        "Guesser cost per episode · position on the shared scale",
+        "Guesser cost per round · position on the shared scale",
         mobile ? 43 : 48,
         (value) => moneyEpisode(rawValueAt(value, costMinimum, costMaximum)),
       ),

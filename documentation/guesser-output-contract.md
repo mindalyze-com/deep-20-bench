@@ -1,19 +1,27 @@
 # Guesser output-contract recovery and reliability
 
-B-0003 additionally permits RATHER_YES and RATHER_NO after ASK under the paired qualified_v1 profile. GUESS, FORMAT_ERROR, scoring, and all private-data boundaries are unchanged. See [Five-answer experiment](five-answer-experiment.md).
+Before the question limit, a Guesser reply that fails the public structured-action format
+uses up a counted turn and receives the fixed `FORMAT_ERROR` reminder. Repeated violations
+can end the round. An invalid reply on the final guess-only opportunity ends the round
+without a reminder or an extra counted turn. Game-policy version 9 keeps these rules.
+
+Completed replies in the wrong format are never retried internally. Empty or incomplete
+provider responses may receive one bounded transient retry before being classified as
+violations. A response cut off by the output limit (`length`) is not retried.
+
+This rule is the same in every profile:
+
+- The optional `concise_v1` Guesser prompt changes only strategy guidance. It uses the same
+  action schema and the same `FORMAT_ERROR`; the selected prompt versions are recorded
+  separately. See [Concise prompt experiment](concise-prompt-experiment.md).
+- B-0003 (the `qualified_v1` profile) also allows RATHER_YES and RATHER_NO as answers to ASK.
+  GUESS, `FORMAT_ERROR`, scoring, and all private-data boundaries are unchanged. See
+  [Five-answer experiment](five-answer-experiment.md).
+- Standard and concise profiles let the Reviewer and Judge use limited, labelled knowledge;
+  qualified profiles use the role permissions in the five-answer specification. These
+  answer-check rules do not change the Guesser's action format or what it can see.
 
 ## Protocol rule
-
-The optional `concise_v1` Guesser prompt changes strategy guidance only. It uses this same
-action schema and canonical `FORMAT_ERROR`; selected prompt versions are recorded separately.
-See [Concise prompt experiment](concise-prompt-experiment.md).
-
-Game-policy version 9 retains the scored way for the model under test to recover from an output that
-fails the public structured-action contract. There is no invisible Guesser output
-retry. Standard and concise profiles allow the labelled, bounded Reviewer/Judge knowledge
-fallback. Qualified profiles use the role permissions in the five-answer specification.
-Those adjudication policies do not alter the Guesser action wire format or visible information
-boundary.
 
 The provider wire response must match exactly one of these branches:
 

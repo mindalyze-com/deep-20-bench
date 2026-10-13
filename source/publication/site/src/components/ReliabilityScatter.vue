@@ -112,7 +112,7 @@ const chartOption = (width: number): EChartsOption => {
     animationDuration: 480,
     aria: {
       enabled: true,
-      description: `Question score and repeated-trial stability on the fixed subjects. Lower-left is better: lower question score and smaller CI width. ${props.items
+      description: `Question score and stability across rounds on these subjects. Lower-left is better: lower question score and smaller CI width. ${props.items
         .map(
           (item) =>
             `${item.label}, score ${item.scoreDisplay}, CI width ${item.intervalWidthDisplay}`,
@@ -189,7 +189,7 @@ void chartElement;
   <figure class="scatter-chart reliability-scatter">
     <figcaption class="scatter-chart-caption">
       <span>Lower-left is better</span>
-      <span>Select a model point to view its full run</span>
+      <span>Select a point to open the model's run</span>
     </figcaption>
     <ChartLoadNotice v-if="loadError" />
     <div

@@ -10,10 +10,9 @@ const newsEntries = [
     displayDate: "13 October 2026",
     title: "Muse Wonder (high) added.",
     summary:
-      "Muse Wonder completed 29 of 30 edition 1.1 games successfully, scoring 19.6 questions and placing 13th of 19 models. " +
-      "Its results varied by subject: it ranked 9th on Albert Schweitzer but 18th on Garfield. " +
-      "Garfield required 10, 22 and 30 questions, while Achilles took eight in every trial. " +
-      "These three-trial observations show how uneven question efficiency can be, even when the model finds the correct answer.",
+      "Edition 1.1 question score: 19.6 (lower is better), 13th of 19 models. It found the subject in 29 of 30 rounds. " +
+      "Results varied a lot by subject: it ranked 9th on Albert Schweitzer but 18th on Garfield, " +
+      "which took 10, 22, and 30 questions. Achilles took eight questions every time.",
     link: {
       type: "run",
       executionId: "BX-20261013-B-0003-OFFICIAL-M0033-002",
@@ -24,7 +23,7 @@ const newsEntries = [
     displayDate: "30 September 2026",
     title: "Claude Sonnet 5.5 (high) added.",
     summary:
-      "Edition 1.1 question score: 17.8 (lower is better). It completed 27 of 30 trials successfully.",
+      "Edition 1.1 question score: 17.8 (lower is better). It found the subject in 27 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260930-B-0003-official-M0032-001",
@@ -35,7 +34,7 @@ const newsEntries = [
     displayDate: "30 September 2026",
     title: "GPT-6.1 Sol (high) added.",
     summary:
-      "Edition 1.1 question score: 15.2 (lower is better). It completed 29 of 30 trials successfully.",
+      "Edition 1.1 question score: 15.2 (lower is better). It found the subject in 29 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260929-B-0003-official-M0031-001",
@@ -46,7 +45,7 @@ const newsEntries = [
     displayDate: "27 September 2026",
     title: "Claude Opus 5.5 (high) added.",
     summary:
-      "Edition 1.1 question score: 15.0 (lower is better). It completed 29 of 30 trials successfully.",
+      "Edition 1.1 question score: 15.0 (lower is better). It found the subject in 29 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260926-B-0003-official-M0030-001",
@@ -57,7 +56,7 @@ const newsEntries = [
     displayDate: "27 September 2026",
     title: "GPT-6 Sol (high) added.",
     summary:
-      "Edition 1.1 question score: 18.0 (lower is better). It completed 30 of 30 trials successfully.",
+      "Edition 1.1 question score: 18.0 (lower is better). It found the subject in 30 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260926-B-0003-official-M0029-001",
@@ -68,7 +67,7 @@ const newsEntries = [
     displayDate: "27 September 2026",
     title: "GPT-6 Luna (high) added.",
     summary:
-      "Edition 1.1 question score: 21.2 (lower is better). It completed 24 of 30 trials successfully.",
+      "Edition 1.1 question score: 21.2 (lower is better). It found the subject in 24 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260926-B-0003-official-M0028-001",
@@ -79,7 +78,7 @@ const newsEntries = [
     displayDate: "27 September 2026",
     title: "Grok 4.7 (high) added.",
     summary:
-      "Edition 1.1 question score: 22.2 (lower is better). It completed 22 of 30 trials successfully.",
+      "Edition 1.1 question score: 22.2 (lower is better). It found the subject in 22 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260926-B-0003-official-M0027-001",
@@ -89,7 +88,7 @@ const newsEntries = [
     date: "2026-09-05",
     displayDate: "5 September 2026",
     title: "GPT-6 Astra (high) added.",
-    summary: "It scored 15.1 questions with 33 of 35 successful trials.",
+    summary: "Edition 1.0 question score: 15.1 (lower is better). It found the subject in 33 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260904-official-M0022-001",
@@ -99,7 +98,7 @@ const newsEntries = [
     date: "2026-09-04",
     displayDate: "4 September 2026",
     title: "Gemini 3.8 Flash (high) added.",
-    summary: "It scored 13.1 questions with 35 of 35 successful trials.",
+    summary: "Edition 1.0 question score: 13.1 (lower is better). It found the subject in 35 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260904-official-M0021-001",
@@ -109,7 +108,7 @@ const newsEntries = [
     date: "2026-09-02",
     displayDate: "2 September 2026",
     title: "Claude Fable 5.1 (high) added.",
-    summary: "It scored 12.1 questions with 34 of 35 successful trials.",
+    summary: "Edition 1.0 question score: 12.1 (lower is better). It found the subject in 34 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260902-official-M0020-001",
@@ -132,7 +131,7 @@ const newsEntries = [
     displayDate: "23 August 2026",
     title: "OpenRouter’s Ox Alpha (high) tested.",
     summary:
-      "The Stealth-routed model won 32 of 35 trials and scored 17.6 questions, placing 12th of 15.",
+      "A stealth model offered through OpenRouter. Edition 1.0 question score: 17.6 (lower is better), 12th of 15 models at the time. It found the subject in 32 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260823-official-M0017-018",
@@ -142,7 +141,7 @@ const newsEntries = [
     date: "2026-08-17",
     displayDate: "17 August 2026",
     title: "Gemini 3.7 Flash (high) added.",
-    summary: "It scored 14.0 questions with 34 of 35 successful trials.",
+    summary: "Edition 1.0 question score: 14.0 (lower is better). It found the subject in 34 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260817-official-M0016-015",
@@ -152,7 +151,7 @@ const newsEntries = [
     date: "2026-08-15",
     displayDate: "15 August 2026",
     title: "Grok 4.6 (high) added.",
-    summary: "It scored 14.3 questions with 35 of 35 successful trials.",
+    summary: "Edition 1.0 question score: 14.3 (lower is better). It found the subject in 35 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260814-official-M0015-013",
@@ -162,7 +161,7 @@ const newsEntries = [
     date: "2026-08-05",
     displayDate: "5 August 2026",
     title: "Claude Fable 5 (high) added.",
-    summary: "We added Claude Fable 5 (high) to the official Deep20Bench results.",
+    summary: "Edition 1.0 question score: 12.1 (lower is better). It found the subject in 35 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260805-official-M0014-011",
@@ -216,7 +215,7 @@ const priorWork = [
     kind: "Question strategy",
     title: "Learning-to-Ask: Knowledge Acquisition via 20 Questions",
     authors: "Yihong Chen et al. · KDD",
-    description: "Learns how to ask questions to identify a subject and gather knowledge.",
+    description: "Learns which questions to ask to identify a subject and gather knowledge.",
     href: "https://www.microsoft.com/en-us/research/publication/learning-to-ask-knowledge-acquisition-via-20-questions/",
     source: "Microsoft Research",
   },
@@ -243,7 +242,7 @@ const priorWork = [
     kind: "Choosing useful questions",
     title: "Adaptive Elicitation of Latent Information Using Natural Language",
     authors: "Jimmy Wang et al. · ICML",
-    description: "Chooses questions that reduce uncertainty about the answer.",
+    description: "Chooses the questions that most reduce uncertainty about the answer.",
     href: "https://openreview.net/forum?id=I7N6vtUChM",
     source: "OpenReview",
   },
@@ -252,7 +251,7 @@ const priorWork = [
     kind: "Information gain",
     title: "BED-LLM: Intelligent Information Gathering with LLMs",
     authors: "Deepro Choudhury et al. · Apple · ICLR",
-    description: "Uses expected information gain to choose questions.",
+    description: "Chooses questions by how much information each answer is expected to give.",
     href: "https://machinelearning.apple.com/research/bed-llm",
     source: "Apple Machine Learning Research",
   },
@@ -284,8 +283,8 @@ onActivated(applyRouteContext);
           <p class="eyebrow">Origin · news · prior work</p>
           <h1>A shared idea, built into a benchmark.</h1>
           <p>
-            Patrick Heusser and Markus Tuor came up with Deep20Bench while playing Twenty Questions
-            with the kids. Patrick then designed and built the benchmark.
+            Patrick Heusser and Markus Tuor came up with Deep20Bench while playing Twenty
+            Questions with the kids. Patrick then designed and built the benchmark.
           </p>
         </div>
         <a class="hero-jump" href="#news">Latest news ↓</a>
@@ -299,7 +298,7 @@ onActivated(applyRouteContext);
             <p class="eyebrow">Updates</p>
             <h2 id="news-title">Project news.</h2>
           </div>
-          <p>Project updates, releases, and notes.</p>
+          <p>New results, releases, and articles.</p>
         </header>
         <div id="news-list" ref="newsList" class="news-list">
           <component
@@ -386,7 +385,7 @@ onActivated(applyRouteContext);
             <p class="eyebrow">Prior work</p>
             <h2 id="research-title">Related research.</h2>
           </div>
-          <p>Deep20Bench was developed independently. These projects address related problems.</p>
+          <p>Deep20Bench was developed independently. These projects work on related problems.</p>
         </header>
         <table class="work-table">
           <caption>

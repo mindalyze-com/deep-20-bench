@@ -97,7 +97,7 @@ _EDITORIAL_PAGES = (
         browser_title="LLM Benchmark Results and Leaderboard | Deep20Bench",
         description=(
             "Compare official Twenty Questions LLM benchmark scores, outcomes, costs, "
-            "runtime, and repeated-trial stability."
+            "runtime, and stability across rounds."
         ),
     ),
     _EditorialPage(
@@ -105,14 +105,14 @@ _EDITORIAL_PAGES = (
         browser_title="LLM Benchmark Stability and Reliability | Deep20Bench",
         description=(
             "Compare how consistent LLM scores are across repeated rounds, their confidence "
-            "intervals, and how often models follow the required reply format."
+            "intervals, and how often models use the required reply format."
         ),
     ),
     _EditorialPage(
         route="results/cost",
         browser_title="LLM Benchmark Cost Comparison | Deep20Bench",
         description=(
-            "Compare recorded LLM benchmark costs by tested model, answer-checking model, run, "
+            "Compare LLM benchmark costs by tested model, answer-checking model, run, "
             "and round."
         ),
     ),
@@ -120,14 +120,15 @@ _EDITORIAL_PAGES = (
         route="results/time",
         browser_title="LLM Benchmark Runtime and Response Time | Deep20Bench",
         description=(
-            "Compare tested-model response times, time per call, and total LLM benchmark time."
+            "Compare how long tested models take per round and per call, and total LLM "
+            "benchmark runtime."
         ),
     ),
     _EditorialPage(
         route="results/efficiency",
         browser_title="LLM Benchmark Cost Efficiency | Deep20Bench",
         description=(
-            "Compare question score and recorded tested-model cost across official "
+            "Compare question score and tested-model cost across official "
             "Twenty Questions LLM benchmark runs."
         ),
     ),
@@ -135,28 +136,33 @@ _EDITORIAL_PAGES = (
         route="methodology",
         browser_title="Twenty Questions LLM Benchmark Method | Deep20Bench",
         description=(
-            "Follow the Deep20Bench LLM benchmark method through answer checks, repeated "
-            "Twenty Questions trials, scoring, and publication."
+            "How the Deep20Bench Twenty Questions LLM benchmark works: the game, answer "
+            "checks, scoring, and publication."
         ),
     ),
     _EditorialPage(
         route="about",
         browser_title="Deep20Bench Origin and Related LLM Research",
         description=(
-            "Read how the Deep20Bench LLM benchmark began, see project news, and review "
-            "related Twenty Questions research."
+            "How the Deep20Bench LLM benchmark began, project news, and related Twenty "
+            "Questions research."
         ),
     ),
     _EditorialPage(
         route="data",
         browser_title="Deep20Bench Dataset, Results and Transcripts",
         description=(
-            "Download the public Deep20Bench dataset, leaderboard results, trial transcripts, "
+            "Download the public Deep20Bench dataset, leaderboard, round transcripts, "
             "schema, and citation details."
         ),
     ),
 )
 _EDITORIAL_ALIASES: dict[str, str] = {"story": "about"}
+
+
+def _round_label(trial_id: str) -> str:
+    """Return the public round label for a validated `trial-NNN` identifier."""
+    return f"Round {int(trial_id.removeprefix('trial-'))}"
 
 
 @app.callback()
@@ -579,7 +585,7 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
                 description=(
                     f"Official Twenty Questions LLM benchmark results for {run.model_name}: "
                     f"{rank}"
-                    f"{score} question score across {run.terminal_trials} episodes with "
+                    f"{score} question score across {run.terminal_trials} rounds with "
                     f"{success} success."
                 ),
                 last_modified=last_modified,
@@ -616,9 +622,9 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
                 ),
                 description=(
                     f"{run.model_name} scored {score} questions on {subject.display_name} "
-                    f"across {len(subject_document.trials)} Deep20Bench trials, solving "
+                    f"across {len(subject_document.trials)} Deep20Bench rounds, solving "
                     f"{subject.successful} of {len(subject_document.trials)}. "
-                    "Inspect results and evidence."
+                    "See every question, answer, and source."
                 ),
                 last_modified=last_modified,
                 execution_id=subject_document.execution_id,
@@ -641,12 +647,13 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
             browser_title=(
                 f"{runs_by_execution[episode_document.execution_id].run.model_name} on "
                 f"{episode_document.episode.subject_name} - "
-                f"{episode_document.trial_id} | Deep20Bench"
+                f"{_round_label(episode_document.trial_id)} | Deep20Bench"
             ),
             description=(
                 "Questions, final answers, and Oracle evidence for "
                 f"{runs_by_execution[episode_document.execution_id].run.model_name} finding "
-                f"{episode_document.episode.subject_name} in {episode_document.trial_id}."
+                f"{episode_document.episode.subject_name} in "
+                f"{_round_label(episode_document.trial_id).lower()}."
             ),
             last_modified=last_modified,
             execution_id=episode_document.execution_id,

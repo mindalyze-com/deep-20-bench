@@ -82,7 +82,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   { key: "models", label: "Models", value: rows.value.length },
   {
     key: "episodes",
-    label: "Episodes / model",
+    label: "Rounds per model",
     value: rows.value[0]?.terminal_trials ?? 0,
   },
   {
@@ -154,30 +154,31 @@ const { loading, error } = usePublicationLoad(async () => {
             <ResultHelp label="Score metric explanations">
               <InfoPopover label="Question score">
                 <p>
-                  The score is the average number of questions used per subject. Lower is
-                  better. Failed trials receive the benchmark penalty.
+                  The average number of questions the model needed, with every subject
+                  weighted equally. Lower is better. A failed round receives the fixed
+                  failure score.
                 </p>
               </InfoPopover>
               <InfoPopover label="CI width">
                 <p>
-                  The line is the 95% CI around the average score. A smaller CI width means the
-                  model was more consistent across repeated trials on the fixed subjects.
+                  The line shows the 95% confidence interval (CI) of the average score. A
+                  narrower CI means more consistent results across repeated rounds on these
+                  subjects.
                 </p>
                 <p>
-                  The companion plot shows the exact CI width. Its background and dot
-                  colors split the displayed width scale into three equal ranges. They are a
-                  visual guide, not fixed quality thresholds.
+                  The side plot shows each CI width. Its three color bands split the shown
+                  range into equal parts. They are a visual aid, not quality grades.
                 </p>
                 <p>
-                  It describes uncertainty in the average score. It is not a prediction
-                  interval for an individual trial.
+                  The CI describes uncertainty in the average, not the range of single
+                  rounds.
                 </p>
               </InfoPopover>
-              <InfoPopover label="Success and contract">
+              <InfoPopover label="Success and format">
                 <p>
-                  Success is the share of trials that count toward scoring and ended with a
-                  correct answer. Contract is the share of evaluated model outputs that
-                  followed the required structured format.
+                  Success is the share of scored rounds in which the model found the
+                  subject. Valid format is the share of model replies that used the
+                  required format.
                 </p>
               </InfoPopover>
             </ResultHelp>
@@ -231,7 +232,7 @@ const { loading, error } = usePublicationLoad(async () => {
                 <td class="success-column" data-label="Success" data-numeric>
                   {{ percent(row.success_rate) }}
                 </td>
-                <td class="contract-column" data-label="Contract" data-numeric>
+                <td class="contract-column" data-label="Valid format" data-numeric>
                   {{
                     contractPercent(
                       row.contract?.compliance_rate ?? null,
@@ -239,14 +240,14 @@ const { loading, error } = usePublicationLoad(async () => {
                     )
                   }}
                 </td>
-                <td class="cost-column" data-label="Guesser cost / episode" data-numeric>
+                <td class="cost-column" data-label="Guesser cost / round" data-numeric>
                   {{
                     row.guesser_cost_per_episode_usd === null
                       ? "-"
                       : moneyEpisode(row.guesser_cost_per_episode_usd)
                   }}
                 </td>
-                <td class="time-column" data-label="Model time / episode" data-numeric>
+                <td class="time-column" data-label="Model time / round" data-numeric>
                   {{
                     row.guesser_think_time_per_episode_ms === null
                       ? "-"
@@ -278,7 +279,7 @@ const { loading, error } = usePublicationLoad(async () => {
               },
               { label: 'Success', value: percent(row.success_rate) },
               {
-                label: 'Guesser cost / episode',
+                label: 'Guesser cost / round',
                 value:
                   row.guesser_cost_per_episode_usd === null
                     ? '-'
@@ -289,10 +290,9 @@ const { loading, error } = usePublicationLoad(async () => {
         </div>
 
         <p class="results-note">
-          The 95% CI uses repeated seeded trials on this edition's fixed subjects. The three CI width
-          bands divide the displayed scale into equal ranges. They are not fixed quality
-          thresholds. The 95% CI does not cover different subjects, model versions, or
-          providers.
+          The 95% CI comes from repeated rounds on this edition's subjects. It does not
+          cover other subjects, model versions, or providers. The three CI width bands split
+          the shown range into equal parts; they are not quality grades.
         </p>
     </ResultsContent>
   </div>

@@ -7,7 +7,7 @@ import { setRouteContext } from "@/lib/route-context";
 const applyRouteContext = (): void => {
   setRouteContext({
     title: "Page not found",
-    description: "The requested Deep20Bench page is not in the current publication.",
+    description: "This Deep20Bench page does not exist.",
     level: null,
     position: null,
     crumbs: [],
@@ -24,7 +24,7 @@ onActivated(applyRouteContext);
   <section id="route-content" class="page not-found" tabindex="-1">
     <p class="eyebrow">404</p>
     <h1>Page not found.</h1>
-    <p>This page is not in the current publication build.</p>
+    <p>This page does not exist on the current site.</p>
     <div class="button-row">
       <RouterLink class="button button-primary" :to="editionRoute('home')">Go home</RouterLink>
       <RouterLink class="button button-secondary" :to="editionRoute('results')">

@@ -21,7 +21,7 @@ defineProps<{
     class="mobile-result-card"
     :class="{ 'mobile-result-card--disabled': to === null }"
     :to="to ?? undefined"
-    :aria-label="to === null ? undefined : `Explore full run for ${name}`"
+    :aria-label="to === null ? undefined : `View full run for ${name}`"
   >
     <div class="mobile-result-card-head">
       <span class="mobile-result-rank">#{{ rank }}</span>
@@ -44,7 +44,7 @@ defineProps<{
         {{
           to === null
             ? "Full run unavailable"
-            : "Explore full run · questions, answers & evidence"
+            : "Full run · questions, answers, and evidence"
         }}
       </span>
       <span v-if="to !== null" aria-hidden="true">→</span>

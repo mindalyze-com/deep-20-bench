@@ -311,9 +311,9 @@ def test_generated_run_subject_and_episode_are_prerendered_and_indexable() -> No
     assert "Question score" in entry
     assert "95% CI" in entry
     assert "Success" in entry
-    assert "Contract compliance" in entry
+    assert "Valid format" in entry
     assert "Guesser cost" in entry
-    assert "Wall-clock runtime" in entry
+    assert "Total runtime" in entry
     assert 'name="robots"' not in entry
     for subject_summary in run.subjects:
         assert (

@@ -68,18 +68,18 @@ const excludedRepairCost = (run: PublicRunSummary): number =>
 const mobileCostMetrics = (run: PublicRunSummary) => {
   const metrics = [
     {
-      label: "Guesser cost / episode",
+      label: "Guesser cost / round",
       value: moneyEpisode(run.comparison.guesser_cost_per_episode_usd),
     },
     {
-      label: "Benchmark cost / episode",
+      label: "Benchmark cost / round",
       value: moneyEpisode(run.comparison.full_cost_per_episode_usd),
     },
     { label: "Benchmark run cost", value: money(run.totals.costs_usd.total) },
   ];
   if (excludedRepairCost(run) > 0) {
     metrics.push({
-      label: "Excluded repair overhead",
+      label: "Excluded repair cost",
       value: money(excludedRepairCost(run)),
     });
   }
@@ -206,35 +206,35 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
                 <h2 id="cost-chart-title">Guesser cost across the run.</h2>
               </div>
               <p>
-                Each bar adds the recorded provider cost of Guesser calls in each round's final
-                recorded attempt. Earlier attempts replaced after test system failures and
-                support costs are excluded.
+                Each bar is the provider-reported cost of all Guesser calls in the run. It
+                excludes answer-checking costs and earlier attempts of rounds rerun after a
+                test system failure.
               </p>
               <ResultHelp label="Cost metric explanations">
                 <InfoPopover label="Guesser and support cost">
                   <p>
-                    Guesser cost covers calls to the model under test. Support cost covers the
-                    Oracle, Reviewer, Judge, and Validator. Benchmark cost combines both.
+                    Guesser cost covers calls to the tested model. Support cost covers the
+                    answer-checking models: Oracle, Reviewer, Judge, and Validator. Benchmark
+                    cost is the sum of both.
                   </p>
                 </InfoPopover>
-                <InfoPopover label="Per episode">
+                <InfoPopover label="Per round">
                   <p>
-                    Cost per round divides the recorded run cost by the number of finished rounds.
-                    This keeps runs comparable when they have different numbers of subjects or rounds.
+                    Cost per round is the run cost divided by the number of finished rounds.
+                    This keeps runs with different numbers of rounds comparable.
                   </p>
                 </InfoPopover>
-                <InfoPopover label="Repaired trials">
+                <InfoPopover label="Rerun rounds">
                   <p>
-                    A repaired round publishes only its final recorded attempt. Earlier attempts
-                    replaced after test system failures remain in the saved records but are
-                    excluded from the cost comparison. These extra repair costs are listed
-                    beneath the run total.
+                    If a round failed because of the test system and was run again, only the
+                    final attempt counts. The cost of the earlier attempts is kept in the
+                    records but left out of the comparison. It is shown below the run total.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="How this page is ordered">
                   <p>
-                    The first chart is ordered by Guesser cost. The breakdown and table are
-                    ordered by benchmark cost, so their order can differ.
+                    The first chart is sorted by Guesser cost. The breakdown and table are
+                    sorted by benchmark cost, so the order can differ.
                   </p>
                 </InfoPopover>
               </ResultHelp>
@@ -257,9 +257,9 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
                 <h3 id="component-ledger-title">Where the total cost came from.</h3>
               </div>
               <p>
-                Bar length shows the retained terminal attempts' benchmark cost. Color separates
-                the Guesser, Primary Oracle, and answer checks. Expand the exact breakdown to
-                compare Reviewer, Judge, and Validator cost.
+                Bar length shows the total benchmark cost. Colors separate the Guesser, the
+                Oracle, and the other answer checks. Open the exact breakdown to compare the
+                Reviewer, Judge, and Validator.
               </p>
             </header>
             <StackedMetricBars
@@ -279,13 +279,13 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
                 </th>
                 <th class="model-column">Model</th>
                 <th data-numeric>
-                  <TableHeaderStack first="Guesser cost" second="per episode" />
+                  <TableHeaderStack first="Guesser cost" second="per round" />
                 </th>
                 <th data-numeric>
-                  <TableHeaderStack first="Benchmark cost" second="per episode" />
+                  <TableHeaderStack first="Benchmark cost" second="per round" />
                 </th>
                 <th data-numeric>
-                  <TableHeaderStack first="Support cost" second="per episode" />
+                  <TableHeaderStack first="Support cost" second="per round" />
                 </th>
                 <th data-numeric>Support share</th>
                 <th data-numeric>Benchmark run cost</th>
@@ -315,7 +315,7 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
                       {{ money(run.totals.costs_usd.total) }}
                     </span>
                     <small v-if="excludedRepairCost(run) > 0">
-                      Excluded repair overhead: {{ money(excludedRepairCost(run)) }}
+                      Excluded repair cost: {{ money(excludedRepairCost(run)) }}
                     </small>
                   </div>
                 </td>
@@ -336,9 +336,9 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
         </div>
 
         <p class="results-note">
-          Costs are provider-reported values for retained terminal attempts in the selected
-          official runs. Earlier attempts replaced after test system failures are excluded. A missing or unreported
-          provider price can affect the comparison.
+          Costs are as reported by the providers for the selected official runs. Earlier
+          attempts of rounds rerun after a test system failure are excluded. A missing provider price can affect
+          the comparison.
         </p>
     </ResultsContent>
   </div>

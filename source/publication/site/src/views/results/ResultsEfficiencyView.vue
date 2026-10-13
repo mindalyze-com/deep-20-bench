@@ -42,7 +42,7 @@ const handleExpandedChartClose = (): void => {
 
 usePageRouteContext({
   title: "Efficiency results",
-  description: "Compare question score and cost, with both scaled from 0 to 1.",
+  description: "Compare question score and cost on a shared 0-to-1 scale.",
 });
 
 const idealDistanceRank = (row: LeaderboardRow): number | null =>
@@ -138,8 +138,8 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
         <p class="eyebrow">Cost efficiency</p>
         <h2>No models can be ranked.</h2>
         <p>
-          Efficiency is available when a model has a question score and a positive
-          recorded Guesser cost for completed episodes.
+          A model needs a question score and a recorded Guesser cost above zero to be
+          ranked.
         </p>
       </template>
 
@@ -160,16 +160,15 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                 <h2 id="efficiency-title">Distance from the lower-left ideal.</h2>
               </div>
               <p>
-                Question score and Guesser cost are each scaled from 0 to 1 across
-                the compared models. The ranking gives both equal weight and measures
-                distance from the lowest score and lowest cost. Lower is better.
+                Question score and Guesser cost are each scaled from 0 (best among these
+                models) to 1 (worst). The ranking weights both equally and measures the
+                distance from the best possible point. Lower is better.
               </p>
               <ResultHelp label="Efficiency ranking explanations">
                 <InfoPopover label="Ideal distance">
                   <p>
-                    A score of 0 would match the lowest question score and lowest
-                    Guesser cost. The theoretical maximum is 1.414. The score changes when
-                    the group of compared models changes.
+                    0 means the lowest question score and the lowest Guesser cost. The
+                    maximum is 1.414. Values change when models are added or removed.
                   </p>
                 </InfoPopover>
               </ResultHelp>
@@ -190,14 +189,14 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                 <p class="eyebrow">Trade-off map</p>
                 <h3 id="tradeoff-title">Cost and question score on a shared scale.</h3>
                 <p>
-                  Both axes use the same 0-to-1 scale. Dashed curves mark equal distance
-                  from the lower-left ideal.
+                  Both axes use the same 0-to-1 scale. Dashed curves connect points at
+                  equal distance from the lower-left corner.
                 </p>
                 <ResultHelp label="Trade-off map explanation">
                   <InfoPopover label="Trade-off map">
                     <p>
-                      The map places cost and score on a shared 0-to-1 scale. Axis labels and
-                      tooltips show the original question score and Guesser cost per round.
+                      Axis labels and tooltips show the actual question score and Guesser
+                      cost per round.
                     </p>
                   </InfoPopover>
                 </ResultHelp>
@@ -292,7 +291,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                     <TableHeaderStack first="Question" second="score" />
                   </th>
                   <th data-numeric>
-                    <TableHeaderStack first="Guesser cost" second="per episode" />
+                    <TableHeaderStack first="Guesser cost" second="per round" />
                   </th>
                   <th data-numeric>Success</th>
                 </tr>
@@ -348,7 +347,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                 { label: 'Pareto-efficient', value: row.pareto_efficient ? 'Yes' : 'No' },
                 { label: 'Question score', value: number(row.question_score) },
                 {
-                  label: 'Guesser cost / episode',
+                  label: 'Guesser cost / round',
                   value: moneyEpisode(row.guesser_cost_per_episode_usd),
                 },
               ]"
@@ -357,8 +356,8 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
 
           <p v-if="unranked.length > 0" class="results-note">
             {{ unranked.length }} model{{ unranked.length === 1 ? " is" : "s are" }}
-            not ranked because a question score or positive recorded Guesser cost per
-            completed episode is unavailable.
+            not ranked because a question score or a Guesser cost above zero is
+            missing.
           </p>
 
           <MetricDefinitionCard
@@ -369,8 +368,8 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
           >
             <ol>
               <li>
-                Scale question score as (value − lowest value) ÷ (highest value − lowest value)
-                among the compared models.
+                Scale question score as (value − lowest) ÷ (highest − lowest) across the
+                compared models.
               </li>
               <li>
                 Scale Guesser cost per round with the same calculation.
@@ -384,7 +383,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
               </strong>
             </p>
             <p>
-              Question score still averages round scores, including the fixed scores for failed rounds.
+              The question score includes the fixed score for failed rounds.
             </p>
             <p>
               Adding or removing a model can change every scaled value and rank.

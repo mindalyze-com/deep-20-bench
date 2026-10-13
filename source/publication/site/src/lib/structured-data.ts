@@ -29,8 +29,8 @@ export const homepageStructuredData = (
         "large language model benchmark", "LLM benchmark", "Twenty Questions",
         "question strategy", "state tracking",
       ],
-      variableMeasured: ["question score", "success rate", "contract compliance", "cost", "runtime"],
-      measurementTechnique: `${manifest.active_cohort.target_ids.length} subjects, ${manifest.active_cohort.iterations} repeated trials per subject, ${evaluated.length} evaluated models`,
+      variableMeasured: ["question score", "success rate", "format compliance", "cost", "runtime"],
+      measurementTechnique: `${manifest.active_cohort.target_ids.length} subjects, ${manifest.active_cohort.iterations} rounds per subject, ${evaluated.length} evaluated models`,
       distribution: [
         {
           "@type": "DataDownload",

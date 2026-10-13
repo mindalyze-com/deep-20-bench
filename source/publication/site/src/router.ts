@@ -165,9 +165,9 @@ const routes: RouteRecordRaw[] = [
             meta: {
               depth: 4,
               nav: "Results",
-              title: "Episode",
+              title: "Round",
               workspace: true,
-              context: "Episode",
+              context: "Round",
             },
           },
         ],

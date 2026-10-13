@@ -23,7 +23,7 @@ onMounted(async () => {
     <div class="site-footer-inner site-boundary">
       <div class="site-footer-intro">
         <strong>Deep20Bench</strong>
-        <p>A public record of a fixed Twenty Questions benchmark.</p>
+        <p>A public Twenty Questions benchmark for AI models.</p>
         <p>
           {{ softwareLicenseDescription }}
         </p>

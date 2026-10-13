@@ -1,19 +1,35 @@
 # Deep20Bench documentation
 
-Deep20Bench uses a live-web Oracle for research, a blind no-web Reviewer for independent
-checking, and a blind no-web Judge for disputed answers. Standard and concise profiles use
-YES, NO, and UNKNOWN. The qualified profile adds RATHER_YES and RATHER_NO for factual questions;
-identity validation keeps three tokens. Every directional Oracle answer requires blind review,
-and every exact-token disagreement requires the Judge.
+Up to three models answer each Guesser question:
 
-Standard and concise Reviewer/Judge policies permit a narrow, labelled stable-knowledge
-fallback. Qualified review is evidence-only; its Judge can use bounded knowledge only under
-the explicit `judge_stable_knowledge_v1` policy. New B-0003 definitions select that policy,
-while published edition 1.1 retains its separately pinned release configuration.
+- The **Oracle** researches the question on the live web.
+- The **Reviewer** answers again from the Oracle's evidence, without web access and without
+  seeing the Oracle's answer. It runs only when the Oracle's answer is not UNKNOWN.
+- The **Judge** decides only when the two disagree. It also sees the evidence but not the web
+  or either earlier answer.
 
-New benchmark executions can reuse fully adjudicated historical or same-game ASK answers with
-source attribution. Standalone commands make fresh calls. In every case the Guesser receives
-only the final token, never evidence, cache metadata, or another component's private state.
+A reused answer (see below) skips all three, because it was already checked.
+
+Standard and concise profiles answer with YES, NO, or UNKNOWN. The qualified profile adds
+RATHER_YES and RATHER_NO for questions; guess validation still uses three answers.
+
+What the roles may rely on depends on the policy:
+
+- In standard and concise profiles, the Reviewer and Judge may use their own knowledge for
+  narrow, settled facts, and must label it.
+- New B-0003 definitions select `adjudication_policy: concise_knowledge_v1`. The Oracle,
+  Reviewer, and Judge may all decide from evidence or other knowledge, labelled as `evidence`
+  or `other`, with a short supporting statement. See
+  [Five-answer experiment](five-answer-experiment.md#concise-evidenceknowledge-policy).
+- Earlier qualified definitions used evidence-only review, optionally with limited Judge
+  knowledge under `judge_stable_knowledge_v1`.
+- Published edition 1.1 accepts several pinned release contracts; each run records which one
+  it used.
+
+Benchmark runs can reuse fully checked ASK answers from earlier games or the same game, with
+their source recorded. Standalone commands always make new calls. Either way, the Guesser gets
+only the final answer token, never evidence, cache details, or another component's private
+state.
 
 ## Current documentation
 
@@ -47,7 +63,7 @@ only the final token, never evidence, cache metadata, or another component's pri
 - [Historical Oracle answers](oracle-history-cache.md) - benchmark-only historical and
   same-game reuse, matching, provenance, accounting, and isolation.
 - [Custom domain](custom-domain-migration.md) - verified hosting state and deployment checks.
-- [Project README](../README.md) - concise project overview and quick start.
+- [Project README](../README.md) - project overview and quick start.
 
 ## Experiment analyses
 
@@ -96,8 +112,8 @@ Implemented:
   quality-control-cost reporting.
 - Independent edition-scoped publication, v10 datasets, and a maintained edition 1 v9 export.
 
-Documentation should describe the live Oracle as the source of research evidence and the
-Oracle/Reviewer/Judge pipeline as the source of final factual answer tokens. References to
-building or querying the retired Fact Builder/Fact Dossier are obsolete. The supported ASK
-cache reuses compatible completed answers under an explicit policy; it is distinct from
-provider prompt caching, which only reuses prefix computation.
+When writing documentation, describe the live Oracle as the source of research evidence and
+the Oracle/Reviewer/Judge pipeline as the source of the final answer tokens. The Fact
+Builder/Fact Dossier is retired; references to it are obsolete. The ASK answer cache reuses
+compatible finished answers under an explicit policy. It is different from provider prompt
+caching, which only reuses computation for an identical prompt prefix.

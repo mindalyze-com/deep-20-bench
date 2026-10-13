@@ -14,9 +14,8 @@ import ModelName from "@/components/ModelName.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
 import { getRun, getSubject, peekRun } from "@/lib/api";
-import { number, percent } from "@/lib/format";
+import { contractStatusLabel, number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
-import type { ContractReliability } from "@/lib/types";
 import { useKeyedPublicationLoad } from "@/lib/use-keyed-publication-load";
 import { runWorkspaceKey } from "@/lib/workspace-context";
 import { subjectWorkspaceView } from "@/router";
@@ -51,7 +50,7 @@ const applyRunContext = (): void => {
   if (current === null || route.name !== "run") return;
   setRouteContext({
     title: current.model_name,
-    description: `Official Deep20Bench results for ${current.model_name}: ${number(current.question_score)} question score across ${current.terminal_trials} episodes with ${percent(current.success_rate)} success.`,
+    description: `Official Deep20Bench results for ${current.model_name}: ${number(current.question_score)} question score across ${current.terminal_trials} rounds with ${percent(current.success_rate)} success.`,
     level: "Run workspace",
     position: `${subjects.value.length} subjects`,
     crumbs: [
@@ -66,12 +65,6 @@ const applyRunContext = (): void => {
 const warmSubject = (targetId: string): void => {
   subjectWorkspaceView.preload();
   void getSubject(executionId.value, targetId);
-};
-
-const contractStatusLabel = (status: ContractReliability["status"]): string => {
-  if (status === "clean") return "clean";
-  if (status === "breached") return "breached";
-  return "not evaluable";
 };
 
 watch(() => route.name, applyRunContext);
@@ -117,15 +110,15 @@ subjectWorkspaceView.preload();
           <span class="rail-item-index" aria-hidden="true">00</span>
           <span>
             <strong>Run overview</strong>
-            <small>{{ run.terminal_trials }} episodes · {{ percent(run.success_rate) }} success</small>
+            <small>{{ run.terminal_trials }} rounds · {{ percent(run.success_rate) }} success</small>
           </span>
         </RouterLink>
 
         <div class="subject-list-heading">
           <p class="eyebrow">Subjects · {{ subjects.length }}</p>
-          <span class="status-legend" aria-label="Subject output contract status">
-            <span><i class="clean" aria-hidden="true"></i> Clean</span>
-            <span><i class="breached" aria-hidden="true"></i> Breach</span>
+          <span class="status-legend" aria-label="Reply format by subject">
+            <span><i class="clean" aria-hidden="true"></i> No format errors</span>
+            <span><i class="breached" aria-hidden="true"></i> Format errors</span>
           </span>
         </div>
 
@@ -163,7 +156,7 @@ subjectWorkspaceView.preload();
               aria-hidden="true"
             ></span>
             <span class="visually-hidden">
-              Contract status: {{ contractStatusLabel(subject.contract.status) }}.
+              Format: {{ contractStatusLabel(subject.contract.status) }}.
             </span>
             <span class="rail-link-arrow" aria-hidden="true">→</span>
           </RouterLink>

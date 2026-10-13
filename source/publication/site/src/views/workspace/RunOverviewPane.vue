@@ -54,15 +54,15 @@ const runDeck = computed(() => {
   const row = leaderboardRow.value;
   if (current === null) return "";
   const trialSummary =
-    `${current.terminal_trials} scored episodes across ${subjects.value.length} subjects ` +
-    `with ${current.iterations} trials per subject.`;
+    `${current.terminal_trials} scored rounds: ${subjects.value.length} subjects, ` +
+    `${current.iterations} rounds each.`;
   if (row?.rank === null || row?.rank === undefined) {
-    return `This Twenty Questions LLM benchmark run contains ${trialSummary}`;
+    return `This Twenty Questions LLM benchmark run has ${trialSummary}`;
   }
   return (
     `In this Twenty Questions LLM benchmark, ${current.model_name} ranks ${row.rank} of ` +
-    `${evaluatedCount.value} with a ${number(current.question_score)} question score and ` +
-    `${percent(current.success_rate)} success. Lower is better. The run contains ${trialSummary}`
+    `${evaluatedCount.value}, with a question score of ${number(current.question_score)} ` +
+    `(lower is better) and ${percent(current.success_rate)} success. The run has ${trialSummary}`
   );
 });
 
@@ -148,7 +148,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
     },
     {
       key: "contract",
-      label: "Contract compliance",
+      label: "Valid format",
       value: contractPercent(
         current.contract.compliance_rate,
         current.contract.violations,
@@ -184,7 +184,7 @@ const roleGuide = runRoleOrder.map((role) => ({
         <p class="eyebrow">Official run</p>
         <h1><ModelName :name="run.model_name" /></h1>
         <p class="run-deck">
-          {{ runDeck }} Choose a subject to inspect its attempts.
+          {{ runDeck }} Choose a subject to see its rounds.
         </p>
         <p v-if="leaderboardRow" class="run-search-facts">
           <span v-if="leaderboardRow.rank !== null">
@@ -241,9 +241,9 @@ const roleGuide = runRoleOrder.map((role) => ({
           <header class="workspace-card-heading">
             <div>
               <p class="eyebrow">Complete benchmark</p>
-              <h2 id="run-totals-title">Run ledger.</h2>
+              <h2 id="run-totals-title">Run totals.</h2>
             </div>
-            <p>All Guesser and benchmark-support activity.</p>
+            <p>Includes the Guesser and all answer-checking models.</p>
           </header>
           <dl>
             <div>
@@ -251,7 +251,7 @@ const roleGuide = runRoleOrder.map((role) => ({
               <dd>{{ integer(run.totals.total_tokens) }}</dd>
             </div>
             <div>
-              <dt>Wall-clock runtime</dt>
+              <dt>Total runtime</dt>
               <dd>{{ duration(run.totals.runtime_ms) }}</dd>
             </div>
             <div>
@@ -267,7 +267,7 @@ const roleGuide = runRoleOrder.map((role) => ({
 
         <ContractStatusCard
           :contract="run.contract"
-          affected-unit="episodes"
+          affected-unit="rounds"
           :example-to="exampleTo"
         />
 
@@ -295,13 +295,13 @@ const roleGuide = runRoleOrder.map((role) => ({
           :total-display="money(run.totals.costs_usd.total)"
         />
         <div v-if="hasExcludedRepairCost && excludedRepair" class="excluded-repair-cost">
-          <span>Excluded repair overhead</span>
+          <span>Excluded repair cost</span>
           <strong>{{ money(excludedRepair.cost_usd) }}</strong>
           <small>
-            {{ integer(excludedRepair.superseded_attempts) }} superseded
-            attempt{{ excludedRepair.superseded_attempts === 1 ? "" : "s" }} across
-            {{ integer(excludedRepair.affected_trials) }} affected
-            trial{{ excludedRepair.affected_trials === 1 ? "" : "s" }}. Not included above.
+            {{ integer(excludedRepair.superseded_attempts) }} earlier
+            attempt{{ excludedRepair.superseded_attempts === 1 ? "" : "s" }} in
+            {{ integer(excludedRepair.affected_trials) }} rerun
+            round{{ excludedRepair.affected_trials === 1 ? "" : "s" }}. Not included above.
           </small>
         </div>
         <div class="role-guide">
@@ -313,7 +313,7 @@ const roleGuide = runRoleOrder.map((role) => ({
             </div>
           </dl>
           <RouterLink :to="editionRoute('methodology', { hash: '#answer-checks' })">
-            Read the role and answer-checking method →
+            How the roles and answer checks work →
           </RouterLink>
         </div>
       </section>

@@ -21,7 +21,7 @@ const { documents, loading, error, providerFor, openRun } =
 usePageRouteContext({
   title: "Time results",
   description:
-    "Compare model time and end-to-end time across official Deep20Bench runs.",
+    "Compare model time and total runtime across official Deep20Bench runs.",
 });
 
 const guesserRuns = computed(() =>
@@ -101,7 +101,7 @@ const guesserTimeBars = computed(() =>
     display: duration(run.totals.guesser_think_time_ms),
     detail: `${duration(
       Number(run.comparison.guesser_think_time_per_episode_ms ?? 0),
-    )} per episode · ${integer(run.totals.guesser_calls)} calls`,
+    )} per round · ${integer(run.totals.guesser_calls)} calls`,
     link: `/runs/${run.execution_id}/`,
   })),
 );
@@ -113,7 +113,7 @@ const benchmarkTimeBars = computed(() =>
     display: duration(run.totals.runtime_ms),
     detail: `${duration(
       Number(run.comparison.runtime_per_episode_ms ?? 0),
-    )} per episode · ${duration(
+    )} per round · ${duration(
       run.totals.guesser_think_time_ms,
     )} model time`,
     link: `/runs/${run.execution_id}/`,
@@ -153,21 +153,21 @@ const benchmarkTimeBars = computed(() =>
                 <h2 id="time-chart-title">Model time across the run.</h2>
               </div>
               <p>
-                Each bar adds the provider-reported time of every call to the model under
-                test. Shorter is faster. This is not the wall-clock benchmark runtime.
+                Each bar is the total time of all calls to the tested model, as reported by
+                the provider. Shorter is faster. This is not the total benchmark runtime.
               </p>
               <ResultHelp label="Time metric explanations">
                 <InfoPopover label="Model time">
                   <p>
-                    The model under test is called the Guesser in the methodology. Model time
-                    adds the provider-reported time of all its calls in the run.
+                    Model time is the total time of all calls to the tested model (the
+                    Guesser) in the run, as reported by the provider.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="End-to-end time">
                   <p>
-                    End-to-end time is the wall-clock runtime of the full benchmark run. It
-                    includes model calls, answer checks, scheduling, overlapping work, and other
-                    benchmark work.
+                    End-to-end time is the clock time from start to finish of the benchmark
+                    run. It includes model calls, answer checks, and waiting. Work that runs in
+                    parallel counts once.
                   </p>
                 </InfoPopover>
               </ResultHelp>
@@ -190,8 +190,8 @@ const benchmarkTimeBars = computed(() =>
                 <h3 id="runtime-ledger-title">End-to-end benchmark time.</h3>
               </div>
               <p>
-                Each bar is the wall-clock time from run creation to final status. It includes
-                model calls, answer checks, scheduling, overlapping work, and other benchmark work.
+                Each bar is the clock time from start to finish of the run. It includes model
+                calls, answer checks, and waiting.
               </p>
             </header>
             <MetricBars
@@ -214,7 +214,7 @@ const benchmarkTimeBars = computed(() =>
                 <th data-numeric>Model time</th>
                 <th data-numeric>End-to-end time</th>
                 <th data-numeric>
-                  <TableHeaderStack first="Model time" second="per episode" />
+                  <TableHeaderStack first="Model time" second="per round" />
                 </th>
                 <th data-numeric>
                   <TableHeaderStack first="Model time" second="per call" />
@@ -271,7 +271,7 @@ const benchmarkTimeBars = computed(() =>
                 value: duration(run.totals.runtime_ms),
               },
               {
-                label: 'Model time / episode',
+                label: 'Model time / round',
                 value:
                   run.comparison.guesser_think_time_per_episode_ms === null
                     ? '-'

@@ -66,7 +66,7 @@ test("source link includes the GitHub mark", { tag: ["@functional", "@desktop"] 
   await expect(sourceLink.locator(".repository-icon")).toBeVisible();
 });
 
-test("illustrative round connects the correct guess to its trial score", { tag: ["@functional", "@both"] }, async ({
+test("illustrative round connects the correct guess to its round score", { tag: ["@functional", "@both"] }, async ({
   page,
 }, testInfo) => {
   await page.goto("");
@@ -78,10 +78,10 @@ test("illustrative round connects the correct guess to its trial score", { tag: 
   );
   const details = page.locator(".hero-details");
   await expect(details).toContainText(
-    "Each question, wrong guess, or reply that does not follow the required format adds one point.",
+    "Each question, wrong guess, or reply in the wrong format adds one point.",
   );
   await expect(details).toContainText(
-    "50 questions - more than the traditional twenty, giving models more room to finish a round.",
+    "50 questions, more than the traditional twenty, so more rounds can finish.",
   );
   await expect(details).toContainText(
     "Each edition has its own comparison settings and results.",
@@ -112,7 +112,7 @@ test("illustrative round connects the correct guess to its trial score", { tag: 
   const score = round.locator(".round-score-card");
   await expect(round).toHaveAttribute(
     "aria-label",
-    "Illustrative round: Garfield identified with a trial score of 3",
+    "Illustrative round: Garfield identified with a round score of 3",
   );
   await expect(round.locator(".round-head")).toContainText("Illustrative round");
   await expect(transcript.locator(".round-columns")).toContainText("Question");
@@ -251,7 +251,7 @@ test("homepage explains the game and keeps repeated-trial design on Method", { t
   );
   await expect(explanation).toContainText("The Guesser is the model being tested");
   await expect(explanation).toContainText(
-    "the Oracle must search the live web and cite evidence instead of relying on memory",
+    "the Oracle searches the web and cites evidence instead of relying on memory",
   );
   await expect(explanation).toContainText(
     "The Guesser receives only the final YES, NO, or UNKNOWN.",
@@ -282,18 +282,18 @@ test("Method explains the game before offering technical details", { tag: ["@fun
   await expect(page.locator(".method-details[open], .edition-comparison-details[open]")).toHaveCount(0);
   await expect(page.locator("#game .answer-meanings dt")).toHaveText(["Yes", "No", "Unknown"]);
   await expect(page.locator(".round-example")).toHaveAttribute(
-    "aria-label", "Illustrative round: Garfield identified with a trial score of 3",
+    "aria-label", "Illustrative round: Garfield identified with a round score of 3",
   );
   await expect(page.locator("#game")).toContainText("50 counted questions, followed by one final guess");
   await expect(page.locator(".answer-roles li")).toHaveCount(3);
   await expect(page.locator(".isolation-callout")).toContainText("stay private");
-  await expect(page.locator("#answer-checks > .editorial-copy")).toContainText("fresh web checks");
+  await expect(page.locator("#answer-checks > .editorial-copy")).toContainText("The transcript marks reused answers");
   await expect(page.locator(".score-rules")).toContainText("51 questions");
   await expect(page.locator("#repetition .lead")).toContainText("7 subjects 5 times each: 35 rounds in total");
   await expect(page.locator(".scope-note")).toContainText("do not rank general intelligence");
   await expect(page.locator(".scope-note")).toContainText("training data");
-  await expect(page.locator("#publication")).toContainText("not independently verified facts");
-  await expect(page.getByRole("link", { name: "read the build story on Medium" })).toHaveAttribute(
+  await expect(page.locator("#publication")).toContainText("not independently verified");
+  await expect(page.getByRole("link", { name: "read the story on Medium" })).toHaveAttribute(
     "href", "https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8",
   );
 
@@ -304,9 +304,9 @@ test("Method explains the game before offering technical details", { tag: ["@fun
   await expect(formulas.locator("math")).toHaveCount(3);
   await expect(formulas.locator(".standard-error-formula math")).toBeVisible();
   await expect(formulas.locator(".standard-error-formula math")).toHaveAttribute(
-    "aria-label", /sample trial variance divided by its trial count/,
+    "aria-label", /sample variance of round scores divided by its round count/,
   );
-  await expect(formulas).toContainText("not a pairwise significance test");
+  await expect(formulas).toContainText("is not a significance test");
   await expectNoViewportOverflow(page);
 });
 
@@ -334,7 +334,7 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(entries.nth(7).locator("time")).toHaveAttribute("datetime", "2026-09-05");
   await expect(entries.nth(7).locator("time")).toHaveText("5 September 2026");
   await expect(entries.nth(7)).toContainText("GPT-6 Astra (high) added.");
-  await expect(entries.nth(7)).toContainText("15.1 questions with 33 of 35 successful trials.");
+  await expect(entries.nth(7)).toContainText("15.1 (lower is better). It found the subject in 33 of 35 rounds.");
   await expect(entries.nth(7).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260904-official-M0022-001/",
@@ -342,7 +342,7 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(entries.nth(8).locator("time")).toHaveAttribute("datetime", "2026-09-04");
   await expect(entries.nth(8).locator("time")).toHaveText("4 September 2026");
   await expect(entries.nth(8)).toContainText("Gemini 3.8 Flash (high) added.");
-  await expect(entries.nth(8)).toContainText("13.1 questions with 35 of 35 successful trials.");
+  await expect(entries.nth(8)).toContainText("13.1 (lower is better). It found the subject in 35 of 35 rounds.");
   await expect(entries.nth(8).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260904-official-M0021-001/",
@@ -350,7 +350,7 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(entries.nth(9).locator("time")).toHaveAttribute("datetime", "2026-09-02");
   await expect(entries.nth(9).locator("time")).toHaveText("2 September 2026");
   await expect(entries.nth(9)).toContainText("Claude Fable 5.1 (high) added.");
-  await expect(entries.nth(9)).toContainText("12.1 questions with 34 of 35 successful trials.");
+  await expect(entries.nth(9)).toContainText("12.1 (lower is better). It found the subject in 34 of 35 rounds.");
   await expect(entries.nth(9).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260902-official-M0020-001/",
@@ -369,7 +369,7 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(entries.nth(11).locator("time")).toHaveText("23 August 2026");
   await expect(entries.nth(11)).toContainText("OpenRouter’s Ox Alpha (high) tested.");
   await expect(entries.nth(11)).toContainText(
-    "The Stealth-routed model won 32 of 35 trials and scored 17.6 questions, placing 12th of 15.",
+    "A stealth model offered through OpenRouter. Edition 1.0 question score: 17.6 (lower is better), 12th of 15 models at the time. It found the subject in 32 of 35 rounds.",
   );
   await expect(entries.nth(11).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
@@ -378,7 +378,7 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(entries.nth(12).locator("time")).toHaveAttribute("datetime", "2026-08-17");
   await expect(entries.nth(12).locator("time")).toHaveText("17 August 2026");
   await expect(entries.nth(12)).toContainText("Gemini 3.7 Flash (high) added.");
-  await expect(entries.nth(12)).toContainText("14.0 questions with 34 of 35 successful trials.");
+  await expect(entries.nth(12)).toContainText("14.0 (lower is better). It found the subject in 34 of 35 rounds.");
   await expect(entries.nth(12).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260817-official-M0016-015/",
@@ -386,7 +386,7 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(entries.nth(13).locator("time")).toHaveAttribute("datetime", "2026-08-15");
   await expect(entries.nth(13).locator("time")).toHaveText("15 August 2026");
   await expect(entries.nth(13)).toContainText("Grok 4.6 (high) added.");
-  await expect(entries.nth(13)).toContainText("14.3 questions with 35 of 35 successful trials.");
+  await expect(entries.nth(13)).toContainText("14.3 (lower is better). It found the subject in 35 of 35 rounds.");
   await expect(entries.nth(13).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260814-official-M0015-013/",
@@ -473,7 +473,7 @@ test("Data provides schema guidance, reuse terms, and next steps", { tag: ["@fun
     "href",
     /results\/$/,
   );
-  await expect(page.getByRole("link", { name: "Read the publication method" }))
+  await expect(page.getByRole("link", { name: "How results are published" }))
     .toHaveAttribute("href", /methodology\/#publication$/);
   await expectNoViewportOverflow(page);
 });
@@ -543,7 +543,7 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
     "middle",
   );
   await expect(
-    page.getByText("The 95% CI uses repeated seeded trials on this edition's fixed subjects"),
+    page.getByText("The 95% CI comes from repeated rounds on this edition's subjects"),
   ).toBeVisible();
 });
 
@@ -560,11 +560,11 @@ test("repeat-average controls remain unavailable", { tag: ["@functional", "@desk
     await waitForPublication(page);
 
     await expect(
-      page.getByRole("switch", { name: /Show repeat averages/ }),
+      page.getByRole("switch", { name: /Show averages by round/ }),
     ).toHaveCount(0);
     expect(repeatAverageRequests).toBe(0);
     await expect(page.locator(".score-dot-plot-caption")).not.toContainText(
-      "repeat average",
+      "average for one round number",
     );
     await expectNoViewportOverflow(page);
     page.off("request", countRepeatRequest);
@@ -587,12 +587,12 @@ test("result pages use shared metric names", { tag: ["@functional", "@desktop"] 
   await waitForPublication(page);
   const stability = page.locator("#route-content");
   await expect(stability.getByRole("heading", { name: "Stability" }).last()).toBeVisible();
-  await expect(stability).toContainText("Repeated-trial stability");
+  await expect(stability).toContainText("Stability across rounds");
   await expect(stability).not.toContainText("Repeated-run stability");
   const stabilityChart = stability.locator(".reliability-scatter-canvas");
   await expect(stabilityChart).toHaveAttribute(
     "aria-label",
-    /Question score and repeated-trial stability on the fixed subjects\./,
+    /Question score and stability across rounds on these subjects\./,
   );
   await expect(stabilityChart).not.toHaveAttribute("aria-label", /repeated-run stability/i);
   await expect(stability).toContainText("CI width");
@@ -735,10 +735,10 @@ test("workspace rows show persistent drill-down affordances", { tag: ["@function
   await expect(subjectArrows.first()).toBeVisible();
   if (!mobile) {
     await expect(page.locator(".subject-list-heading")).toContainText("Subjects");
-    await expect(page.locator(".status-legend")).toContainText("Clean");
-    await expect(page.locator(".status-legend")).toContainText("Breach");
+    await expect(page.locator(".status-legend")).toContainText("No format errors");
+    await expect(page.locator(".status-legend")).toContainText("Format errors");
     await expect(subjectLinks.first().locator(".visually-hidden")).toContainText(
-      "Contract status:",
+      "Format:",
     );
   }
 
@@ -750,7 +750,7 @@ test("workspace rows show persistent drill-down affordances", { tag: ["@function
   await expect(page).toHaveURL(new RegExp(`/subjects/${targetId}/$`));
   await waitForPublication(page);
   const episodeLinks = page.locator(".episode-list > a");
-  await expect(page.locator(".episode-list-heading")).toContainText("Episodes");
+  await expect(page.locator(".episode-list-heading")).toContainText("Rounds");
   await expect(page.locator(".episode-list-heading")).toContainText("choose one");
   await expect(page.locator(".episode-link-arrow")).toHaveCount(
     await episodeLinks.count(),
@@ -778,12 +778,12 @@ test("run overview explains its totals and keeps every subject row available", {
   await expect(page.locator(".run-workspace-hero")).toContainText("Official run");
   await expect(page.locator(".run-workspace-hero")).not.toContainText("Certified");
   await expect(page.locator(".run-deck")).toContainText(
-    `across ${runDocument.subjects.length} subjects`,
+    `: ${runDocument.subjects.length} subjects,`,
   );
   await expect(page.locator(".run-deck")).toContainText(
     "In this Twenty Questions LLM benchmark",
   );
-  await expect(page.locator(".run-deck")).toContainText("scored episodes");
+  await expect(page.locator(".run-deck")).toContainText("scored rounds");
 
   const roleGuide = page.locator(".role-guide");
   await expect(roleGuide.locator("dt")).toHaveText([
@@ -793,7 +793,7 @@ test("run overview explains its totals and keeps every subject row available", {
     "Judge",
     "Validator",
   ]);
-  await expect(roleGuide.getByRole("link", { name: /role and answer-checking/ }))
+  await expect(roleGuide.getByRole("link", { name: /roles and answer checks/ }))
     .toHaveAttribute("href", /methodology\/#answer-checks$/);
 
   const rail = page.locator(".model-rail");
@@ -888,7 +888,7 @@ test("run model roles separate the Guesser from game support", { tag: ["@functio
   await expect(page.locator(".support-model-grid > .run-model-card")).toHaveCount(4);
 
   const oracleLabels = cards.nth(1).locator("dt");
-  await expect(oracleLabels).toContainText(["Calls", "Prompt contract"]);
+  await expect(oracleLabels).toContainText(["Calls", "Prompt version"]);
 
   const boxes = await cards.evaluateAll((elements) =>
     elements.map((element) => {

@@ -105,7 +105,7 @@ test("data page keeps download, exploration, and reuse in one ordered flow", { t
     "Edition 1 data.",
   );
   await expect(page.locator(".data-lede")).toContainText(
-    "Deep20Bench publishes the data behind its leaderboard",
+    "Deep20Bench publishes all the data behind its leaderboard",
   );
   await expect(
     page
@@ -698,7 +698,7 @@ test("question score stays primary in charts and desktop leaderboards", { tag: [
     await expect(legend).toContainText("Question score");
     await expect(legend.locator("strong")).toHaveCSS("color", "rgb(12, 17, 27)");
     await expect(
-      page.getByText("The companion plot shows each exact CI width", {
+      page.getByText("The side plot shows each CI width", {
         exact: false,
       }).first(),
     ).toBeVisible();

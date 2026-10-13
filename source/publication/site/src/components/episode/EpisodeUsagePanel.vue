@@ -38,7 +38,7 @@ const evidenceCount = computed(() =>
 
 const telemetryRows = computed<TelemetryRow[]>(() => [
   { role: "Guesser", values: props.episode.telemetry.guesser },
-  { role: "Oracle support", values: props.episode.telemetry.oracle },
+  { role: "Oracle, Reviewer, Judge", values: props.episode.telemetry.oracle },
   { role: "Validator", values: props.episode.telemetry.validator },
 ]);
 </script>
@@ -55,11 +55,11 @@ const telemetryRows = computed<TelemetryRow[]>(() => [
       <header class="section-heading">
         <div>
           <p class="eyebrow">Technical details</p>
-          <h2 id="technical-heading">Episode usage.</h2>
+          <h2 id="technical-heading">Round usage.</h2>
         </div>
         <p>
-          Tokens, cache use, latency, and recorded cost for this episode. Model
-          configuration is shown on the Run overview.
+          Tokens, cache use, response time, and cost for this round. Model settings are
+          on the run overview.
         </p>
       </header>
 
@@ -74,15 +74,15 @@ const telemetryRows = computed<TelemetryRow[]>(() => [
           />
         </article>
         <article>
-          <span>Episode scope</span>
+          <span>Round total</span>
           <strong>
             {{ moneyEpisode(episode.total_cost_usd) }} across
             {{ episode.total_turns }} turns
           </strong>
           <p>
             Includes {{ evidenceCount }} evidence
-            {{ evidenceCount === 1 ? "item" : "items" }} and all model activity for this
-            episode.
+            {{ evidenceCount === 1 ? "item" : "items" }} and all model calls in this
+            round.
           </p>
           <RouterLink
             :to="{ name: 'run', params: { executionId: run.execution_id } }"
@@ -91,12 +91,12 @@ const telemetryRows = computed<TelemetryRow[]>(() => [
           </RouterLink>
         </article>
         <article>
-          <span>Public post-run view</span>
-          <strong>Published actions and rejected Guesser text</strong>
+          <span>What is published</span>
+          <strong>Questions, guesses, and rejected replies</strong>
           <p>
-            Questions, guesses, correctly formatted replies, and rejected Guesser text are public.
-            Answer-checking models' instructions, hidden reasoning, private IDs, and full
-            provider messages are excluded.
+            All Guesser questions, guesses, and rejected replies are public. The
+            answer-checking models' instructions, hidden reasoning, private IDs, and full
+            provider messages are not.
           </p>
         </article>
       </div>
@@ -147,7 +147,7 @@ const telemetryRows = computed<TelemetryRow[]>(() => [
         <summary>
           <span>
             <strong>IDs and timing</strong>
-            <small>Execution IDs, timestamps, and totals</small>
+            <small>Run IDs, timestamps, and totals</small>
           </span>
           <span aria-hidden="true">View ↓</span>
         </summary>
@@ -161,7 +161,7 @@ const telemetryRows = computed<TelemetryRow[]>(() => [
           <div><dt>Git commit</dt><dd><code>{{ run.git_commit }}</code></dd></div>
           <div><dt>Cache status</dt><dd>{{ statusLabel(episode.cache_status) }}</dd></div>
           <div><dt>Total tokens</dt><dd>{{ integer(episode.total_tokens) }}</dd></div>
-          <div><dt>Episode cost</dt><dd>{{ moneyEpisode(episode.total_cost_usd) }}</dd></div>
+          <div><dt>Round cost</dt><dd>{{ moneyEpisode(episode.total_cost_usd) }}</dd></div>
         </dl>
       </details>
     </div>

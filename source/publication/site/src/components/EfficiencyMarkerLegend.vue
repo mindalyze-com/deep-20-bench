@@ -4,7 +4,7 @@
       <i class="marker-symbol marker-symbol--pareto" aria-hidden="true"></i>
       <span>
         <strong>Diamond</strong>
-        Pareto-efficient - no other model is both cheaper and better
+        Pareto-efficient: no other model is both cheaper and better
       </span>
     </span>
     <span>

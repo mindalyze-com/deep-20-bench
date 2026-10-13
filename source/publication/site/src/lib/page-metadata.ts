@@ -9,7 +9,7 @@ export const applyPageMetadata = (
 
   const title = metadata?.browser_title ?? "Page not found · Deep20Bench";
   const description = metadata?.description ??
-    "The requested Deep20Bench page is not in the current publication.";
+    "This Deep20Bench page does not exist.";
   const canonicalUrl = metadata === undefined ? null : new URL(
     metadata.canonical_route === "" ? "" : `${metadata.canonical_route}/`,
     canonicalBase,

@@ -31,12 +31,12 @@ const violationTurns = computed(() =>
     <div class="content-inner">
       <header class="section-heading">
         <div>
-          <p class="eyebrow">Independent aspect</p>
-          <h2 id="reliability-heading">Output-contract reliability.</h2>
+          <p class="eyebrow">Reply format</p>
+          <h2 id="reliability-heading">Format errors.</h2>
         </div>
         <p>
-          Gameplay success and contract compliance are separate. Counted-turn penalties
-          already affect the question total; this section does not add another penalty.
+          This is separate from finding the subject. A reply in the wrong format already
+          used up a counted turn; nothing more is added here.
         </p>
       </header>
       <ContractMetrics class="reliability-grid" :contract="episode.contract" />
@@ -46,8 +46,8 @@ const violationTurns = computed(() =>
         aria-labelledby="violation-summary-title"
       >
         <header>
-          <p class="eyebrow">Recorded violations</p>
-          <h3 id="violation-summary-title">Where the contract broke.</h3>
+          <p class="eyebrow">Recorded errors</p>
+          <h3 id="violation-summary-title">Where the format was wrong.</h3>
         </header>
         <ol>
           <li v-for="turn in violationTurns" :key="turn.turn_number">
@@ -55,7 +55,7 @@ const violationTurns = computed(() =>
             <strong>{{ contractViolationDetails[turn.violation_kind].label }}</strong>
             <p>{{ contractViolationDetails[turn.violation_kind].description }}</p>
             <small>
-              {{ turn.counted ? `Counted as Q${turn.counted_questions}` : "No turn charge" }}
+              {{ turn.counted ? `Counted as question ${turn.counted_questions}` : "Not counted" }}
               · {{ turn.feedback_event ?? "No retry" }}
             </small>
           </li>

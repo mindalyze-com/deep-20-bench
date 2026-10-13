@@ -8,7 +8,7 @@ import type { ContractReliability } from "@/lib/types";
 const props = withDefaults(
   defineProps<{
     contract: ContractReliability;
-    affectedUnit: "episodes" | "attempts";
+    affectedUnit: "rounds";
     headingLevel?: "h2" | "h3";
     exampleTo?: RouteLocationRaw | null;
   }>(),
@@ -19,32 +19,26 @@ const props = withDefaults(
 );
 
 const heading = computed(() => {
-  if (props.contract.status === "breached") return "Output contract breached.";
-  if (props.contract.status === "clean") return "Output contract clean.";
-  return "Output contract not evaluable.";
+  if (props.contract.status === "breached") return "Format errors found.";
+  if (props.contract.status === "clean") return "No format errors.";
+  return "Format not checked.";
 });
 </script>
 
 <template>
   <section class="contract-status-card" :data-status="contract.status">
-    <p class="eyebrow">Reliability</p>
+    <p class="eyebrow">Reply format</p>
     <component :is="headingLevel">{{ heading }}</component>
     <p v-if="contract.status === 'breached'">
-      {{ formatCount(contract.violations, "invalid output") }} affected
-      {{
-        formatCount(
-          contract.affected_trials,
-          affectedUnit === "episodes" ? "episode" : "attempt",
-        )
-      }}
-      and consumed {{ formatCount(contract.counted_penalties, "counted turn") }}.
+      {{ formatCount(contract.violations, "invalid reply", "invalid replies") }} in
+      {{ formatCount(contract.affected_trials, "round") }} used up
+      {{ formatCount(contract.counted_penalties, "counted turn") }}.
     </p>
     <p v-else-if="contract.status === 'clean'">
-      All {{ contract.evaluated_outputs }} evaluated outputs matched the public
-      structured-action contract.
+      All {{ contract.evaluated_outputs }} checked replies used the required format.
     </p>
     <p v-else>
-      No structured outputs were available for contract evaluation.
+      No replies were available to check.
     </p>
     <RouterLink
       v-if="contract.status === 'breached' && exampleTo"

@@ -27,8 +27,8 @@ const { error } = usePublicationLoad(async () => {
         <div id="editions" class="edition-comparison-body">
           <p class="eyebrow">Benchmark editions</p>
           <h2>What changed in 1.1</h2>
-          <p>Version 1.0 uses Yes, No, and Unknown for factual questions. Version 1.1 adds
-            Rather yes and Rather no, so an answer can lean one way when the evidence is incomplete.</p>
+          <p>Version 1.0 answers questions with Yes, No, or Unknown. Version 1.1 adds Rather
+            yes and Rather no, so an answer can lean one way when the evidence is incomplete.</p>
           <p v-if="error" role="alert">{{ error }}</p>
           <table v-else>
             <caption class="visually-hidden">Comparison of published benchmark definitions</caption>
@@ -39,25 +39,24 @@ const { error } = usePublicationLoad(async () => {
               <tr><th scope="row">Rounds per subject</th><td v-for="document in documents" :key="document.edition_id">{{ document.active_cohort.iterations }}</td></tr>
               <tr><th scope="row">Question limit</th><td v-for="document in documents" :key="document.edition_id">{{ document.active_cohort.max_questions }}</td></tr>
               <tr><th scope="row">Failure score</th><td v-for="document in documents" :key="document.edition_id">{{ document.active_cohort.max_questions + document.score_policy.failure_penalty_offset }}</td></tr>
-              <tr><th scope="row">Review rules</th><td v-for="document in documents" :key="document.edition_id">{{ document.active_cohort.eligibility.kind === 'qualified_release' ? 'Evidence or model knowledge under the recorded rules; any difference in answers goes to the Judge' : 'Evidence first; limited use of model knowledge for settled facts' }}</td></tr>
+              <tr><th scope="row">Review rules</th><td v-for="document in documents" :key="document.edition_id">{{ document.active_cohort.eligibility.kind === 'qualified_release' ? 'Evidence or model knowledge, as each run records; any disagreement goes to the Judge' : 'Evidence first; model knowledge only for settled facts' }}</td></tr>
               <tr><th scope="row">Guess validation</th><td v-for="document in documents" :key="document.edition_id">Yes, No, Unknown</td></tr>
             </tbody>
           </table>
           <div class="answer-rationale" aria-labelledby="qualified-answers-title">
             <h3 id="qualified-answers-title">Why add Rather yes and Rather no?</h3>
-            <p>Web evidence can favor an answer without fully establishing the exact claim.
-              With three answers, Unknown loses that useful direction, while a firm Yes or No
-              can overstate what the evidence supports. The two additional answers make that
-              gap explicit.</p>
-            <p>The aim is to retain useful partial evidence without treating it as certainty.
-              Whether this improves gameplay needs testing; adding possible answers alone does
-              not prove better accuracy.</p>
+            <p>Web evidence often points one way without fully proving the claim. With only
+              three answers, Unknown throws that hint away, while a firm Yes or No can claim
+              more than the evidence shows. The two new answers keep the hint and mark it as
+              uncertain.</p>
+            <p>Whether this improves the game still needs testing. More answer options alone
+              do not prove better accuracy.</p>
           </div>
-          <p>Edition 1.1 also revises the question strategy instructions and adds a fixed guide to
-            category meanings. Scores, uncertainty, costs, and efficiency are calculated within
-            each edition. Both use the same scoring formula, giving each subject equal weight. Because
-            subjects, trial counts, limits, and prompts also differ, a score difference across
-            editions cannot isolate the effect of the new answers or establish model improvement.</p>
+          <p>Edition 1.1 also revises the Guesser's strategy instructions and adds a fixed guide
+            to what each category means. Scores, uncertainty, costs, and efficiency are calculated
+            separately for each edition, with the same formula and equal subject weights. Because
+            the subjects, round counts, limits, and prompts also differ, a score difference between
+            editions cannot show the effect of the new answers or that a model improved.</p>
         </div>
       </details>
     </div>

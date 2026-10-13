@@ -20,7 +20,7 @@ test("historical answer source is visible and expandable @both @smoke", async ({
   await waitForPublication(page);
   await page.getByRole("tab", { name: /Transcript/i }).click();
   const source = page.getByRole("complementary", { name: "Historical answer source" });
-  await expect(source.getByText("Answer from an earlier test")).toBeVisible();
+  await expect(source.getByText("Answer reused from an earlier benchmark run")).toBeVisible();
   await source.getByText("View original response").click();
   await expect(source.getByText("BX-earlier-response-source")).toBeVisible();
   await expect(source.getByText("The original historical question?")).toBeVisible();

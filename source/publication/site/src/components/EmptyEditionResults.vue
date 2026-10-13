@@ -10,8 +10,8 @@ const other = computed(() => editionsIndex.value?.editions.find(edition =>
     <div>
       <p class="eyebrow">Edition {{ cohort.edition_label }}</p>
       <h2>No complete {{ cohort.edition_label }} results yet</h2>
-      <p>A model result appears after all {{ cohort.target_ids.length * cohort.iterations }} rounds
-        have completed. Earlier diagnostic games remain outside this ranking.</p>
+      <p>A model appears here after all {{ cohort.target_ids.length * cohort.iterations }} of its
+        rounds are complete. Test games played before that are not ranked.</p>
     </div>
     <RouterLink v-if="other" class="button button-primary"
       :to="{ name: 'results', params: { editionId: other.edition_id } }">

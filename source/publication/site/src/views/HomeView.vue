@@ -125,10 +125,10 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <h1>How well can AI models play Twenty Questions?</h1>
             <p class="hero-lead">
               Deep20Bench is a public benchmark for large language models (LLMs). It measures how
-              many questions they need to identify a hidden subject - a person, character, or
-              thing. Each question builds on earlier answers.
-              <template v-if="qualified">Answers are Yes, Rather yes, Rather no, or No,
-                with Unknown when there is not enough clear information to answer.</template>
+              many questions a model needs to identify a hidden subject: a person, character, or
+              thing.
+              <template v-if="qualified">Answers are Yes, Rather yes, Rather no, No, or
+                Unknown when the information is unclear.</template>
               <template v-else>Answers are Yes, No, or Unknown.</template>
             </p>
             <div class="hero-actions">
@@ -142,30 +142,30 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <article>
               <p class="hero-detail-label">How scoring works</p>
               <p>
-                The model is told nothing but the broad category (for example, "video game
-                character") and gets up to {{ manifest.active_cohort.max_questions }} questions -
-                more than the traditional twenty, giving models more room to finish a round. Each
-                question, wrong guess, or reply that does not follow the required format adds one
-                point. If the model never finds the answer, the round scores
-                {{ failurePenalty }}. Scores are averaged across all rounds, and lower is better.
+                The model only knows a broad category, such as "video game character". It gets
+                up to {{ manifest.active_cohort.max_questions }} questions,
+                more than the traditional twenty, so more rounds can finish. Each question, wrong guess, or reply
+                in the wrong format adds one point. If the model never finds the subject, the
+                round scores {{ failurePenalty }}. Scores are averaged over all rounds; lower is
+                better.
               </p>
             </article>
             <article class="hero-pilot-note">
-              <p class="hero-detail-label">Current tests</p>
+              <p class="hero-detail-label">This edition</p>
               <p v-if="evaluated.length > 0">
-                All results, game transcripts, and scoring data are public. This edition
-                compares {{ evaluated.length }} model versions and settings across
+                This edition compares {{ evaluated.length }} models on
                 {{ countWord(manifest.active_cohort.target_ids.length) }} subjects, with
-                {{ countWord(manifest.active_cohort.iterations) }} rounds per subject. Each edition has its own comparison settings and results.
+                {{ countWord(manifest.active_cohort.iterations) }} rounds per subject. All
+                results, transcripts, and scoring data are public. Each edition has its own comparison settings and results.
               </p>
               <p v-else>
-                Edition {{ manifest.active_cohort.edition_label }} is ready for full runs:
+                Edition {{ manifest.active_cohort.edition_label }} has
                 {{ manifest.active_cohort.target_ids.length }} subjects, with
-                {{ manifest.active_cohort.iterations }} rounds per subject. No complete model
-                result has been published for this edition yet. Edition 1 results remain available.
+                {{ manifest.active_cohort.iterations }} rounds per subject. No model has a
+                complete result yet. Edition 1 results are still available.
               </p>
               <div class="hero-discussions">
-                <p>Use GitHub Discussions to suggest what we should test next.</p>
+                <p>Suggest what we should test next on GitHub Discussions.</p>
                 <div class="hero-discussion-links">
                   <a
                     href="https://github.com/mindalyze-com/deep-20-bench/discussions"
@@ -201,7 +201,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <article>
               <span>01</span>
               <h3>World knowledge</h3>
-              <p>Know which categories and facts are useful.</p>
+              <p>Know which facts help narrow down the subject.</p>
             </article>
             <article>
               <span>02</span>
@@ -216,35 +216,34 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <article>
               <span>04</span>
               <h3>Knowing when to guess</h3>
-              <p>Make an exact guess before the limit.</p>
+              <p>Guess at the right moment, before the limit.</p>
             </article>
           </div>
           <div class="adjudication">
             <div>
               <p class="eyebrow">How the game is played</p>
-              <h3>The Guesser asks. Three roles determine the answer.</h3>
+              <h3>The Guesser asks. Other models answer and check.</h3>
             </div>
             <div class="adjudication-summary">
               <p v-if="qualified">
                 The Guesser is the model being tested: it asks questions and makes the final guess.
-                For a new answer, the Oracle uses web research and, when the run's rules allow it, its
-                own knowledge. A Reviewer checks every answer except Unknown without seeing
-                the Oracle's answer. If their answers differ, a Judge decides without seeing
-                either answer. The Guesser receives only the final answer.
+                The Oracle answers using web research and, if the run's rules allow, its own
+                knowledge. A Reviewer checks every answer except Unknown without seeing the
+                Oracle's answer. If they disagree, a Judge decides without seeing either answer.
+                The Guesser receives only the final answer.
               </p>
               <p v-else>
                 The Guesser is the model being tested: it asks yes-or-no questions and makes the final
-                guess. For every question, the Oracle must search the live web and cite evidence
-                instead of relying on memory. A Reviewer checks every YES or NO using that
-                evidence without seeing the Oracle's answer. If their answers differ, a
-                Judge decides without seeing either answer. The Guesser receives only the
-                final YES, NO, or UNKNOWN.
+                guess. For every question, the Oracle searches the web and cites evidence instead
+                of relying on memory. A Reviewer checks every YES or NO against that evidence
+                without seeing the Oracle's answer. If they disagree, a Judge decides without
+                seeing either answer. The Guesser receives only the final YES, NO, or UNKNOWN.
               </p>
               <RouterLink
                 class="text-link"
                 :to="editionRoute('methodology', { hash: '#answer-checks' })"
               >
-                Read the full game and answer-checking method →
+                How the game and answer checks work →
               </RouterLink>
             </div>
           </div>
@@ -411,7 +410,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
               <p class="eyebrow">How to read the results</p>
               <h2>Same test setup, limited conclusions.</h2>
             </div>
-            <p>We test only a small set of subjects. The setup and game records are public so you can check the results.</p>
+            <p>We test only a small set of subjects. The setup and all game records are public, so you can check the results.</p>
           </header>
           <div class="trust-grid">
             <article>
@@ -422,12 +421,12 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <article>
               <span>02</span>
               <h3>Failures stay visible</h3>
-              <p>Failed rounds receive a fixed score. Replies in the wrong format use up a turn.</p>
+              <p>A failed round gets a fixed score. A reply in the wrong format uses up a turn.</p>
             </article>
             <article>
               <span>03</span>
               <h3>Public records</h3>
-              <p>Each model's results link to its subjects, rounds, questions and answers, sources, costs, and times.</p>
+              <p>Each model's results link to every subject, round, question, answer, source, cost, and time.</p>
             </article>
           </div>
         </div>
@@ -437,7 +436,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
         <div class="origin-strip-inner site-boundary">
           <div>
             <p class="eyebrow">Origin</p>
-            <h2>From a holiday game to a prototype.</h2>
+            <h2>From a holiday game to a benchmark.</h2>
           </div>
           <div>
             <p>

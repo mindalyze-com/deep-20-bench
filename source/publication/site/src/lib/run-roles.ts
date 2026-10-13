@@ -10,7 +10,7 @@ export const runRoleCopy: Readonly<Record<PublicRunModel["role"], RunRoleCopy>> 
   guesser: {
     costLabel: "Guesser",
     roleLabel: "Guesser",
-    description: "Asks the questions and submits the scored guess.",
+    description: "The tested model. Asks questions and makes guesses.",
   },
   oracle: {
     costLabel: "Primary Oracle",
@@ -20,7 +20,7 @@ export const runRoleCopy: Readonly<Record<PublicRunModel["role"], RunRoleCopy>> 
   reviewer: {
     costLabel: "Reviewer",
     roleLabel: "Reviewer",
-    description: "Checks each Oracle YES or NO independently.",
+    description: "Checks each Oracle answer except Unknown, without seeing it.",
   },
   judge: {
     costLabel: "Judge",
@@ -30,7 +30,7 @@ export const runRoleCopy: Readonly<Record<PublicRunModel["role"], RunRoleCopy>> 
   validator: {
     costLabel: "Validator",
     roleLabel: "Guess Validator",
-    description: "Checks a submitted guess against the trusted subject.",
+    description: "Checks whether a guess names the hidden subject.",
   },
 };
 

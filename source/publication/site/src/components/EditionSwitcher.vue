@@ -23,9 +23,9 @@ const handleToggle = (): void => {
   if (!picker.value?.open) resetPreview();
 };
 const notices: Record<string, string> = {
-  "missing-model": "This model has no complete result in the selected edition. Showing its results overview.",
+  "missing-model": "This model has no complete result in the selected edition. Showing the results overview.",
   "missing-subject": "This subject is not in the selected edition. Showing the model's run.",
-  "episode-scope": "Rounds from different editions are separate games. Showing the subject's results.",
+  "episode-scope": "Rounds in different editions are separate games. Showing the subject instead.",
 };
 const notice = computed(() => typeof route.query.editionNotice === "string"
   ? notices[route.query.editionNotice] : undefined);

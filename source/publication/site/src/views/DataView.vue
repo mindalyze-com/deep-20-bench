@@ -44,12 +44,13 @@ const { loading, error } = usePublicationLoad(async () => {
           </div>
           <div class="lede data-lede">
             <p>
-              Deep20Bench publishes the data behind its leaderboard, not only average scores:
-              runs, trials, transcripts, evidence, outcomes, cost, and timing.
+              Deep20Bench publishes all the data behind its leaderboard, not only the averages:
+              runs, rounds, transcripts, evidence, outcomes, cost, and timing.
             </p>
             <p>
-              Project-authored result data and documentation use
+              Project-authored result data and documentation are licensed under
               <a :href="dataLicenseResource.href">CC BY 4.0</a> and may be reused with attribution.
+              Evidence excerpts from third-party sources are not covered.
             </p>
             <ul aria-label="What the public data supports">
               <li>Trace each published result.</li>
@@ -65,11 +66,11 @@ const { loading, error } = usePublicationLoad(async () => {
           <header class="section-heading">
             <div>
               <p class="eyebrow flow-step"><span>01</span> Choose a format</p>
-              <h2 id="download-title">Start with the file that fits your task.</h2>
+              <h2 id="download-title">Pick the file you need.</h2>
             </div>
             <p>
-              JSON carries the complete public record, CSV carries the current rankings, and the
-              schema validates the JSON dataset.
+              The JSON file has the complete public record. The CSV file has the current
+              rankings. The schema describes and validates the JSON file.
             </p>
           </header>
 
@@ -89,7 +90,7 @@ const { loading, error } = usePublicationLoad(async () => {
             <article class="card download-card">
               <p class="file-type">CSV · UTF-8</p>
               <h3>Leaderboard table</h3>
-              <p>One row per model with a selected complete run.</p>
+              <p>One row per ranked model.</p>
               <a
                 class="button button-secondary"
                 :href="editionDownloadUrl('leaderboard.csv')"
@@ -101,7 +102,7 @@ const { loading, error } = usePublicationLoad(async () => {
             <article class="card download-card">
               <p class="file-type">JSON Schema · draft 2020-12</p>
               <h3>Public data schema</h3>
-              <p>The file structure, required fields, and allowed values for data format v10.</p>
+              <p>The structure, required fields, and allowed values of data format v10.</p>
               <a
                 class="button button-secondary"
                 :href="editionDownloadUrl('deep20bench-v10.schema.json')"
@@ -116,11 +117,11 @@ const { loading, error } = usePublicationLoad(async () => {
 
       <section class="content-section" aria-label="Version 9 compatibility">
         <div class="content-inner">
-          <h2>Existing v9 download</h2>
+          <h2>Older v9 download</h2>
           <p>The <a :href="publicDownloadUrl('deep20bench-v9.json')">v9 dataset</a> and
-            <a :href="publicDownloadUrl('deep20bench-v9.schema.json')">v9 schema</a> remain maintained
-            for edition 1. Version 9 cannot represent both editions or transcripts with Rather yes and Rather no answers.
-            Edition 1.1 results are available in its schema 10 download above.</p>
+            <a :href="publicDownloadUrl('deep20bench-v9.schema.json')">v9 schema</a> are still
+            updated for edition 1. Version 9 cannot hold both editions or Rather yes and Rather no
+            answers, so edition 1.1 results are only in the v10 download above.</p>
         </div>
       </section>
       <section class="content-section flow-stage" aria-labelledby="field-guide-title">
@@ -130,32 +131,32 @@ const { loading, error } = usePublicationLoad(async () => {
               <p class="eyebrow flow-step"><span>02</span> Explore the file</p>
               <h2 id="field-guide-title">Find the main records.</h2>
             </div>
-            <p>These four paths cover rankings, runs, trials, and episode transcripts.</p>
+            <p>These four paths cover rankings, runs, rounds, and transcripts.</p>
           </header>
 
           <div class="field-guide">
             <dl class="field-paths">
               <div>
                 <dt><code>leaderboard[]</code></dt>
-                <dd>Ranks, model identity, question score, success, reliability, cost, and time.</dd>
+                <dd>Ranks, models, question scores, success, format errors, cost, and time.</dd>
               </div>
               <div>
                 <dt><code>official_runs[]</code></dt>
-                <dd>Full selected runs with configuration, totals, subjects, and component models.</dd>
+                <dd>Each ranked run in full: settings, totals, subjects, and all models used.</dd>
               </div>
               <div>
                 <dt><code>subjects[].trials[]</code></dt>
-                <dd>Trial outcomes, counted questions, penalties, cost, duration, and contract status.</dd>
+                <dd>Each round's outcome, counted questions, score, cost, duration, and format errors.</dd>
               </div>
               <div>
                 <dt><code>trials[].episode</code></dt>
-                <dd>Questions and answers, public evidence, usage, timing, and visible format errors.</dd>
+                <dd>The round transcript: questions, answers, evidence, usage, timing, and format errors.</dd>
               </div>
             </dl>
             <div class="query-example">
               <div>
                 <p class="eyebrow">Example query</p>
-                <p>Print leaderboard rank, model name, and exact question score.</p>
+                <p>Print each model's rank, name, and exact question score.</p>
               </div>
               <pre><code>jq -r '.leaderboard[] | [.rank, .model.display_name, .question_score] | @tsv' deep20bench-v10.json</code></pre>
             </div>
@@ -170,7 +171,7 @@ const { loading, error } = usePublicationLoad(async () => {
               <p class="eyebrow flow-step"><span>03</span> Verify and reuse</p>
               <h2 id="release-title">Check the release details.</h2>
             </div>
-            <p>Review what went into this build, then cite it and reuse it.</p>
+            <p>See what went into this build, then cite and reuse it.</p>
           </header>
 
           <dl class="stats-grid release-facts" aria-label="Build details">
@@ -179,7 +180,7 @@ const { loading, error } = usePublicationLoad(async () => {
               <dd>{{ manifest.provenance.source_run_count }}</dd>
             </div>
             <div>
-              <dt>Selected official runs</dt>
+              <dt>Ranked official runs</dt>
               <dd>{{ manifest.provenance.official_run_count }}</dd>
             </div>
             <div>
@@ -210,31 +211,31 @@ const { loading, error } = usePublicationLoad(async () => {
           <section class="data-contract" aria-labelledby="contract-title">
             <div class="contract-intro">
               <p class="eyebrow">Contents</p>
-              <h3 id="contract-title">Public and excluded.</h3>
+              <h3 id="contract-title">What is and is not published.</h3>
             </div>
             <div class="contract-body">
               <div class="contract-columns">
                 <article>
                   <h4>Included</h4>
                   <p>
-                    IDs, model settings, scores, outcomes, costs, timestamps, source commit,
-                    contract reliability, typed transcripts, published Oracle evidence, and
-                    source attribution for reused answers. Contract-violation records may
-                    include captured visible Guesser text, including invalid output.
+                    IDs, model settings, scores, outcomes, costs, timestamps, the source code
+                    commit, format errors, transcripts, Oracle evidence, and the source of each
+                    reused answer. Format error records can include the Guesser's invalid
+                    reply text.
                   </p>
                 </article>
                 <article>
                   <h4>Excluded</h4>
                   <p>
-                    Answer-checking models' instructions, raw responses and internal decisions, hidden reasoning,
-                    full provider payloads, credentials, headers, sessions, and private subject
-                    state. Owner-only diagnostic files are not published.
+                    The answer-checking models' instructions, raw responses, and internal
+                    decisions; hidden reasoning; full provider messages; credentials; and private
+                    subject data. Private diagnostic files are not published.
                   </p>
                 </article>
               </div>
               <p class="publisher-note">
-                The publisher reads completed signed run files. It makes no model calls and does
-                not change source runs.
+                The site is built from finished, signed run files. Building it makes no model
+                calls and does not change the run files.
               </p>
             </div>
           </section>
@@ -251,16 +252,16 @@ const { loading, error } = usePublicationLoad(async () => {
               </a>
             </article>
             <article class="card">
-              <p class="eyebrow">Data licence</p>
+              <p class="eyebrow">Data license</p>
               <h3>CC BY 4.0</h3>
-              <p>Project-authored result data may be reused with attribution.</p>
+              <p>Project-authored result data may be reused with attribution. Third-party evidence excerpts are excluded.</p>
               <a :href="dataLicenseResource.href" target="_blank" rel="noreferrer">
                 {{ dataLicenseResource.label }} ↗
               </a>
             </article>
             <article class="card">
-              <p class="eyebrow">Software licence</p>
-              <h3>Source-available software</h3>
+              <p class="eyebrow">Software license</p>
+              <h3>Source available</h3>
               <p>{{ softwareLicenseDescription }}</p>
               <a :href="softwareLicenseResource.href" target="_blank" rel="noreferrer">
                 {{ softwareLicenseResource.label }} ↗
@@ -284,7 +285,7 @@ const { loading, error } = usePublicationLoad(async () => {
               class="button button-secondary"
               :to="editionRoute('methodology', { hash: '#publication' })"
             >
-              Read the publication method →
+              How results are published →
             </RouterLink>
           </div>
         </nav>

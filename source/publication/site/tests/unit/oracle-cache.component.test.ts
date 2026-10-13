@@ -49,7 +49,7 @@ describe("historical Oracle answers", () => {
     };
     const wrapper = mount(EpisodeTranscriptPanel, { props: { episode } });
     const source = wrapper.get('[aria-label="Historical answer source"]');
-    expect(source.text()).toContain("Answer from an earlier test");
+    expect(source.text()).toContain("Answer reused from an earlier benchmark run");
     expect(source.text()).toContain("BX-earlier-source");
     expect(source.text()).toContain("trial-002 / 7");
     expect(source.text()).toContain("The ORIGINAL question?");
@@ -70,7 +70,7 @@ describe("historical Oracle answers", () => {
     expect(source.text()).toContain("Answer reused from turn 1 of this game");
     expect(source.text()).toContain("The original live question?");
     expect(source.get("button").text()).toBe("Go to turn 1");
-    expect(source.text()).not.toContain("earlier test");
+    expect(source.text()).not.toContain("earlier benchmark run");
     for (const evidence of turn.evidence) expect(wrapper.text()).toContain(evidence.excerpt);
   });
   test("leaves fresh historical transcripts unmarked", () => {

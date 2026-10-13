@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { contractPercent, statusLabel } from "@/lib/format";
+import { contractPercent, contractStatusLabel } from "@/lib/format";
 import type { ContractReliability } from "@/lib/types";
 
 const props = withDefaults(
@@ -15,25 +15,25 @@ const props = withDefaults(
 const metrics = computed(() => {
   const shared = [
     {
-      label: "Compliance",
+      label: "Valid format",
       value: contractPercent(
         props.contract.compliance_rate,
         props.contract.violations,
       ),
     },
-    { label: "Violations", value: String(props.contract.violations) },
+    { label: "Format errors", value: String(props.contract.violations) },
     {
-      label: props.compact ? "Turn penalties" : "Counted-turn penalties",
+      label: "Turns used by format errors",
       value: String(props.contract.counted_penalties),
     },
   ];
   return props.compact
     ? shared
     : [
-        { label: "Status", value: statusLabel(props.contract.status) },
-        { label: "Valid outputs", value: String(props.contract.valid_outputs) },
+        { label: "Status", value: contractStatusLabel(props.contract.status) },
+        { label: "Valid replies", value: String(props.contract.valid_outputs) },
         {
-          label: "Evaluated outputs",
+          label: "Checked replies",
           value: String(props.contract.evaluated_outputs),
         },
         ...shared,

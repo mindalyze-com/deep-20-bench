@@ -28,7 +28,7 @@ export interface PageRouteContext {
 }
 
 const defaultDescription =
-  "Compare AI models in a public Twenty Questions LLM benchmark measuring question strategy, multi-turn reasoning, state tracking, reliability, cost, and runtime.";
+  "Compare AI models playing Twenty Questions: how well they ask questions, use earlier answers, follow the reply format, and what they cost.";
 
 const state = reactive<RouteContext>({
   title: "Deep20Bench",

@@ -20,7 +20,7 @@ import {
   money,
   moneyEpisode,
   number,
-  statusLabel,
+  outcomeLabel,
 } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import { episodeRoute, runRoute, subjectRoute } from "@/lib/route-location";
@@ -94,7 +94,7 @@ const applySubjectContext = (): void => {
   const nextSubject = subjects.value[index + 1];
   setRouteContext({
     title: currentSubject.display_name,
-    description: `${currentSubject.display_name} attempts in ${currentRun.model_name}.`,
+    description: `${currentRun.model_name} rounds for ${currentSubject.display_name}.`,
     level: "Subject workspace",
     position: `${index + 1} of ${subjects.value.length}`,
     crumbs: [
@@ -140,7 +140,7 @@ episodeView.preload();
     <ErrorState v-else-if="error && document === null" :message="error" />
 
     <template v-else-if="run && subject && profile">
-      <aside class="episode-rail" aria-label="Episodes for this subject">
+      <aside class="episode-rail" aria-label="Rounds for this subject">
         <header class="episode-rail-heading">
           <RouterLink
             class="mobile-run-back"
@@ -168,7 +168,7 @@ episodeView.preload();
             <dl>
               <div><dt>Solved</dt><dd>{{ subject.successful }}/{{ run.iterations }}</dd></div>
               <div>
-                <dt>Contract</dt>
+                <dt>Valid format</dt>
                 <dd>
                   {{
                     contractPercent(
@@ -182,11 +182,11 @@ episodeView.preload();
           </div>
         </header>
 
-        <nav class="episode-list" aria-label="Episodes for this subject">
+        <nav class="episode-list" aria-label="Rounds for this subject">
           <div class="episode-list-heading">
             <p class="eyebrow rail-section-label">
               <span aria-hidden="true">02</span>
-              Episodes
+              Rounds
             </p>
             <strong>{{ trials.length }} · choose one</strong>
           </div>
@@ -202,7 +202,7 @@ episodeView.preload();
           >
             <span class="episode-index">{{ String(trial.trial_number).padStart(2, "0") }}</span>
             <span class="episode-copy">
-              <strong>{{ statusLabel(trial.status) }}</strong>
+              <strong>{{ outcomeLabel(trial.status) }}</strong>
               <small>
                 {{ trial.counted_questions }} questions · {{ duration(trial.duration_ms) }}
                 · {{ moneyEpisode(trial.cost_usd) }}

@@ -1,10 +1,5 @@
 # Benchmark edition design record
 
-Edition 1.2 is an explicit, inactive [backend refactor draft](edition-1.2-draft.md).
-`config/editions.yaml` is the shared registry. It leaves 1.1 current and 1.0 previous.
-Private draft execution and preview do not activate a public edition or alter released
-qualification rules. Activation requires a separate publication decision.
-
 Status: implemented locally on 6 September 2026. This file preserves the original proposal,
 including its pre-implementation repository snapshot and planned work. It is a historical
 design record, not the current implementation guide. Present and future tense below refer
@@ -15,6 +10,11 @@ Both editions, qualification checks, scoped data, compatible v9 export, selector
 and empty states are implemented. Release prompt/configuration pins remain separate from
 later execution defaults, including the newer Judge and Validator policies. The public
 Methodology now includes the [qualified-answer rationale](five-answer-experiment.md#why-add-qualified-answers).
+
+Edition 1.2 is a separate, inactive [backend refactor draft](edition-1.2-draft.md).
+`config/editions.yaml` is the shared registry. It leaves 1.1 current and 1.0 previous.
+Private draft execution and preview do not activate a public edition or alter released
+qualification rules. Activation requires a separate publication decision.
 
 ## Historical proposal - 6 September 2026
 

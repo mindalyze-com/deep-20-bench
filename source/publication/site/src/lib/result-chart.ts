@@ -36,4 +36,4 @@ export const leaderboardScoreDot = (
 };
 
 export const questionScoreChartSummary =
-  "Lower is better. The blue marker is the average question score. The colored line is its 95% confidence interval (CI). The companion plot shows each exact CI width. Its three bands divide the displayed width scale into equal ranges.";
+  "Lower is better. The blue marker is the average question score. The colored line is its 95% confidence interval (CI). The side plot shows each CI width, with three color bands of equal size.";

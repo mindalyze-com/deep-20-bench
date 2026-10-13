@@ -1,5 +1,19 @@
 # Benchmark control plane
 
+`deep20-benchmark` is the top-level package that runs benchmarks. Each run applies a benchmark
+definition to exactly one registered Guesser configuration. It saves every round as it
+finishes, publishes live typed state, aggregates the model's results, renders summaries, and
+returns one complete, immutable `BenchmarkResult`.
+
+Dependencies go one way:
+
+```text
+deep20-benchmark → deep20-game → deep20-oracle
+```
+
+Lower packages receive typed protocols for saving and observation. They never choose benchmark
+paths, configure logging, or write routine benchmark `INFO` lines.
+
 ## Released edition launches
 
 Edition **1.1 is official**: five ASK answers (YES, NO, UNKNOWN, RATHER_YES, RATHER_NO),
@@ -35,70 +49,59 @@ uv run deep20 benchmark compare path/to/first/manifest.json path/to/second/manif
 Historical runs without edition metadata need manual contract checks. For controlled comparisons,
 also match the history cutoff or disable ASK reuse; live sources and providers may change.
 
-The inactive [edition 1.2 draft](../../../documentation/edition-1.2-draft.md) uses this same
-control plane with per-role OpenRouter, Ollama, interactive and mock implementations.
-Select it explicitly with `--edition 1.2`; role settings use `--runtime-config`.
-`preview` is offline. Draft paid runs require `--live --budget-usd N`; all-mock runs are
-offline. `work` operates the private request queue. Defaults remain three iterations and the
-released OpenRouter path. Draft artifacts use version 4 under `private/editions/1.2/`;
-released version-3 artifacts retain their existing paths and readers.
+## Current policies
 
-For a Guesser-free replay of recorded questions against the current Oracle pipeline, use
-`deep20 benchmark replay-oracle`. See [Oracle question replay](../../../documentation/oracle-question-replay.md)
-for the Astra five-answer source, preview, filters, private comparison reports, and continuation.
-
-New B-0003 executions use `concise_knowledge_v1`: one research attempt requesting
-`research_query_target` queries (default 3), with an API ceiling calculated as the target plus
-two bonus calls. Valid completed answers within that ceiling retain normal independent
-evidence/knowledge decisions and private `evidence`/`other` basis plus a supporting statement. This policy permits source-free directional answers
-and retained UNKNOWN context; the earlier evidence/recovery rules below describe historical
-policies. See [the current policy](../../../documentation/five-answer-experiment.md#concise-evidenceknowledge-policy).
-
-
-Benchmark executions support [historical Oracle answer reuse](../../../documentation/oracle-history-cache.md) under the explicit
-`historical_ask_v1`, `same_episode_ask_v1`, and `same_execution_ask_v1` policies. The benchmark
-lazily loads verified historical trials and adds eligible live ASK answers after each completed,
-scoring-eligible game. Later repetitions reuse these answers; resume restores them from verified
-trial artifacts. The engine also stores answers immediately for normalized repeats within one
-game. Repeats still count as questions. Reused ASK turns retain original evidence and marked
-source provenance, with no new adjudicator calls or cost. Each Guesser conversation starts fresh;
-cache metadata never enters it. Standalone commands keep fresh-call behavior. Guesser and
-Validator responses are never cached. Older manifests retain their recorded cache scope.
-
-New direct runs discover other processes' completed games when each subject starts. Trial YAML
-is written atomically after each game, so the source run need not be finished. Each subject's
-inventory is saved before reuse and restored on resume; subsequent questions and repetitions
-for that subject do not rescan external history. Pass `--oracle-history-before` to freeze all
-subjects at one cutoff. Existing executions retain the discovery policy in their manifest.
-
-
-B-0003 is the official edition 1.1 five-answer qualified_v1 profile with three default repetitions and the same models. Its Guesser and Oracle profiles must match. Qualified tokens stay out of standard runs and the v9 publication. See [Five-answer experiment](../../../documentation/five-answer-experiment.md).
-
-Earlier B-0003 definitions explicitly selected `adjudication_policy: judge_stable_knowledge_v1` in
-Oracle configuration. The versioned Judge fallback changes the immutable definition hash;
-use fresh execution IDs and compare policies separately. Missing policy retains the historical
-profile behavior. The configured policy reaches structured startup canaries, provider schemas,
-local validation, and saved episode configuration. Scheduling remains three iterations, and
-Oracle UNKNOWN and Oracle-Reviewer agreement still bypass the Judge.
-
-The concise policy now gives a completed Oracle reply with explicit zero recorded searches
-the existing bounded invalid-output retry. Missing telemetry and route/cache/budget faults
-do not authorize retry. The retry still requires a recorded search, preserves blind inputs,
-and retains all costs. This service revision changes the factual contract for fresh runs.
-
-`deep20-benchmark` is the top-level orchestration package. Each execution applies a benchmark
-definition to exactly one registered Guesser configuration, persists every trial continuously,
-publishes live typed state, aggregates that model's observations, renders derived summaries,
-and returns one complete immutable `BenchmarkResult`.
-
-Dependency direction is one-way:
-
-```text
-deep20-benchmark → deep20-game → deep20-oracle
-```
-
-Lower packages receive typed persistence and observation protocols. They never choose benchmark
-paths, configure logging, or own routine benchmark `INFO` lines.
+- **Edition 1.1 (B-0003).** B-0003 is the official edition 1.1 five-answer `qualified_v1`
+  profile, with three rounds per subject by default and the same models. Its Guesser and Oracle
+  profiles must match. Five-answer tokens never appear in standard runs or the v9 publication.
+  See [Five-answer experiment](../../../documentation/five-answer-experiment.md).
+- **Judge knowledge policy.** Earlier B-0003 definitions explicitly set
+  `adjudication_policy: judge_stable_knowledge_v1` in the Oracle configuration. This versioned
+  Judge fallback changes the definition hash, so use new execution IDs and compare policies
+  separately. Without the setting, the earlier behavior applies. The policy reaches startup
+  canaries, provider schemas, local validation, and the saved game configuration. Scheduling
+  stays at three rounds, and Oracle UNKNOWN and Oracle–Reviewer agreement still skip the Judge.
+- **Concise research (`concise_knowledge_v1`).** New B-0003 runs make one research attempt that
+  asks for `research_query_target` search queries (default 3), with an API limit of that target
+  plus two extra calls. A valid answer within that limit keeps its independent evidence or
+  knowledge decision, a private `evidence`/`other` basis, and a supporting statement. The
+  policy allows directional answers without sources and keeps context for UNKNOWN answers.
+  Older evidence and recovery rules describe earlier policies. See
+  [the current policy](../../../documentation/five-answer-experiment.md#concise-evidenceknowledge-policy).
+- **Zero-search retry.** Under the concise policy, a finished Oracle reply that explicitly
+  reports zero searches gets the existing limited invalid-output retry. Missing telemetry and
+  route, cache, or budget faults do not allow a retry. The retry still requires a recorded
+  search, keeps inputs blind, and counts all costs. This change alters the answer contract for
+  new runs.
+- **Answer reuse.** Benchmark runs can
+  [reuse earlier Oracle answers](../../../documentation/oracle-history-cache.md) under the
+  explicit `historical_ask_v1`, `same_episode_ask_v1`, and `same_execution_ask_v1` policies.
+  The benchmark loads verified earlier rounds when first needed and adds eligible new ASK
+  answers after each finished, scored game. Later rounds reuse them, and a resumed run restores
+  them from verified round artifacts. Within one game, the engine stores answers at once so that
+  a repeated (normalized) question reuses them. Repeated questions still count. Reused turns
+  keep their original evidence and a source label, with no new answer-checking calls or cost.
+  Each Guesser conversation starts fresh, and cache details never enter it. Standalone commands
+  always make new calls. Guesser and Validator responses are never cached. Older manifests keep
+  their recorded cache scope.
+- **Finding earlier games.** New direct runs look for other processes' finished games when each
+  subject starts. Round YAML is written atomically after each game, so the source run does not
+  need to be finished. Each subject's lookup is saved before reuse and restored on resume;
+  later questions and rounds for that subject do not scan again. Pass
+  `--oracle-history-before` to use one fixed cutoff for all subjects. Existing runs keep the
+  lookup policy recorded in their manifest.
+- **Oracle replay.** To replay recorded questions against the current Oracle pipeline without a
+  Guesser, use `deep20 benchmark replay-oracle`. See
+  [Oracle question replay](../../../documentation/oracle-question-replay.md) for the Astra
+  five-answer source, preview, filters, private comparison reports, and continuing a replay.
+- **Edition 1.2 draft.** The inactive
+  [edition 1.2 draft](../../../documentation/edition-1.2-draft.md) uses this same control plane
+  with per-role OpenRouter, Ollama, interactive, and mock implementations. Select it explicitly
+  with `--edition 1.2`; role settings use `--runtime-config`. `preview` is offline. Paid draft
+  runs require `--live --budget-usd N`; all-mock runs are offline. `work` processes the private
+  request queue. The defaults stay at three rounds and the released OpenRouter path. Draft
+  artifacts use version 4 under `private/editions/1.2/`; released version-3 artifacts keep their
+  paths and readers.
 
 ## Catalogs and scheduling
 

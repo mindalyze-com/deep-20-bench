@@ -1,18 +1,19 @@
 # Historical Oracle answers
 
-`concise_knowledge_v1` uses separate prompt/schema/configuration contracts. It permits an
-`other` answer with empty evidence after independent review. Historical candidates reconstruct
-that original result with its recorded research basis and supporting statement, validate the
-selected policy, and preserve the support as audit data. No support enters model requests.
-`bounded_unknown` is excluded from all ASK cache policies. Earlier policies remain readable;
-results from the new policy cannot seed an earlier-policy execution or vice versa.
+New benchmark runs use the versioned `historical_ask_v1` policy by default. The benchmark may
+reuse an earlier, fully checked ASK answer instead of asking the Oracle again. It copies the
+original Oracle evidence and check decisions and clearly marks where the answer came from. This
+is the one user-authorized exception to the general ban on caching application responses.
+Standalone Oracle and game commands, Guesser responses, guess validation, and provider response
+caching are not covered by this policy.
 
-
-New benchmark executions use the versioned `historical_ask_v1` policy by default. The benchmark
-may reuse an earlier, fully adjudicated ASK answer. It copies the original Oracle evidence and
-quality decisions and clearly identifies the source. This is the user-authorized exception to
-the previous application-response-cache prohibition. Standalone Oracle/game commands, Guesser
-responses, GUESS validation, and provider response caching remain outside this policy.
+`concise_knowledge_v1` has its own prompt, schema, and configuration contracts. After
+independent review, it allows an answer with basis `other` and no evidence. When such an answer
+is reused, the original result is rebuilt with its recorded research basis and supporting
+statement, checked against the selected policy, and the support is kept as audit data only.
+Support never enters model requests. `bounded_unknown` answers are never reused. Answers from
+earlier policies can still be read, but answers from the new policy cannot feed a run that uses
+an earlier policy, and the reverse.
 
 ## Matching and eligibility
 

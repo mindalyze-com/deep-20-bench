@@ -29,17 +29,17 @@ uv run --project source/publication/compiler deep20-publication build --check
 uv run python scripts/check-markdown-links.py
 ```
 
-Integration tests require credentials and make paid provider calls. Do not run them as part of
-the normal test suite.
+Integration tests need credentials and make paid provider calls. They are excluded from the
+normal test run; do not add them to it.
 
 ## Guesser isolation
 
-The Guesser is the model under test. It may receive only the protocol-defined visible history.
-Any change to prompts, message history, provider requests, sessions, caches, tools, retries,
-artifacts, reports, or component wiring must review this boundary and add or update tests that
-prove the Guesser-visible projection remains limited to permitted data.
+The Guesser is the model under test. It may see only the history the protocol allows. Any
+change to prompts, message history, provider requests, sessions, caches, tools, retries,
+artifacts, reports, or component wiring must check this boundary and add or update tests that
+prove the Guesser still sees only permitted data.
 
 Do not commit credentials, files under `private/`, or owner-only `error-outputs.jsonl`
-diagnostics. Before publishing a new terminal run with contract violations, run
-`deep20-publication capture-guesser-outputs` and review the typed public snapshot. Build the
-generated publication only from terminal benchmark runs.
+diagnostics. Before publishing a finished run that has Guesser format errors (contract
+violations), run `deep20-publication capture-guesser-outputs` and review the public snapshot it
+creates. Build the publication only from finished benchmark runs.

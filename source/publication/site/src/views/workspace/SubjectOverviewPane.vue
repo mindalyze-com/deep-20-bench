@@ -42,7 +42,7 @@ const facts = computed<MetricGridItem[]>(() => {
   return [
     {
       key: "episodes",
-      label: "Episodes",
+      label: "Rounds",
       value: currentDocument.trials.length,
     },
     {
@@ -57,7 +57,7 @@ const facts = computed<MetricGridItem[]>(() => {
     },
     {
       key: "contract",
-      label: "Contract",
+      label: "Valid format",
       value: contractPercent(
         currentSubject.contract.compliance_rate,
         currentSubject.contract.violations,
@@ -91,8 +91,8 @@ const facts = computed<MetricGridItem[]>(() => {
           explain
         />
         <p>
-          The score averages all {{ document.trials.length }} penalized trial values for this
-          subject.
+          The average of all {{ document.trials.length }} round scores for this subject,
+          with failed rounds at the fixed failure score.
         </p>
       </div>
 
@@ -106,7 +106,7 @@ const facts = computed<MetricGridItem[]>(() => {
 
       <ContractStatusCard
         :contract="subject.contract"
-        affected-unit="attempts"
+        affected-unit="rounds"
         heading-level="h3"
         :example-to="exampleTo"
       />
@@ -114,8 +114,8 @@ const facts = computed<MetricGridItem[]>(() => {
       <aside class="episode-prompt">
         <span aria-hidden="true">↖</span>
         <div>
-          <strong>Choose an episode.</strong>
-          <p>Open it to inspect the transcript, reliability, and usage.</p>
+          <strong>Choose a round.</strong>
+          <p>Open it to see the transcript, format errors, and usage.</p>
         </div>
       </aside>
     </div>

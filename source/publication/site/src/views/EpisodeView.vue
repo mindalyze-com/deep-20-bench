@@ -42,7 +42,7 @@ const { document: episodeDocument, loading, error } = useKeyedPublicationLoad({
   ],
   clearBeforeLoad: true,
   initial: () => peekEpisode(executionId.value, targetId.value, trialId.value),
-  fallbackError: "The episode could not be loaded.",
+  fallbackError: "The round could not be loaded.",
   onBeforeLoad: () => {
     activeTab.value = "transcript";
   },
@@ -60,7 +60,7 @@ const { document: episodeDocument, loading, error } = useKeyedPublicationLoad({
         (candidate) => candidate.trial_id === requestedTrial,
       )
     ) {
-      throw new Error("The requested episode is not part of this run.");
+      throw new Error("This round is not part of this run.");
     }
     return loadedEpisode;
   },
@@ -158,9 +158,9 @@ const applyRouteContext = (): void => {
   const previousSubject = subjects.value[currentSubjectIndex - 1];
   const nextSubject = subjects.value[currentSubjectIndex + 1];
   setRouteContext({
-    title: `Episode ${currentTrial.trial_number} · ${currentSubject.display_name}`,
+    title: `Round ${currentTrial.trial_number} · ${currentSubject.display_name}`,
     description: `Questions, answers, and Oracle evidence for finding ${currentSubject.display_name}.`,
-    level: "Episode",
+    level: "Round",
     position: `${index + 1} of ${episodeTrials.value.length}`,
     crumbs: [
       { label: "Results", to: editionRoute('results') },
@@ -172,15 +172,15 @@ const applyRouteContext = (): void => {
         label: currentSubject.display_name,
         to: subjectRoute(currentRun.execution_id, currentSubject.target_id),
       },
-      { label: `Episode ${currentTrial.trial_number}` },
+      { label: `Round ${currentTrial.trial_number}` },
     ],
     previous: previousTrial
-      ? { label: `Episode ${previousTrial.trial_number}`, to: episodeTo(previousTrial) }
+      ? { label: `Round ${previousTrial.trial_number}`, to: episodeTo(previousTrial) }
       : previousSubject
         ? { label: "Previous subject", to: subjectTo(previousSubject.target_id) }
         : null,
     next: nextTrial
-      ? { label: `Episode ${nextTrial.trial_number}`, to: episodeTo(nextTrial) }
+      ? { label: `Round ${nextTrial.trial_number}`, to: episodeTo(nextTrial) }
       : nextSubject
         ? { label: "Next subject", to: subjectTo(nextSubject.target_id) }
         : null,
@@ -200,7 +200,7 @@ onActivated(() => {
 
 <template>
   <div class="episode-view">
-    <LoadingState v-if="loading" label="Loading episode" />
+    <LoadingState v-if="loading" label="Loading round" />
     <ErrorState v-else-if="error" :message="error" />
 
     <template v-else-if="run && subject && trial && episode">
@@ -211,7 +211,7 @@ onActivated(() => {
         :episode="episode"
       />
 
-      <nav class="episode-tabs" aria-label="Episode detail views" role="tablist">
+      <nav class="episode-tabs" aria-label="Round detail views" role="tablist">
         <button
           id="episode-tab-transcript"
           type="button"
@@ -235,8 +235,8 @@ onActivated(() => {
           @click="selectEpisodeTab('reliability')"
           @keydown="onEpisodeTabKeydown($event, 'reliability')"
         >
-          <span>Reliability</span>
-          <small>{{ formatCount(episode.contract.violations, "violation") }}</small>
+          <span>Format</span>
+          <small>{{ formatCount(episode.contract.violations, "error") }}</small>
         </button>
         <button
           id="episode-tab-usage"
@@ -260,16 +260,16 @@ onActivated(() => {
       >
         <div class="content-inner workspace-detail-boundary warning">
           <div>
-            <p class="eyebrow">Reliability warning</p>
-            <h2 id="episode-contract-heading">Model broke the output contract.</h2>
+            <p class="eyebrow">Format warning</p>
+            <h2 id="episode-contract-heading">The model sent replies in the wrong format.</h2>
           </div>
           <div>
             <p>
-              The Guesser produced
-              {{ formatCount(episode.contract.violations, "invalid structured response") }}.
-              Violations before the limit consumed counted turns. The fixed feedback
-              disclosed only the public action format, never whether an attempted answer was
-              correct.
+              The Guesser sent
+              {{ formatCount(episode.contract.violations, "invalid reply", "invalid replies") }}.
+              Each one before the question limit used up a counted turn. The model was only
+              reminded of the required format; it was never told whether its question or
+              guess was correct.
             </p>
             <ContractMetrics
               class="warning-facts"

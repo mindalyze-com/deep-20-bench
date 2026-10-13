@@ -278,7 +278,7 @@ test("result metric explanations work by keyboard and tap", { tag: ["@interactio
   const scoreHelp = page.getByRole("button", { name: "Question score" });
   await scoreHelp.click();
   await expect(page.getByRole("dialog", { name: "Question score" })).toContainText(
-    "Failed trials receive the benchmark penalty",
+    "A failed round receives the fixed failure score",
   );
   await page.keyboard.press("Escape");
   await expect(scoreHelp).toBeFocused();
@@ -288,7 +288,7 @@ test("result metric explanations work by keyboard and tap", { tag: ["@interactio
   await page.getByRole("button", { name: "CI width" }).click();
   await expect(
     page.getByRole("dialog", { name: "CI width" }),
-  ).toContainText("upper 95% CI bound minus the lower bound");
+  ).toContainText("upper end of the 95% confidence interval minus the lower end");
 });
 
 test("workspaces preload the next drilldown view before it is clicked", { tag: ["@interactions", "@desktop"] }, async ({
@@ -396,7 +396,7 @@ test("the first episode stays clickable in a short desktop workspace", { tag: ["
 
   await firstEpisode.click();
   await expect(page).toHaveURL(new RegExp(`/episodes/${trialId}/$`));
-  await expect(page.getByRole("heading", { name: "Episode 1", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Round 1", exact: true })).toBeVisible();
 });
 
 test("episode navigation continues across subject boundaries", { tag: ["@interactions", "@desktop"] }, async ({ page }) => {
@@ -418,7 +418,7 @@ test("episode navigation continues across subject boundaries", { tag: ["@interac
     new RegExp(`/subjects/${previousTraversalSubjectId}/$`),
   );
   await expect(firstEpisodeNavigation.locator('a[rel="next"]')).toContainText(
-    "Episode",
+    "Round",
   );
 
   await page.goto(
@@ -429,7 +429,7 @@ test("episode navigation continues across subject boundaries", { tag: ["@interac
 
   const lastEpisodeNavigation = page.locator(".sibling-controls");
   await expect(lastEpisodeNavigation.locator('a[rel="prev"]')).toContainText(
-    "Episode",
+    "Round",
   );
   const nextSubject = lastEpisodeNavigation.getByRole("link", {
     name: "Next: Next subject",
@@ -487,7 +487,7 @@ test("contract summaries open one clearly labeled recorded example", { tag: ["@i
 
   const openedViolation = page.locator(".turn:has(.violation-detail[open])");
   await expect(openedViolation).toHaveCount(1);
-  await expect(openedViolation).toContainText("Model broke the output contract.");
+  await expect(openedViolation).toContainText("Reply in the wrong format.");
   const disclosure = openedViolation.locator(".violation-detail");
   await expect(disclosure).toHaveAttribute("open", "");
   await expect(disclosure.locator("summary")).toBeFocused();
@@ -723,10 +723,10 @@ test("episode tabs support arrow, Home, and End keys", { tag: ["@interactions", 
   await page.goto(episodePath);
   await waitForPublication(page);
   const answerLabels = page.locator(".turn-list .answer > span");
-  await expect(answerLabels.first()).toHaveText("2 · Adjudication returns");
+  await expect(answerLabels.first()).toHaveText("2 · Answer check returns");
   await expect(answerLabels.last()).toHaveText("2 · Validator returns");
   const transcript = page.getByRole("tab", { name: /Transcript/ });
-  const reliability = page.getByRole("tab", { name: /Reliability/ });
+  const reliability = page.getByRole("tab", { name: /Format/ });
   const usage = page.getByRole("tab", { name: /Usage/ });
 
   await transcript.focus();

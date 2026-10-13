@@ -65,12 +65,12 @@ const accessibleLabel = computed(() => {
     >
       <p class="score-help-copy">
         Round scores are averaged for each subject, then across subjects. A failed round
-        receives the fixed failure score.
+        gets the fixed failure score.
       </p>
       <p v-if="confidenceInterval !== null" class="score-help-copy">
-        The 95% confidence interval estimates uncertainty in the average score from repeated
+        The 95% confidence interval shows how certain the average is, based on repeated
         rounds on these subjects. A wider interval means less consistent results. It does
-        not predict scores on new subjects.
+        not predict scores on other subjects.
       </p>
     </InfoPopover>
   </div>

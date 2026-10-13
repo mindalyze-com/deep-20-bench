@@ -13,6 +13,6 @@ source/
     └── site/         Vue and Vite website
 ```
 
-Execution code may not depend on publication code or generated publication data. Publication
-reads completed artifacts from `runs/` only after model execution. Moving source code does not
-change the Guesser-visible protocol or artifact layout.
+Execution code must not depend on publication code or generated publication data. Publication
+reads finished results from `runs/` after the models have run. Moving source files does not
+change what the Guesser sees or how artifacts are laid out.

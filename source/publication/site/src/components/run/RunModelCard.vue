@@ -11,8 +11,8 @@ const props = defineProps<{
 
 const routingLabel = (): string =>
   props.model.provider_routing === "automatic"
-    ? "OpenRouter automatic routing"
-    : `Exact provider · ${props.model.requested_provider}`;
+    ? "Chosen automatically by OpenRouter"
+    : `Fixed provider · ${props.model.requested_provider}`;
 </script>
 
 <template>
@@ -44,11 +44,11 @@ const routingLabel = (): string =>
         <dd>{{ model.resolved_providers.join(", ") }}</dd>
       </div>
       <div v-if="model.prompt_versions?.length">
-        <dt>Prompt contracts</dt>
+        <dt>Prompt versions</dt>
         <dd><div v-for="version in model.prompt_versions" :key="version"><code>{{ version }}</code></div></dd>
       </div>
       <div v-else-if="model.prompt_version !== null">
-        <dt>Prompt contract</dt>
+        <dt>Prompt version</dt>
         <dd><code>{{ model.prompt_version }}</code></dd>
       </div>
       <div v-if="model.configuration_id !== null">
@@ -58,13 +58,13 @@ const routingLabel = (): string =>
     </dl>
 
     <details class="provider-routing-details">
-      <summary>Resolved provider details</summary>
-      <p v-if="model.calls === 0">This role was not invoked in this run.</p>
+      <summary>Provider details</summary>
+      <p v-if="model.calls === 0">This role was not used in this run.</p>
       <p
         v-else-if="model.providers.length === 0 && model.unreported_calls === 0"
       >
-        Legacy run. Per-call routing totals were not retained. The configured provider
-        was <strong>{{ model.requested_provider }}</strong>.
+        Older run: providers were not recorded per call. The configured provider was
+        <strong>{{ model.requested_provider }}</strong>.
       </p>
       <template v-else>
         <div
@@ -83,7 +83,7 @@ const routingLabel = (): string =>
             <dd>{{ integer(model.fallback_calls) }}</dd>
           </div>
           <div>
-            <dt>Provider unreported</dt>
+            <dt>Provider not reported</dt>
             <dd>{{ integer(model.unreported_calls) }}</dd>
           </div>
         </dl>

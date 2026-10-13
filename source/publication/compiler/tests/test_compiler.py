@@ -1361,12 +1361,12 @@ def test_public_run_model_defaults_to_exact_without_route_totals() -> None:
 def test_run_overview_discloses_provider_routing_and_legacy_state() -> None:
     source = _run_source()
 
-    assert "Resolved provider details" in source
-    assert "OpenRouter automatic routing" in source
+    assert "Provider details" in source
+    assert "Chosen automatically by OpenRouter" in source
     assert "model.providers" in source
     assert "model.resolved_providers" in source
     assert "Fallback calls" in source
-    assert "Legacy run" in source
+    assert "Older run" in source
 
 
 def test_publication_and_report_ui_have_no_execution_component_imports() -> None:
@@ -1414,11 +1414,11 @@ def test_publication_and_report_ui_have_no_execution_component_imports() -> None
     assert "variation_token" not in report_source
     assert "clean_worktree" not in report_source
     assert "dirty_worktree" not in report_source
-    assert "Model broke the output contract." in report_source
-    assert "Contract compliance" in report_source
+    assert "The model sent replies in the wrong format." in report_source
+    assert "Valid format" in report_source
     assert "What the model returned" in report_source
-    assert "What a valid response looks like" in report_source
-    assert "The provider returned no textual completion for this call." in report_source
+    assert "What a valid reply looks like" in report_source
+    assert "The provider returned no text." in report_source
     assert "rejected_outputs" in report_source
     assert "v-html" not in (
         REPOSITORY / "source" / "publication" / "site" / "src" / "views" / "EpisodeView.vue"
@@ -1553,14 +1553,14 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     )
     leaderboard_source = (views / "HomeView.vue").read_text(encoding="utf-8")
 
-    assert "Episode cost" in episode_source
+    assert "Round cost" in episode_source
     assert "detail: `All ${props.episode.total_turns} turns`" in episode_source
     assert "Full run {{ money(run.total_cost_usd) }}" in episode_source
     assert "Judge" in run_source
     assert "Exact Guesser setup" in episode_source
     assert "Recorded Guesser output" in episode_source
-    assert "Why this output was rejected" in episode_source
-    assert "Exact Guesser provider text" in episode_source
+    assert "Why this reply was rejected" in episode_source
+    assert "Exact text from the provider" in episode_source
     assert "1 · Guesser asks" in episode_source
     assert (
         '2 · {{ turn.adjudicator === "oracle" ? "Answer check" : "Validator" }} returns'
@@ -1572,17 +1572,17 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     assert "<th data-numeric>Latency</th>" in episode_source
     assert "seconds(row.values.latency_ms)" in episode_source
     assert "`Q${turn.counted_questions}`" in episode_source
-    assert "No question charge" in episode_source
+    assert "Not counted" in episode_source
     assert "moneyEpisode(trial.cost_usd)" in subject_source
     assert "<dt>Run cost</dt>" not in run_source
     assert "Complete benchmark" in run_source
     assert "Model under test" in run_source
     assert 'label="Question score"' in run_source
     assert 'class="workspace-metrics workspace-detail-boundary"' in run_source
-    assert "Run ledger." in run_source
+    assert "Run totals." in run_source
     assert "Guesser time" in run_source
     assert "Primary Oracle" in run_source
-    assert "Game support" in run_source
+    assert "Answer checks" in run_source
     assert "run.totals.total_tokens" in run_source
     assert "current.totals.guesser_think_time_ms" in run_source
     assert "{ label: 'Benchmark run cost', value: money(row.total_cost_usd) }" in leaderboard_source
@@ -1606,11 +1606,11 @@ def test_cost_documentation_excludes_superseded_infrastructure_attempts() -> Non
 
     cost_copy = " ".join(cost_source.split())
     methodology_copy = " ".join(methodology_source.split())
-    assert "Earlier attempts replaced after test system failures and support costs are excluded." in cost_copy
-    assert "excluded from the cost comparison" in cost_copy
-    assert "Excluded repair overhead" in cost_copy
-    assert "Excluded repair overhead" in run_source
-    assert "excluded from the public cost comparison" in methodology_copy
+    assert "It excludes answer-checking costs and earlier attempts of rounds rerun after a test system failure." in cost_copy
+    assert "left out of the comparison" in cost_copy
+    assert "Excluded repair cost" in cost_copy
+    assert "Excluded repair cost" in run_source
+    assert "but not in the cost comparison" in methodology_copy
 
 
 def test_generated_homepage_matches_the_official_result_state() -> None:
@@ -1674,16 +1674,16 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "Each edition has its own comparison settings and results." in homepage_copy
     assert "small first step" not in homepage
     assert "not a definitive ranking" not in homepage
-    assert "Use GitHub Discussions to suggest what we should test next." in homepage
+    assert "Suggest what we should test next on GitHub Discussions." in homepage
     assert "https://github.com/mindalyze-com/deep-20-bench/discussions" in homepage
     assert "Use all earlier questions and answers to plan the next question." in homepage
-    assert "The Guesser asks. Three roles determine the answer." in homepage
+    assert "The Guesser asks. Other models answer and check." in homepage
     assert "The Guesser is the model being tested" in homepage
-    assert "the Oracle must search the live web and cite evidence" in homepage
+    assert "the Oracle searches the web and cites evidence" in homepage
     assert "A Reviewer checks every YES or NO" in homepage
-    assert "If their answers differ, a" in homepage
+    assert "If they disagree, a" in homepage
     assert "The Guesser receives only the" in homepage
-    assert "Read the full game and answer-checking method" in homepage
+    assert "How the game and answer checks work" in homepage
     assert "hash: '#answer-checks'" in homepage
     assert "Early runs exposed rare but basic Oracle errors" not in homepage
     assert "How Deep20Bench works" in methodology
@@ -1694,7 +1694,7 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "The correct guess is excluded." in illustrative_round
     methodology_copy = " ".join(methodology.split())
     for required_explanation in (
-        "Check answers before giving a clue.",
+        "How answers are checked.",
         "It must search instead of relying on memory.",
         "without seeing the Oracle’s answer",
         "It sees neither earlier answer",
@@ -1702,18 +1702,18 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
         "Guess Validator",
         "The Guesser cannot see the answer checks.",
         "It sees the category, its own questions and guesses, and the final answers",
-        "provider logs, or private files",
-        "reveals nothing about the hidden subject",
-        "Every extra question raises the score",
+        "decisions, logs, or private files",
+        "reveals nothing about the subject",
+        "Every extra question still raises the score",
         "not random, balanced, or representative",
         "do not rank general intelligence",
         "training data; we cannot rule out an advantage",
-        "Future editions aim to include more subjects",
+        "Future editions should include more subjects",
         "Every subject has equal weight",
-        "questions used · failed trial = {{ penalty }}",
-        "One divided by T, times the sum of trial scores",
+        "questions used · failed round = {{ penalty }}",
+        "One divided by R, times the sum of round scores",
         "One divided by S, times the sum of subject averages",
-        "number of trials for the subject",
+        "number of rounds for the subject",
         "number of subjects",
     ):
         assert required_explanation in methodology_copy
@@ -1723,8 +1723,8 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "Publication happens after play is finished." in methodology
     assert "published data never returns to the Guesser." in methodology_copy
     assert "questionScoreChartSummary" in homepage
-    assert "companion plot shows each exact" in result_chart
-    assert "three bands divide the displayed width scale" in result_chart
+    assert "side plot shows each CI width" in result_chart
+    assert "three color bands of equal size" in result_chart
     assert 'class="protocol-flow"' not in homepage
     assert "Homepage built" not in homepage
     assert "home-build-note" not in homepage
@@ -1746,7 +1746,7 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "Verify and reuse" in data_page
     assert "CC BY 4.0" in data_page
     assert ".model.display_name" in data_page
-    assert "Read the publication method" in data_page
+    assert "How results are published" in data_page
     assert "Support future benchmark runs" in homepage
     if evaluated:
         assert '<template v-if="evaluated.length > 0">' in homepage
@@ -1760,7 +1760,7 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
         assert "tone: 'primary'" not in homepage
         assert "@click.stop" in model_run_link
         assert "model-run-link-chevron" in model_run_link
-        assert "Explore full run · questions, answers & evidence" in mobile_result_card
+        assert "Full run · questions, answers, and evidence" in mobile_result_card
         assert "result-row--navigable" in homepage
     else:
         assert '<article v-else class="empty-results">' in homepage
@@ -1784,7 +1784,7 @@ def test_generated_drilldown_pages_keep_current_location_visible() -> None:
     assert "<RouterView v-else />" in subject_source
     assert "hash:" not in run_source
     assert "hash:" not in subject_source
-    assert 'level: "Episode"' in episode_source
+    assert 'level: "Round"' in episode_source
     assert 'id="episode-overview"' in episode_source
     assert "previous: previousTrial" in episode_source
     assert "next: nextTrial" in episode_source
@@ -2226,7 +2226,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "data-tone" not in mobile_result_card
     assert "background: inherit;" in mobile_result_card
     assert "min-height: 2.75rem;" in mobile_result_card
-    assert "Explore full run · questions, answers & evidence" in mobile_result_card
+    assert "Full run · questions, answers, and evidence" in mobile_result_card
     assert "translateX(0.2rem)" in mobile_result_card
     for table_source in (overview, efficiency, reliability):
         assert "result-row--clickable" in table_source
@@ -2260,10 +2260,10 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
         assert "useOfficialRunData" in table_source
     assert "getLeaderboard()" in official_run_data
     assert "getOfficialRuns()" in official_run_data
-    assert "Model time / episode" in overview
+    assert "Model time / round" in overview
     assert 'label="Question score"' in overview
     assert 'label="CI width"' in overview
-    assert 'label="Success and contract"' in overview
+    assert 'label="Success and format"' in overview
     assert ("Number(left.totals.costs_usd.total) - Number(right.totals.costs_usd.total)") in cost
     assert (
         "Number(left.totals.costs_usd.guesser) -\n        Number(right.totals.costs_usd.guesser)"
@@ -2271,7 +2271,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "value: Number(run.totals.costs_usd.guesser)" in cost
     assert 'direction-label="Guesser cost · lower is better"' in cost
     assert 'label="Guesser and support cost"' in cost
-    assert 'label="Per episode"' in cost
+    assert 'label="Per round"' in cost
     assert 'label="How this page is ordered"' in cost
     assert "Total benchmark cost" in cost
     assert 'direction-label="Total benchmark cost by component"' in cost
@@ -2313,7 +2313,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert ".result-chart-panel > .panel-heading" in app_css
     assert "@media (min-width: 761px)" in app_css
     assert "border-bottom: 0;" in app_css
-    assert "averages round scores, including the fixed scores for failed rounds" in efficiency
+    assert "The question score includes the fixed score for failed rounds." in efficiency
     assert "scaled question score 0.06" in efficiency
     assert "Guesser cost range" in efficiency
     assert 'label="Ideal distance"' in efficiency
@@ -2346,14 +2346,14 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "left.intervalWidth - right.intervalWidth" in reliability
     assert "reliabilityChartItems" in reliability
     assert "Stable does not mean good" in reliability
-    assert "Every model uses the same 95% confidence level" in reliability
+    assert "Every model uses the same 95% level" in reliability
     assert 'label="CI width"' in reliability
     assert 'label="Score and stability"' in reliability
     assert "smaller CI width" in " ".join(reliability.split())
     assert "Question score." in overview
     assert "questionScoreChartSummary" in overview
-    assert "companion plot shows each exact" in result_chart
-    assert "visual guide, not fixed quality thresholds" in overview
+    assert "side plot shows each CI width" in result_chart
+    assert "visual aid, not quality grades" in overview
     assert '"CI width · lower is better"' in reliability_scatter
     assert '"Question score"' in reliability_scatter
     assert "value: [item.intervalWidth, item.score]" in reliability_scatter
@@ -2418,7 +2418,7 @@ def test_mobile_drilldowns_keep_all_facts_and_compact_turn_navigation() -> None:
     assert ':max-columns="4"' in run_overview
     assert 'class="attempt-score-track"' in subject_workspace
     assert 'class="eyebrow rail-section-label"' in subject_workspace
-    assert 'aria-label="Episodes for this subject"' in subject_workspace
+    assert 'aria-label="Rounds for this subject"' in subject_workspace
     assert "{{ trials.length }} · choose one" in subject_workspace
     assert "@media (max-height: 800px) and (min-width: 761px)" in subject_workspace
     assert 'exact-active-class="active"' in results_nav
@@ -2437,10 +2437,10 @@ def test_homepage_and_method_share_one_typed_illustrative_round() -> None:
     assert 'from "@/lib/illustrative-round"' not in story
     assert "2 September 2026" in story
     assert "Claude Fable 5.1 (high) added." in story
-    assert "12.1 questions with 34 of 35 successful trials." in story
+    assert "12.1 (lower is better). It found the subject in 34 of 35 rounds." in story
     assert "23 August 2026" in story
     assert "OpenRouter’s Ox Alpha (high) tested." in story
-    assert "17.6 questions, placing 12th of 15." in story
+    assert "17.6 (lower is better), 12th of 15 models at the time." in story
     assert "15 August 2026" in story
     assert "17 August 2026" in story
     assert "Gemini 3.7 Flash (high) added." in story

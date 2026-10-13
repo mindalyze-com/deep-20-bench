@@ -135,6 +135,9 @@ Read and follow the relevant detailed specification before changing these areas:
   constants, formats, and behavior from one canonical definition.
 - Use WebP for raster assets unless tooling or a format-specific requirement prevents it.
 - Write in English unless the user requests another language. Use hyphens, not em dashes.
+- Write website copy and documentation in simple, concise, clear language, not marketing
+  language. Start a document with what it is for; put policy and change notes after that.
+  Website terms follow the public copy rules in `documentation/homepage-creation.md#purpose`.
 
 ## Console logging
 

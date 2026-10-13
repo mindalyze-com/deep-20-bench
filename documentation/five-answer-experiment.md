@@ -159,11 +159,16 @@ agreement is final. Any difference, including YES versus RATHER_YES, invokes the
 The Judge's exact token is final. Reviewer and Judge receive only the trusted subject, current
 question, and numbered evidence excerpts, with no prior decisions, history, or web access.
 
-All four directional research answers require 1-3 evidence items. The Reviewer uses only
-supplied evidence and identifies at least one supporting index for a directional answer.
-Evidence-based Judge answers follow the same rule.
+These evidence requirements describe the earlier `profile_default` and
+`judge_stable_knowledge_v1` policies. Current B-0003 runs use the
+[concise evidence/knowledge policy](#concise-evidenceknowledge-policy) above, which also
+permits directional answers based on other knowledge.
 
-New B-0003 definitions explicitly select
+Under the earlier policies, all four directional research answers require 1-3 evidence items.
+The Reviewer uses only supplied evidence and identifies at least one supporting index for a
+directional answer. Evidence-based Judge answers follow the same rule.
+
+Earlier B-0003 definitions explicitly selected
 `oracle_configuration.adjudication_policy: judge_stable_knowledge_v1`. The Judge first assesses
 whether the supplied excerpts support any directional answer, including a qualified answer.
 Only insufficient factual coverage that would otherwise force UNKNOWN permits the bounded
@@ -183,18 +188,25 @@ no indices; qualified tokens do not authorize overriding contradictions with mem
 Missing `adjudication_policy` means `profile_default`, omitted from serialized configuration.
 For qualified_v1 this retains the historical evidence-only Reviewer and Judge and their
 original prompts and schemas. Standard and concise profiles retain their existing exceptions.
-The new policy is valid only with qualified_v1. Schema generation and local validation use the
-role and policy together; publication independently validates the same distinction and checks
-that episode policy matches the execution manifest. Required-role or schema failure remains an
-infrastructure failure with no provisional-answer fallback. Research usually uses 1-4 queries
-and must keep the existing hard 1-8 query-list contract. Nothing truncates or repairs that list.
+The `judge_stable_knowledge_v1` policy is valid only with qualified_v1. Schema generation and
+local validation use the role and policy together; publication independently validates the same
+distinction and checks that episode policy matches the execution manifest. Required-role or
+schema failure remains an infrastructure failure with no provisional-answer fallback.
+Research usually uses 1-4 queries and must keep the existing hard 1-8 query-list contract.
+Nothing truncates or repairs that list.
 
 Only the final token enters Guesser history. Qualified tokens are allowed only on ASK.
 Identity validation remains YES/NO/UNKNOWN and locally rejects qualified answers. Guesser and
-Oracle five-answer profiles must be selected together, and official mode rejects them before
-startup calls. The canonical FORMAT_ERROR and all other isolation rules remain unchanged.
+Oracle five-answer profiles must be selected together. Official edition 1.1 accepts the paired
+profiles under its release contract; variants use explicit experimental settings. The canonical
+FORMAT_ERROR and all other isolation rules remain unchanged.
 
 ## Versions and persistence
+
+The following versions and revision notes describe the earlier evidence-context and
+Judge-knowledge policies. Current role versions are listed in the concise policy section
+above; accepted publication contracts are defined in
+[the publication guide](../source/publication/README.md#edition-contracts).
 
 - Guesser: `stateful-category-guesser-v16-five-answer-category-guide`.
 - Oracle: `live-web-oracle-v12-evidence-context`.
@@ -262,12 +274,12 @@ change cache eligibility. Fresh route preflight and startup canaries precede the
 
 ## New trials
 
-The current factual contract is `oracle-factual-answer-v2-inconclusive-unknown`. The application
-no longer scans question keywords to decide whether missing evidence is an infrastructure
-failure. Valid research that remains inconclusive after recovery returns UNKNOWN and play
-continues; actual technical failures retain their infrastructure classification. New execution
-definition and factual-cache hashes separate this behavior from earlier runs. Prompts and
-the five-token ASK vocabulary are unchanged, and historical results are not reclassified.
+The current factual contract is `oracle-factual-answer-v4-bounded-format-retry`, including the
+inconclusive-UNKNOWN rule introduced in v2. The application no longer scans question keywords
+to decide whether missing evidence is an infrastructure failure. Valid inconclusive research
+returns UNKNOWN after the selected policy's research workflow; actual technical failures
+remain infrastructure failures. Execution and factual-cache hashes separate incompatible
+contracts, and historical results are not reclassified.
 
 Use active subjects, fresh execution IDs, the current paired profiles, and three iterations
 per subject and model unless another count is requested. For long runs, use detached screen,

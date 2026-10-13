@@ -12,7 +12,7 @@ export const citationResource: SiteResourceLink = {
 
 export const dataLicenseResource: SiteResourceLink = {
   href: "https://creativecommons.org/licenses/by/4.0/",
-  label: "CC BY 4.0 data licence",
+  label: "CC BY 4.0 data license",
 };
 
 export const softwareLicenseDescription =
@@ -31,7 +31,7 @@ export const supportResource: SiteResourceLink = {
 
 export const citeAndReuseLinks: readonly SiteResourceLink[] = [
   { ...citationResource, label: "How to cite" },
-  { ...dataLicenseResource, label: "Result data licence - CC BY 4.0" },
+  { ...dataLicenseResource, label: "Data license - CC BY 4.0" },
   softwareLicenseResource,
 ];
 

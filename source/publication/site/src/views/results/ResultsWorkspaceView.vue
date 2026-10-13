@@ -31,10 +31,10 @@ const copy = computed(() => {
   switch (route.name) {
     case "results-reliability":
       return {
-        label: "Repeated-trial stability",
+        label: "Stability across rounds",
         title: "Stability",
         description:
-          "Whether a model produces similar scores across repeated trials on the same fixed subjects.",
+          "How similar a model's scores are when it plays the same subjects again.",
         tone: "stability",
       };
     case "results-cost":
@@ -42,7 +42,7 @@ const copy = computed(() => {
         label: "Recorded costs",
         title: "Cost",
         description:
-          "Recorded provider costs for the tested model and benchmark support models.",
+          "Recorded provider costs for the tested model and the answer-checking models.",
         tone: "cost",
       };
     case "results-time":
@@ -50,7 +50,7 @@ const copy = computed(() => {
         label: "Model and benchmark time",
         title: "Time",
         description:
-          "Provider-reported model-call time and end-to-end benchmark runtime.",
+          "Time spent in model calls, and total benchmark runtime.",
         tone: "time",
       };
     case "results-efficiency":
@@ -58,7 +58,7 @@ const copy = computed(() => {
         label: "Cost and quality",
         title: "Efficiency",
         description:
-          "Compare question quality with the recorded cost of the model under test.",
+          "Question score compared with the cost of the tested model.",
         tone: "efficiency",
       };
     default:

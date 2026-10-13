@@ -280,13 +280,13 @@ test(
     await expect(overview).toContainText("Question score");
     await expect(overview).toContainText("95% CI");
     await expect(overview).toContainText("Success");
-    await expect(overview).toContainText("Contract compliance");
+    await expect(overview).toContainText("Valid format");
     await expect(overview).toContainText("Guesser cost");
-    await expect(overview).toContainText("Wall-clock runtime");
+    await expect(overview).toContainText("Total runtime");
     await expect(overview).toContainText(
       representativeRun.run.contract.status === "clean"
-        ? "Output contract clean."
-        : "Output contract breached.",
+        ? "No format errors."
+        : "Format errors found.",
     );
     for (const subject of representativeRun.subjects) {
       await expect(
@@ -341,7 +341,7 @@ test(
     await expect(overview).toBeVisible();
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(overview).toContainText("Average questions");
-    await expect(overview).toContainText("Episodes");
+    await expect(overview).toContainText("Rounds");
     await expect(overview).toContainText("Successful");
     await expect(page.locator(".episode-list a")).toHaveCount(5);
     await expect(page.locator('meta[name="robots"]')).toHaveCount(0);

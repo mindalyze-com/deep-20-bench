@@ -260,7 +260,7 @@ const scoreDomain = computed(() =>
   ]),
 );
 const repeatCountLabel = computed(() => {
-  if (props.repeatAveragesLoading) return "Loading repeat averages…";
+  if (props.repeatAveragesLoading) return "Loading averages by round…";
   if (props.repeatAverages === null) return "Repeated rounds across all subjects";
   const counts = new Map<string, number>();
   for (const average of props.repeatAverages) {
@@ -320,9 +320,9 @@ const summaryTooltip = (
 
 const repeatNumbers = (averages: PublicRepeatAverage[]): string => {
   const values = averages.map((average) => average.trial_number);
-  if (values.length === 1) return `Repeat ${values[0]}`;
-  if (values.length === 2) return `Repeats ${values[0]} and ${values[1]}`;
-  return `Repeats ${values.slice(0, -1).join(", ")}, and ${values.at(-1)}`;
+  if (values.length === 1) return `Round ${values[0]}`;
+  if (values.length === 2) return `Rounds ${values[0]} and ${values[1]}`;
+  return `Rounds ${values.slice(0, -1).join(", ")}, and ${values.at(-1)}`;
 };
 
 const repeatTooltip = (parameter: CallbackDataParams): string => {
@@ -345,7 +345,7 @@ const repeatTooltip = (parameter: CallbackDataParams): string => {
       : `${subjectCount} subjects each`;
   const outcomes =
     modelFailed === 0
-      ? `${successful}/${total} successful subject trials`
+      ? `${successful}/${total} successful rounds`
       : `${successful} successful · ${modelFailed} model failures`;
   return [
     '<div style="min-width:205px;padding:3px 2px">',
@@ -360,7 +360,7 @@ const repeatTooltip = (parameter: CallbackDataParams): string => {
     ),
     `<span style="display:block;margin-top:6px;color:${theme.inkSoft};font-size:.78rem;font-weight: var(--font-weight-semibold)">${escapeHtml(repeatNumbers(group.averages))} · ${cohort}</span>`,
     `<span style="display:block;margin-top:4px;color:${theme.muted};font-size:.75rem">${escapeHtml(outcomes)}</span>`,
-    `<span style="display:block;margin-top:7px;color:${theme.muted};font-size:.75rem">Average of the same trial number across the same subjects</span>`,
+    `<span style="display:block;margin-top:7px;color:${theme.muted};font-size:.75rem">Average of this round number across all subjects</span>`,
     chartTooltipRunLink(theme, true),
     "</div>",
   ].join("");
@@ -419,7 +419,7 @@ const scoreChartOption = (width: number): EChartsOption => {
     animationEasing: "cubicOut",
     aria: {
       enabled: true,
-      description: `${scoreCollectionLabel.value}. Each solid blue marker is the average question score, where lower is better. Each colored line is the 95 percent confidence interval of that average. Its color matches the three-band CI width companion plot.${showRepeatAverages.value ? " Grey diamonds show averages for each trial number across the same subjects; darker diamonds indicate equal repeat averages." : ""} The horizontal axis runs from ${scoreDomain.value.minimum} to ${scoreDomain.value.maximum}. ${props.items
+      description: `${scoreCollectionLabel.value}. Each solid blue marker is the average question score; lower is better. Each colored line is the 95 percent confidence interval of that average. Its color matches the CI width plot.${showRepeatAverages.value ? " Grey diamonds show the average for each round number across all subjects; darker diamonds mean several averages are equal." : ""} The horizontal axis runs from ${scoreDomain.value.minimum} to ${scoreDomain.value.maximum}. ${props.items
         .map(
           (item, index) => {
             const detail = confidenceDetailFor(item);
@@ -1010,7 +1010,7 @@ watch(
             </span>
           </span>
           <span v-if="showRepeatAverages" class="score-dot-plot-legend-item">
-            <span>Grey diamond: repeat average</span>
+            <span>Grey diamond: average for one round number</span>
           </span>
         </span>
         <label
@@ -1019,7 +1019,7 @@ watch(
           :for="repeatSwitchId"
         >
           <span class="repeat-average-switch-copy">
-            <strong>Show repeat averages</strong>
+            <strong>Show averages by round</strong>
             <small :id="`${repeatSwitchId}-description`">{{ repeatCountLabel }}</small>
           </span>
           <input
@@ -1079,14 +1079,14 @@ watch(
     <ol
       v-if="showRepeatAverages"
       class="visually-hidden"
-      aria-label="Repeat averages"
+      aria-label="Averages by round"
     >
       <li
         v-for="average in repeatAverages ?? []"
         :key="`${average.execution_id}-${average.trial_number}`"
       >
         {{ items.find((item) => item.modelId === average.model_id)?.label }},
-        repeat {{ average.trial_number }}: {{ average.average_questions }} questions,
+        round {{ average.trial_number }}: {{ average.average_questions }} questions,
         averaged across {{ average.subject_count }} subjects.
       </li>
     </ol>

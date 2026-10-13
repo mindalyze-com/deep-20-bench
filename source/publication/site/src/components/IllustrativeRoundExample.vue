@@ -11,7 +11,7 @@ const questionCount = computed(() => round.value.turns.filter(turn => turn.kind 
   <aside
     class="round-example"
     :aria-label="
-      `Illustrative round: ${round.subject} identified with a trial score of ${questionCount}`
+      `Illustrative round: ${round.subject} identified with a round score of ${questionCount}`
     "
   >
     <div class="round-card">

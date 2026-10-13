@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import { contractExampleRoute } from "@/lib/contract-example";
-import { duration, moneyEpisode, number, statusLabel } from "@/lib/format";
+import { contractStatusLabel, duration, moneyEpisode, number, outcomeLabel } from "@/lib/format";
 import type {
   PublicEpisodeDetail,
   PublicRunSummary,
@@ -34,19 +34,19 @@ const facts = computed<MetricGridItem[]>(() => [
     label: "Outcome",
     value: props.episode.success
       ? "Success"
-      : statusLabel(props.episode.terminal_reason),
+      : outcomeLabel(props.episode.terminal_reason),
     tone: props.episode.success ? "default" : "danger",
   },
   {
     key: "questions",
     label: "Questions",
     value: props.trial.counted_questions,
-    detail: `Penalized ${number(props.trial.penalized_questions)}`,
+    detail: `Score ${number(props.trial.penalized_questions)}`,
   },
   {
     key: "contract",
-    label: "Output contract",
-    value: statusLabel(props.episode.contract.status),
+    label: "Format errors",
+    value: contractStatusLabel(props.episode.contract.status),
     tone: props.episode.contract.status === "breached" ? "danger" : "default",
     linkLabel: exampleTo.value === null ? undefined : "View one example",
     to: exampleTo.value ?? undefined,
@@ -58,7 +58,7 @@ const facts = computed<MetricGridItem[]>(() => [
   },
   {
     key: "cost",
-    label: "Episode cost",
+    label: "Round cost",
     value: moneyEpisode(props.episode.total_cost_usd),
     detail: `All ${props.episode.total_turns} turns`,
     tone: "accent",
@@ -70,8 +70,8 @@ const facts = computed<MetricGridItem[]>(() => [
   <header id="episode-overview" class="episode-hero">
     <div class="episode-hero-inner workspace-detail-boundary">
       <div class="episode-summary">
-        <p class="eyebrow">Episode {{ trial.trial_number }}</p>
-        <h1>Episode {{ trial.trial_number }}</h1>
+        <p class="eyebrow">Round {{ trial.trial_number }}</p>
+        <h1>Round {{ trial.trial_number }}</h1>
         <p class="episode-deck">
           <template v-if="episode.success">
             Identified <em>{{ episode.subject_name }}</em> in
@@ -92,7 +92,7 @@ const facts = computed<MetricGridItem[]>(() => [
             },
           }"
         >
-          Back to {{ subject.display_name }} attempts
+          Back to all {{ subject.display_name }} rounds
           <span aria-hidden="true">↑</span>
         </RouterLink>
       </div>
@@ -100,7 +100,7 @@ const facts = computed<MetricGridItem[]>(() => [
       <MetricGrid
         class="episode-summary-metrics"
         :items="facts"
-        label="Episode summary"
+        label="Round summary"
         :max-columns="5"
         density="compact"
       />

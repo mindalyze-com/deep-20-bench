@@ -23,7 +23,7 @@ const turnMap = computed(() =>
         marker: turn.counted ? `Q${turn.counted_questions}` : "END",
         answer: "FORMAT",
         tone: "format",
-        label: `Turn ${turn.turn_number}: output contract violation`,
+        label: `Turn ${turn.turn_number}: reply in the wrong format`,
       };
     }
     const actionLabel =
@@ -89,8 +89,8 @@ const jumpToTurn = (turnNumber: number): void => {
         <h2 id="transcript-heading">Questions and answers.</h2>
       </div>
       <p>
-        Turns appear in recorded order. Each action shows the Guesser first, followed by
-        the final checked answer.
+        Turns are shown in the order they happened. Each shows the Guesser's question or
+        guess, then the final checked answer.
       </p>
     </header>
 
@@ -104,8 +104,9 @@ const jumpToTurn = (turnNumber: number): void => {
       </summary>
       <div class="setup-body">
         <p>
-          These messages introduced this episode to the Guesser. The BEGIN event
-          contains the broad category and an opaque subject-independent variation token.
+          The Guesser received these messages at the start of the round. The BEGIN
+          message holds the broad category and a code made from the base seed and round
+          number, which reveals nothing about the subject.
         </p>
         <article>
           <span>System message</span>
@@ -116,8 +117,8 @@ const jumpToTurn = (turnNumber: number): void => {
           <pre>{{ episode.guesser_disclosure.begin_message }}</pre>
         </article>
         <p class="detail-note">
-          Valid replies are shown in the required format. Rejected Guesser text
-          is published separately without provider or call identifiers.
+          Valid replies are shown in the required format. Rejected replies are shown
+          separately, without provider or call IDs.
         </p>
       </div>
     </details>
@@ -190,7 +191,7 @@ const jumpToTurn = (turnNumber: number): void => {
               <span>
                 {{ turn.action === "ASK" ? "1 · Guesser asks" : "1 · Guesser guesses" }}
               </span>
-              <span v-if="!turn.counted">No question charge</span>
+              <span v-if="!turn.counted">Not counted</span>
             </div>
             <h3>
               {{ turn.action === "ASK" ? turn.question : turn.guess_name }}
@@ -198,15 +199,15 @@ const jumpToTurn = (turnNumber: number): void => {
             <aside v-if="turn.oracle_cache" class="cache-source" :aria-label="turn.oracle_cache.scope === 'same_episode' ? 'Earlier turn answer source' : turn.oracle_cache.scope === 'same_execution' ? 'Earlier game answer source' : 'Historical answer source'">
               <strong v-if="turn.oracle_cache.scope === 'same_episode'">Answer reused from turn {{ turn.oracle_cache.turn_number }} of this game</strong>
               <strong v-else-if="turn.oracle_cache.scope === 'same_execution'">Answer reused from an earlier game in this benchmark run</strong>
-              <strong v-else>Answer from an earlier test</strong>
-              <p>This answer and its Oracle evidence were reused. No new research or review was run for this turn.</p>
+              <strong v-else>Answer reused from an earlier benchmark run</strong>
+              <p>This answer and its evidence come from an earlier check. No new search or review ran for this turn.</p>
               <details>
                 <summary>View original response</summary>
                 <dl>
                   <template v-if="turn.oracle_cache.scope !== 'same_episode'">
                   <div><dt>Execution</dt><dd>{{ turn.oracle_cache.execution_id }}</dd></div>
                   <div><dt>Model / benchmark</dt><dd>{{ turn.oracle_cache.model_id }} / {{ turn.oracle_cache.benchmark_id }}</dd></div>
-                  <div><dt>Subject / trial / turn</dt><dd>{{ turn.oracle_cache.target_id }} / {{ turn.oracle_cache.trial_id }} / {{ turn.oracle_cache.turn_number }}</dd></div>
+                  <div><dt>Subject / round / turn</dt><dd>{{ turn.oracle_cache.target_id }} / {{ turn.oracle_cache.trial_id }} / {{ turn.oracle_cache.turn_number }}</dd></div>
                   </template>
                   <div v-else><dt>Original turn</dt><dd><button type="button" @click="jumpToTurn(turn.oracle_cache.turn_number)">Go to turn {{ turn.oracle_cache.turn_number }}</button></dd></div>
                   <div><dt>Episode</dt><dd>{{ turn.oracle_cache.episode_id }}</dd></div>
@@ -278,16 +279,16 @@ const jumpToTurn = (turnNumber: number): void => {
         <template v-else>
           <div class="turn-body">
             <div class="turn-label">
-              <span>1 · Guesser output rejected</span>
-              <span>{{ turn.counted ? "Turn charged" : "Limit reached" }}</span>
+              <span>1 · Guesser reply rejected</span>
+              <span>{{ turn.counted ? "Turn counted" : "Limit reached" }}</span>
             </div>
-            <h3>Model broke the output contract.</h3>
+            <h3>Reply in the wrong format.</h3>
             <p class="guess-description">
               {{ violationDetails[turn.violation_kind].label }} ·
               {{
                 turn.feedback_event === "FORMAT_ERROR"
                   ? "fixed format reminder sent"
-                  : "episode ended without another retry"
+                  : "round ended without a retry"
               }}
             </p>
             <details
@@ -296,7 +297,7 @@ const jumpToTurn = (turnNumber: number): void => {
             >
               <summary>
                 <span>
-                  <strong>Why this output was rejected</strong>
+                  <strong>Why this reply was rejected</strong>
                   <small>
                     {{ violationDetails[turn.violation_kind].label }} · turn
                     {{ turn.turn_number }}
@@ -313,15 +314,15 @@ const jumpToTurn = (turnNumber: number): void => {
                   </div>
                   <div><dt>Turn</dt><dd>{{ turn.turn_number }}</dd></div>
                   <div>
-                    <dt>Question charge</dt>
-                    <dd>{{ turn.counted ? `Yes · Q${turn.counted_questions}` : "No" }}</dd>
+                    <dt>Counted</dt>
+                    <dd>{{ turn.counted ? `Yes · question ${turn.counted_questions}` : "No" }}</dd>
                   </div>
                   <div><dt>Feedback</dt><dd>{{ turn.feedback_event ?? "No retry" }}</dd></div>
                 </dl>
                 <section class="rejected-output-comparison">
                   <header>
                     <strong>What the model returned</strong>
-                    <small>Exact Guesser provider text</small>
+                    <small>Exact text from the provider</small>
                   </header>
                   <div v-if="turn.rejected_outputs.length" class="rejected-output-list">
                     <article
@@ -336,7 +337,7 @@ const jumpToTurn = (turnNumber: number): void => {
                     </article>
                   </div>
                   <p v-else class="missing-output">
-                    The provider returned no textual completion for this call.
+                    The provider returned no text.
                   </p>
                 </section>
                 <section
@@ -344,7 +345,7 @@ const jumpToTurn = (turnNumber: number): void => {
                   class="contract-examples"
                 >
                   <header>
-                    <strong>What a valid response looks like</strong>
+                    <strong>What a valid reply looks like</strong>
                     <small>The same formats shown to the Guesser</small>
                   </header>
                   <div>
@@ -358,15 +359,15 @@ const jumpToTurn = (turnNumber: number): void => {
                     </article>
                   </div>
                   <p class="detail-note">
-                    The response must match one complete format. Active strings must be
-                    non-empty. Inactive fields must be JSON <code>null</code>.
+                    A reply must match one of these formats exactly. Text fields in use
+                    must not be empty; unused fields must be JSON <code>null</code>.
                   </p>
                 </section>
               </div>
             </details>
           </div>
           <div class="answer answer-format">
-            <span>2 · Protocol response</span>
+            <span>2 · System response</span>
             <strong>FORMAT</strong>
           </div>
         </template>

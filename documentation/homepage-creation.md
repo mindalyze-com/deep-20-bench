@@ -3,6 +3,28 @@
 Status: implemented publication for benchmark editions 1 and 1.1, with separate
 latest-qualified-run selection and 1.1 as the GUI default.
 
+## Purpose
+
+Deep20Bench publishes a static GitHub Pages website derived from completed benchmark
+artifacts. The site provides an approachable leaderboard and an
+evidence-first research explorer. It must show a clearly defined winner without hiding success
+rates, subject-level variation, costs, provenance, or experimental results.
+
+The website is a post-processing product. It never participates in a benchmark execution and
+must not become a source of Guesser context, session state, cache state, or retry input.
+
+Public copy uses plain, concise language without marketing tone. Name the actual group:
+subjects, compared models, or edition rules, rather than "cohort". Prefer "answer checks",
+"run details", and "rounds" to "adjudication", "provenance", and "episodes". Use "round" for one
+game in all visible text and labels, including headings such as "Round 2"; data field names,
+IDs, and URLs keep `trial` and `episode`. Say "format errors" or "valid format" rather than
+"output contract" or "contract compliance". Define precise technical terms such as confidence
+intervals where readers encounter them. Keep published field names, research titles, license
+terms, recorded game text, and model-visible instructions unchanged by copy edits.
+
+The durable benchmark artifacts remain the source evidence. Generated website data and HTML are
+reproducible projections of that evidence, not a second benchmark result store.
+
 ## Edition extension
 
 The edition-specific contract in [publication README](../source/publication/README.md#edition-contracts)
@@ -58,25 +80,6 @@ supported by partial evidence without presenting it as settled. It distinguishes
 benefit from a demonstrated improvement. Changes to subjects, repetitions, limits, and prompts
 prevent a cross-edition score difference from isolating the effect of the new answer classes.
 See [the five-answer rationale](five-answer-experiment.md#why-add-qualified-answers).
-
-## Purpose
-
-Deep20Bench publishes a static GitHub Pages website derived from completed benchmark
-artifacts. The site provides an approachable leaderboard and an
-evidence-first research explorer. It must show a clearly defined winner without hiding success
-rates, subject-level variation, costs, provenance, or experimental results.
-
-The website is a post-processing product. It never participates in a benchmark execution and
-must not become a source of Guesser context, session state, cache state, or retry input.
-
-Public copy uses plain language. Name the actual group: subjects, compared models, or edition
-rules, rather than "cohort". Prefer "answer checks", "run details", and "rounds" to
-"adjudication", "provenance", and "episodes" in general explanations. Define precise technical
-terms such as confidence intervals where readers encounter them. Keep published field names,
-research titles, recorded game text, and model-visible instructions unchanged by copy edits.
-
-The durable benchmark artifacts remain the source evidence. Generated website data and HTML are
-reproducible projections of that evidence, not a second benchmark result store.
 
 ## Dedicated package boundary
 

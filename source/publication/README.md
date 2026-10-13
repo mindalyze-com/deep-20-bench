@@ -1,51 +1,50 @@
 # Deep20Bench publication
 
-[Edition 1.2 DRAFT](../../documentation/edition-1.2-draft.md) is local and inactive.
-Ordinary builds validate released edition metadata against `config/editions.yaml`; they
-exclude the private draft tree and preserve the 1.0/1.1 selector and v9 compatibility data.
-`deep20-publication preview-draft --edition 1.2 --model M-9900 --run-id BX-example`
-validates the signed draft projection and renders a private local HTML report. The preview
-reader is independent of execution packages and does not change `docs/`.
-
-Evidence may additionally carry `kind: source_summary`. The strict reader and public projection
-retain this label and the full evidence text. The site displays it as a model-reported source
-summary, outside quotation blocks. An omitted kind means quotation and preserves old serialized
-data. This optional field is supported by both current and maintained v9 projections/schemas;
-no release/cohort pin changes or live calls accompany this representation change.
-
-The private artifact reader also supports `concise_knowledge_v1`, its two decision bases
-(`evidence`/`other`), bounded supporting statements, and single-attempt `bounded_unknown`.
-It validates role policy and the configured query target plus two bonus search calls (five
-when the target is omitted). Concise Reviewer/Judge UNKNOWN decisions may retain valid evidence
-indices and either decision basis with private support; earlier policies retain their stricter
-UNKNOWN format. Support fields are accepted only for the concise policy
-and are excluded from the public projection. The release decision below admits the accepted
-policy revisions; the v9/v10 transcript projections remain unchanged.
-
-
-Benchmark executions support [historical Oracle answer reuse](../../documentation/oracle-history-cache.md) under the explicit
-`historical_ask_v1`, `same_episode_ask_v1`, and `same_execution_ask_v1` policies. The benchmark
-owns lazy subject loading from verified original trial files and adds eligible completed games
-from the current execution. The engine owns a private map for repeats within one game.
-Reused ASK turns retain original evidence and marked source provenance, with no
-new adjudicator calls or cost. Cache metadata never enters Guesser history. Standalone
-commands keep fresh-call behavior. The publisher reports this provenance after execution.
-
-
-The site publishes benchmark editions **1.1** (current, default) and **1** (previous) through
-one application. Edition 1.1 has four directional question answers plus UNKNOWN; edition 1
-has YES/NO/UNKNOWN. Guess validation remains three-token in both editions.
-See [benchmark editions](../../documentation/benchmark-editions-proposal.md) and
-[qualified answers](../../documentation/five-answer-experiment.md).
-
-`deep20-publication` is the independent, deterministic post-processor for the Deep20Bench
-homepage. It validates signed benchmark artifacts, decides official eligibility, selects the
-latest qualified run for each model, calculates the declared question score, emits a versioned
-public JSON/CSV projection, and builds the static GitHub Pages site.
+`deep20-publication` builds the Deep20Bench website from finished benchmark runs. It validates
+signed benchmark artifacts, decides which runs are official, picks the latest qualifying run for
+each model, calculates the question score, writes versioned public JSON and CSV data, and builds
+the static GitHub Pages site.
 
 It does not import the benchmark runner, game, Oracle, Reviewer, Judge, Validator, provider,
-prompts, sessions, or credentials. It never makes a model request. Publication happens only
-after the source runs have completed.
+prompts, sessions, or credentials, and it never calls a model. It runs only after the source
+runs have finished.
+
+The site publishes edition **1.1** (current, default) and edition **1** (previous) in one
+application. In edition 1.1, questions get four directional answers plus UNKNOWN; edition 1
+uses YES/NO/UNKNOWN. Guesses get three answers in both editions. See
+[benchmark editions](../../documentation/benchmark-editions-proposal.md) and
+[qualified answers](../../documentation/five-answer-experiment.md).
+
+## Current policies
+
+- **Source summaries.** Evidence may carry `kind: source_summary`. The strict reader and the
+  public projection keep this label and the full evidence text. The site shows such evidence as
+  a model-reported source summary, outside quotation blocks. Without `kind`, evidence is a
+  quotation, so older data stays valid. Both the current and the maintained v9 projections and
+  schemas support the field. This change needed no new release or cohort pins and no live calls.
+- **Concise research.** The private artifact reader also supports `concise_knowledge_v1`: its
+  two decision bases (`evidence`/`other`), limited supporting statements, and single-attempt
+  `bounded_unknown`. It checks the role policy and the configured query target plus two extra
+  search calls (five when no target is set). Concise Reviewer and Judge UNKNOWN decisions may
+  keep valid evidence indices and either decision basis with private support; earlier policies
+  keep their stricter UNKNOWN format. Support fields are accepted only for the concise policy
+  and never appear in the public projection. The release decision below accepts these policy
+  revisions; the v9 and v10 transcript projections do not change.
+- **Answer reuse.** Benchmark runs can
+  [reuse earlier Oracle answers](../../documentation/oracle-history-cache.md) under the
+  explicit `historical_ask_v1`, `same_episode_ask_v1`, and `same_execution_ask_v1` policies.
+  The benchmark loads subjects from verified original round files when first needed and adds
+  eligible finished games from the current run. The engine keeps a private map for repeated
+  questions within one game. Reused turns keep their original evidence and a source label, with
+  no new answer-checking calls or cost. Cache details never enter the Guesser's history.
+  Standalone commands always make new calls. The publisher shows where each reused answer came
+  from.
+- **Edition 1.2 draft.** [Edition 1.2](../../documentation/edition-1.2-draft.md) is a local,
+  inactive draft. Normal builds check released edition metadata against
+  `config/editions.yaml`, leave out the private draft tree, and keep the 1.0/1.1 selector and
+  the v9 compatibility data. `deep20-publication preview-draft --edition 1.2 --model M-9900
+  --run-id BX-example` checks the signed draft data and renders a private local HTML report.
+  The preview reader does not depend on execution packages and does not change `docs/`.
 
 ## Package layout
 

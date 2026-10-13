@@ -62,7 +62,7 @@ const variantColumns: Record<ComparisonRankingTableVariant, readonly ComparisonC
     },
     {
       key: "contract",
-      labels: ["Contract"],
+      labels: ["Valid", "format"],
       className: "contract-column",
       numeric: true,
       width: metricWidth,
@@ -85,21 +85,21 @@ const variantColumns: Record<ComparisonRankingTableVariant, readonly ComparisonC
     },
     {
       key: "contract",
-      labels: ["Contract"],
+      labels: ["Valid", "format"],
       className: "contract-column",
       numeric: true,
       width: metricWidth,
     },
     {
       key: "cost",
-      labels: ["Guesser cost", "per episode"],
+      labels: ["Guesser cost", "per round"],
       className: "cost-column",
       numeric: true,
       width: metricWidth,
     },
     {
       key: "time",
-      labels: ["Model time", "per episode"],
+      labels: ["Model time", "per round"],
       className: "time-column",
       numeric: true,
       width: metricWidth,

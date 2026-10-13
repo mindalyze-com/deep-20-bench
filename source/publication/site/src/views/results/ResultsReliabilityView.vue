@@ -109,9 +109,9 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
       :empty="ranked.length === 0"
     >
       <template #empty>
-        <p class="eyebrow">Repeated-trial stability</p>
+        <p class="eyebrow">Stability across rounds</p>
         <h2>No models can be ranked.</h2>
-        <p>Stability ranking requires a published 95% CI.</p>
+        <p>A stability rank needs a published 95% CI.</p>
       </template>
 
           <MetricGrid
@@ -131,27 +131,26 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
                 <h2 id="reliability-scatter-title">Stability.</h2>
               </div>
               <p>
-                Each dot compares two results. Lower means a better average question score.
-                Further left means a smaller CI width, so the model produced more
-                consistent results across repeated trials on the fixed subjects.
+                Each dot is one model. Lower means a better average question score. Further
+                left means a narrower CI, so the model's results varied less across repeated
+                rounds on these subjects.
               </p>
               <ResultHelp label="Stability metric explanations">
                 <InfoPopover label="CI width">
                   <p>
-                    CI width is the upper 95% CI bound minus the lower bound. A smaller CI
-                    width means the estimated average score varied less across the current
-                    repeated trials.
+                    CI width is the upper end of the 95% confidence interval minus the
+                    lower end. A smaller width means the average score is more certain.
                   </p>
                   <p>
-                    It describes uncertainty in the average score. It is not a prediction
-                    interval for an individual trial.
+                    It describes uncertainty in the average, not the range of single
+                    rounds.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="Score and stability">
                   <p>
-                    Score and stability answer different questions. A model can repeat a
-                    poor score consistently, or achieve a strong average with more variation
-                    between trials.
+                    Score and stability measure different things. A model can score
+                    poorly but consistently, or score well with more variation between
+                    rounds.
                   </p>
                 </InfoPopover>
               </ResultHelp>
@@ -242,30 +241,28 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
           <MetricDefinitionCard
             title="CI width."
             formula="CI width = upper 95% CI bound − lower 95% CI bound"
-            interpretation="A smaller CI width means the model produced more consistent average scores across the current repeated rounds."
-            detail-summary="Steps, example, interpretation, and limits"
+            interpretation="A smaller CI width means more consistent results across the repeated rounds."
+            detail-summary="Steps, example, and limits"
           >
             <ol>
-              <li>Calculate the fixed-subject repeated-trial 95% CI.</li>
-              <li>Subtract its lower bound from its upper bound.</li>
-              <li>Sort exact widths from smallest to largest.</li>
+              <li>Calculate the model's 95% CI from its repeated rounds.</li>
+              <li>Subtract the lower end from the upper end.</li>
+              <li>Sort the widths from smallest to largest.</li>
             </ol>
             <p class="metric-example">
               Example:
               <strong>17.46 − 9.79 = 7.67 questions.</strong>
             </p>
             <p>
-              Every model uses the same 95% confidence level, so the level itself cannot
-              define the order. CI width is the comparison measure.
+              Every model uses the same 95% level, so only the width differs.
             </p>
             <p>
-              Stable does not mean good. A model can produce a poor score consistently and
-              rank well here. A strong average with a large CI width ranks lower because its
-              repeated results vary more.
+              Stable does not mean good. A model that scores poorly but consistently can rank
+              well here. A model with a strong average and a wide CI ranks lower.
             </p>
             <p>
-              This is an approximate stability measure for the current fixed subjects. It is
-              not a prediction interval for individual trials or a pairwise significance test.
+              This is an approximate measure for these subjects only. It does not predict
+              single rounds and is not a significance test between two models.
             </p>
           </MetricDefinitionCard>
     </ResultsContent>

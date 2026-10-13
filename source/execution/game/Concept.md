@@ -1,38 +1,16 @@
 # Game engine concept
 
-New B-0003 executions use `concise_knowledge_v1`: one research attempt requesting
-`research_query_target` queries (default 3), with an API ceiling calculated as the target plus
-two bonus calls. Valid completed answers within that ceiling retain normal independent
-evidence/knowledge decisions and private `evidence`/`other` basis plus a supporting statement. This policy permits source-free directional answers
-and retained UNKNOWN context; the earlier evidence/recovery rules below describe historical
-policies. See [the current policy](../../../documentation/five-answer-experiment.md#concise-evidenceknowledge-policy).
-
-
-Benchmark executions support [historical Oracle answer reuse](../../../documentation/oracle-history-cache.md) under the explicit
-`historical_ask_v1`, `same_episode_ask_v1`, and `same_execution_ask_v1` policies. The benchmark
-lazily loads verified historical trials and adds eligible live ASK answers after each completed,
-scoring-eligible game. Later repetitions reuse these answers; resume restores them from verified
-trial artifacts. The engine also stores answers immediately for normalized repeats within one
-game. Repeats still count as questions. Reused ASK turns retain original evidence and marked
-source provenance, with no new adjudicator calls or cost. Each Guesser conversation starts fresh;
-cache metadata never enters it. Standalone commands keep fresh-call behavior. Guesser and
-Validator responses are never cached. Older manifests retain their recorded cache scope.
-
-
-The opt-in B-0003 experiment extends factual replies to five tokens without changing role boundaries or scoring. See [Five-answer experiment](../../../documentation/five-answer-experiment.md).
-
 ## Purpose and scope
 
-The game engine is the deterministic state machine for one Deep20Bench episode. Given one
-trusted subject and one Guesser configuration, it repeatedly asks the Guesser for an action,
-routes that action to the correct independent adjudicator, advances the question budget, and
-persists through an injected typed audit sink.
+The game engine is the deterministic state machine for one Deep20Bench game (episode). Given
+one trusted subject and one Guesser configuration, it repeatedly asks the Guesser for an
+action, sends the action to the right independent checker, counts questions, and saves data
+through an injected typed audit sink.
 
-The engine does not decide facts or identities itself. It delegates factual questions to the
-Oracle quality-control facade, which coordinates research, blind review, and disputed-case
-judgment. Identity proposals go to the separate Guess Validator. The engine does not schedule
-repetitions or compare models; the benchmark control plane calls this one-game engine
-repeatedly.
+The engine never decides facts or identities itself. Questions go to the Oracle facade, which
+runs research, blind review, and the Judge for disputes. Guesses go to the separate Guess
+Validator. The engine does not schedule repeated rounds or compare models; the benchmark control
+plane calls it once per round.
 
 ```mermaid
 flowchart LR
@@ -58,6 +36,30 @@ flowchart LR
     Engine --> Observer["Injected typed execution observer"]
     Engine --> Result["EpisodeResult"]
 ```
+
+## Current policies
+
+- **Concise research (`concise_knowledge_v1`).** New B-0003 runs make one research attempt that
+  asks for `research_query_target` search queries (default 3), with an API limit of that
+  target plus two extra calls. A valid answer within that limit keeps its independent evidence
+  or knowledge decision, a private `evidence`/`other` basis, and a supporting statement. The
+  policy allows directional answers without sources and keeps context for UNKNOWN answers. The
+  older evidence and recovery rules below describe earlier policies. See
+  [the current policy](../../../documentation/five-answer-experiment.md#concise-evidenceknowledge-policy).
+- **Answer reuse.** Benchmark runs can
+  [reuse earlier Oracle answers](../../../documentation/oracle-history-cache.md) under the
+  explicit `historical_ask_v1`, `same_episode_ask_v1`, and `same_execution_ask_v1` policies.
+  The benchmark loads verified earlier rounds when first needed and adds eligible new ASK
+  answers after each finished, scored game. Later rounds reuse them, and a resumed run restores
+  them from verified round artifacts. Within one game, the engine stores answers at once so that
+  a repeated (normalized) question reuses them. Repeated questions still count. Reused turns
+  keep their original evidence and a source label, with no new answer-checking calls or cost.
+  Each Guesser conversation starts fresh, and cache details never enter it. Standalone commands
+  always make new calls. Guesser and Validator responses are never cached. Older manifests keep
+  their recorded cache scope.
+- **Five answers.** B-0003 is official edition 1.1. It allows five answer tokens for questions;
+  guesses still use YES, NO, or UNKNOWN. Role boundaries and the scoring formula are unchanged. See
+  [Five-answer experiment](../../../documentation/five-answer-experiment.md).
 
 ## Stable adjudicators, variable Guesser
 
