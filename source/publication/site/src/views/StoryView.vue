@@ -8,11 +8,11 @@ const newsEntries = [
   {
     date: "2026-10-13",
     displayDate: "13 October 2026",
-    title: "Muse Wonder (high) added.",
+    title: "Muse Wonder (high) joins the leaderboard.",
     summary:
-      "Edition 1.1 question score: 19.6 (lower is better), 13th of 19 models. It found the subject in 29 of 30 rounds. " +
-      "Results varied a lot by subject: it ranked 9th on Albert Schweitzer but 18th on Garfield, " +
-      "which took 10, 22, and 30 questions. Achilles took eight questions every time.",
+      "It scored 19.6 in edition 1.1 (lower is better), 13th of 19 models, and guessed the subject in 29 of 30 rounds. " +
+      "Some subjects were much harder for it than others: it was 9th best on Albert Schweitzer but 18th on Garfield, " +
+      "which took it 10, 22, and 30 questions. Achilles took eight questions every time.",
     link: {
       type: "run",
       executionId: "BX-20261013-B-0003-OFFICIAL-M0033-002",
@@ -21,9 +21,9 @@ const newsEntries = [
   {
     date: "2026-09-30",
     displayDate: "30 September 2026",
-    title: "Claude Sonnet 5.5 (high) added.",
+    title: "Claude Sonnet 5.5 (high) joins the leaderboard.",
     summary:
-      "Edition 1.1 question score: 17.8 (lower is better). It found the subject in 27 of 30 rounds.",
+      "It scored 17.8 in edition 1.1 (lower is better) and guessed the subject in 27 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260930-B-0003-official-M0032-001",
@@ -32,9 +32,9 @@ const newsEntries = [
   {
     date: "2026-09-30",
     displayDate: "30 September 2026",
-    title: "GPT-6.1 Sol (high) added.",
+    title: "GPT-6.1 Sol (high) joins the leaderboard.",
     summary:
-      "Edition 1.1 question score: 15.2 (lower is better). It found the subject in 29 of 30 rounds.",
+      "It scored 15.2 in edition 1.1 (lower is better) and guessed the subject in 29 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260929-B-0003-official-M0031-001",
@@ -43,9 +43,9 @@ const newsEntries = [
   {
     date: "2026-09-27",
     displayDate: "27 September 2026",
-    title: "Claude Opus 5.5 (high) added.",
+    title: "Claude Opus 5.5 (high) joins the leaderboard.",
     summary:
-      "Edition 1.1 question score: 15.0 (lower is better). It found the subject in 29 of 30 rounds.",
+      "It scored 15.0 in edition 1.1 (lower is better) and guessed the subject in 29 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260926-B-0003-official-M0030-001",
@@ -54,9 +54,9 @@ const newsEntries = [
   {
     date: "2026-09-27",
     displayDate: "27 September 2026",
-    title: "GPT-6 Sol (high) added.",
+    title: "GPT-6 Sol (high) joins the leaderboard.",
     summary:
-      "Edition 1.1 question score: 18.0 (lower is better). It found the subject in 30 of 30 rounds.",
+      "It scored 18.0 in edition 1.1 (lower is better) and guessed the subject in all 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260926-B-0003-official-M0029-001",
@@ -65,9 +65,9 @@ const newsEntries = [
   {
     date: "2026-09-27",
     displayDate: "27 September 2026",
-    title: "GPT-6 Luna (high) added.",
+    title: "GPT-6 Luna (high) joins the leaderboard.",
     summary:
-      "Edition 1.1 question score: 21.2 (lower is better). It found the subject in 24 of 30 rounds.",
+      "It scored 21.2 in edition 1.1 (lower is better) and guessed the subject in 24 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260926-B-0003-official-M0028-001",
@@ -76,9 +76,9 @@ const newsEntries = [
   {
     date: "2026-09-27",
     displayDate: "27 September 2026",
-    title: "Grok 4.7 (high) added.",
+    title: "Grok 4.7 (high) joins the leaderboard.",
     summary:
-      "Edition 1.1 question score: 22.2 (lower is better). It found the subject in 22 of 30 rounds.",
+      "It scored 22.2 in edition 1.1 (lower is better) and guessed the subject in 22 of 30 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260926-B-0003-official-M0027-001",
@@ -87,8 +87,8 @@ const newsEntries = [
   {
     date: "2026-09-05",
     displayDate: "5 September 2026",
-    title: "GPT-6 Astra (high) added.",
-    summary: "Edition 1.0 question score: 15.1 (lower is better). It found the subject in 33 of 35 rounds.",
+    title: "GPT-6 Astra (high) joins the leaderboard.",
+    summary: "It scored 15.1 in edition 1.0 (lower is better) and guessed the subject in 33 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260904-official-M0022-001",
@@ -97,8 +97,8 @@ const newsEntries = [
   {
     date: "2026-09-04",
     displayDate: "4 September 2026",
-    title: "Gemini 3.8 Flash (high) added.",
-    summary: "Edition 1.0 question score: 13.1 (lower is better). It found the subject in 35 of 35 rounds.",
+    title: "Gemini 3.8 Flash (high) joins the leaderboard.",
+    summary: "It scored 13.1 in edition 1.0 (lower is better) and guessed the subject in all 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260904-official-M0021-001",
@@ -107,8 +107,8 @@ const newsEntries = [
   {
     date: "2026-09-02",
     displayDate: "2 September 2026",
-    title: "Claude Fable 5.1 (high) added.",
-    summary: "Edition 1.0 question score: 12.1 (lower is better). It found the subject in 34 of 35 rounds.",
+    title: "Claude Fable 5.1 (high) joins the leaderboard.",
+    summary: "It scored 12.1 in edition 1.0 (lower is better) and guessed the subject in 34 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260902-official-M0020-001",
@@ -119,7 +119,7 @@ const newsEntries = [
     displayDate: "30 August 2026",
     title: "Behind Deep20Bench: the hard part wasn’t the game.",
     summary:
-      "A first-person account of the Oracle errors, blind review, format failures, and design choices behind the benchmark.",
+      "Patrick writes about what it took to build Deep20Bench: wrong answers from the answering model, the blind second check, format errors, and the design choices along the way.",
     link: {
       type: "external",
       href: "https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8",
@@ -129,9 +129,9 @@ const newsEntries = [
   {
     date: "2026-08-23",
     displayDate: "23 August 2026",
-    title: "OpenRouter’s Ox Alpha (high) tested.",
+    title: "We tried Ox Alpha (high) from OpenRouter.",
     summary:
-      "A stealth model offered through OpenRouter. Edition 1.0 question score: 17.6 (lower is better), 12th of 15 models at the time. It found the subject in 32 of 35 rounds.",
+      "An anonymous stealth model on OpenRouter. It scored 17.6 in edition 1.0 (lower is better), 12th of 15 models at the time, and guessed the subject in 32 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260823-official-M0017-018",
@@ -140,8 +140,8 @@ const newsEntries = [
   {
     date: "2026-08-17",
     displayDate: "17 August 2026",
-    title: "Gemini 3.7 Flash (high) added.",
-    summary: "Edition 1.0 question score: 14.0 (lower is better). It found the subject in 34 of 35 rounds.",
+    title: "Gemini 3.7 Flash (high) joins the leaderboard.",
+    summary: "It scored 14.0 in edition 1.0 (lower is better) and guessed the subject in 34 of 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260817-official-M0016-015",
@@ -150,8 +150,8 @@ const newsEntries = [
   {
     date: "2026-08-15",
     displayDate: "15 August 2026",
-    title: "Grok 4.6 (high) added.",
-    summary: "Edition 1.0 question score: 14.3 (lower is better). It found the subject in 35 of 35 rounds.",
+    title: "Grok 4.6 (high) joins the leaderboard.",
+    summary: "It scored 14.3 in edition 1.0 (lower is better) and guessed the subject in all 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260814-official-M0015-013",
@@ -160,8 +160,8 @@ const newsEntries = [
   {
     date: "2026-08-05",
     displayDate: "5 August 2026",
-    title: "Claude Fable 5 (high) added.",
-    summary: "Edition 1.0 question score: 12.1 (lower is better). It found the subject in 35 of 35 rounds.",
+    title: "Claude Fable 5 (high) joins the leaderboard.",
+    summary: "It scored 12.1 in edition 1.0 (lower is better) and guessed the subject in all 35 rounds.",
     link: {
       type: "run",
       executionId: "BX-20260805-official-M0014-011",
@@ -296,9 +296,12 @@ onActivated(applyRouteContext);
         <header class="section-heading">
           <div>
             <p class="eyebrow">Updates</p>
-            <h2 id="news-title">Project news.</h2>
+            <h2 id="news-title">What’s new.</h2>
           </div>
-          <p>New results, releases, and articles.</p>
+          <p>
+            New models on the leaderboard, releases, and articles. A score is the average number
+            of questions a model needs, and missed rounds count as a penalty. Lower is better.
+          </p>
         </header>
         <div id="news-list" ref="newsList" class="news-list">
           <component

@@ -324,7 +324,7 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   );
 
   const news = page.locator("#news");
-  await expect(news.getByRole("heading", { name: "Project news." })).toBeVisible();
+  await expect(news.getByRole("heading", { name: "What’s new." })).toBeVisible();
   const entries = news.locator(".news-entry");
   await expect(entries).toHaveCount(15);
   await expect(news.locator(".news-entry:visible")).toHaveCount(4);
@@ -333,24 +333,24 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await news.getByRole("button", { name: "Show 3 older updates" }).click();
   await expect(entries.nth(7).locator("time")).toHaveAttribute("datetime", "2026-09-05");
   await expect(entries.nth(7).locator("time")).toHaveText("5 September 2026");
-  await expect(entries.nth(7)).toContainText("GPT-6 Astra (high) added.");
-  await expect(entries.nth(7)).toContainText("15.1 (lower is better). It found the subject in 33 of 35 rounds.");
+  await expect(entries.nth(7)).toContainText("GPT-6 Astra (high) joins the leaderboard.");
+  await expect(entries.nth(7)).toContainText("15.1 in edition 1.0 (lower is better) and guessed the subject in 33 of 35 rounds.");
   await expect(entries.nth(7).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260904-official-M0022-001/",
   );
   await expect(entries.nth(8).locator("time")).toHaveAttribute("datetime", "2026-09-04");
   await expect(entries.nth(8).locator("time")).toHaveText("4 September 2026");
-  await expect(entries.nth(8)).toContainText("Gemini 3.8 Flash (high) added.");
-  await expect(entries.nth(8)).toContainText("13.1 (lower is better). It found the subject in 35 of 35 rounds.");
+  await expect(entries.nth(8)).toContainText("Gemini 3.8 Flash (high) joins the leaderboard.");
+  await expect(entries.nth(8)).toContainText("13.1 in edition 1.0 (lower is better) and guessed the subject in all 35 rounds.");
   await expect(entries.nth(8).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260904-official-M0021-001/",
   );
   await expect(entries.nth(9).locator("time")).toHaveAttribute("datetime", "2026-09-02");
   await expect(entries.nth(9).locator("time")).toHaveText("2 September 2026");
-  await expect(entries.nth(9)).toContainText("Claude Fable 5.1 (high) added.");
-  await expect(entries.nth(9)).toContainText("12.1 (lower is better). It found the subject in 34 of 35 rounds.");
+  await expect(entries.nth(9)).toContainText("Claude Fable 5.1 (high) joins the leaderboard.");
+  await expect(entries.nth(9)).toContainText("12.1 in edition 1.0 (lower is better) and guessed the subject in 34 of 35 rounds.");
   await expect(entries.nth(9).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260902-official-M0020-001/",
@@ -359,7 +359,7 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(entries.nth(10).locator("time")).toHaveText("30 August 2026");
   await expect(entries.nth(10)).toContainText("Behind Deep20Bench: the hard part wasn’t the game.");
   await expect(entries.nth(10)).toContainText(
-    "A first-person account of the Oracle errors, blind review, format failures, and design choices behind the benchmark.",
+    "Patrick writes about what it took to build Deep20Bench: wrong answers from the answering model, the blind second check, format errors, and the design choices along the way.",
   );
   await expect(entries.nth(10).getByRole("link", { name: /Read article/ })).toHaveAttribute(
     "href",
@@ -367,9 +367,9 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   );
   await expect(entries.nth(11).locator("time")).toHaveAttribute("datetime", "2026-08-23");
   await expect(entries.nth(11).locator("time")).toHaveText("23 August 2026");
-  await expect(entries.nth(11)).toContainText("OpenRouter’s Ox Alpha (high) tested.");
+  await expect(entries.nth(11)).toContainText("We tried Ox Alpha (high) from OpenRouter.");
   await expect(entries.nth(11)).toContainText(
-    "A stealth model offered through OpenRouter. Edition 1.0 question score: 17.6 (lower is better), 12th of 15 models at the time. It found the subject in 32 of 35 rounds.",
+    "An anonymous stealth model on OpenRouter. It scored 17.6 in edition 1.0 (lower is better), 12th of 15 models at the time, and guessed the subject in 32 of 35 rounds.",
   );
   await expect(entries.nth(11).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
@@ -377,23 +377,23 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   );
   await expect(entries.nth(12).locator("time")).toHaveAttribute("datetime", "2026-08-17");
   await expect(entries.nth(12).locator("time")).toHaveText("17 August 2026");
-  await expect(entries.nth(12)).toContainText("Gemini 3.7 Flash (high) added.");
-  await expect(entries.nth(12)).toContainText("14.0 (lower is better). It found the subject in 34 of 35 rounds.");
+  await expect(entries.nth(12)).toContainText("Gemini 3.7 Flash (high) joins the leaderboard.");
+  await expect(entries.nth(12)).toContainText("14.0 in edition 1.0 (lower is better) and guessed the subject in 34 of 35 rounds.");
   await expect(entries.nth(12).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260817-official-M0016-015/",
   );
   await expect(entries.nth(13).locator("time")).toHaveAttribute("datetime", "2026-08-15");
   await expect(entries.nth(13).locator("time")).toHaveText("15 August 2026");
-  await expect(entries.nth(13)).toContainText("Grok 4.6 (high) added.");
-  await expect(entries.nth(13)).toContainText("14.3 (lower is better). It found the subject in 35 of 35 rounds.");
+  await expect(entries.nth(13)).toContainText("Grok 4.6 (high) joins the leaderboard.");
+  await expect(entries.nth(13)).toContainText("14.3 in edition 1.0 (lower is better) and guessed the subject in all 35 rounds.");
   await expect(entries.nth(13).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260814-official-M0015-013/",
   );
   await expect(entries.nth(14).locator("time")).toHaveAttribute("datetime", "2026-08-05");
   await expect(entries.nth(14).locator("time")).toHaveText("5 August 2026");
-  await expect(entries.nth(14)).toContainText("Claude Fable 5 (high) added.");
+  await expect(entries.nth(14)).toContainText("Claude Fable 5 (high) joins the leaderboard.");
   await expect(entries.nth(14).getByRole("link", { name: "View run" })).toHaveAttribute(
     "href",
     "/deep-20-bench/runs/BX-20260805-official-M0014-011/",
@@ -417,8 +417,8 @@ test("news reveals older updates in batches and returns to the latest", { tag: [
   await expect(visibleEntries).toHaveCount(4);
   await expect(status).toHaveText("Showing 4 of 15 updates");
   await expect(latestOnly).toHaveCount(0);
-  await expect(entries.first()).toContainText("Muse Wonder (high) added.");
-  await expect(entries.nth(1)).toContainText("Claude Sonnet 5.5 (high) added.");
+  await expect(entries.first()).toContainText("Muse Wonder (high) joins the leaderboard.");
+  await expect(entries.nth(1)).toContainText("Claude Sonnet 5.5 (high) joins the leaderboard.");
 
   for (const [previousCount, batchSize, expectedCount] of [[4, 4, 8], [8, 4, 12], [12, 3, 15]]) {
     const showOlder = news.getByRole("button", { name: `Show ${batchSize} older updates` });
