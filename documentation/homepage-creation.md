@@ -285,7 +285,8 @@ artifacts fail the build.
 
 ## Winner and scoring rule
 
-The homepage winner is the model with the lowest question score in the active official cohort.
+The homepage winner is the model ranked first in the active official cohort: lowest question
+score, then narrowest 95% confidence interval when exact scores match.
 The headline number stays in the same unit as the game: questions. Lower is better.
 
 For a benchmark with question limit `Q`:
@@ -305,10 +306,18 @@ This calculation:
 - Ensures every failed trial affects the score.
 - Treats protocol failures and early Validator `UNKNOWN` results as failures rather than
   artificially cheap trials.
-- Produces an exact tie when unrounded scores are equal.
+- Keeps equal unrounded scores equal.
 
 The overview displays the question score to one decimal place and ranks on the exact unrounded
-value. Detailed run and subject views show the model score and subject averages. Episode views
+value, then the exact 95% confidence-interval width (upper bound minus lower bound). A narrower
+interval ranks first when scores match. Equal scores and widths share a competition rank; the
+next rank skips the tied positions. An unavailable interval follows available intervals within
+the same score group. This is a ranking rule, not a pairwise significance test. The homepage,
+results, and Method page explain it. Subtle circled rank numbers appear on winner links, result
+tables, mobile cards, and run summaries; shared ranks use `=1`, `=2`, and so on. Ranking notes
+appear beside the chart only when scores match; chart help and the Method page always explain
+the rule. The badges remain plain text with accessible rank labels. Detailed run and
+subject views show the model score and subject averages. Episode views
 show both counted questions and penalized questions. A model failure shows both its observed
 count and the declared penalty so 51 is never mistaken for an observed question count.
 

@@ -421,7 +421,11 @@ model score = sum of all subject averages / number of subjects
 ```
 
 The question score remains in the unit used by the game. Lower is better. Ranking uses the
-unrounded value, and exact ties remain joint ties. Every completed trial contributes to its
+unrounded value first, then the exact width of the 95% confidence interval (upper minus lower).
+Narrower intervals rank first when scores match. Equal scores and widths share a competition
+rank, and the next rank skips tied positions. Missing intervals follow available intervals
+within the same score group. The winner uses this same rank. This rule does not imply a
+statistically significant difference between models. Every completed trial contributes to its
 subject average, including model failures at the declared penalty. Averaging the subject
 averages gives every subject equal weight. Both cohorts use equal repetition counts, so this is also the average of all 30 penalized
 trial values in edition 1.1, or all 35 in edition 1. Infrastructure

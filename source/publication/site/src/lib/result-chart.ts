@@ -37,3 +37,6 @@ export const leaderboardScoreDot = (
 
 export const questionScoreChartSummary =
   "Lower is better. The blue marker is the average question score. The colored line is its 95% confidence interval (CI). The side plot shows each CI width, with three color bands of equal size.";
+
+export const questionScoreRankingRule =
+  "Models rank by exact average score, then by narrower 95% confidence interval (CI). Equal scores and CI widths share a rank.";

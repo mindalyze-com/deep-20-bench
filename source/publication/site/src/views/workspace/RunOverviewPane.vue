@@ -9,6 +9,7 @@ import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import ModelName from "@/components/ModelName.vue";
 import PublicationTime from "@/components/PublicationTime.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
+import RankBadge from "@/components/RankBadge.vue";
 import ReasoningEffort from "@/components/ReasoningEffort.vue";
 import RunModelsSection from "@/components/run/RunModelsSection.vue";
 import { getLeaderboard, getSubject, peekLeaderboard } from "@/lib/api";
@@ -27,6 +28,7 @@ import {
 } from "@/lib/format";
 import { runRoleCopy, runRoleOrder } from "@/lib/run-roles";
 import { useRunWorkspace } from "@/lib/workspace-context";
+import { rankPresentation } from "@/lib/rank-presentation";
 import type { LeaderboardRow } from "@/lib/types";
 
 const { run, subjects } = useRunWorkspace();
@@ -188,7 +190,7 @@ const roleGuide = runRoleOrder.map((role) => ({
         </p>
         <p v-if="leaderboardRow" class="run-search-facts">
           <span v-if="leaderboardRow.rank !== null">
-            Rank {{ leaderboardRow.rank }} of {{ evaluatedCount }}
+            <span aria-hidden="true">Rank </span><RankBadge :rank="leaderboardRow.rank" v-bind="rankPresentation(leaderboardRow, leaderboard)" /> of {{ evaluatedCount }}
           </span>
           <span>{{ leaderboardRow.model.provider }}</span>
           <ReasoningEffort :effort="leaderboardRow.model.reasoning_effort" compact />

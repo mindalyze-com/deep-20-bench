@@ -8,6 +8,7 @@ import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
+import RankBadge from "@/components/RankBadge.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
 import ResultsContent from "@/components/ResultsContent.vue";
 import ScoreDotPlot from "@/components/ScoreDotPlot.vue";
@@ -27,10 +28,12 @@ import {
   percent,
 } from "@/lib/format";
 import { usePageRouteContext } from "@/lib/route-context";
+import { hasScoreTies, rankPresentation } from "@/lib/rank-presentation";
 import { runRoute } from "@/lib/route-location";
 import {
   leaderboardScoreDot,
   questionScoreChartSummary,
+  questionScoreRankingRule,
   type ScoreDot,
 } from "@/lib/result-chart";
 import type { LeaderboardRow, ManifestDocument } from "@/lib/types";
@@ -141,6 +144,8 @@ const { loading, error } = usePublicationLoad(async () => {
           :max-columns="4"
         />
 
+        <p v-if="hasScoreTies(rows)" class="results-note score-ranking-note">{{ questionScoreRankingRule }}</p>
+
         <section
           class="panel result-chart-panel comparison-panel"
           aria-labelledby="overview-chart-title"
@@ -158,6 +163,7 @@ const { loading, error } = usePublicationLoad(async () => {
                   weighted equally. Lower is better. A failed round receives the fixed
                   failure score.
                 </p>
+                <p>{{ questionScoreRankingRule }}</p>
               </InfoPopover>
               <InfoPopover label="CI width">
                 <p>
@@ -207,7 +213,7 @@ const { loading, error } = usePublicationLoad(async () => {
                 }"
                 @click="openRun(row)"
               >
-                <td class="rank-column" data-label="Question rank">{{ row.rank ?? "-" }}</td>
+                <td class="rank-column" data-label="Question rank"><RankBadge :rank="row.rank" v-bind="rankPresentation(row, rows)" /></td>
                 <td class="model-column" data-label="Model">
                   <ModelRunLink
                     v-if="row.execution_id !== null"
@@ -263,6 +269,8 @@ const { loading, error } = usePublicationLoad(async () => {
             v-for="row in rows"
             :key="`mobile-${row.model.model_id}`"
             :rank="row.rank ?? '-'"
+            :rank-tied="rankPresentation(row, rows).tied"
+            :rank-note="rankPresentation(row, rows).note"
             :name="row.model.display_name"
             :provider="row.model.provider"
             :to="row.execution_id === null ? null : runRoute(row.execution_id)"

@@ -8,9 +8,10 @@ const newsEntries = [
   {
     date: "2026-10-14",
     displayDate: "14 October 2026",
-    title: "Gemini 4 Argon (high) joins the leaderboard and ties for first.",
+    title: "Gemini 4 Argon (high) matches the lowest average score.",
     summary:
       "It scored 13.7 in edition 1.1 (lower is better), the same as GPT-6 Astra (high): both used 410 questions over 30 rounds and guessed every subject. " +
+      "Astra ranks first because its 95% confidence interval is narrower. " +
       "Argon was the best of 20 models on Door handle and second on Albert Schweitzer and Bike pump, " +
       "but 19th on Moon, which took it 11, 12, and 14 questions.",
     link: {

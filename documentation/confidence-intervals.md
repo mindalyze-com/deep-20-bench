@@ -79,6 +79,16 @@ The steps are:
 The two penalized scores of `51` are part of both the mean and variance. They are a main reason
 this model's interval is wide.
 
+## Question-score tie-breaker
+
+The main leaderboard ranks by exact average question score first. When scores match, it ranks
+the exact 95% interval width (upper bound minus lower bound) from smallest to largest. Equal
+scores and widths share a competition rank; the next rank skips the tied positions. A missing
+interval follows available intervals within the same score group.
+
+This tie-breaker prefers more repeatable results at the same score. It does not change trial
+scores, the average, or the interval calculation, and it is not a pairwise significance test.
+
 ## Stability ranking
 
 Every published interval uses the same 95% confidence level, so confidence level cannot rank the

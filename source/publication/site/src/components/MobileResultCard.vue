@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, type RouteLocationRaw } from "vue-router";
+import RankBadge from "@/components/RankBadge.vue";
 
 interface ResultMetric {
   label: string;
@@ -8,6 +9,8 @@ interface ResultMetric {
 
 defineProps<{
   rank: number | string;
+  rankTied?: boolean;
+  rankNote?: string;
   name: string;
   provider: string;
   metrics: ResultMetric[];
@@ -24,7 +27,7 @@ defineProps<{
     :aria-label="to === null ? undefined : `View full run for ${name}`"
   >
     <div class="mobile-result-card-head">
-      <span class="mobile-result-rank">#{{ rank }}</span>
+      <RankBadge :rank="rank" :tied="rankTied" :note="rankNote" />
       <span class="mobile-result-identity">
         <strong>{{ name }}</strong>
         <small>{{ provider }}</small>
@@ -84,13 +87,6 @@ defineProps<{
   gap: 0.6rem;
   align-items: center;
   padding: 0.85rem 0.9rem 0.75rem;
-}
-
-.mobile-result-rank {
-  color: var(--muted);
-  font-size: var(--text-small);
-  font-weight: var(--font-weight-bold);
-  font-variant-numeric: tabular-nums;
 }
 
 .mobile-result-identity {

@@ -417,7 +417,7 @@ test("news reveals older updates in batches and returns to the latest", { tag: [
   await expect(visibleEntries).toHaveCount(4);
   await expect(status).toHaveText("Showing 4 of 16 updates");
   await expect(latestOnly).toHaveCount(0);
-  await expect(entries.first()).toContainText("Gemini 4 Argon (high) joins the leaderboard and ties for first.");
+  await expect(entries.first()).toContainText("Gemini 4 Argon (high) matches the lowest average score.");
   await expect(entries.nth(1)).toContainText("Muse Wonder (high) joins the leaderboard.");
 
   for (const [previousCount, batchSize, expectedCount] of [[4, 4, 8], [8, 4, 12], [12, 4, 16]]) {

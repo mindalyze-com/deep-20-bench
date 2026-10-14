@@ -88,7 +88,7 @@ def _fraction_decimal(value: Fraction) -> Decimal:
 
 
 def _question_score(trial_values_by_subject: tuple[tuple[Decimal, ...], ...]) -> Decimal:
-    """Average subject averages exactly, so equal scores remain joint ties after rounding."""
+    """Average subject averages exactly, so equal scores stay equal after rounding."""
     if not trial_values_by_subject or any(not values for values in trial_values_by_subject):
         raise ValueError("question score requires trial values for every subject")
     subject_averages = tuple(
@@ -924,23 +924,33 @@ def _public_run(
     )
 
 
+def _question_rank_key(row: LeaderboardRow) -> tuple[Decimal, bool, Fraction]:
+    if row.question_score is None:
+        raise ValueError("question ranking requires a score")
+    interval = row.question_score_confidence_interval
+    # Fractions preserve every published decimal digit without context rounding.
+    width = Fraction(0) if interval is None else Fraction(interval.upper) - Fraction(interval.lower)
+    return row.question_score, interval is None, width
+
+
 def _rank(rows: tuple[LeaderboardRow, ...]) -> tuple[LeaderboardRow, ...]:
     evaluated = sorted(
         (row for row in rows if row.question_score is not None),
         key=lambda row: (
-            row.question_score,
+            *_question_rank_key(row),
             row.model.display_name.casefold(),
             row.model.model_id,
         ),
     )
     ranked_by_id: dict[str, LeaderboardRow] = {}
-    prior_score: Decimal | None = None
+    prior_key: tuple[Decimal, bool, Fraction] | None = None
     prior_rank = 0
     for index, row in enumerate(evaluated, start=1):
-        rank = prior_rank if prior_score == row.question_score else index
+        key = _question_rank_key(row)
+        rank = prior_rank if prior_key == key else index
         ranked_by_id[row.model.model_id] = row.model_copy(update={"rank": rank})
         prior_rank = rank
-        prior_score = row.question_score
+        prior_key = key
     awaiting = sorted(
         (row for row in rows if row.question_score is None),
         key=lambda row: (row.model.display_name.casefold(), row.model.model_id),
@@ -1201,7 +1211,7 @@ def compile_publication(
             row.question_score for row in evaluated if row.question_score is not None
         )
         winning_score = min(evaluated_scores)
-        winners = tuple(row for row in evaluated if row.question_score == winning_score)
+        winners = tuple(row for row in evaluated if row.rank == 1)
         winner = Winner(
             model_ids=tuple(row.model.model_id for row in winners),
             display_names=tuple(row.model.display_name for row in winners),

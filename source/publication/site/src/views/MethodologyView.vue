@@ -10,6 +10,7 @@ import MethodDetails from "@/components/MethodDetails.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import { getManifest, peekManifest } from "@/lib/api";
 import { usePageRouteContext } from "@/lib/route-context";
+import { questionScoreRankingRule } from "@/lib/result-chart";
 import type { ManifestDocument } from "@/lib/types";
 import { usePublicationLoad } from "@/lib/use-publication-load";
 
@@ -238,6 +239,8 @@ const totalTrials = computed(() => {
               ranks models by this interval’s width. Cost and time are reported separately
               and do not change the question score.
             </p>
+            <p>{{ questionScoreRankingRule }} This tie-breaker is a ranking rule, not a test
+              of whether one model is significantly better.</p>
             <MethodDetails title="Format errors and failed rounds" anchor="reliability">
               <p>
                 Each Guesser reply must be one valid ASK or GUESS action. Before the question

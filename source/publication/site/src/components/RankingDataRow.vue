@@ -2,6 +2,7 @@
 import type { RouteLocationRaw } from "vue-router";
 
 import ModelRunLink from "@/components/ModelRunLink.vue";
+import RankBadge from "@/components/RankBadge.vue";
 
 defineProps<{
   rank: string | number | null;
@@ -13,7 +14,7 @@ defineProps<{
 
 <template>
   <tr>
-    <td class="rank-column">{{ rank ?? "-" }}</td>
+    <td class="rank-column"><RankBadge :rank="rank" /></td>
     <td class="model-column">
       <ModelRunLink v-if="to !== null" :to="to" :name="name" :meta="meta" />
       <template v-else>

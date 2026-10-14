@@ -1,0 +1,1 @@
+import{I as e,L as t}from"./runtime-core.esm-bundler-CNMtQn0S.js";var n=`Publication data could not be loaded.`,r=(r,i=n,a=!1)=>{let o=t(!a),s=t(null),c=async()=>{o.value=!0,s.value=null;try{await r()}catch(e){s.value=e instanceof Error?e.message:i}finally{o.value=!1}};return a||c(),{loading:e(o),error:e(s),reload:c}};export{r as t};

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 from decimal import Decimal, localcontext
+from fractions import Fraction
 from pathlib import Path
 from typing import Literal
 
@@ -47,6 +48,7 @@ from deep20_publication.models import (
     PublicRunModel,
     PublicRunTotals,
     PublishedDataset,
+    QuestionScoreConfidenceInterval,
     RepairAggregateSnapshot,
     SupersededInfrastructureAttemptSnapshot,
     TrialArtifactReferences,
@@ -841,6 +843,58 @@ def test_rank_preserves_exact_joint_ties_and_places_awaiting_last() -> None:
 
     assert tuple(row.model.display_name for row in ranked) == ("Alpha", "Beta", "Gamma")
     assert tuple(row.rank for row in ranked) == (1, 1, None)
+
+
+def _score_row(
+    model_id: str, name: str, score: str, lower: str | None, upper: str | None,
+) -> LeaderboardRow:
+    interval = None
+    if lower is not None and upper is not None:
+        interval = QuestionScoreConfidenceInterval(
+            confidence_level=Decimal("0.95"),
+            method="stratified-welch-t-v1",
+            estimate=Decimal(score),
+            lower=Decimal(lower),
+            upper=Decimal(upper),
+            standard_error=Decimal(0) if lower == upper else Decimal(1),
+            degrees_of_freedom=None if lower == upper else Decimal(10),
+            subject_count=10,
+            trial_count=30,
+        )
+    return LeaderboardRow(
+        rank=None, model=_model(model_id, name), status="evaluated",
+        question_score=Decimal(score), question_score_confidence_interval=interval,
+    )
+
+
+def test_score_rank_breaks_ties_by_ci_width_and_keeps_competition_ranks() -> None:
+    rows = (
+        _score_row("M-0001", "Alpha", "12", "10", "14"),
+        _score_row("M-0002", "Beta", "11", "1", "21"),
+        _score_row("M-0003", "Gamma", "12", "11", "13"),
+        _score_row("M-0004", "Delta", "12.00", "11.0", "13.0"),
+        _score_row("M-0005", "Epsilon", "12", None, None),
+        _score_row("M-0006", "Zeta", "12", None, None),
+        _score_row("M-0007", "Eta", "12.00001", "12.00001", "12.00001"),
+        LeaderboardRow(rank=None, model=_model("M-0008", "Awaiting"), status="awaiting_official_run"),
+    )
+    expected = ("Beta", "Delta", "Gamma", "Alpha", "Epsilon", "Zeta", "Eta", "Awaiting")
+    for inputs in (rows, tuple(reversed(rows))):
+        ranked = _rank(inputs)
+        assert tuple(row.model.display_name for row in ranked) == expected
+        assert tuple(row.rank for row in ranked) == (1, 2, 2, 4, 5, 5, 7, None)
+
+
+def test_ci_tie_breaker_preserves_digits_beyond_decimal_context() -> None:
+    rows = (
+        _score_row("M-0001", "Alpha", "12", "11", "13.00000000000000000000000000002"),
+        _score_row("M-0002", "Beta", "12", "11", "13.00000000000000000000000000001"),
+    )
+    with localcontext() as context:
+        context.prec = 8
+        ranked = _rank(rows)
+    assert tuple(row.model.display_name for row in ranked) == ("Beta", "Alpha")
+    assert tuple(row.rank for row in ranked) == (1, 2)
 
 
 def test_run_comparison_uses_terminal_episode_and_guesser_cost_basis() -> None:
@@ -1904,12 +1958,29 @@ def test_generated_question_scores_use_subject_averages_then_average() -> None:
     assert Decimal(opus_interval["upper"]) == pytest.approx(Decimal("13.2728992905099725"))
     assert opus_interval["subject_count"] == 7
     assert opus_interval["trial_count"] == 35
-    scored_rows = [row for row in dataset["leaderboard"] if row["question_score"] is not None]
-    for row in scored_rows:
-        assert row["rank"] == 1 + sum(
-            Decimal(other["question_score"]) < Decimal(row["question_score"])
-            for other in scored_rows
+
+
+@pytest.mark.parametrize("edition", ["1.0", "1.1"])
+def test_generated_ranks_and_winners_use_score_then_ci_width(edition: str) -> None:
+    dataset_path = REPOSITORY / "docs/data/editions" / edition / "deep20bench-v10.json"
+    dataset = PublishedDataset.model_validate_json(dataset_path.read_text(encoding="utf-8"))
+    scored = tuple(row for row in dataset.leaderboard if row.question_score is not None)
+    keys: dict[str, tuple[Decimal, Fraction]] = {}
+    for row in scored:
+        assert row.question_score is not None
+        interval = row.question_score_confidence_interval
+        assert interval is not None
+        keys[row.model.model_id] = (
+            row.question_score, Fraction(interval.upper) - Fraction(interval.lower),
         )
+    for row in scored:
+        assert row.rank == 1 + sum(
+            keys[other.model.model_id] < keys[row.model.model_id] for other in scored
+        )
+    assert dataset.winner is not None
+    first = tuple(row for row in scored if row.rank == 1)
+    assert dataset.winner.model_ids == tuple(row.model.model_id for row in first)
+    assert dataset.winner.joint == (len(first) > 1)
 
 
 def test_generated_efficiency_distance_is_reproducible_from_public_decimals() -> None:

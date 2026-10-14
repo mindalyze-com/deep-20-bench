@@ -12,6 +12,7 @@ import LoadingState from "@/components/LoadingState.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import ModelRunLink from "@/components/ModelRunLink.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
+import RankBadge from "@/components/RankBadge.vue";
 import ReasoningEffort from "@/components/ReasoningEffort.vue";
 import ScoreDotPlot from "@/components/ScoreDotPlot.vue";
 import {
@@ -34,8 +35,11 @@ import { runRoute } from "@/lib/route-location";
 import {
   leaderboardScoreDot,
   questionScoreChartSummary,
+  questionScoreRankingRule,
   type ScoreDot,
 } from "@/lib/result-chart";
+import { confidenceIntervalWidth } from "@/lib/confidence-width";
+import { hasScoreTies, rankPresentation } from "@/lib/rank-presentation";
 import { supportResource } from "@/lib/site-resources";
 import { useRepeatAverages } from "@/lib/use-repeat-averages";
 import type {
@@ -104,27 +108,43 @@ const winnerRows = computed<Array<LeaderboardRow & { execution_id: string }>>(()
       : [{ ...row, execution_id: row.execution_id }];
   });
 });
-const allWinnersSucceeded = computed(() =>
+const scorePeers = computed<Array<LeaderboardRow & { execution_id: string }>>(() =>
+  evaluated.value.flatMap((row) =>
+    row.question_score === manifest.value?.winner?.question_score && row.rank !== 1 && row.execution_id !== null
+      ? [{ ...row, execution_id: row.execution_id }]
+      : []),
+);
+const allLeadersSucceeded = computed(() =>
   winnerRows.value.length > 0 && winnerRows.value.every((row) =>
     row.terminal_trials > 0 && row.successful === row.terminal_trials),
 );
 const numberWords: Record<number, string> = { 3: "three", 4: "four", 5: "five" };
-const jointWinnerSummary = computed(() => {
+const leaderSummary = computed(() => {
   const first = winnerRows.value[0];
   const cohort = manifest.value?.active_cohort;
   if (first === undefined || cohort === undefined) return "";
-  if (allWinnersSucceeded.value && first.question_score !== null) {
+  if (allLeadersSucceeded.value && first.question_score !== null) {
     // Released editions have equal rounds per subject. For fully successful runs,
     // score times rounds recovers the counted total, without failure penalties.
     const questions = Math.round(Number(first.question_score) * first.terminal_trials);
     const count = winnerRows.value.length;
-    const models = count === 2 ? "Both models" : `All ${numberWords[count] ?? count} models`;
+    const models = count === 1 ? "This model" : count === 2 ? "Both models" : `All ${numberWords[count] ?? count} models`;
     return `${models} guessed the subject in all ${first.terminal_trials} rounds ` +
       `(${cohort.target_ids.length} subjects, ${cohort.iterations} rounds each) ` +
-      `and used ${questions} questions each.`;
+      `and used ${questions} questions${count === 1 ? '' : ' each'}.`;
+  }
+  if (winnerRows.value.length === 1) {
+    return `Guessed the subject in ${first.successful} of ${first.terminal_trials} rounds ` +
+      `(${cohort.target_ids.length} subjects, ${cohort.iterations} rounds each).`;
   }
   return `These models have the same average score over ${first.terminal_trials} rounds each.`;
 });
+const intervalWidthLabel = (row: LeaderboardRow): string => {
+  const interval = row.question_score_confidence_interval;
+  return interval === null ? "Unavailable" : number(
+    confidenceIntervalWidth(Number(interval.lower), Number(interval.upper)), 2,
+  );
+};
 const openRun = (row: LeaderboardRow): void => {
   if (row.execution_id !== null) void router.push(runRoute(row.execution_id));
 };
@@ -285,23 +305,28 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
           <template v-if="evaluated.length > 0">
             <article v-if="manifest.winner && evaluated.length > 1" class="winner-card">
-              <div v-if="manifest.winner.joint">
+              <div>
+                <template v-if="manifest.winner.joint">
                 <h3>Tied for first place</h3>
                 <ul class="winner-list" aria-label="Models tied for first place">
                   <li v-for="row in winnerRows" :key="row.model.model_id">
+                    <RankBadge :rank="row.rank" v-bind="rankPresentation(row, evaluated)" dark />
                     <RouterLink class="winner-link" :to="runRoute(row.execution_id)">
                       {{ row.model.display_name }} →
                     </RouterLink>
-                    <span v-if="!allWinnersSucceeded" class="winner-meta">
+                    <span v-if="row.question_score_confidence_interval !== null" class="winner-meta">
+                      95% CI width: {{ intervalWidthLabel(row) }} questions
+                    </span>
+                    <span v-else class="winner-meta">95% CI unavailable</span>
+                    <span v-if="!allLeadersSucceeded" class="winner-meta">
                       Guessed the subject in {{ row.successful }} of {{ row.terminal_trials }} rounds
                     </span>
                   </li>
                 </ul>
-                <p class="winner-note">{{ jointWinnerSummary }}</p>
-              </div>
-              <div v-else>
-                <p class="eyebrow">Lowest average score in these tests</p>
-                <h3>{{ manifest.winner.display_names[0] }}</h3>
+                </template>
+                <template v-else>
+                <p class="eyebrow">First place in these tests</p>
+                <h3 class="winner-identity"><RankBadge :rank="1" :note="winnerRows[0] ? rankPresentation(winnerRows[0], evaluated).note : undefined" dark /> <span>{{ manifest.winner.display_names[0] }}</span></h3>
                 <div class="winner-efforts">
                   <ReasoningEffort
                     v-for="row in winnerRows"
@@ -318,21 +343,34 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 >
                   View full run →
                 </RouterLink>
+                </template>
+                <p class="winner-note">{{ leaderSummary }}</p>
+                <p v-if="scorePeers.length > 0" class="winner-note winner-comparison">
+                  Same average score as
+                  <template v-for="(row, index) in scorePeers" :key="row.model.model_id">
+                    {{ index > 0 ? ', ' : '' }}
+                    <RouterLink :to="runRoute(row.execution_id)">{{ row.model.display_name }}</RouterLink>
+                    <RankBadge :rank="row.rank" v-bind="rankPresentation(row, evaluated)" dark />
+                  </template>.
+                  <template v-if="scorePeers.length === 1 && winnerRows[0]?.question_score_confidence_interval && scorePeers[0]?.question_score_confidence_interval">
+                    {{ manifest.winner.joint ? 'The first-place models have' : 'The winner has' }} a narrower 95% CI
+                    ({{ intervalWidthLabel(winnerRows[0]!) }} vs {{ intervalWidthLabel(scorePeers[0]!) }} questions).
+                  </template>
+                  <template v-else>CI width decides the rank.</template>
+                </p>
               </div>
               <QuestionScore
                 :score="manifest.winner.question_score"
                 :max-questions="manifest.active_cohort.max_questions"
-                :label="manifest.winner.joint ? 'Shared score' : 'Question score'"
+                :label="manifest.winner.joint ? 'Shared average score' : 'Question score'"
                 variant="hero"
                 theme="dark"
                 explain
-                :confidence-interval="
-                  manifest.winner.joint
-                    ? null
-                    : (winnerRows[0]?.question_score_confidence_interval ?? null)
-                "
+                :confidence-interval="winnerRows[0]?.question_score_confidence_interval ?? null"
               />
             </article>
+
+            <p v-if="hasScoreTies(evaluated)" class="results-note score-ranking-note">{{ questionScoreRankingRule }}</p>
 
             <div class="leaderboard-layout">
               <div class="score-chart">
@@ -363,7 +401,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                     }"
                     @click="openRun(row)"
                   >
-                    <td class="rank-column">{{ row.rank ?? "-" }}</td>
+                    <td class="rank-column"><RankBadge :rank="row.rank" v-bind="rankPresentation(row, evaluated)" /></td>
                     <td class="model-column">
                       <ModelRunLink
                         v-if="row.execution_id"
@@ -408,6 +446,8 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 v-for="row in evaluated"
                 :key="`mobile-${row.model.model_id}`"
                 :rank="row.rank ?? '-'"
+                :rank-tied="rankPresentation(row, evaluated).tied"
+                :rank-note="rankPresentation(row, evaluated).note"
                 :name="row.model.display_name"
                 :provider="row.model.provider"
                 :to="row.execution_id === null ? null : runRoute(row.execution_id)"
@@ -806,7 +846,9 @@ dd {
 
 .winner-list li {
   display: grid;
-  gap: 0.2rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.65rem;
+  row-gap: 0.2rem;
 }
 
 .winner-list .winner-link {
@@ -815,8 +857,23 @@ dd {
 }
 
 .winner-meta {
+  grid-column: 2;
   color: rgb(255 255 255 / 86%);
   font-size: 0.95rem;
+}
+
+.winner-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.winner-comparison a {
+  color: var(--acid);
+}
+
+.winner-comparison .rank-badge {
+  margin-inline: 0.3rem;
 }
 
 .leaderboard-layout {
