@@ -49,7 +49,11 @@ const accessibleLabel = computed(() => {
   >
     <span class="score-label">{{ label }}</span>
     <strong>{{ number(score) }}</strong>
-    <span class="score-unit">{{ score === null ? "not available" : "questions · lower is better" }}</span>
+    <span class="score-unit">{{
+      score === null ? "not available" : variant === "hero"
+        ? "questions per round, on average" : "questions · lower is better"
+    }}</span>
+    <span v-if="variant === 'hero' && score !== null" class="score-direction">Lower is better.</span>
     <span v-if="confidenceInterval !== null" class="score-confidence">
       <template v-if="variant !== 'table'">95% CI </template>{{
         number(confidenceInterval.lower, 2)
@@ -85,6 +89,7 @@ const accessibleLabel = computed(() => {
 
 .score-label,
 .score-unit,
+.score-direction,
 .score-confidence {
   color: var(--muted);
   font-size: var(--text-micro);
@@ -224,7 +229,8 @@ strong {
 }
 
 .question-score--dark .score-label,
-.question-score--dark .score-unit {
+.question-score--dark .score-unit,
+.question-score--dark .score-direction {
   color: white;
 }
 

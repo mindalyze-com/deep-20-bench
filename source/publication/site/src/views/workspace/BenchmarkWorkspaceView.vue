@@ -184,10 +184,13 @@ subjectWorkspaceView.preload();
 
 .model-rail {
   display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto minmax(min-content, 1fr);
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
   border-right: var(--rule-inverse-subtle);
   background: var(--surface-inverse);
   color: var(--text-inverse);
@@ -300,8 +303,6 @@ subjectWorkspaceView.preload();
 
 .subject-rail-list {
   min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: thin;
 }
 
 .subject-list-heading {
@@ -440,7 +441,6 @@ subjectWorkspaceView.preload();
 .benchmark-workspace.is-run-overview .subject-rail-list {
   display: grid;
   grid-auto-rows: minmax(44px, 1fr);
-  overflow-y: auto;
 }
 
 .benchmark-workspace.is-run-overview .subject-rail-list a {

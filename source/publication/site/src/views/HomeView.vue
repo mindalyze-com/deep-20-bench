@@ -104,6 +104,27 @@ const winnerRows = computed<Array<LeaderboardRow & { execution_id: string }>>(()
       : [{ ...row, execution_id: row.execution_id }];
   });
 });
+const allWinnersSucceeded = computed(() =>
+  winnerRows.value.length > 0 && winnerRows.value.every((row) =>
+    row.terminal_trials > 0 && row.successful === row.terminal_trials),
+);
+const numberWords: Record<number, string> = { 3: "three", 4: "four", 5: "five" };
+const jointWinnerSummary = computed(() => {
+  const first = winnerRows.value[0];
+  const cohort = manifest.value?.active_cohort;
+  if (first === undefined || cohort === undefined) return "";
+  if (allWinnersSucceeded.value && first.question_score !== null) {
+    // Released editions have equal rounds per subject. For fully successful runs,
+    // score times rounds recovers the counted total, without failure penalties.
+    const questions = Math.round(Number(first.question_score) * first.terminal_trials);
+    const count = winnerRows.value.length;
+    const models = count === 2 ? "Both models" : `All ${numberWords[count] ?? count} models`;
+    return `${models} guessed the subject in all ${first.terminal_trials} rounds ` +
+      `(${cohort.target_ids.length} subjects, ${cohort.iterations} rounds each) ` +
+      `and used ${questions} questions each.`;
+  }
+  return `These models have the same average score over ${first.terminal_trials} rounds each.`;
+});
 const openRun = (row: LeaderboardRow): void => {
   if (row.execution_id !== null) void router.push(runRoute(row.execution_id));
 };
@@ -264,15 +285,23 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
           <template v-if="evaluated.length > 0">
             <article v-if="manifest.winner && evaluated.length > 1" class="winner-card">
-              <div>
-                <p class="eyebrow">
-                  {{
-                    manifest.winner.joint
-                      ? "Joint lowest average scores in these tests"
-                      : "Lowest average score in these tests"
-                  }}
-                </p>
-                <h3>{{ manifest.winner.display_names.join(" · ") }}</h3>
+              <div v-if="manifest.winner.joint">
+                <h3>Tied for first place</h3>
+                <ul class="winner-list" aria-label="Models tied for first place">
+                  <li v-for="row in winnerRows" :key="row.model.model_id">
+                    <RouterLink class="winner-link" :to="runRoute(row.execution_id)">
+                      {{ row.model.display_name }} →
+                    </RouterLink>
+                    <span v-if="!allWinnersSucceeded" class="winner-meta">
+                      Guessed the subject in {{ row.successful }} of {{ row.terminal_trials }} rounds
+                    </span>
+                  </li>
+                </ul>
+                <p class="winner-note">{{ jointWinnerSummary }}</p>
+              </div>
+              <div v-else>
+                <p class="eyebrow">Lowest average score in these tests</p>
+                <h3>{{ manifest.winner.display_names[0] }}</h3>
                 <div class="winner-efforts">
                   <ReasoningEffort
                     v-for="row in winnerRows"
@@ -287,12 +316,13 @@ const scoreDots = computed<ScoreDot[]>(() =>
                   class="winner-link"
                   :to="runRoute(row.execution_id)"
                 >
-                  {{ manifest.winner.joint ? row.model.display_name : "View full run" }} →
+                  View full run →
                 </RouterLink>
               </div>
               <QuestionScore
                 :score="manifest.winner.question_score"
                 :max-questions="manifest.active_cohort.max_questions"
+                :label="manifest.winner.joint ? 'Shared score' : 'Question score'"
                 variant="hero"
                 theme="dark"
                 explain
@@ -758,6 +788,35 @@ dd {
   margin-top: 0.6rem;
   color: var(--acid);
   font-weight: var(--font-weight-bold);
+}
+
+.winner-note {
+  max-width: 34rem;
+  margin: 1rem 0 0;
+  color: rgb(255 255 255 / 86%);
+}
+
+.winner-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 1.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.winner-list li {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.winner-list .winner-link {
+  margin-top: 0;
+  font-size: 1.25rem;
+}
+
+.winner-meta {
+  color: rgb(255 255 255 / 86%);
+  font-size: 0.95rem;
 }
 
 .leaderboard-layout {

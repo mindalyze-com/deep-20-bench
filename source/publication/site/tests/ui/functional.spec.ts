@@ -800,7 +800,7 @@ test("run overview explains its totals and keeps every subject row available", {
   const subjectList = page.locator(".subject-rail-list");
   const subjectLinks = subjectList.locator("a");
   await expect(subjectLinks).toHaveCount(runDocument.subjects.length);
-  await expect(subjectList).toHaveCSS("overflow-y", "auto");
+  await expect(rail).toHaveCSS("overflow-y", "auto");
   const bounds = await page.evaluate(() => {
     const railElement = document.querySelector<HTMLElement>(".model-rail");
     const links = [...document.querySelectorAll<HTMLElement>(".subject-rail-list a")];
@@ -829,6 +829,45 @@ test("run overview explains its totals and keeps every subject row available", {
   );
   await expect(rail).toBeVisible();
 });
+
+for (const [label, routePath] of [
+  ["run", runPath],
+  ["subject", subjectPath],
+  ["round", episodePath],
+] as const) {
+  test(`${label} sidebar scrolls from its heading and keeps all subjects reachable`, {
+    tag: ["@functional", "@desktop", "@smoke"],
+  }, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 480 });
+    await page.goto(routePath);
+    await waitForPublication(page);
+
+    const rail = page.locator(".model-rail");
+    const links = rail.locator(".subject-rail-list a");
+    const last = links.last();
+    await expect(links).toHaveCount(runDocument.subjects.length);
+    await expect(rail).toHaveCSS("overflow-y", "auto");
+    expect(await rail.evaluate((element) => element.scrollHeight))
+      .toBeGreaterThan(await rail.evaluate((element) => element.clientHeight));
+    await expect(last).not.toBeInViewport();
+
+    await rail.locator(".model-rail-heading").hover();
+    await page.mouse.wheel(0, 2000);
+    await expect.poll(() => rail.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
+    // Allow fractional pixel rounding at the scroll limits.
+    await expect(last).toBeInViewport({ ratio: 0.99 });
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+
+    await links.first().focus();
+    await expect(links.first()).toBeInViewport({ ratio: 0.99 });
+    await last.focus();
+    await expect(last).toBeInViewport({ ratio: 0.99 });
+    await last.click();
+    await waitForPublication(page);
+    await expect(last).toHaveAttribute("aria-current", "page");
+  });
+}
 
 test("dates use the visitor locale and time zone", { tag: ["@functional", "@desktop"] }, async ({ browser }) => {
   const context = await browser.newContext({
