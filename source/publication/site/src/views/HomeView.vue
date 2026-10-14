@@ -130,12 +130,12 @@ const leaderSummary = computed(() => {
     const count = winnerRows.value.length;
     const models = count === 1 ? "This model" : count === 2 ? "Both models" : `All ${numberWords[count] ?? count} models`;
     return `${models} guessed the subject in all ${first.terminal_trials} rounds ` +
-      `(${cohort.target_ids.length} subjects, ${cohort.iterations} rounds each) ` +
-      `and used ${questions} questions${count === 1 ? '' : ' each'}.`;
+      `(${cohort.target_ids.length} subjects × ${cohort.iterations}), ` +
+      `using ${questions} questions${count === 1 ? '' : ' each'}.`;
   }
   if (winnerRows.value.length === 1) {
     return `Guessed the subject in ${first.successful} of ${first.terminal_trials} rounds ` +
-      `(${cohort.target_ids.length} subjects, ${cohort.iterations} rounds each).`;
+      `(${cohort.target_ids.length} subjects × ${cohort.iterations}).`;
   }
   return `These models have the same average score over ${first.terminal_trials} rounds each.`;
 });
@@ -325,24 +325,14 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 </ul>
                 </template>
                 <template v-else>
-                <p class="eyebrow">First place in these tests</p>
+                <p class="eyebrow">First place</p>
                 <h3 class="winner-identity"><RankBadge :rank="1" :note="winnerRows[0] ? rankPresentation(winnerRows[0], evaluated).note : undefined" dark /> <span>{{ manifest.winner.display_names[0] }}</span></h3>
-                <div class="winner-efforts">
-                  <ReasoningEffort
-                    v-for="row in winnerRows"
-                    :key="row.model.model_id"
-                    :effort="row.model.reasoning_effort"
-                    dark
-                  />
+                <div v-for="row in winnerRows" :key="row.model.model_id" class="winner-meta-row">
+                  <ReasoningEffort :effort="row.model.reasoning_effort" dark />
+                  <RouterLink class="winner-link" :to="runRoute(row.execution_id)">
+                    View full run →
+                  </RouterLink>
                 </div>
-                <RouterLink
-                  v-for="row in winnerRows"
-                  :key="row.execution_id ?? row.model.model_id"
-                  class="winner-link"
-                  :to="runRoute(row.execution_id)"
-                >
-                  View full run →
-                </RouterLink>
                 </template>
                 <p class="winner-note">{{ leaderSummary }}</p>
                 <p v-if="scorePeers.length > 0" class="winner-note winner-comparison">
@@ -350,13 +340,11 @@ const scoreDots = computed<ScoreDot[]>(() =>
                   <template v-for="(row, index) in scorePeers" :key="row.model.model_id">
                     {{ index > 0 ? ', ' : '' }}
                     <RouterLink :to="runRoute(row.execution_id)">{{ row.model.display_name }}</RouterLink>
-                    <RankBadge :rank="row.rank" v-bind="rankPresentation(row, evaluated)" dark />
-                  </template>.
-                  <template v-if="scorePeers.length === 1 && winnerRows[0]?.question_score_confidence_interval && scorePeers[0]?.question_score_confidence_interval">
-                    {{ manifest.winner.joint ? 'The first-place models have' : 'The winner has' }} a narrower 95% CI
-                    ({{ intervalWidthLabel(winnerRows[0]!) }} vs {{ intervalWidthLabel(scorePeers[0]!) }} questions).
+                    <RankBadge :rank="row.rank" v-bind="rankPresentation(row, evaluated)" dark /></template><template v-if="scorePeers.length === 1 && winnerRows[0]?.question_score_confidence_interval && scorePeers[0]?.question_score_confidence_interval">;
+                    ranked higher by narrower 95% CI
+                    ({{ intervalWidthLabel(winnerRows[0]!) }} vs {{ intervalWidthLabel(scorePeers[0]!) }}).
                   </template>
-                  <template v-else>CI width decides the rank.</template>
+                  <template v-else>; CI width decides the rank.</template>
                 </p>
               </div>
               <QuestionScore
@@ -800,9 +788,10 @@ dd {
 
 .winner-card {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(18rem, 1fr);
-  gap: clamp(2rem, 6vw, 6rem);
-  padding: clamp(1.5rem, 3vw, 2.5rem);
+  grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
   background: var(--gradient-accent);
   color: white;
 }
@@ -810,16 +799,17 @@ dd {
 .winner-card h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.2rem, 3.7vw, 3.7rem);
+  font-size: clamp(1.75rem, 3.4vw, 3.2rem);
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.042em;
 }
 
-.winner-efforts {
+.winner-meta-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
-  margin: 1.2rem 0;
+  align-items: center;
+  gap: 0.4rem 1.25rem;
+  margin-top: 0.6rem;
 }
 
 .winner-link {
@@ -830,9 +820,13 @@ dd {
   font-weight: var(--font-weight-bold);
 }
 
+.winner-meta-row .winner-link {
+  margin-top: 0;
+}
+
 .winner-note {
   max-width: 34rem;
-  margin: 1rem 0 0;
+  margin: 0.75rem 0 0;
   color: rgb(255 255 255 / 86%);
 }
 
@@ -868,12 +862,16 @@ dd {
   gap: 0.65rem;
 }
 
+.winner-comparison {
+  font-size: 0.95rem;
+}
+
 .winner-comparison a {
   color: var(--acid);
 }
 
 .winner-comparison .rank-badge {
-  margin-inline: 0.3rem;
+  margin-inline: 0.3rem 0.1rem;
 }
 
 .leaderboard-layout {

@@ -53,11 +53,13 @@ const accessibleLabel = computed(() => {
       score === null ? "not available" : variant === "hero"
         ? "questions per round, on average" : "questions · lower is better"
     }}</span>
-    <span v-if="variant === 'hero' && score !== null" class="score-direction">Lower is better.</span>
-    <span v-if="confidenceInterval !== null" class="score-confidence">
-      <template v-if="variant !== 'table'">95% CI </template>{{
-        number(confidenceInterval.lower, 2)
-      }}–{{ number(confidenceInterval.upper, 2) }}
+    <span v-if="confidenceInterval !== null || (variant === 'hero' && score !== null)" class="score-confidence">
+      <template v-if="variant === 'hero' && score !== null">Lower is better<template v-if="confidenceInterval !== null"> · </template></template>
+      <template v-if="confidenceInterval !== null">
+        <template v-if="variant !== 'table'">95% CI </template>{{
+          number(confidenceInterval.lower, 2)
+        }}–{{ number(confidenceInterval.upper, 2) }}
+      </template>
     </span>
     <span v-if="variant !== 'compact' && score !== null" class="score-scale" aria-hidden="true">
       <i :style="{ width: `${percentage}%` }"></i>
@@ -89,7 +91,6 @@ const accessibleLabel = computed(() => {
 
 .score-label,
 .score-unit,
-.score-direction,
 .score-confidence {
   color: var(--muted);
   font-size: var(--text-micro);
@@ -223,14 +224,52 @@ strong {
   margin-top: 0.5rem;
 }
 
+.question-score--hero {
+  grid-template:
+    "label label" auto
+    "value unit" auto
+    "confidence confidence" auto
+    "scale scale" auto
+    "help help" auto
+    / auto minmax(0, 1fr);
+  column-gap: 1rem;
+  row-gap: 0.4rem;
+}
+
+.question-score--hero .score-label {
+  grid-area: label;
+}
+
 .question-score--hero strong {
+  grid-area: value;
   color: var(--acid);
-  font-size: clamp(5rem, 11vw, 9rem);
+  font-size: clamp(3.5rem, 7vw, 6rem);
+}
+
+.question-score--hero .score-unit {
+  grid-area: unit;
+  align-self: end;
+  max-width: 10rem;
+  padding-bottom: 0.35rem;
+  line-height: 1.35;
+}
+
+.question-score--hero .score-confidence {
+  grid-area: confidence;
+}
+
+.question-score--hero .score-scale {
+  grid-area: scale;
+  margin-top: 0.2rem;
+}
+
+.question-score--hero .score-help {
+  grid-area: help;
+  margin-top: 0;
 }
 
 .question-score--dark .score-label,
-.question-score--dark .score-unit,
-.question-score--dark .score-direction {
+.question-score--dark .score-unit {
   color: white;
 }
 
