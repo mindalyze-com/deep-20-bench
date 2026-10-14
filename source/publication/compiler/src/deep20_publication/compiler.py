@@ -87,6 +87,17 @@ def _fraction_decimal(value: Fraction) -> Decimal:
     return Decimal(value.numerator) / Decimal(value.denominator)
 
 
+def _question_score(trial_values_by_subject: tuple[tuple[Decimal, ...], ...]) -> Decimal:
+    """Average subject averages exactly, so equal scores remain joint ties after rounding."""
+    if not trial_values_by_subject or any(not values for values in trial_values_by_subject):
+        raise ValueError("question score requires trial values for every subject")
+    subject_averages = tuple(
+        sum((Fraction(value) for value in values), start=Fraction(0)) / len(values)
+        for values in trial_values_by_subject
+    )
+    return _fraction_decimal(sum(subject_averages, start=Fraction(0)) / len(subject_averages))
+
+
 def _reason_codes(
     run: LoadedRun,
     cohort: CohortConfig,
@@ -850,24 +861,22 @@ def _public_run(
         )
         for subject in run.summary.subjects
     )
-    subject_averages = tuple(
-        subject.average_questions for subject in subjects if subject.average_questions is not None
+    trial_values_by_subject = tuple(
+        tuple(
+            trial.penalized_questions
+            for trial in subject.trials
+            if trial.penalized_questions is not None
+        )
+        for subject in subjects
     )
     question_score = (
-        _average(subject_averages)
-        if len(subject_averages) == len(subjects) and subject_averages
+        _question_score(trial_values_by_subject)
+        if subjects and all(subject.average_questions is not None for subject in subjects)
         else None
     )
     confidence_interval = (
         stratified_question_score_confidence_interval(
-            tuple(
-                tuple(
-                    trial.penalized_questions
-                    for trial in subject.trials
-                    if trial.penalized_questions is not None
-                )
-                for subject in subjects
-            ),
+            trial_values_by_subject,
             estimate=question_score,
         )
         if question_score is not None

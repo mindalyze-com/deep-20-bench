@@ -405,6 +405,32 @@ This verifies route and contract operation, not prefix reuse, savings, or game p
 The supporting record remains under `private/reviews/muse-wonder-20261013/smoke.json`.
 No cache savings are assumed. Recheck the exact route before later paid launches.
 
+Gemini 4 Argon (`M-0034`) uses `google/gemini-4-argon` pinned to Google Vertex with high
+reasoning, strict JSON Schema output, seed support, and disabled fallbacks. On 14 October
+2026, [OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/google/gemini-4-argon/endpoints)
+advertised introductory standard global Vertex prices of $2 per million input tokens,
+$10 per million output tokens, and $0.10 per million cache-read tokens. The endpoint listed
+$0.1875 per million cache-write tokens but marked implicit caching unsupported. Google's
+[Vertex guide](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/guides/gemini-4-argon)
+documents automatic implicit caching from 6,144 shared-prefix tokens and a 15-20 minute
+retention window. The direct Gemini API documents a different 4,096-token threshold; it is
+not used for this Vertex registration.
+
+Keep automatic best-effort prefix caching with the existing fixed instructions and append-only
+visible transcript. The configuration uses the Vertex threshold and a conservative 300-second
+observation window. Its 1.00 write multiplier is an automatic-input accounting estimate, not
+the explicit storage price or a measured cache-write rate. No padding, explicit cache storage,
+response reuse, or privileged state is added. Actual OpenRouter cache reads, writes, billing,
+and latency determine whether this route reuses prefixes; no savings are assumed. Recheck
+introductory pricing before later paid launches.
+
+The authorized `qualified_v1` opening-turn canary passed on 14 October 2026 with one
+request and a valid ASK action. It resolved to `google/gemini-4-argon` on Google Vertex,
+finished with `stop`, and reported 1,104 input tokens, 1,221 output tokens (1,168 reasoning),
+17,226 milliseconds of latency, and $0.014418 cost. Cache-read and cache-write tokens were
+both zero. This verifies the route and action contract, not prefix reuse or game performance.
+The supporting record is `private/reviews/gemini4-20261014/smoke.json`.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input

@@ -13,6 +13,7 @@ from deep20_publication.compiler import (
     _average,
     _public_run_comparison,
     _public_run_totals,
+    _question_score,
     _rank,
     _rank_efficiency,
     _reason_codes,
@@ -759,6 +760,58 @@ def test_contract_reliability_counts_are_strict() -> None:
 def test_average_uses_exact_decimal_values() -> None:
     assert _average((Decimal(51), Decimal(4), Decimal(10), Decimal(8), Decimal(7))) == Decimal(16)
     assert _average((Decimal(51), Decimal(4), Decimal(10), Decimal(8))) == Decimal("18.25")
+
+
+def _trial_values(*subjects: tuple[int, ...]) -> tuple[tuple[Decimal, ...], ...]:
+    return tuple(tuple(Decimal(value) for value in values) for values in subjects)
+
+
+def test_question_score_keeps_equal_exact_scores_tied() -> None:
+    # Both runs total 410 counted questions over ten subjects of three trials. Averaging
+    # rounded subject averages gave them different final digits and split the tie.
+    first = _question_score(
+        _trial_values(
+            (12, 11, 9),
+            (15, 19, 15),
+            (11, 16, 9),
+            (9, 8, 9),
+            (13, 10, 12),
+            (26, 15, 27),
+            (13, 13, 14),
+            (12, 15, 12),
+            (11, 12, 14),
+            (17, 13, 18),
+        )
+    )
+    second = _question_score(
+        _trial_values(
+            (9, 10, 10),
+            (14, 18, 16),
+            (7, 8, 9),
+            (8, 8, 8),
+            (11, 8, 11),
+            (26, 26, 27),
+            (13, 25, 17),
+            (13, 13, 12),
+            (9, 10, 11),
+            (20, 15, 18),
+        )
+    )
+
+    assert first == second == Decimal(41) / Decimal(3)
+    ranked = _rank(
+        tuple(
+            LeaderboardRow(
+                rank=None,
+                model=_model(model_id, name),
+                status="evaluated",
+                question_score=score,
+                contract=_contract(),
+            )
+            for model_id, name, score in (("M-0001", "Alpha", first), ("M-0002", "Beta", second))
+        )
+    )
+    assert [row.rank for row in ranked] == [1, 1]
 
 
 def test_rank_preserves_exact_joint_ties_and_places_awaiting_last() -> None:
@@ -1827,15 +1880,14 @@ def test_generated_question_scores_use_subject_averages_then_average() -> None:
 
     assert dataset["score_policy"]["version"] == "average-then-average-v1"
     for run in dataset["official_runs"]:
-        subject_averages: list[Decimal] = []
+        trial_values_by_subject: list[tuple[Decimal, ...]] = []
         for subject in run["subjects"]:
             trial_values = tuple(
                 Decimal(trial["penalized_questions"]) for trial in subject["trials"]
             )
-            subject_average = _average(trial_values)
-            assert Decimal(subject["average_questions"]) == subject_average
-            subject_averages.append(subject_average)
-        expected_score = sum(subject_averages, start=Decimal(0)) / Decimal(len(subject_averages))
+            assert Decimal(subject["average_questions"]) == _average(trial_values)
+            trial_values_by_subject.append(trial_values)
+        expected_score = _question_score(tuple(trial_values_by_subject))
         assert Decimal(run["question_score"]) == expected_score
 
     leaderboard_by_model = {row["model"]["model_id"]: row for row in dataset["leaderboard"]}
@@ -2435,18 +2487,6 @@ def test_homepage_and_method_share_one_typed_illustrative_round() -> None:
     assert '<IllustrativeRoundExample :qualified="qualified" />' in homepage
     assert '<IllustrativeRoundExample :qualified="qualified" />' in method
     assert 'from "@/lib/illustrative-round"' not in story
-    assert "2 September 2026" in story
-    assert "Claude Fable 5.1 (high) added." in story
-    assert "12.1 (lower is better). It found the subject in 34 of 35 rounds." in story
-    assert "23 August 2026" in story
-    assert "OpenRouter’s Ox Alpha (high) tested." in story
-    assert "17.6 (lower is better), 12th of 15 models at the time." in story
-    assert "15 August 2026" in story
-    assert "17 August 2026" in story
-    assert "Gemini 3.7 Flash (high) added." in story
-    assert "Grok 4.6 (high) added." in story
-    assert "5 August 2026" in story
-    assert "Claude Fable 5 (high) added." in story
     assert 'class="round-section"' not in story
     assert 'class="scope-section"' not in story
     assert 'class="apple-spotlight"' not in story

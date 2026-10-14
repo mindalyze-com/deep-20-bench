@@ -824,3 +824,32 @@ models:
         input_usd_per_million: "4.00"
         cached_input_usd_per_million: "0.20"
         cache_write_multiplier: "1.00"
+
+  M-0034:
+    model_id: M-0034
+    display_name: Gemini 4 Argon (high)
+    configuration:
+      configuration_id: M-0034
+      gateway: openrouter
+      model: google/gemini-4-argon
+      # Google Vertex had higher standard-route daily uptime than AI Studio
+      # and advertised strict structured outputs, seed, and effort on 2026-10-14.
+      provider: google-vertex
+      reasoning_effort: high
+      allow_fallbacks: false
+      max_output_tokens: 32768
+      timeout_seconds: 120
+      recovery: *default_recovery
+      seed_capability: supported
+      prompt_cache:
+        policy: best_effort
+        control: automatic
+        # Vertex documents a 6144-token minimum. The 300-second window is an
+        # observation setting; OpenRouter does not advertise implicit caching.
+        minimum_cacheable_tokens: 6144
+        ttl_seconds: 300
+        # OpenRouter's standard global Vertex route advertised introductory
+        # $2 input, $10 output, and $0.10 cache reads per million on 2026-10-14.
+        input_usd_per_million: "2.00"
+        cached_input_usd_per_million: "0.10"
+        cache_write_multiplier: "1.00"

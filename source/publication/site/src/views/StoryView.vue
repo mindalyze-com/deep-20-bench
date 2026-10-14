@@ -6,6 +6,19 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-10-14",
+    displayDate: "14 October 2026",
+    title: "Gemini 4 Argon (high) joins the leaderboard and ties for first.",
+    summary:
+      "It scored 13.7 in edition 1.1 (lower is better), the same as GPT-6 Astra (high): both used 410 questions over 30 rounds and guessed every subject. " +
+      "Argon was the best of 20 models on Door handle and second on Albert Schweitzer and Bike pump, " +
+      "but 19th on Moon, which took it 11, 12, and 14 questions.",
+    link: {
+      type: "run",
+      executionId: "BX-20261014-B-0003-official-M0034-002",
+    },
+  },
+  {
     date: "2026-10-13",
     displayDate: "13 October 2026",
     title: "Muse Wonder (high) joins the leaderboard.",

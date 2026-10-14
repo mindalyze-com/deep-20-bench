@@ -121,7 +121,7 @@ test("visitor ID survives navigation, reloads, and tabs while separate profiles 
     const id = (await views(page))[0]!.id;
     expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
     await navigate(page, "Method");
-    expect((await views(page)).map(view => view.id)).toEqual([id, id]);
+    await expect.poll(async () => (await views(page)).map(view => view.id)).toEqual([id, id]);
     expect(await page.evaluate(() =>
       (window as Window & { __analyticsCalls?: string[] }).__analyticsCalls)).toEqual(["identify", "pageview", "pageview"]);
     await page.reload();
@@ -189,7 +189,7 @@ test("denied storage keeps a visitor ID for the page session", { tag: ["@analyti
   const id = (await views(page))[0]!.id;
   expect(id).toBeTruthy();
   await navigate(page, "Data");
-  expect((await views(page)).map(view => view.id)).toEqual([id, id]);
+  await expect.poll(async () => (await views(page)).map(view => view.id)).toEqual([id, id]);
   await page.reload();
   await expect.poll(() => views(page)).toHaveLength(1);
   expect((await views(page))[0]?.id).not.toBe(id);
