@@ -16,6 +16,7 @@ interface RunSubject {
 }
 
 interface RunDocumentFixture {
+  run: { model_id: string };
   subjects: RunSubject[];
 }
 
@@ -78,6 +79,15 @@ export const derivePublicationPaths = (dataRoot: string, selectedExecutionId?: s
 };
 
 const fixturePaths = derivePublicationPaths(fixtureDataRoot);
+const fixtureEditions = JSON.parse(
+  readFileSync(path.join(fixtureDataRoot, "editions.json"), "utf8"),
+) as { editions: { edition_id: string; models: { model_id: string; slug: string }[] }[] };
+const fixtureModelSlug = fixtureEditions.editions[0]?.models.find(
+  (model) => model.model_id === fixturePaths.runDocument.run.model_id,
+)?.slug;
+if (fixtureModelSlug === undefined) throw new Error("The fixture run has no model page.");
+/** The stable model page of the fixture's first run. */
+export const modelPath = `editions/1.0/models/${fixtureModelSlug}/`;
 export const {
   episodePath,
   executionId,

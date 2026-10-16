@@ -13,15 +13,30 @@ interface Pageview {
   id: string;
 }
 
+interface Identification {
+  id: string;
+  data: {
+    timezone?: string;
+    preferred_languages?: string;
+    viewport_width?: number;
+    viewport_height?: number;
+  };
+}
+
 // A local transport checks the application's integration without external analytics calls.
 // An enabled automatic initial page view deliberately exposes a missing opt-out attribute.
 const trackerScript = `(() => {
   const script = document.currentScript;
   window.__pageviews = [];
   window.__analyticsCalls = [];
+  window.__identifications = [];
   let id;
   window.umami = {
-    identify: value => { id = value; window.__analyticsCalls.push('identify'); },
+    identify: (value, data) => {
+      id = value;
+      window.__analyticsCalls.push('identify');
+      window.__identifications.push({ id: value, data });
+    },
     track: payload => {
       window.__analyticsCalls.push('pageview');
       const defaults = { url: location.href, title: document.title, referrer: document.referrer, id };
@@ -33,6 +48,8 @@ const trackerScript = `(() => {
 
 const views = (page: Page) => page.evaluate(() =>
   (window as Window & { __pageviews?: Pageview[] }).__pageviews ?? []);
+const identifications = (page: Page) => page.evaluate(() =>
+  (window as Window & { __identifications?: Identification[] }).__identifications ?? []);
 const paths = async (page: Page) => (await views(page)).map(view => new URL(view.url).pathname);
 const navigate = async (page: Page, name: string): Promise<void> => {
   const menu = page.locator(".mobile-navigation > summary");
@@ -111,6 +128,31 @@ test("blocked analytics leaves ordinary navigation working", { tag: ["@analytics
   await expect(page).toHaveURL(`${staticBase}editions/1.1/data/`);
   await waitForPublication(page);
   expect(errors).toEqual([]);
+});
+
+test.describe("browser session data collection", () => {
+  test.use({ timezoneId: "Europe/Zurich" });
+
+  test("identification includes browser session data without extra page views",
+    { tag: ["@analytics", "@both"] }, async ({ page }) => {
+      await page.addInitScript(() => {
+        Object.defineProperty(navigator, "languages", { get: () => ["de-CH", "en-US", "fr"] });
+      });
+      await page.route(trackerUrl, route => route.fulfill({ contentType: "text/javascript", body: trackerScript }));
+      await page.goto(staticBase);
+      await expect.poll(() => views(page)).toHaveLength(1);
+      const id = (await views(page))[0]!.id;
+      const viewport = page.viewportSize()!;
+      expect(await identifications(page)).toEqual([
+        { id, data: {
+          timezone: "Europe/Zurich", preferred_languages: "de-CH,en-US,fr",
+          viewport_width: viewport.width, viewport_height: viewport.height,
+        } },
+      ]);
+      await navigate(page, "Method");
+      await expect.poll(() => views(page)).toHaveLength(2);
+      expect(await identifications(page)).toHaveLength(1);
+    });
 });
 
 test("visitor ID survives navigation, reloads, and tabs while separate profiles get different IDs",

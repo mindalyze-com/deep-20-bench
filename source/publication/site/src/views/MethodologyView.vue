@@ -50,9 +50,9 @@ const totalTrials = computed(() => {
             <h1>How Deep20Bench works</h1>
           </div>
           <p class="lede">
-            Deep20Bench tests how well AI models find a hidden subject by asking questions.
-            Models play the same subjects repeatedly. Fewer questions and fewer failed rounds
-            give a better score.
+            Deep20Bench measures how many questions an AI model needs to find a hidden subject.
+            Each model plays the same subjects several times. The fewer questions it needs, the
+            better its score. A round where it never finds the subject gets a fixed penalty.
           </p>
         </div>
       </section>
@@ -73,21 +73,23 @@ const totalTrials = computed(() => {
           <div>
             <h2>Find a hidden subject.</h2>
             <p class="lead">
-              A subject is the person, character, or thing to identify. The model being tested,
-              called the Guesser, starts with only a broad category. It asks one question at a
-              time, uses the answers to narrow the possibilities, and makes a guess.
+              The model under test, called the Guesser, must identify a hidden subject: a
+              person, character, or thing. It starts with only a broad category, asks one
+              question at a time, and guesses when it is ready.
             </p>
             <div class="method-round">
-              <IllustrativeRoundExample :qualified="qualified" />
+              <IllustrativeRoundExample />
             </div>
             <p>
-              This round scores three questions. The correct guess does not count. A wrong
-              guess counts as one question and play continues. For example, 12 questions, one
-              wrong guess, and one reply in the wrong format before the correct guess score 14. The limit is
-              {{ manifest.active_cohort.max_questions }} counted questions, followed by one final guess.
+              The Guesser has up to {{ manifest.active_cohort.max_questions }} counted questions,
+              then one final guess. See <a href="#scoring">what counts toward the score</a>.
             </p>
             <div class="answer-guide" aria-labelledby="answer-meanings-title">
               <h3 id="answer-meanings-title">What the answers mean</h3>
+              <p>
+                Most questions get a clear Yes or No. The other answers cover questions the
+                facts do not settle clearly.
+              </p>
               <dl class="answer-meanings">
                 <div><dt>Yes</dt><dd>The information supports a clear Yes.</dd></div>
                 <div v-if="qualified"><dt>Rather yes</dt><dd>It points toward Yes, but an important gap remains.</dd></div>
@@ -95,15 +97,15 @@ const totalTrials = computed(() => {
                 <div><dt>No</dt><dd>The information supports a clear No.</dd></div>
                 <div><dt>Unknown</dt><dd>There is no clear direction, or unclear wording or conflicting evidence could change the answer.</dd></div>
               </dl>
-              <p v-if="qualified">
-                Rather yes and Rather no are clues, not probabilities. The Guesser should keep
-                other possibilities open and check important assumptions with another question.
+              <p>
+                Not finding something in a search is not enough for No<template v-if="qualified"> or Rather no</template>.
+                <template v-if="qualified">Rather yes and Rather no are clues, not probabilities,
+                  and they do not say how often something is true. The Guesser should keep other
+                  possibilities open and check important assumptions with another question.</template>
               </p>
             </div>
             <MethodDetails title="Guess rules and the question limit" anchor="game-details">
               <p>
-                Not finding something in a search is not enough for No<template v-if="qualified"> or Rather no</template>.
-                <template v-if="qualified">Rather answers do not say how often something is true.</template>
                 Guesses get only Yes, No, or Unknown. Only Yes ends a round successfully.
               </p>
               <p v-if="qualified">
@@ -131,7 +133,7 @@ const totalTrials = computed(() => {
             <h2>How answers are checked.</h2>
             <p class="lead">
               Other models know the hidden subject and answer the Guesser’s questions. Up to
-              three roles are involved, each with a separate job:
+              three of them handle each question, each with a separate job:
             </p>
             <ol class="answer-roles">
               <li><h3>Oracle: find an answer.</h3>
@@ -145,6 +147,12 @@ const totalTrials = computed(() => {
                   It sees neither earlier answer.</p></li>
             </ol>
             <p>
+              The second check exists because a single answering model can make basic mistakes.
+              In early runs, one Oracle said Yes to “born before 1800?” while citing 1875. The
+              Reviewer and Judge use different model families and providers to reduce shared
+              mistakes.
+            </p>
+            <p>
               Guesses go to a separate <strong>Guess Validator</strong>, which checks whether
               the guess names the subject. The Guesser receives only the final answer, with no
               explanation.
@@ -155,28 +163,26 @@ const totalTrials = computed(() => {
                 The hidden subject, searches, evidence, and other models’ conversations stay private.</p>
             </aside>
             <p>
-              If the same question was already checked, its answer can be reused. The
-              transcript marks reused answers.
+              A repeated question can reuse an earlier, fully checked answer. The transcript
+              marks every reused answer.
             </p>
             <MethodDetails title="What the checking models can see" anchor="check-details">
               <p>
-                The Oracle receives the subject and the current question, but no earlier
-                turns. For a new answer, it searches the web and keeps the source text.
-                <template v-if="qualified">Current rules also let it use its own knowledge,
-                  with a short private justification.</template>
+                <strong>Oracle:</strong> the subject and the current question, but no earlier
+                turns. It searches the web and keeps the source text.
+                <template v-if="qualified">Under current rules, it may also use its own
+                  knowledge, with a short private justification.</template>
                 <template v-else>It must search instead of relying on memory.</template>
               </p>
               <p>
-                The Reviewer and Judge receive the subject, the question, and the Oracle’s
+                <strong>Reviewer and Judge:</strong> the subject, the question, and the Oracle’s
                 numbered evidence. They cannot search the web or see earlier answers or the game
                 history. <template v-if="qualified">Any difference, even Yes versus Rather yes,
                   goes to the Judge.</template>
-                If a required check fails, the round counts as a test system failure; the
-                Oracle’s answer is never used on its own.
               </p>
               <p v-if="qualified">
-                In current runs, all three roles may use evidence or their own knowledge, with
-                a short private justification. An earlier accepted version limited the Reviewer
+                In current runs, the Reviewer and Judge may also use their own knowledge, with a
+                short private justification. An earlier accepted version limited the Reviewer
                 to the supplied evidence and let the Judge use its own knowledge only in
                 limited cases. Each run records its rules and prompt versions.
               </p>
@@ -185,29 +191,30 @@ const totalTrials = computed(() => {
                 when the evidence is not enough.
               </p>
               <p>
-                The Guess Validator receives only the subject and the guess, with no web
-                access. The Guesser never sees sources, other models’ instructions, checking
-                decisions, logs, or private files. Its own instructions and format reminder
-                contain nothing about the subject.
+                <strong>Guess Validator:</strong> only the subject and the guess, with no web
+                access.
               </p>
               <p>
-                Early runs exposed basic Oracle errors: one answer said Yes to “born before
-                1800?” while citing 1875. The Reviewer and Judge use different model families
-                and providers to reduce shared mistakes.
+                If a required check fails, the round counts as a test system failure; the
+                Oracle’s answer is never used on its own.
+              </p>
+              <p>
+                The Guesser never sees sources, other models’ instructions, checking
+                decisions, logs, or private files. Its own instructions and format reminder
+                contain nothing about the subject.
               </p>
             </MethodDetails>
             <MethodDetails title="When an earlier answer is reused" anchor="answer-reuse">
               <p>
-                New benchmark runs reuse answers by default. A question that matches an
-                earlier one can reuse its fully checked answer, either from an earlier
-                compatible round or from the same game. Standalone games always check anew.
-                The run’s recorded rules decide which answers qualify.
+                Benchmark runs reuse answers by default. A question that matches an earlier
+                one can reuse its fully checked answer, from an earlier compatible round or
+                from the same game. The run’s recorded rules decide which answers qualify.
               </p>
               <p>
-                Reused answers keep their original evidence, time, and source label in the
-                transcript. They are not new web checks. The question still counts, but adds
-                no answer-checking calls or cost. The Guesser sees only the final answer.
-                Compare runs only if they use the same reuse rules and answer history.
+                A reused answer keeps its original evidence, time, and source label. No new
+                search or check runs. The question still counts, but adds no answer-checking
+                cost. The Guesser sees only the final answer. Compare runs only if they use the
+                same reuse rules and answer history.
               </p>
             </MethodDetails>
           </div>
@@ -220,19 +227,26 @@ const totalTrials = computed(() => {
           <div>
             <h2>Fewer questions means a better score.</h2>
             <p class="lead">
-              Average the round scores for each subject, then average those subject scores.
-              Every subject has equal weight. This is the model’s question score.
+              Each round gets a score. Average the rounds for each subject, then average the
+              subjects. Every subject has equal weight. The result is the model’s question score.
             </p>
             <dl class="score-rules" aria-label="Round scoring">
-              <div><dt>Subject found</dt><dd>Counted questions used</dd></div>
-              <div><dt>Model fails to find it</dt><dd>{{ penalty }} questions</dd></div>
-              <div><dt>Test system fails</dt><dd>Unscored; the run stays incomplete</dd></div>
+              <div><dt>Each question</dt><dd>+1</dd></div>
+              <div><dt>Each wrong guess</dt><dd>+1, play continues</dd></div>
+              <div><dt>Each reply in the wrong format</dt><dd>+1, play continues; an invalid final guess ends the round instead</dd></div>
+              <div><dt>Correct guess</dt><dd>Not counted; the round ends</dd></div>
+              <div><dt>Subject not found</dt><dd>The round scores {{ penalty }}</dd></div>
+              <div><dt>Test system failure</dt><dd>Not scored; the run stays incomplete until the round is rerun</dd></div>
             </dl>
             <p>
-              Each score has a <strong>95% confidence interval</strong>: an estimate of uncertainty
-              in the average from repeated rounds on these subjects. A narrower interval means
-              more consistent results, even if the score itself is poor. It does not describe
-              performance on new subjects.
+              For example, 12 questions, one wrong guess, and one reply in the wrong format
+              before the correct guess score 14.
+            </p>
+            <p>
+              Each score has a <strong>95% confidence interval</strong> (CI). It estimates how
+              much the average could change if the same subjects were played again. A narrower
+              interval means more consistent results, even if the score itself is poor. It does
+              not describe performance on new subjects.
             </p>
             <p>
               The <RouterLink :to="editionRoute('results-reliability')">Stability view</RouterLink>
@@ -251,10 +265,9 @@ const totalTrials = computed(() => {
                 extra counted turn.
               </p>
               <p>
-                A later correct guess does not erase earlier format errors. Round, subject,
-                run, and leaderboard pages show the share of valid replies, the number of
-                errors, the affected rounds, and the turns used. The used turn is already in
-                the question score; there is no second penalty.
+                A later correct guess does not erase earlier format errors. Result pages show
+                the share of valid replies, the number of errors, and the affected rounds. The
+                used turn is already in the question score; there is no second penalty.
               </p>
             </MethodDetails>
             <MethodDetails title="Scoring formulas and uncertainty" anchor="score-details">
@@ -388,15 +401,14 @@ const totalTrials = computed(() => {
             </div>
               <p>
                 The interval describes uncertainty in the average, not the range of single
-                rounds. It does not cover other subjects, changes to models or providers, or
-                future editions. It assumes that rounds on the same subject are independent;
-                different seeds support this but do not prove it. Comparing two models’
-                intervals is not a significance test.
+                rounds. It also does not cover changes to models, providers, or editions.
+                Comparing two models’ intervals is not a significance test.
               </p>
               <p>
-                Reused answers can link rounds. The interval does not adjust for this or
-                estimate how new web research might change answers. Stability ranks use the
-                interval width at the same 95% level for every model.
+                The interval assumes that rounds on the same subject are independent. Different
+                seeds support this but do not prove it, and reused answers can link rounds. The
+                interval does not adjust for this or estimate how new web research might change
+                answers.
               </p>
             </MethodDetails>
           </div>
@@ -415,13 +427,12 @@ const totalTrials = computed(() => {
             </p>
             <p>
               Only complete runs with accepted settings enter the leaderboard. If several runs
-              qualify for a model, it uses the newest completed run, never the best score.
+              qualify for a model, the newest one counts, never the best one.
             </p>
             <p v-if="qualified">
-              Edition 1.1 accepts several reviewed versions of the answer-checking prompts
-              and subject descriptions, so runs within this edition may differ in more than
-              the Guesser model. These differences can affect scores. Each run shows its
-              settings.
+              Edition 1.1 accepts a few reviewed versions of the answer-checking prompts and
+              subject descriptions, so runs may differ in more than the Guesser. These
+              differences can affect scores. Each run shows its settings.
             </p>
             <aside class="scope-note">
               <h3>What a comparison can tell you</h3>
@@ -435,7 +446,7 @@ const totalTrials = computed(() => {
             <MethodDetails title="Subjects, repeated rounds, and future editions" anchor="subject-design">
               <p>
                 Each subject has a main name, accepted alternative names, a clear description,
-                and a public reference. Every model in an edition uses the same list, shown with
+                and a public reference. Every model in an edition plays the same list, shown with
                 categories in each run. The selection is not random, balanced, or representative.
                 Cost limits its size: each added subject needs repeated model turns and answer checks.
               </p>
@@ -448,7 +459,7 @@ const totalTrials = computed(() => {
               <p>
                 Future editions should include more subjects and kinds, such as places and
                 objects. Subjects and selection rules will be fixed before testing. Any change
-                to subjects or game rules gets a new edition with separate results.
+                to subjects or game rules starts a new edition with separate results.
               </p>
             </MethodDetails>
             <MethodDetails title="Requirements for a published run" anchor="eligibility">
@@ -464,17 +475,14 @@ const totalTrials = computed(() => {
                 Reviewer, Judge, Guess Validator, round count, and scoring rules stay the same.
               </p>
               <ul>
-                <li>Signed run files must pass integrity checks.</li>
+                <li>Signed run files must pass integrity checks. Any invalid file stops the site
+                  build.</li>
                 <li>The run must be finished, with every round of every subject complete.</li>
                 <li>Rounds the model failed count as scored. A run with missing rounds or test
                   system failures stays out until those rounds are rerun.</li>
+                <li>For a rerun round, only the final attempt counts toward scores and cost
+                  comparisons. Earlier attempts stay in the records and the total spend.</li>
               </ul>
-              <p>Any invalid run file stops the site build.</p>
-              <p>
-                Cost comparisons use the final attempt of each round. Earlier attempts that
-                were rerun after a test system failure stay in the records and the total spend,
-                but not in the cost comparison.
-              </p>
             </MethodDetails>
           </div>
         </div>
@@ -495,21 +503,13 @@ const totalTrials = computed(() => {
               you check the evidence and spot mistakes.
             </p>
             <div class="button-row">
+              <RouterLink class="button button-primary" :to="editionRoute('results')">
+                Explore the results →
+              </RouterLink>
               <RouterLink class="button button-secondary" :to="editionRoute('data')">
-                View public data →
+                Download the data
               </RouterLink>
             </div>
-            <MethodDetails title="How results reach this website" anchor="publication-details">
-              <p>
-                Publication happens after play is finished. The site is built from saved,
-                verified result files. It never takes part in a game, and published data never
-                returns to the Guesser.
-              </p>
-              <p>
-                The publishing code is a separate package that cannot call models. Public data
-                excludes private prompts, hidden reasoning, provider logs, and credentials.
-              </p>
-            </MethodDetails>
             <p class="build-story">
               For background on how it was built,
               <a

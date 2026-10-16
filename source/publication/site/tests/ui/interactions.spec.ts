@@ -5,6 +5,7 @@ import { expect, test } from "./support/fixture";
 
 import { splitModelName } from "../../src/lib/model-name";
 import { siteResourceLinks } from "../../src/lib/site-resources";
+import type { ModelIndexDocument } from "../../src/lib/types";
 import {
   contractExampleEpisodePath,
   contractExampleHref,
@@ -17,6 +18,7 @@ import {
   expectVerticalGap,
   firstTraversalTrialId,
   lastTraversalTrialId,
+  modelPath,
   nextTraversalSubjectId,
   previousTraversalSubjectId,
   runDocument,
@@ -149,7 +151,7 @@ test("mobile score plots preserve vertical pan and open model runs", { tag: ["@i
       expect(href).not.toBeNull();
       expect(linkLabel).not.toBeNull();
       const modelName = splitModelName(
-        linkLabel?.replace("View full run for ", "") ?? "",
+        linkLabel?.replace("View results for ", "") ?? "",
       ).displayName;
 
       await scoreCanvases
@@ -225,7 +227,7 @@ test("leaderboard links and headers remain clear while scrolling", { tag: ["@int
   const singleViolationRow = page
     .locator(".comparison-ranking-table tbody tr")
     .filter({ hasText: "Synthetic Model 04" });
-  await expect(singleViolationRow).toContainText(">99%");
+  await expect(singleViolationRow).toContainText("99.8%");
   await expect(singleViolationRow).toContainText("1 violation");
   await expect(singleViolationRow).not.toContainText("1 violations");
 
@@ -262,20 +264,17 @@ test("collapsed result cards highlight the complete entry", { tag: ["@interactio
   await waitForPublication(page);
 
   const card = page.locator(".mobile-result-card").first();
-  const action = card.locator(".mobile-result-action");
   await expect(card).toBeVisible();
-  await expect(action).toHaveCSS("background-color", "rgb(250, 249, 245)");
-  await expect(action).toHaveCSS("color", "rgb(48, 68, 210)");
-  await expect(action).toHaveCSS("border-top-style", "solid");
+  await expect(card).toHaveCSS("background-color", "rgb(250, 249, 245)");
+  await expect(card.locator(".mobile-result-primary small")).toHaveText("Question score");
   await card.hover();
   await expect(card).toHaveCSS("background-color", "rgb(238, 240, 255)");
-  await expect(action).toHaveCSS("background-color", "rgb(238, 240, 255)");
 });
 
 test("result metric explanations work by keyboard and tap", { tag: ["@interactions", "@desktop"] }, async ({ page }) => {
   await page.goto("results/");
   await waitForPublication(page);
-  const scoreHelp = page.getByRole("button", { name: "Question score" });
+  const scoreHelp = page.getByRole("button", { name: "Question score", exact: true });
   await scoreHelp.click();
   await expect(page.getByRole("dialog", { name: "Question score" })).toContainText(
     "A failed round receives the fixed failure score",
@@ -285,7 +284,7 @@ test("result metric explanations work by keyboard and tap", { tag: ["@interactio
 
   await page.goto("results/reliability/");
   await waitForPublication(page);
-  await page.getByRole("button", { name: "CI width" }).click();
+  await page.getByRole("button", { name: "CI width", exact: true }).click();
   await expect(
     page.getByRole("dialog", { name: "CI width" }),
   ).toContainText("upper end of the 95% confidence interval minus the lower end");
@@ -329,7 +328,9 @@ test("cached workspace transitions keep route identities scoped to their workspa
 
   await page.goto("results/");
   await waitForPublication(page);
-  await page.locator(`a[href$="/${runPath}"]:visible`).last().click();
+  await page.locator(`.ranking-section a[href$="/${modelPath}"]:visible`).first().click();
+  await expect(page).toHaveURL(new RegExp(`${modelPath}$`));
+  await page.locator(`a[href$="/${runPath}"]:visible`).first().click();
   await expect(page).toHaveURL(new RegExp(`${runPath}$`));
   await page.locator(`a[href$="/${subjectPath}"]:visible`).first().click();
   await expect(page).toHaveURL(new RegExp(`${subjectPath}$`));
@@ -534,8 +535,8 @@ test("result navigation, tables, and charts use the shared results layout", { ta
   );
   const stackedLegend = page.locator(".stacked-chart figcaption");
   await expect(stackedLegend).toContainText("Guesser");
-  await expect(stackedLegend).toContainText("Primary Oracle");
-  await expect(stackedLegend).toContainText("Answer checks");
+  await expect(stackedLegend).toContainText("Oracle");
+  await expect(stackedLegend).toContainText("Other answer checks");
   await expect(stackedLegend).not.toContainText("Reviewer");
   await expect(stackedLegend).not.toContainText("Judge");
   await expect(stackedLegend).not.toContainText("Validator");
@@ -784,15 +785,15 @@ test("turn-map markers scroll the selected turn into view", { tag: ["@interactio
 
 test("turn-map markers expand for long answer tokens", { tag: ["@interactions", "@desktop"] }, async ({ page }) => {
   for (const [path, answer] of [
-    [unknownExampleEpisodePath, "UNKNOWN"],
-    [contractExampleEpisodePath, "FORMAT"],
+    [unknownExampleEpisodePath, "Unknown"],
+    [contractExampleEpisodePath, "Format"],
   ] as const) {
     await page.goto(path);
     await waitForPublication(page);
 
     const turnMap = page.locator(".turn-map");
     const shortMarker = turnMap.locator("button").filter({
-      has: page.locator("strong", { hasText: /^NO$/ }),
+      has: page.locator("strong", { hasText: /^No$/ }),
     }).first();
     const longMarker = turnMap.locator("button").filter({
       has: page.locator("strong", { hasText: new RegExp(`^${answer}$`) }),
@@ -893,4 +894,53 @@ test("mobile header menu restores focus after Escape", { tag: ["@interactions", 
   await page.keyboard.press("Escape");
   await expect(mobileMenu).not.toHaveAttribute("open", "");
   await expect(summary).toBeFocused();
+});
+
+test("model page points to the full run from the banner and below the result", { tag: ["@functional", "@both"] }, async ({ page }) => {
+  await page.goto(modelPath);
+  await waitForPublication(page);
+  const heroButton = page.locator(".page-hero").getByRole("link", { name: /^See all \d+ rounds →$/ });
+  await expect(heroButton).toHaveAttribute("href", new RegExp(`/${runPath}$`));
+  await expect(page.locator(".run-cta-hint")).toHaveText("Every question, answer, guess, and source.");
+  const callout = page.locator(".run-callout");
+  await expect(callout).toHaveAttribute("href", new RegExp(`/${runPath}$`));
+  await expect(callout).toContainText("Open the full run →");
+  await callout.click();
+  await expect(page).toHaveURL(new RegExp(`${runPath}$`));
+});
+
+test("switching models clears the previous results while the next model loads", { tag: ["@interactions", "@both"] }, async ({ page }) => {
+  const index = JSON.parse(readFileSync(path.resolve(
+    "tests/fixtures/publication/data/editions/1.0/models.json",
+  ), "utf8")) as ModelIndexDocument;
+  const [first, second] = index.models;
+  if (first === undefined || second === undefined) throw new Error("Two model fixtures are required.");
+  const modelsPath = "editions/1.0/models/";
+  await page.goto(`${modelsPath}${first.slug}/`);
+  await expect(page.locator(".model-page .run-callout"))
+    .toHaveAttribute("href", `/deep-20-bench/runs/${first.execution_id}/`);
+  await page.getByRole("link", { name: "All models", exact: true }).click();
+
+  let release!: () => void;
+  const responseGate = new Promise<void>((resolve) => { release = resolve; });
+  await page.route(`**/data/editions/1.0/models/${second.slug}.json`, async (route) => {
+    await responseGate;
+    await route.fallback();
+  });
+  try {
+    await page.locator(`.model-index-table a[href$="/${modelsPath}${second.slug}/"]`).click();
+    await expect(page).toHaveURL(new RegExp(`/${modelsPath}${second.slug}/$`));
+    await expect(page.locator(".model-page .loading-state")).toBeVisible();
+    await expect(page.locator(".model-page .page-hero, .model-page .model-facts, .model-page .observation-groups"))
+      .toHaveCount(0);
+    await expect(page.locator(".model-page a")).toHaveCount(0);
+  } finally {
+    release();
+  }
+
+  await expect(page.locator(".model-page h1"))
+    .toContainText(splitModelName(second.model.display_name).displayName);
+  await expect(page.locator(".model-page .run-callout"))
+    .toHaveAttribute("href", `/deep-20-bench/runs/${second.execution_id}/`);
+  await expect(page.locator(".model-page .loading-state")).toHaveCount(0);
 });

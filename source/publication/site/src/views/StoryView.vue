@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { editionRoute } from "@/lib/route-location";
+import { modelSlug } from "@/lib/api";
+import { editionRoute, modelRoute } from "@/lib/route-location";
 import { computed, nextTick, onActivated, onMounted, ref } from "vue";
 
 import { setRouteContext } from "@/lib/route-context";
@@ -10,13 +11,14 @@ const newsEntries = [
     displayDate: "14 October 2026",
     title: "Gemini 4 Argon (high) matches the lowest average score.",
     summary:
-      "It scored 13.7 in edition 1.1 (lower is better), the same as GPT-6 Astra (high): both used 410 questions over 30 rounds and guessed every subject. " +
+      "It averaged 13.67 questions per round in edition 1.1, the same as GPT-6 Astra (high): both used 410 questions over 30 rounds and solved every round. " +
       "Astra ranks first because its 95% confidence interval is narrower. " +
       "Argon was the best of 20 models on Door handle and second on Albert Schweitzer and Bike pump, " +
       "but 19th on Moon, which took it 11, 12, and 14 questions.",
     link: {
-      type: "run",
-      executionId: "BX-20261014-B-0003-official-M0034-002",
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0034",
     },
   },
   {
@@ -24,12 +26,13 @@ const newsEntries = [
     displayDate: "13 October 2026",
     title: "Muse Wonder (high) joins the leaderboard.",
     summary:
-      "It scored 19.6 in edition 1.1 (lower is better), 13th of 19 models, and guessed the subject in 29 of 30 rounds. " +
+      "It averaged 19.63 questions per round in edition 1.1, 13th of 19 models at the time. " +
       "Some subjects were much harder for it than others: it was 9th best on Albert Schweitzer but 18th on Garfield, " +
-      "which took it 10, 22, and 30 questions. Achilles took eight questions every time.",
+      "which took it 10, 22, and 30 questions. Achilles took 8 questions every time.",
     link: {
-      type: "run",
-      executionId: "BX-20261013-B-0003-OFFICIAL-M0033-002",
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0033",
     },
   },
   {
@@ -37,10 +40,11 @@ const newsEntries = [
     displayDate: "30 September 2026",
     title: "Claude Sonnet 5.5 (high) joins the leaderboard.",
     summary:
-      "It scored 17.8 in edition 1.1 (lower is better) and guessed the subject in 27 of 30 rounds.",
+      "It averaged 17.83 questions per round in edition 1.1, with 3 failed rounds out of 30.",
     link: {
-      type: "run",
-      executionId: "BX-20260930-B-0003-official-M0032-001",
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0032",
     },
   },
   {
@@ -48,10 +52,11 @@ const newsEntries = [
     displayDate: "30 September 2026",
     title: "GPT-6.1 Sol (high) joins the leaderboard.",
     summary:
-      "It scored 15.2 in edition 1.1 (lower is better) and guessed the subject in 29 of 30 rounds.",
+      "It averaged 15.23 questions per round in edition 1.1, with 1 failed round out of 30.",
     link: {
-      type: "run",
-      executionId: "BX-20260929-B-0003-official-M0031-001",
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0031",
     },
   },
   {
@@ -59,10 +64,11 @@ const newsEntries = [
     displayDate: "27 September 2026",
     title: "Claude Opus 5.5 (high) joins the leaderboard.",
     summary:
-      "It scored 15.0 in edition 1.1 (lower is better) and guessed the subject in 29 of 30 rounds.",
+      "It averaged 15.00 questions per round in edition 1.1, with 1 failed round out of 30.",
     link: {
-      type: "run",
-      executionId: "BX-20260926-B-0003-official-M0030-001",
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0030",
     },
   },
   {
@@ -70,10 +76,11 @@ const newsEntries = [
     displayDate: "27 September 2026",
     title: "GPT-6 Sol (high) joins the leaderboard.",
     summary:
-      "It scored 18.0 in edition 1.1 (lower is better) and guessed the subject in all 30 rounds.",
+      "It averaged 18.03 questions per round in edition 1.1, with no failed rounds.",
     link: {
-      type: "run",
-      executionId: "BX-20260926-B-0003-official-M0029-001",
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0029",
     },
   },
   {
@@ -81,10 +88,11 @@ const newsEntries = [
     displayDate: "27 September 2026",
     title: "GPT-6 Luna (high) joins the leaderboard.",
     summary:
-      "It scored 21.2 in edition 1.1 (lower is better) and guessed the subject in 24 of 30 rounds.",
+      "It averaged 21.17 questions per round in edition 1.1, with 6 failed rounds out of 30.",
     link: {
-      type: "run",
-      executionId: "BX-20260926-B-0003-official-M0028-001",
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0028",
     },
   },
   {
@@ -92,40 +100,44 @@ const newsEntries = [
     displayDate: "27 September 2026",
     title: "Grok 4.7 (high) joins the leaderboard.",
     summary:
-      "It scored 22.2 in edition 1.1 (lower is better) and guessed the subject in 22 of 30 rounds.",
+      "It averaged 22.23 questions per round in edition 1.1, with 8 failed rounds out of 30.",
     link: {
-      type: "run",
-      executionId: "BX-20260926-B-0003-official-M0027-001",
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0027",
     },
   },
   {
     date: "2026-09-05",
     displayDate: "5 September 2026",
     title: "GPT-6 Astra (high) joins the leaderboard.",
-    summary: "It scored 15.1 in edition 1.0 (lower is better) and guessed the subject in 33 of 35 rounds.",
+    summary: "It averaged 15.09 questions per round in edition 1.0, with 2 failed rounds out of 35.",
     link: {
-      type: "run",
-      executionId: "BX-20260904-official-M0022-001",
+      type: "model",
+      editionId: "1.0",
+      modelId: "M-0022",
     },
   },
   {
     date: "2026-09-04",
     displayDate: "4 September 2026",
     title: "Gemini 3.8 Flash (high) joins the leaderboard.",
-    summary: "It scored 13.1 in edition 1.0 (lower is better) and guessed the subject in all 35 rounds.",
+    summary: "It averaged 13.14 questions per round in edition 1.0, with no failed rounds.",
     link: {
-      type: "run",
-      executionId: "BX-20260904-official-M0021-001",
+      type: "model",
+      editionId: "1.0",
+      modelId: "M-0021",
     },
   },
   {
     date: "2026-09-02",
     displayDate: "2 September 2026",
     title: "Claude Fable 5.1 (high) joins the leaderboard.",
-    summary: "It scored 12.1 in edition 1.0 (lower is better) and guessed the subject in 34 of 35 rounds.",
+    summary: "It averaged 12.11 questions per round in edition 1.0, with 1 failed round out of 35.",
     link: {
-      type: "run",
-      executionId: "BX-20260902-official-M0020-001",
+      type: "model",
+      editionId: "1.0",
+      modelId: "M-0020",
     },
   },
   {
@@ -145,43 +157,53 @@ const newsEntries = [
     displayDate: "23 August 2026",
     title: "We tried Ox Alpha (high) from OpenRouter.",
     summary:
-      "An anonymous stealth model on OpenRouter. It scored 17.6 in edition 1.0 (lower is better), 12th of 15 models at the time, and guessed the subject in 32 of 35 rounds.",
+      "An anonymous stealth model on OpenRouter. It averaged 17.60 questions per round in edition 1.0, 12th of 15 models at the time.",
     link: {
-      type: "run",
-      executionId: "BX-20260823-official-M0017-018",
+      type: "model",
+      editionId: "1.0",
+      modelId: "M-0017",
     },
   },
   {
     date: "2026-08-17",
     displayDate: "17 August 2026",
     title: "Gemini 3.7 Flash (high) joins the leaderboard.",
-    summary: "It scored 14.0 in edition 1.0 (lower is better) and guessed the subject in 34 of 35 rounds.",
+    summary: "It averaged 14.03 questions per round in edition 1.0, with 1 failed round out of 35.",
     link: {
-      type: "run",
-      executionId: "BX-20260817-official-M0016-015",
+      type: "model",
+      editionId: "1.0",
+      modelId: "M-0016",
     },
   },
   {
     date: "2026-08-15",
     displayDate: "15 August 2026",
     title: "Grok 4.6 (high) joins the leaderboard.",
-    summary: "It scored 14.3 in edition 1.0 (lower is better) and guessed the subject in all 35 rounds.",
+    summary: "It averaged 14.29 questions per round in edition 1.0, with no failed rounds.",
     link: {
-      type: "run",
-      executionId: "BX-20260814-official-M0015-013",
+      type: "model",
+      editionId: "1.0",
+      modelId: "M-0015",
     },
   },
   {
     date: "2026-08-05",
     displayDate: "5 August 2026",
     title: "Claude Fable 5 (high) joins the leaderboard.",
-    summary: "It scored 12.1 in edition 1.0 (lower is better) and guessed the subject in all 35 rounds.",
+    summary: "It averaged 12.06 questions per round in edition 1.0, with no failed rounds.",
     link: {
-      type: "run",
-      executionId: "BX-20260805-official-M0014-011",
+      type: "model",
+      editionId: "1.0",
+      modelId: "M-0014",
     },
   },
 ] as const;
+
+// News describes a model, so it links the stable model page rather than a replaceable run.
+const newsModelRoute = (modelId: string, editionId: string) => {
+  const slug = modelSlug(modelId, editionId);
+  return slug === null ? editionRoute("results", { editionId }) : modelRoute(slug, editionId);
+};
 
 const newsBatchSize = 4;
 const orderedNewsEntries = [...newsEntries].sort((a, b) => b.date.localeCompare(a.date));
@@ -313,8 +335,8 @@ onActivated(applyRouteContext);
             <h2 id="news-title">What’s new.</h2>
           </div>
           <p>
-            New models on the leaderboard, releases, and articles. A score is the average number
-            of questions a model needs, and missed rounds count as a penalty. Lower is better.
+            New models, releases, and articles. A score is the average number of questions per
+            round, with a fixed penalty for failed rounds. Lower is better.
           </p>
         </header>
         <div id="news-list" ref="newsList" class="news-list">
@@ -336,6 +358,7 @@ onActivated(applyRouteContext);
               :key="`${entry.date}-${entry.title}`"
               v-show="!enhancedNews || groupIndex === 0 || entryIndex < visibleNewsCount - newsBatchSize"
               class="news-entry"
+              :class="{ 'news-entry--latest': groupIndex === 0 && entryIndex === 0 }"
               tabindex="-1"
             >
               <time :datetime="entry.date">{{ entry.displayDate }}</time>
@@ -356,12 +379,9 @@ onActivated(applyRouteContext);
               <RouterLink
                 v-else
                 class="news-link"
-                :to="{
-                  name: 'run',
-                  params: { executionId: entry.link.executionId },
-                }"
+                :to="newsModelRoute(entry.link.modelId, entry.link.editionId)"
               >
-                View run →
+                View model results →
               </RouterLink>
             </article>
           </component>
@@ -591,7 +611,14 @@ details.news-group > .news-entry {
   grid-template-columns: minmax(9rem, 0.25fr) minmax(0, 1fr) auto;
   gap: clamp(1.5rem, 4vw, 4rem);
   align-items: center;
-  padding: clamp(1.5rem, 3vw, 2.5rem);
+  padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
+  border: var(--rule-default);
+  background: var(--paper-bright);
+}
+
+/* Only the newest update is highlighted, so it stands out from the archive. */
+.news-entry--latest {
+  padding-block: clamp(1.5rem, 3vw, 2.5rem);
   border: var(--rule-strong);
   background: var(--acid);
 }
@@ -607,8 +634,12 @@ details.news-group > .news-entry {
 .news-entry h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.65rem, 3vw, 2.4rem);
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
   font-weight: var(--font-weight-medium);
+}
+
+.news-entry--latest h3 {
+  font-size: clamp(1.65rem, 3vw, 2.4rem);
 }
 
 .news-entry p {
@@ -625,7 +656,8 @@ details.news-group > .news-entry {
 .story-closing-inner {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.65fr);
-  gap: clamp(3rem, 8vw, 8rem);
+  column-gap: clamp(3rem, 8vw, 8rem);
+  row-gap: 1.25rem;
 }
 
 .work-table {
@@ -716,10 +748,6 @@ details.news-group > .news-entry {
 .story-closing h2 {
   max-width: 11ch;
   font-size: clamp(2.7rem, 4vw, 4rem);
-}
-
-.story-closing-inner > div:last-child {
-  align-self: end;
 }
 
 .story-closing-inner > div:last-child > p {

@@ -1688,7 +1688,7 @@ def test_report_cost_labels_define_episode_and_run_scope() -> None:
     assert 'class="workspace-metrics workspace-detail-boundary"' in run_source
     assert "Run totals." in run_source
     assert "Guesser time" in run_source
-    assert "Primary Oracle" in run_source
+    assert "Oracle" in run_source
     assert "Answer checks" in run_source
     assert "run.totals.total_tokens" in run_source
     assert "current.totals.guesser_think_time_ms" in run_source
@@ -1715,9 +1715,9 @@ def test_cost_documentation_excludes_superseded_infrastructure_attempts() -> Non
     methodology_copy = " ".join(methodology_source.split())
     assert "It excludes answer-checking costs and earlier attempts of rounds rerun after a test system failure." in cost_copy
     assert "left out of the comparison" in cost_copy
-    assert "Excluded repair cost" in cost_copy
-    assert "Excluded repair cost" in run_source
-    assert "but not in the cost comparison" in methodology_copy
+    assert "Rerun cost (excluded)" in cost_copy
+    assert "Rerun cost (excluded)" in run_source
+    assert "only the final attempt counts toward scores and cost comparisons" in methodology_copy
 
 
 def test_generated_homepage_matches_the_official_result_state() -> None:
@@ -1795,8 +1795,8 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "Early runs exposed rare but basic Oracle errors" not in homepage
     assert "How Deep20Bench works" in methodology
     assert "Method · Edition {{ manifest.active_cohort.edition_label }}" in methodology
-    assert '<IllustrativeRoundExample :qualified="qualified" />' in homepage
-    assert '<IllustrativeRoundExample :qualified="qualified" />' in methodology
+    assert '<IllustrativeRoundExample />' in homepage
+    assert '<IllustrativeRoundExample />' in methodology
     assert "Question score (single round)" in illustrative_round
     assert "The correct guess is excluded." in illustrative_round
     methodology_copy = " ".join(methodology.split())
@@ -1824,14 +1824,29 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
         "number of subjects",
     ):
         assert required_explanation in methodology_copy
+    why_copy = " ".join((
+        REPOSITORY / "source" / "publication" / "site" / "src" / "views" / "WhyView.vue"
+    ).read_text(encoding="utf-8").split())
+    for reason in (
+        "Easy to play, hard to play well.",
+        "The game is uneven.",
+        "splits the remaining possibilities roughly in half",
+        "There is no universal list of questions",
+        "testing it still takes repeated rounds and answer checks",
+        "an advantage from training data cannot be ruled out",
+        "Before the question limit, each broken reply costs a turn.",
+        "not a measure of general intelligence",
+        "Researchers at Microsoft and Apple have used Twenty Questions",
+        "hash: '#research'",
+    ):
+        assert reason in why_copy
     assert "A score built from repeated trials." not in homepage
     assert "Each model completes the full subject set several times." not in homepage
     assert "Only complete runs with accepted settings enter the leaderboard." in methodology
-    assert "Publication happens after play is finished." in methodology
-    assert "published data never returns to the Guesser." in methodology_copy
+    assert "How results reach this website" not in methodology
     assert "questionScoreChartSummary" in homepage
     assert "side plot shows each CI width" in result_chart
-    assert "three color bands of equal size" in result_chart
+    assert "three equal bands" in result_chart
     assert 'class="protocol-flow"' not in homepage
     assert "Homepage built" not in homepage
     assert "home-build-note" not in homepage
@@ -1853,7 +1868,8 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
     assert "Verify and reuse" in data_page
     assert "CC BY 4.0" in data_page
     assert ".model.display_name" in data_page
-    assert "How results are published" in data_page
+    assert "How it works →" in data_page
+    assert "Building it makes no model" in data_page
     assert "Support future benchmark runs" in homepage
     if evaluated:
         assert '<template v-if="evaluated.length > 0">' in homepage
@@ -1867,7 +1883,7 @@ def test_generated_homepage_matches_the_official_result_state() -> None:
         assert "tone: 'primary'" not in homepage
         assert "@click.stop" in model_run_link
         assert "model-run-link-chevron" in model_run_link
-        assert "Full run · questions, answers, and evidence" in mobile_result_card
+        assert 'class="mobile-result-primary"' in mobile_result_card
         assert "result-row--navigable" in homepage
     else:
         assert '<article v-else class="empty-results">' in homepage
@@ -2149,9 +2165,9 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "aria:" in component
     assert "tooltip:" in component
     assert "useResponsiveEChart" in component
-    assert 'name: "View full run"' in component
+    assert 'name: "View model results"' in component
     assert 'barGap: "-100%"' in component
-    assert "Select a model row to view its full run" in component
+    assert "Select a model row to view its results" in component
     assert "ResizeObserver" in responsive_runtime
     assert 'chart.on("click", options.onClick)' in responsive_runtime
     assert "<InfoPopover" in question_score
@@ -2202,7 +2218,7 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert 'name: "95% CI of average"' in score_dot_plot
     assert "intentionally not exposed for now" in score_dot_plot
     assert "confidenceDisplay" in score_dot_plot
-    assert 'name: "View full run"' in score_dot_plot
+    assert 'name: "View model results"' in score_dot_plot
     assert "scoreDomain.value.minimum" in score_dot_plot
     assert "lineStyle: { color: theme.gridLine, width: 1 }" in score_dot_plot
     assert "color: theme.ink" in score_dot_plot
@@ -2216,11 +2232,11 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
         stacked_costs,
         score_dot_plot,
     ):
-        assert "View full run" in linked_model_chart
+        assert "View model results" in linked_model_chart
     assert "chartTooltipRunLink" in efficiency_scatter
     assert "useLinkedEChart" in efficiency_scatter
-    assert "View full run" in chart_tooltip
-    assert "View full run" in chart_accessible_data
+    assert "View model results" in chart_tooltip
+    assert "View results for" in chart_accessible_data
     assert "router.push" in use_linked_echart
     for chart_source in (
         component,
@@ -2335,7 +2351,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert '@click="openRun(row)"' in overview
     assert "result-row--navigable" in overview
     assert "@click.stop" in model_run_link
-    assert "View full run" in model_run_link
+    assert "View results for" in model_run_link
     assert ":focus-visible" in model_run_link
     assert "model-run-link-chevron" in model_run_link
     assert ".ranking-table .rank-column" in app_css
@@ -2345,11 +2361,10 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert ".table-header-stack" in app_css
     assert ".ranking-table-wrap" in app_css
     assert ".mobile-result-list" in app_css
-    assert "grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));" in mobile_result_card
+    assert "grid-template-columns: repeat(3, minmax(0, 1fr));" in mobile_result_card
     assert "data-tone" not in mobile_result_card
-    assert "background: inherit;" in mobile_result_card
-    assert "min-height: 2.75rem;" in mobile_result_card
-    assert "Full run · questions, answers, and evidence" in mobile_result_card
+    assert "Open model results." in mobile_result_card
+    assert "Full run · questions, answers, and evidence" not in mobile_result_card
     assert "translateX(0.2rem)" in mobile_result_card
     for table_source in (overview, efficiency, reliability):
         assert "result-row--clickable" in table_source
@@ -2386,20 +2401,20 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "Model time / round" in overview
     assert 'label="Question score"' in overview
     assert 'label="CI width"' in overview
-    assert 'label="Success and format"' in overview
+    assert 'label="Solved and format"' in overview
     assert ("Number(left.totals.costs_usd.total) - Number(right.totals.costs_usd.total)") in cost
     assert (
         "Number(left.totals.costs_usd.guesser) -\n        Number(right.totals.costs_usd.guesser)"
     ) in cost
     assert "value: Number(run.totals.costs_usd.guesser)" in cost
     assert 'direction-label="Guesser cost · lower is better"' in cost
-    assert 'label="Guesser and support cost"' in cost
+    assert 'label="Guesser and answer-checking cost"' in cost
     assert 'label="Per round"' in cost
     assert 'label="How this page is ordered"' in cost
     assert "Total benchmark cost" in cost
     assert 'direction-label="Total benchmark cost by component"' in cost
     assert 'key: "adjudication"' in cost
-    assert 'label: "Answer checks"' in cost
+    assert 'label: "Other answer checks"' in cost
     assert 'label: "Reviewer"' in cost
     assert 'label: "Judge"' in cost
     assert 'label: "Validator"' in cost
@@ -2409,7 +2424,7 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert 'class="component-ledger panel-frame"' not in cost
     assert 'class="result-chart-stack"' in cost
     assert cost.count("result-chart-panel") == 2
-    assert "`value-signal value-signal--${costBand(index)}`" in cost
+    assert "`value-signal value-signal--${band}`" in cost
     assert "min-width: 4rem;" in cost
     assert "Model time across the run." in time
     assert (
@@ -2469,7 +2484,8 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "left.intervalWidth - right.intervalWidth" in reliability
     assert "reliabilityChartItems" in reliability
     assert "Stable does not mean good" in reliability
-    assert "Every model uses the same 95% level" in reliability
+    assert "Every model uses the same 95% level" not in reliability
+    assert "Differences between subjects do not widen it." in " ".join(reliability.split())
     assert 'label="CI width"' in reliability
     assert 'label="Score and stability"' in reliability
     assert "smaller CI width" in " ".join(reliability.split())
@@ -2534,7 +2550,6 @@ def test_mobile_drilldowns_keep_all_facts_and_compact_turn_navigation() -> None:
     assert 'class="drilldown-mobile-crumbs"' in drilldown
     assert "crumbs.value.slice(-2)" in drilldown
     assert ".drilldown-mobile-crumbs" in app_css
-    assert "font-size: 1.25rem;" in app_css
     assert "<CostDonut" in run_overview
     assert "current.totals.costs_usd.guesser" in run_overview
     assert "Recorded total" not in run_overview
@@ -2555,8 +2570,8 @@ def test_homepage_and_method_share_one_typed_illustrative_round() -> None:
     story = (source_root / "views" / "StoryView.vue").read_text(encoding="utf-8")
 
     assert "satisfies IllustrativeRound" in shared_round
-    assert '<IllustrativeRoundExample :qualified="qualified" />' in homepage
-    assert '<IllustrativeRoundExample :qualified="qualified" />' in method
+    assert '<IllustrativeRoundExample />' in homepage
+    assert '<IllustrativeRoundExample />' in method
     assert 'from "@/lib/illustrative-round"' not in story
     assert 'class="round-section"' not in story
     assert 'class="scope-section"' not in story

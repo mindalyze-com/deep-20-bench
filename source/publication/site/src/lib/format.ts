@@ -36,21 +36,12 @@ const usdEpisode = new Intl.NumberFormat("en", {
   maximumFractionDigits: 4,
 });
 
-const userDate = new Intl.DateTimeFormat(undefined, {
-  dateStyle: "medium",
-});
-
-const userDateTime = new Intl.DateTimeFormat(undefined, {
-  dateStyle: "medium",
-  timeStyle: "medium",
-});
-
-// Initial HTML and hydration must agree even when browser ICU date patterns differ.
-// PublicationTime switches to the user's local date format after mounting.
+// One fixed UTC format keeps initial HTML, hydration, and every page in agreement
+// (for example "9 Sep 2026" and "9 Sep 2026, 10:31 UTC"), matching run page titles.
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const staticDayLabel = (timestamp: Date): string => {
+const dayLabel = (timestamp: Date): string => {
   if (Number.isNaN(timestamp.getTime())) throw new RangeError("Invalid time value");
-  return `${months[timestamp.getUTCMonth()]} ${timestamp.getUTCDate()}, ${timestamp.getUTCFullYear()}`;
+  return `${timestamp.getUTCDate()} ${months[timestamp.getUTCMonth()]} ${timestamp.getUTCFullYear()}`;
 };
 
 export const number = (
@@ -82,12 +73,21 @@ export const percent = (value: string | null | undefined): string =>
     ? "-"
     : percentage.format(Number(value));
 
+const percentOneDecimal = new Intl.NumberFormat("en", {
+  style: "percent",
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
+// Any violation shows one decimal so small differences stay visible (99.3% vs 99.6%);
+// a rate that would still round to 100% shows as ">99.9%".
 export const contractPercent = (
   value: string | null | undefined,
   violations: number,
 ): string => {
-  const formatted = percent(value);
-  return violations > 0 && formatted === "100%" ? ">99%" : formatted;
+  if (value === null || value === undefined || violations === 0) return percent(value);
+  const formatted = percentOneDecimal.format(Number(value));
+  return formatted === "100.0%" ? ">99.9%" : formatted;
 };
 
 export const plural = (
@@ -120,21 +120,13 @@ export const moneyEpisode = (
     : usdEpisode.format(Number(value));
 
 export const date = (value: string | null): string =>
-  value === null ? "-" : userDate.format(new Date(value));
+  value === null ? "-" : dayLabel(new Date(value));
 
-export const dateTime = (value: string): string =>
-  userDateTime.format(new Date(value));
-
-export const staticDateLabel = (value: string): string =>
-  staticDayLabel(new Date(value));
-
-export const staticDateTimeLabel = (value: string): string => {
+export const dateTime = (value: string): string => {
   const timestamp = new Date(value);
-  const day = staticDayLabel(timestamp);
-  const hours = timestamp.getUTCHours();
+  const hours = String(timestamp.getUTCHours()).padStart(2, "0");
   const minutes = String(timestamp.getUTCMinutes()).padStart(2, "0");
-  const seconds = String(timestamp.getUTCSeconds()).padStart(2, "0");
-  return `${day}, ${hours % 12 || 12}:${minutes}:${seconds} ${hours < 12 ? "AM" : "PM"}`;
+  return `${dayLabel(timestamp)}, ${hours}:${minutes} UTC`;
 };
 
 export const isoDateTime = (value: string): string =>
@@ -142,11 +134,12 @@ export const isoDateTime = (value: string): string =>
 
 export const duration = (milliseconds: number): string => {
   const seconds = milliseconds / 1_000;
-  if (seconds < 60) return `${number(seconds, 1)} s`;
-  if (seconds < 3_600) {
-    return `${Math.floor(seconds / 60)}m ${Math.round(seconds % 60)}s`;
-  }
-  return `${Math.floor(seconds / 3_600)}h ${Math.round((seconds % 3_600) / 60)}m`;
+  if (seconds < 10) return `${number(seconds, 1)}s`;
+  const whole = Math.round(seconds);
+  if (whole < 60) return `${whole}s`;
+  if (whole < 3_600) return `${Math.floor(whole / 60)}m ${whole % 60}s`;
+  const minutes = Math.round(whole / 60);
+  return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
 };
 
 export const seconds = (milliseconds: number): string =>
@@ -176,7 +169,7 @@ export const statusLabel = (value: string): string =>
   value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 
 const outcomeLabels: Readonly<Record<string, string>> = {
-  success: "Success",
+  success: "Solved",
   model_failure: "Not found",
   infrastructure_failure: "Test system failure",
   limit_exhausted: "Question limit reached",

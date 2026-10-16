@@ -1,0 +1,1 @@
+import{T as e,g as t,nt as n,o as r,u as i}from"./runtime-core.esm-bundler-CNMtQn0S.js";import{a,o}from"./format-CXmkO2no.js";var s=[`datetime`],c=t({__name:`PublicationTime`,props:{value:{},dateOnly:{type:Boolean,default:!1}},setup(t){let c=t,l=r(()=>c.dateOnly?a(c.value):o(c.value));return(r,a)=>(e(),i(`time`,{datetime:t.value},n(l.value),9,s))}});export{c as t};

@@ -17,7 +17,7 @@ const { error } = usePublicationLoad(async () => {
         <summary>
           <span>
             <strong>What changed between editions?</strong>
-            <small>Compare versions 1.0 and 1.1</small>
+            <small>Compare editions 1.0 and 1.1</small>
           </span>
           <span aria-hidden="true">
             <span class="comparison-open-label">View ↓</span>
@@ -27,12 +27,12 @@ const { error } = usePublicationLoad(async () => {
         <div id="editions" class="edition-comparison-body">
           <p class="eyebrow">Benchmark editions</p>
           <h2>What changed in 1.1</h2>
-          <p>Version 1.0 answers questions with Yes, No, or Unknown. Version 1.1 adds Rather
-            yes and Rather no, so an answer can lean one way when the evidence is incomplete.</p>
+          <p>In edition 1.0, questions get Yes, No, or Unknown. Edition 1.1 adds Rather yes and
+            Rather no, so an answer can lean one way when the evidence is incomplete.</p>
           <p v-if="error" role="alert">{{ error }}</p>
           <table v-else>
             <caption class="visually-hidden">Comparison of published benchmark definitions</caption>
-            <thead><tr><th scope="col">Setting</th><th v-for="document in documents" :key="document.edition_id" scope="col">Version {{ document.active_cohort.edition_label }}</th></tr></thead>
+            <thead><tr><th scope="col">Setting</th><th v-for="document in documents" :key="document.edition_id" scope="col">Edition {{ document.active_cohort.edition_label }}</th></tr></thead>
             <tbody>
               <tr><th scope="row">Question answers</th><td v-for="document in documents" :key="document.edition_id">{{ document.active_cohort.eligibility.kind === 'qualified_release' ? 'Yes, Rather yes, Rather no, No, Unknown' : 'Yes, No, Unknown' }}</td></tr>
               <tr><th scope="row">Subjects</th><td v-for="document in documents" :key="document.edition_id">{{ document.active_cohort.target_ids.length }}</td></tr>
@@ -48,15 +48,13 @@ const { error } = usePublicationLoad(async () => {
             <p>Web evidence often points one way without fully proving the claim. With only
               three answers, Unknown throws that hint away, while a firm Yes or No can claim
               more than the evidence shows. The two new answers keep the hint and mark it as
-              uncertain.</p>
-            <p>Whether this improves the game still needs testing. More answer options alone
-              do not prove better accuracy.</p>
+              uncertain. Whether this improves the game still needs testing.</p>
           </div>
           <p>Edition 1.1 also revises the Guesser's strategy instructions and adds a fixed guide
-            to what each category means. Scores, uncertainty, costs, and efficiency are calculated
-            separately for each edition, with the same formula and equal subject weights. Because
-            the subjects, round counts, limits, and prompts also differ, a score difference between
-            editions cannot show the effect of the new answers or that a model improved.</p>
+            to what each category means. Both editions use the same scoring formula, but results
+            are calculated separately. Because the subjects, round counts, limits, and prompts
+            differ, a score difference between editions does not show the effect of the new
+            answers or that a model improved.</p>
         </div>
       </details>
     </div>

@@ -30,18 +30,23 @@ const exampleTo = computed(() =>
 
 const facts = computed<MetricGridItem[]>(() => [
   {
-    key: "outcome",
-    label: "Outcome",
-    value: props.episode.success
-      ? "Success"
-      : outcomeLabel(props.episode.terminal_reason),
-    tone: props.episode.success ? "default" : "danger",
-  },
-  {
     key: "questions",
     label: "Questions",
     value: props.trial.counted_questions,
-    detail: `Score ${number(props.trial.penalized_questions)}`,
+    // Single rounds score whole questions; show the score only when the failure penalty applies.
+    detail:
+      props.trial.penalized_questions !== null &&
+      Number(props.trial.penalized_questions) !== props.trial.counted_questions
+        ? `Scored as ${number(props.trial.penalized_questions, 0)}`
+        : undefined,
+  },
+  {
+    key: "outcome",
+    label: "Outcome",
+    value: props.episode.success
+      ? "Solved"
+      : outcomeLabel(props.episode.terminal_reason),
+    tone: props.episode.success ? "default" : "danger",
   },
   {
     key: "contract",

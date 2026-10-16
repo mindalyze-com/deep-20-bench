@@ -44,7 +44,7 @@ test("old deep links identify edition 1 and explain missing counterparts", { tag
   const paths = derivePublicationPaths(path.join(docsRoot, "data"), missingRun!.execution_id);
   await page.goto(new URL(paths.episodePath, base).href);
   await expect(page.locator(".episode-tabs")).toBeVisible();
-  await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v\.1\.0\s*Previous/);
+  await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v1\.0\s*Previous/);
   await switchEdition(page, "1.1");
   await expect(page).toHaveURL(/editions\/1.1\/results\/\?editionNotice=missing-model$/);
   await expect(page.getByRole("status").filter({ hasText: "This model has no complete result" })).toBeVisible();
@@ -56,8 +56,8 @@ test("edition comparison remains accessible on narrow screens", { tag: ["@editio
   await expect(page.locator(".edition-comparison-details")).toHaveAttribute("open", "");
   await expect(page.locator("#editions table")).toBeVisible();
   await expect(page.locator("#editions")).toContainText("What changed in 1.1");
-  await expect(page.locator("#editions")).toContainText("Version 1.1");
-  await expect(page.locator("#editions")).toContainText("Version 1");
+  await expect(page.locator("#editions")).toContainText("Edition 1.1");
+  await expect(page.locator("#editions")).toContainText("Edition 1");
   await expectNoViewportOverflow(page);
   await page.locator(".edition-trigger").click();
   const audit = await new AxeBuilder({ page }).include(".edition-bar").include(".edition-comparison")
@@ -134,7 +134,7 @@ test("Method details and formulas remain accessible when expanded", { tag: ["@ed
   for (const id of ["1.0", "1.1"]) {
     await page.goto(new URL(`editions/${id}/methodology/`, base).href);
     for (const summary of await page.locator(".method-details summary").all()) await summary.click();
-    await expect(page.locator(".method-details[open]")).toHaveCount(8);
+    await expect(page.locator(".method-details[open]")).toHaveCount(7);
     const audit = await new AxeBuilder({ page }).include(".methodology-page")
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
     expect(audit.violations).toEqual([]);
@@ -214,8 +214,8 @@ test("edition hover and keyboard focus preview settings without switching", { ta
   await expect(summary).toContainText("50 question limit");
   await expect(summary).not.toContainText("Rather yes");
   await expect(page).toHaveURL(/editions\/1\.1\/$/);
-  await expect(trigger).toContainText("v.1.1");
-  await expect(page.locator(".edition-links [aria-current]")).toContainText("v.1.1");
+  await expect(trigger).toContainText("v1.1");
+  await expect(page.locator(".edition-links [aria-current]")).toContainText("v1.1");
   await summary.hover();
   await expect(summary.locator(".edition-label")).toHaveText("Edition 1.0 settings");
   await page.locator(".wordmark").hover();
@@ -257,7 +257,7 @@ test("late edition preview responses cannot replace newer settings", { tag: ["@e
     await expect(summary).toContainText("10 subjects");
     await expect(summary).toContainText("3 rounds per subject");
     await expect(summary).toContainText("Rather yes");
-    await expect(page.locator(".edition-trigger")).toContainText("v.1.1");
+    await expect(page.locator(".edition-trigger")).toContainText("v1.1");
   } finally { release(); }
 });
 
@@ -292,12 +292,12 @@ test("both editions can be selected without JavaScript", { tag: ["@editions", "@
   try {
     const page = await context.newPage();
     await page.goto(base);
-    await expect(page.locator(".edition-trigger")).toContainText("v.1.1");
+    await expect(page.locator(".edition-trigger")).toContainText("v1.1");
     await switchEdition(page, "1.0");
-    await expect(page.locator(".edition-trigger")).toContainText("v.1.0");
+    await expect(page.locator(".edition-trigger")).toContainText("v1.0");
     await (await primaryLink(page, "About")).click();
     await expect(page).toHaveURL(/editions\/1.0\/about\/$/);
-    await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v\.1\.0\s*Previous/);
+    await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v1\.0\s*Previous/);
     await (await primaryLink(page, "Results")).click();
     await expect(page).toHaveURL(/editions\/1.0\/results\/$/);
     await expect(page.locator(".edition-empty")).toHaveCount(0);
@@ -340,9 +340,9 @@ test("About preserves edition selection across navigation and reload", { tag: ["
   await page.goto(new URL("editions/1.0/results/", base).href);
   await (await primaryLink(page, "About")).click();
   await expect(page).toHaveURL(/editions\/1.0\/about\/$/);
-  await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v\.1\.0\s*Previous/);
+  await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v1\.0\s*Previous/);
   await page.reload();
-  await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v\.1\.0\s*Previous/);
+  await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v1\.0\s*Previous/);
   await (await primaryLink(page, "Results")).click();
   await expect(page).toHaveURL(/editions\/1.0\/results\/$/);
   await expect(page.locator(".edition-empty")).toHaveCount(0);
@@ -350,7 +350,7 @@ test("About preserves edition selection across navigation and reload", { tag: ["
   await expect(page).toHaveURL(/editions\/1.0\/about\/$/);
   await switchEdition(page, "1.1");
   await expect(page).toHaveURL(/editions\/1.1\/about\/$/);
-  await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v\.1\.1\s*Current/);
+  await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v1\.1\s*Current/);
 });
 
 test("a slow edition switch keeps the selector consistent with the displayed data", { tag: ["@editions", "@both"] }, async ({ page }) => {
@@ -364,18 +364,18 @@ test("a slow edition switch keeps the selector consistent with the displayed dat
   try {
     await switchEdition(page, "1.1");
     await expect(page.getByRole("status").filter({ hasText: "Loading edition 1.1" })).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Results 1");
-    await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v\.1\.0\s*Previous/);
-    await expect(page.locator(".edition-trigger")).toContainText("v.1.0");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("AI leaderboard 1.0");
+    await expect(page.locator(".edition-links [aria-current]")).toHaveText(/v1\.0\s*Previous/);
+    await expect(page.locator(".edition-trigger")).toContainText("v1.0");
     await page.locator(".edition-trigger").click();
     await expect(page.locator(".edition-links a").first()).toHaveAttribute("aria-disabled", "true");
     await page.locator(".edition-links a").first().dispatchEvent("click");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Results 1");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("AI leaderboard 1.0");
   } finally { release(); }
   await expect(page).toHaveURL(/editions\/1.1\/results\/$/);
   await expect(page.locator(".ranking-table tbody tr")).not.toHaveCount(0);
   await expect(page.getByRole("status").filter({ hasText: "Loading edition" })).toHaveCount(0);
-  await expect(page.locator(".edition-trigger")).toContainText("v.1.1");
+  await expect(page.locator(".edition-trigger")).toContainText("v1.1");
   await expect(page.locator(".edition-panel")).toBeHidden();
   await expect(page.locator(".edition-links [aria-disabled]")).toHaveCount(0);
 });

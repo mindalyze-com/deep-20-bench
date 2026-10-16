@@ -3,10 +3,12 @@ from __future__ import annotations
 from decimal import Decimal
 
 import pytest
+import yaml
 from pydantic import JsonValue, ValidationError
 
 from deep20_publication.integrity import (
     PublicationInputError,
+    _UniqueKeyLoader,
     canonical_json,
     parse_yaml_object,
     sha256_text,
@@ -32,6 +34,21 @@ from deep20_publication.models import (
 def test_yaml_loader_rejects_duplicate_keys() -> None:
     with pytest.raises(PublicationInputError, match="duplicate key"):
         parse_yaml_object("value: 1\nvalue: 2\n", "duplicate.yml")
+    with pytest.raises(PublicationInputError, match="duplicate key"):
+        parse_yaml_object("outer:\n  - inner: 1\n    inner: 2\n", "nested-duplicate.yml")
+
+
+def test_yaml_loader_uses_libyaml_when_available_with_identical_safe_results() -> None:
+    if yaml.__with_libyaml__:
+        assert issubclass(_UniqueKeyLoader, yaml.CSafeLoader)
+    text = (
+        "schema_version: 3\nflag: true\nnone: null\ncount: 7\nratio: 0.25\n"
+        "when: 2026-10-14T21:48:18Z\nquoted: 'yes'\nlist: [1, two, {k: v}]\n"
+        "block: |\n  line one\n  line two\nunicode: \"Se\\u00f1or\"\n"
+    )
+    assert yaml.load(text, Loader=_UniqueKeyLoader) == yaml.safe_load(text)
+    with pytest.raises(PublicationInputError):
+        parse_yaml_object("!!python/object/apply:os.system ['true']\n", "unsafe.yml")
 
 
 def test_integrity_verification_rejects_modified_payload() -> None:

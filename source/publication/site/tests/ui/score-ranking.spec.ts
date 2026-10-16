@@ -24,7 +24,7 @@ test(
     await page.goto(new URL("editions/1.1/", staticBase).href);
     await waitForPublication(page);
     const card = page.locator(".winner-card");
-    await expect(card).toContainText("guessed the subject");
+    await expect(card).toContainText(/over \d+ rounds/);
     for (const row of leaders) {
       await expect(card.locator(`[data-rank="${row.rank}"]`))
         .toHaveCount(leaders.filter((other) => other.rank === row.rank).length);

@@ -6,8 +6,8 @@ import {
   moneyEpisode,
   number,
   reasoningEffortLabel,
-  staticDateLabel,
-  staticDateTimeLabel,
+  date,
+  dateTime,
 } from "../../src/lib/format";
 import { splitModelName } from "../../src/lib/model-name";
 
@@ -22,7 +22,9 @@ describe("publication formatting", () => {
 
   test("keeps meaningful contract and episode precision", () => {
     expect(contractPercent("1", 0)).toBe("100%");
-    expect(contractPercent("0.9984", 1)).toBe(">99%");
+    expect(contractPercent("0.9984", 1)).toBe("99.8%");
+    expect(contractPercent("0.99932", 3)).toBe("99.9%");
+    expect(contractPercent("0.9997", 1)).toBe(">99.9%");
     expect(contractPercent(null, 1)).toBe("-");
     expect(formatCount(1, "violation")).toBe("1 violation");
     expect(formatCount(2, "invalid output")).toBe("2 invalid outputs");
@@ -42,16 +44,11 @@ describe("publication formatting", () => {
     });
   });
 
-  test("renders publication timestamps consistently across server and browser time zones", () => {
-    expect(staticDateTimeLabel("2026-08-05T18:13:13.469638Z")).toBe(
-      "Aug 5, 2026, 6:13:13 PM",
-    );
-    expect(staticDateTimeLabel("2026-09-06T02:00:00+02:00")).toBe(
-      "Sep 6, 2026, 12:00:00 AM",
-    );
-    expect(staticDateTimeLabel("2026-09-06T12:05:09Z")).toBe(
-      "Sep 6, 2026, 12:05:09 PM",
-    );
-    expect(staticDateLabel("2026-01-01T00:30:00+01:00")).toBe("Dec 31, 2025");
+  test("renders publication timestamps in one UTC format", () => {
+    expect(dateTime("2026-08-05T18:13:13.469638Z")).toBe("5 Aug 2026, 18:13 UTC");
+    expect(dateTime("2026-09-06T02:00:00+02:00")).toBe("6 Sep 2026, 00:00 UTC");
+    expect(dateTime("2026-09-06T12:05:09Z")).toBe("6 Sep 2026, 12:05 UTC");
+    expect(date("2026-01-01T00:30:00+01:00")).toBe("31 Dec 2025");
+    expect(date(null)).toBe("-");
   });
 });

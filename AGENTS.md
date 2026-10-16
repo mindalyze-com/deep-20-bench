@@ -18,13 +18,27 @@
   spending limit, including retries and failed calls. Prefer focused diagnostic questions
   before a larger, explicitly requested live regression run.
 
+## Mandatory: no commit or push without permission
+
+- Never commit, push, tag, release, open a pull request, or publish externally without the
+  user's explicit permission for that action. Requests to fix, build, test, or run authorize
+  local work only.
+
+## Writing
+
+- Keep replies and notes short, concise, and in simple language.
+- Write in English unless the user requests another language. Use hyphens, not em dashes.
+- Website copy and documentation: simple and clear, no marketing language. Start a document with
+  what it is for; put policy and change notes after that. Website terms follow the public copy
+  rules in `documentation/homepage-creation.md#purpose`.
+
 ## Required references
 
 Read and follow the relevant detailed specification before changing these areas:
 
 - Prompts, model-visible history, adjudication, provider requests, retries, sessions, tools,
-  artifacts, reporting, or component boundaries: `documentation/architecture.md` and
-  `documentation/guesser-output-contract.md`.
+  artifacts, reporting, console logging, or component boundaries:
+  `documentation/architecture.md` and `documentation/guesser-output-contract.md`.
 - Provider prompt caching or any response/application cache: `documentation/llm-caching.md`.
 - Benchmark execution, persistence, observation, logging, or results:
   `source/execution/benchmark/README.md`.
@@ -48,8 +62,6 @@ Read and follow the relevant detailed specification before changing these areas:
   data that can be represented by the v9 contract; do not leave it frozen, rename it, or remove
   it merely because v10 or a later schema exists. Keep its companion v9 schema available and
   document any data that cannot be represented in v9.
-- Do not automatically commit, push, tag, release, open a pull request, or publish externally.
-  Requests to fix, build, test, or run the publication authorize local work only.
 - Always ask for separate, explicit confirmation before committing for publication, pushing,
   or deploying, including GitHub Pages, even when deployment was requested. Prepare and verify
   the local work first, then identify the exact action, final revision, and destination in the
@@ -86,12 +98,10 @@ Read and follow the relevant detailed specification before changing these areas:
 
 ## Highest-priority invariant: Guesser isolation
 
-- The official edition 1.1 B-0003 benchmark uses paired `qualified_v1` profiles. It adds only
-  `RATHER_YES` and `RATHER_NO` to the final ASK-token vocabulary below. Every directional token
-  requires blind review; any exact-token disagreement invokes the Judge. GUESS remains
-  `YES`/`NO`/`UNKNOWN`. All other isolation requirements still apply. Standard profiles keep
-  the three-token vocabulary. See `documentation/five-answer-experiment.md`.
-
+- Edition 1.1 (paired `qualified_v1` profiles) adds only `RATHER_YES` and `RATHER_NO` to the
+  final ASK-token vocabulary below; standard profiles keep three tokens. Every directional
+  token requires blind review; any exact-token disagreement invokes the Judge. GUESS stays
+  `YES`/`NO`/`UNKNOWN`. See `documentation/five-answer-experiment.md`.
 - The Guesser is the model under test. Its information boundary overrides convenience,
   observability, performance, caching, and reporting.
 - Guesser-visible state is limited to fixed system instructions, the broad category, its own
@@ -134,14 +144,9 @@ Read and follow the relevant detailed specification before changing these areas:
 - Reuse or extend an existing source of truth when reasonable. Derive repeated schemas,
   constants, formats, and behavior from one canonical definition.
 - Use WebP for raster assets unless tooling or a format-specific requirement prevents it.
-- Write in English unless the user requests another language. Use hyphens, not em dashes.
-- Write website copy and documentation in simple, concise, clear language, not marketing
-  language. Start a document with what it is for; put policy and change notes after that.
-  Website terms follow the public copy rules in `documentation/homepage-creation.md#purpose`.
 
 ## Console logging
 
-- Follow the detailed console contract in `documentation/architecture.md`.
 - Composition roots configure logging. Component libraries do not configure handlers or emit
   routine `INFO`; their diagnostics use the component logger at `DEBUG`.
 - Emit one timestamped `INFO` result per successful major operation and one stable-coded failure.
@@ -163,8 +168,8 @@ Read and follow the relevant detailed specification before changing these areas:
 ## LLM caching
 
 - Every LLM-backed feature must explicitly evaluate provider prompt caching, even when the
-  decision is disabled. Follow `documentation/llm-caching.md` and re-evaluate when prompts,
-  models, routes, pricing, provider policy, or expected reuse changes.
+  decision is disabled. Re-evaluate when prompts, models, routes, pricing, provider policy, or
+  expected reuse changes.
 - Prompt-prefix caching may reuse computation for an exact prefix but never an earlier Oracle,
   Reviewer, Judge, or Validator answer or extra state. Never add application or provider
   response caching except the explicitly authorized benchmark-only `historical_ask_v1`,

@@ -3,8 +3,21 @@ from __future__ import annotations
 import csv
 import io
 import json
+from decimal import ROUND_HALF_EVEN, Decimal
 
 from .models import PublicationDocument, PublishedDataset
+
+CSV_DECIMAL_PLACES = 6
+_CSV_QUANTUM = Decimal(1).scaleb(-CSV_DECIMAL_PLACES)
+
+
+def _csv_cell(value: object) -> object:
+    """Round long decimals for the convenience CSV; the JSON dataset keeps exact values."""
+    if isinstance(value, Decimal):
+        exponent = value.as_tuple().exponent
+        if isinstance(exponent, int) and exponent < -CSV_DECIMAL_PLACES:
+            return value.quantize(_CSV_QUANTUM, rounding=ROUND_HALF_EVEN)
+    return value
 
 
 def dataset_json(dataset: PublishedDataset) -> str:
@@ -70,84 +83,83 @@ def leaderboard_csv(dataset: PublishedDataset) -> str:
         )
     )
     for row in dataset.leaderboard:
-        writer.writerow(
+        cells = (
+            row.rank or "",
+            row.efficiency_rank or "",
+            row.ideal_distance_rank or "",
+            row.product_efficiency_rank or "",
+            row.pareto_efficient,
+            row.model.model_id,
+            row.model.display_name,
+            row.status,
+            row.execution_id or "",
+            row.question_score if row.question_score is not None else "",
             (
-                row.rank or "",
-                row.efficiency_rank or "",
-                row.ideal_distance_rank or "",
-                row.product_efficiency_rank or "",
-                row.pareto_efficient,
-                row.model.model_id,
-                row.model.display_name,
-                row.status,
-                row.execution_id or "",
-                row.question_score if row.question_score is not None else "",
-                (
-                    row.question_score_confidence_interval.lower
-                    if row.question_score_confidence_interval is not None
-                    else ""
-                ),
-                (
-                    row.question_score_confidence_interval.upper
-                    if row.question_score_confidence_interval is not None
-                    else ""
-                ),
-                (
-                    row.question_score_confidence_interval.method
-                    if row.question_score_confidence_interval is not None
-                    else ""
-                ),
-                row.success_rate if row.success_rate is not None else "",
-                row.contract.status if row.contract is not None else "",
-                (
-                    row.contract.compliance_rate
-                    if row.contract is not None and row.contract.compliance_rate is not None
-                    else ""
-                ),
-                row.contract.violations if row.contract is not None else "",
-                row.contract.affected_trials if row.contract is not None else "",
-                row.contract.counted_penalties if row.contract is not None else "",
-                row.successful,
-                row.terminal_trials,
-                row.total_cost_usd if row.total_cost_usd is not None else "",
-                (
-                    row.guesser_cost_per_episode_usd
-                    if row.guesser_cost_per_episode_usd is not None
-                    else ""
-                ),
-                (
-                    row.full_cost_per_episode_usd
-                    if row.full_cost_per_episode_usd is not None
-                    else ""
-                ),
-                (row.runtime_per_episode_ms if row.runtime_per_episode_ms is not None else ""),
-                (
-                    row.guesser_think_time_per_episode_ms
-                    if row.guesser_think_time_per_episode_ms is not None
-                    else ""
-                ),
-                (
-                    row.guesser_latency_per_call_ms
-                    if row.guesser_latency_per_call_ms is not None
-                    else ""
-                ),
-                row.ideal_distance_score if row.ideal_distance_score is not None else "",
-                (
-                    row.normalized_question_score
-                    if row.normalized_question_score is not None
-                    else ""
-                ),
-                (
-                    row.normalized_guesser_cost
-                    if row.normalized_guesser_cost is not None
-                    else ""
-                ),
-                (
-                    row.cost_adjusted_question_score
-                    if row.cost_adjusted_question_score is not None
-                    else ""
-                ),
-                row.efficiency_status,
-            )
+                row.question_score_confidence_interval.lower
+                if row.question_score_confidence_interval is not None
+                else ""
+            ),
+            (
+                row.question_score_confidence_interval.upper
+                if row.question_score_confidence_interval is not None
+                else ""
+            ),
+            (
+                row.question_score_confidence_interval.method
+                if row.question_score_confidence_interval is not None
+                else ""
+            ),
+            row.success_rate if row.success_rate is not None else "",
+            row.contract.status if row.contract is not None else "",
+            (
+                row.contract.compliance_rate
+                if row.contract is not None and row.contract.compliance_rate is not None
+                else ""
+            ),
+            row.contract.violations if row.contract is not None else "",
+            row.contract.affected_trials if row.contract is not None else "",
+            row.contract.counted_penalties if row.contract is not None else "",
+            row.successful,
+            row.terminal_trials,
+            row.total_cost_usd if row.total_cost_usd is not None else "",
+            (
+                row.guesser_cost_per_episode_usd
+                if row.guesser_cost_per_episode_usd is not None
+                else ""
+            ),
+            (
+                row.full_cost_per_episode_usd
+                if row.full_cost_per_episode_usd is not None
+                else ""
+            ),
+            (row.runtime_per_episode_ms if row.runtime_per_episode_ms is not None else ""),
+            (
+                row.guesser_think_time_per_episode_ms
+                if row.guesser_think_time_per_episode_ms is not None
+                else ""
+            ),
+            (
+                row.guesser_latency_per_call_ms
+                if row.guesser_latency_per_call_ms is not None
+                else ""
+            ),
+            row.ideal_distance_score if row.ideal_distance_score is not None else "",
+            (
+                row.normalized_question_score
+                if row.normalized_question_score is not None
+                else ""
+            ),
+            (
+                row.normalized_guesser_cost
+                if row.normalized_guesser_cost is not None
+                else ""
+            ),
+            (
+                row.cost_adjusted_question_score
+                if row.cost_adjusted_question_score is not None
+                else ""
+            ),
+            row.efficiency_status,
         )
+        writer.writerow(tuple(_csv_cell(cell) for cell in cells))
     return buffer.getvalue()

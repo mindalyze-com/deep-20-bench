@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RouteLocationRaw } from "vue-router";
 
-import { benchmarkWorkspaceView } from "@/router";
+import { modelView } from "@/router";
 
 defineProps<{
   name: string;
@@ -14,10 +14,10 @@ defineProps<{
   <RouterLink
     class="result-row-link model-run-link"
     :to="to"
-    :aria-label="`View full run for ${name}`"
+    :aria-label="`View results for ${name}`"
     @click.stop
-    @mouseenter="benchmarkWorkspaceView.preload()"
-    @focus="benchmarkWorkspaceView.preload()"
+    @mouseenter="modelView.preload()"
+    @focus="modelView.preload()"
   >
     <span class="model-run-link-copy">
       <span class="model-run-link-name">{{ name }}</span>

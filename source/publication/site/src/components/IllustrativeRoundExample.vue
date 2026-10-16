@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { illustrativeRound, qualifiedIllustrativeRound } from "@/lib/illustrative-round";
+import { illustrativeRound as round } from "@/lib/illustrative-round";
 
-const props = withDefaults(defineProps<{ qualified?: boolean }>(), { qualified: false });
-const round = computed(() => props.qualified ? qualifiedIllustrativeRound : illustrativeRound);
-const questionCount = computed(() => round.value.turns.filter(turn => turn.kind === "question").length);
+// Most real answers are a plain Yes or No, so the example uses only those.
+const questionCount = computed(() => round.turns.filter(turn => turn.kind === "question").length);
 </script>
 
 <template>
@@ -40,7 +39,7 @@ const questionCount = computed(() => round.value.turns.filter(turn => turn.kind 
             <span v-if="turn.kind === 'guess'" class="round-not-counted">Not counted</span>
           </p>
           <strong class="round-answer" :class="{ 'round-answer--no': turn.answer === 'NO' }">
-            {{ turn.kind === "guess" ? "Identified" : turn.answer }}
+            {{ turn.kind === "guess" ? "Identified" : turn.answer === "NO" ? "No" : "Yes" }}
           </strong>
         </li>
       </ol>

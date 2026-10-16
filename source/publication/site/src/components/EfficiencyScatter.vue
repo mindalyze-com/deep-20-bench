@@ -25,6 +25,7 @@ import { moneyEpisode, number } from "@/lib/format";
 import {
   chartAnimationEnabled,
   chartFont,
+  chartFontWeightBold,
   chartTextSize,
   escapeHtml,
 } from "@/lib/use-responsive-echart";
@@ -111,7 +112,7 @@ const chartHeight = computed(() => {
 const modelKeyItems = computed<ChartModelKeyItem[]>(() =>
   props.items.map((item) => ({
     key: item.label,
-    label: item.label,
+    label: `${item.rank}. ${item.label}`,
     detail: `${item.distanceDisplay} distance${
       item.paretoEfficient ? " · Pareto-efficient" : ""
     }`,
@@ -128,14 +129,14 @@ const accessibleItems = computed<ChartAccessibleItem[]>(() =>
   })),
 );
 
-const pointData = (mobile: boolean) => {
+const pointData = () => {
   const maximumCost = Math.max(...props.items.map((item) => item.normalizedCost));
   return props.items.map((item) => ({
     name: item.label,
     value: [item.normalizedCost, item.normalizedScore],
     rank: item.rank,
     symbol: item.paretoEfficient ? "diamond" : "circle",
-    symbolSize: item.paretoEfficient ? (mobile ? 17 : 21) : mobile ? 13 : 16,
+    symbolSize: item.paretoEfficient ? 23 : 19,
     label: {
       position:
         item.normalizedCost === maximumCost ? ("left" as const) : ("right" as const),
@@ -189,8 +190,10 @@ const chartOption = (width: number): EChartsOption => {
   const costMaximum = Math.max(...rawCosts);
   const scoreMinimum = Math.min(...rawScores);
   const scoreMaximum = Math.max(...rawScores);
-  const rawValueAt = (normalized: number, minimum: number, maximum: number): number =>
-    minimum + normalized * (maximum - minimum);
+  // Only the ends carry raw values; in-between ticks are positions on the shared scale,
+  // so labelling them would show odd numbers such as $0.0705 or 17.54.
+  const endLabel = (value: number, minimum: string, maximum: string): string =>
+    value === 0 ? minimum : value === 1 ? maximum : "";
   return {
     animation: chartAnimationEnabled(),
     animationDuration: 480,
@@ -219,9 +222,9 @@ const chartOption = (width: number): EChartsOption => {
       ...chartValueAxis(
         theme,
         axisFontSize,
-        "Guesser cost per round · position on the shared scale",
+        "Guesser cost per round · cheapest left, most expensive right",
         mobile ? 43 : 48,
-        (value) => moneyEpisode(rawValueAt(value, costMinimum, costMaximum)),
+        (value) => endLabel(value, moneyEpisode(costMinimum), moneyEpisode(costMaximum)),
       ),
       min: 0,
       max: 1,
@@ -232,9 +235,9 @@ const chartOption = (width: number): EChartsOption => {
       ...chartValueAxis(
         theme,
         axisFontSize,
-        "Question score · position on the shared scale",
+        "Question score · best at the bottom",
         mobile ? 40 : 51,
-        (value) => number(rawValueAt(value, scoreMinimum, scoreMaximum), 2),
+        (value) => endLabel(value, number(scoreMinimum, 2), number(scoreMaximum, 2)),
       ),
       min: 0,
       max: 1,
@@ -285,7 +288,7 @@ const chartOption = (width: number): EChartsOption => {
         name: "Models",
         type: "scatter",
         clip: false,
-        data: pointData(mobile),
+        data: pointData(),
         cursor: "pointer",
         ...scatterSeriesPresentation(
           theme,
@@ -294,7 +297,35 @@ const chartOption = (width: number): EChartsOption => {
           theme.results.efficiency,
           true,
           (parameters) => parameters.name,
+          false,
         ),
+      },
+      {
+        // Efficiency rank inside each marker matches the table and the phone key.
+        name: "Efficiency rank",
+        type: "scatter",
+        clip: false,
+        silent: true,
+        tooltip: { show: false },
+        data: props.items.map((item) => ({
+          name: item.label,
+          value: [item.normalizedCost, item.normalizedScore],
+          symbol: item.paretoEfficient ? "diamond" : "circle",
+          symbolSize: item.paretoEfficient ? 23 : 19,
+        })),
+        itemStyle: { color: "transparent" },
+        label: {
+          show: true,
+          position: "inside",
+          color: "#ffffff",
+          fontFamily: chartFont,
+          fontSize: 9,
+          fontWeight: chartFontWeightBold,
+          formatter: (parameters: CallbackDataParams): string =>
+            String(props.items.find((item) => item.label === parameters.name)?.rank ?? ""),
+        },
+        labelLayout: { hideOverlap: false },
+        z: 3,
       },
     ],
   };
@@ -316,7 +347,7 @@ void chartElement;
   >
     <figcaption v-if="!expanded" class="scatter-chart-caption">
       <span>Lower-left is better</span>
-      <span>Curves show equal ideal distance</span>
+      <span>Curves show equal ideal distance. Numbers match the table rank.</span>
     </figcaption>
     <ChartLoadNotice v-if="loadError" />
     <div

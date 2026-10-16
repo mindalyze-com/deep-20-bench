@@ -25,6 +25,8 @@ const props = withDefaults(
   },
 );
 
+// Large cards keep the unit short and put the direction next to the interval.
+const directionOnSecondLine = computed(() => props.variant === "hero" || props.variant === "wide");
 const percentage = computed(() =>
   props.score === null
     ? 0
@@ -51,10 +53,11 @@ const accessibleLabel = computed(() => {
     <strong>{{ number(score) }}</strong>
     <span class="score-unit">{{
       score === null ? "not available" : variant === "hero"
-        ? "questions per round, on average" : "questions · lower is better"
+        ? "questions per round, on average" : variant === "wide"
+          ? "questions per round" : "questions · lower is better"
     }}</span>
-    <span v-if="confidenceInterval !== null || (variant === 'hero' && score !== null)" class="score-confidence">
-      <template v-if="variant === 'hero' && score !== null">Lower is better<template v-if="confidenceInterval !== null"> · </template></template>
+    <span v-if="confidenceInterval !== null || (directionOnSecondLine && score !== null)" class="score-confidence">
+      <template v-if="directionOnSecondLine && score !== null">Lower is better<template v-if="confidenceInterval !== null"> · </template></template>
       <template v-if="confidenceInterval !== null">
         <template v-if="variant !== 'table'">95% CI </template>{{
           number(confidenceInterval.lower, 2)
@@ -99,8 +102,14 @@ const accessibleLabel = computed(() => {
   text-transform: uppercase;
 }
 
+/* Only the label is an uppercase heading; unit and interval are plain supporting text. */
+.score-unit,
 .score-confidence {
+  color: var(--text-secondary);
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-medium);
   letter-spacing: 0;
+  line-height: 1.4;
   text-transform: none;
 }
 

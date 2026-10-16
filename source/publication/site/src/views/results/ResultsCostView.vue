@@ -13,13 +13,14 @@ import StackedMetricBars, {
   type StackedBarRow,
   type StackedBarSegment,
 } from "@/components/StackedMetricBars.vue";
-import TableHeaderStack from "@/components/TableHeaderStack.vue";
+import SortButton from "@/components/SortButton.vue";
 import { readChartTheme } from "@/lib/chart-theme";
 import { money, moneyEpisode, percent } from "@/lib/format";
 import { usePageRouteContext } from "@/lib/route-context";
-import { runRoute } from "@/lib/route-location";
+import { modelSummaryRoute } from "@/lib/route-location";
 import type { PublicRunSummary } from "@/lib/types";
 import { useOfficialRunData } from "@/lib/use-official-run-data";
+import { useTableSort } from "@/lib/use-table-sort";
 
 const { documents, loading, error, providerFor, openRun } =
   useOfficialRunData();
@@ -79,7 +80,7 @@ const mobileCostMetrics = (run: PublicRunSummary) => {
   ];
   if (excludedRepairCost(run) > 0) {
     metrics.push({
-      label: "Excluded repair cost",
+      label: "Rerun cost (excluded)",
       value: money(excludedRepairCost(run)),
     });
   }
@@ -101,7 +102,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
   },
   {
     key: "support",
-    label: "Support share",
+    label: "Answer-checking share",
     value: percent(supportShare.value),
   },
 ]);
@@ -124,11 +125,11 @@ const adjudicationRows = [
 ] as const;
 const componentRows = [
   { key: "guesser", label: "Guesser", color: roleColors.guesser },
-  { key: "primary_oracle", label: "Primary Oracle", color: roleColors.oracle },
+  { key: "primary_oracle", label: "Oracle", color: roleColors.oracle },
   {
     key: "adjudication",
-    label: "Answer checks",
-    color: chartTheme.results.stability,
+    label: "Other answer checks",
+    color: chartTheme.confidenceWidth.neutral,
   },
 ] as const;
 
@@ -173,6 +174,20 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
   return "middle";
 };
 
+// Rank and band come from the published cost order and stay fixed while sorting.
+const runEntries = computed(() =>
+  runs.value.map((run, index) => ({ run, rank: index + 1, band: costBand(index) })),
+);
+const amount = (value: string | null): number | null => (value === null ? null : Number(value));
+const { sortedRows: sortedEntries, toggleSort, ariaSort } = useTableSort(runEntries, {
+  model: (entry) => entry.run.model_name,
+  guesser: (entry) => amount(entry.run.comparison.guesser_cost_per_episode_usd),
+  full: (entry) => amount(entry.run.comparison.full_cost_per_episode_usd),
+  support: (entry) => amount(entry.run.comparison.support_cost_per_episode_usd),
+  share: (entry) => amount(entry.run.comparison.support_cost_share),
+  total: (entry) => Number(entry.run.totals.costs_usd.total),
+});
+
 </script>
 
 <template>
@@ -211,11 +226,11 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
                 test system failure.
               </p>
               <ResultHelp label="Cost metric explanations">
-                <InfoPopover label="Guesser and support cost">
+                <InfoPopover label="Guesser and answer-checking cost">
                   <p>
-                    Guesser cost covers calls to the tested model. Support cost covers the
-                    answer-checking models: Oracle, Reviewer, Judge, and Validator. Benchmark
-                    cost is the sum of both.
+                    Guesser cost covers calls to the tested model. Answer-checking cost covers
+                    the Oracle, Reviewer, Judge, and Validator. Benchmark cost is the sum of
+                    both.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="Per round">
@@ -227,8 +242,9 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
                 <InfoPopover label="Rerun rounds">
                   <p>
                     If a round failed because of the test system and was run again, only the
-                    final attempt counts. The cost of the earlier attempts is kept in the
-                    records but left out of the comparison. It is shown below the run total.
+                    final attempt counts. The rerun cost of the earlier attempts is kept in
+                    the records but left out of the comparison. It is shown below the run
+                    total.
                   </p>
                 </InfoPopover>
                 <InfoPopover label="How this page is ordered">
@@ -258,8 +274,8 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
               </div>
               <p>
                 Bar length shows the total benchmark cost. Colors separate the Guesser, the
-                Oracle, and the other answer checks. Open the exact breakdown to compare the
-                Reviewer, Judge, and Validator.
+                Oracle, and the other answer checks (Reviewer, Judge, and Validator). Open the
+                exact breakdown to compare those three.
               </p>
             </header>
             <StackedMetricBars
@@ -277,25 +293,31 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
                   <span aria-hidden="true">#</span>
                   <span class="visually-hidden">Benchmark cost rank</span>
                 </th>
-                <th class="model-column">Model</th>
-                <th data-numeric>
-                  <TableHeaderStack first="Guesser cost" second="per round" />
+                <th class="model-column" :aria-sort="ariaSort('model')">
+                  <SortButton :labels="['Model']" :direction="ariaSort('model')" @sort="toggleSort('model')" />
                 </th>
-                <th data-numeric>
-                  <TableHeaderStack first="Benchmark cost" second="per round" />
+                <th data-numeric :aria-sort="ariaSort('guesser')">
+                  <SortButton :labels="['Guesser cost', 'per round']" :direction="ariaSort('guesser')" @sort="toggleSort('guesser')" />
                 </th>
-                <th data-numeric>
-                  <TableHeaderStack first="Support cost" second="per round" />
+                <th data-numeric :aria-sort="ariaSort('full')">
+                  <SortButton :labels="['Benchmark cost', 'per round']" :direction="ariaSort('full')" @sort="toggleSort('full')" />
                 </th>
-                <th data-numeric>Support share</th>
-                <th data-numeric>Benchmark run cost</th>
+                <th data-numeric :aria-sort="ariaSort('support')">
+                  <SortButton :labels="['Answer-checking', 'cost per round']" :direction="ariaSort('support')" @sort="toggleSort('support')" />
+                </th>
+                <th data-numeric :aria-sort="ariaSort('share')">
+                  <SortButton :labels="['Answer-checking', 'share']" :direction="ariaSort('share')" @sort="toggleSort('share')" />
+                </th>
+                <th data-numeric :aria-sort="ariaSort('total')">
+                  <SortButton :labels="['Benchmark', 'run cost']" :direction="ariaSort('total')" @sort="toggleSort('total')" />
+                </th>
               </tr>
             </thead>
             <tbody>
               <OfficialRunRankingRow
-                v-for="(run, index) in runs"
+                v-for="{ run, rank, band } in sortedEntries"
                 :key="run.execution_id"
-                :rank="index + 1"
+                :rank="rank"
                 :run="run"
                 @click="openRun(run)"
               >
@@ -311,11 +333,11 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
                 <td data-numeric>{{ percent(run.comparison.support_cost_share) }}</td>
                 <td data-numeric>
                   <div class="run-cost-value">
-                    <span :class="`value-signal value-signal--${costBand(index)}`">
+                    <span :class="`value-signal value-signal--${band}`">
                       {{ money(run.totals.costs_usd.total) }}
                     </span>
                     <small v-if="excludedRepairCost(run) > 0">
-                      Excluded repair cost: {{ money(excludedRepairCost(run)) }}
+                      Rerun cost (excluded): {{ money(excludedRepairCost(run)) }}
                     </small>
                   </div>
                 </td>
@@ -330,7 +352,7 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
             :rank="index + 1"
             :name="run.model_name"
             :provider="providerFor(run.model_id)"
-            :to="runRoute(run.execution_id)"
+            :to="modelSummaryRoute(run.model_id, run.execution_id)"
             :metrics="mobileCostMetrics(run)"
           />
         </div>

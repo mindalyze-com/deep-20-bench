@@ -102,7 +102,7 @@ test("data page keeps download, exploration, and reuse in one ordered flow", { t
   await waitForPublication(page);
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Edition 1 data.",
+    "Deep20Bench 1.0 dataset.",
   );
   await expect(page.locator(".data-lede")).toContainText(
     "Deep20Bench publishes all the data behind its leaderboard",
@@ -266,9 +266,9 @@ test("tablet popovers and footer content stay inside the viewport", { tag: ["@la
   await page.goto("results/cost/");
   await waitForPublication(page);
 
-  await page.getByRole("button", { name: "Guesser and support cost" }).click();
+  await page.getByRole("button", { name: "Guesser and answer-checking cost" }).click();
   const popoverBox = await page
-    .getByRole("dialog", { name: "Guesser and support cost" })
+    .getByRole("dialog", { name: "Guesser and answer-checking cost" })
     .boundingBox();
   expect(popoverBox).not.toBeNull();
   expect(popoverBox!.x).toBeGreaterThanOrEqual(0);
@@ -705,13 +705,12 @@ test("question score stays primary in charts and desktop leaderboards", { tag: [
 
     if (mobile) {
       await expect(page.locator(".mobile-result-metrics [data-tone]")).toHaveCount(0);
+      const primary = page.locator(".mobile-result-primary").first();
+      await expect(primary).toBeVisible();
+      await expect(primary.locator("small")).toHaveText("Question score");
       const firstMetric = page.locator(".mobile-result-metrics > div").first();
-      await expect(firstMetric).toBeVisible();
-      await expect(firstMetric.locator("dt")).toHaveText("Question score");
+      await expect(firstMetric.locator("dt")).toHaveText("95% CI");
       await expect(firstMetric).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-      const cardAction = page.locator(".mobile-result-action").first();
-      await expect(cardAction).toHaveCSS("background-color", "rgb(250, 249, 245)");
-      await expect(cardAction).toHaveCSS("color", "rgb(48, 68, 210)");
     } else {
       const primaryColumn = page.locator(".ranking-table .primary-metric-column");
       await expect(primaryColumn.first()).toBeVisible();
@@ -787,6 +786,7 @@ test("result tables use the available width before collapsing to cards", { tag: 
   await waitForPublication(page);
   await expect(page.locator(".results-table-wrap")).toBeHidden();
   await expect(page.locator(".mobile-result-list")).toBeVisible();
+  await expect(page.locator(".mobile-result-list > a").first()).toBeInViewport();
 });
 
 test("result hints stay inside their chart headings", { tag: ["@layout", "@both"] }, async ({
@@ -849,9 +849,8 @@ test("result hints stay inside their chart headings", { tag: ["@layout", "@both"
     expect(compactTitleBox).not.toBeNull();
     expect(compactCopyBox).not.toBeNull();
     expect(compactHelpBox).not.toBeNull();
-    expect(compactCopyBox!.width).toBeGreaterThan(compactTitleBox!.width);
-    expect(Math.abs(compactHelpBox!.x - compactCopyBox!.x)).toBeLessThan(1);
-    expect(Math.abs(compactHelpBox!.width - compactCopyBox!.width)).toBeLessThan(1);
+    expect(compactHelpBox!.x).toBeGreaterThanOrEqual(compactTitleBox!.x + compactTitleBox!.width);
+    expect(compactCopyBox!.y).toBeGreaterThanOrEqual(compactHelpBox!.y + compactHelpBox!.height - 1);
 
     await page.setViewportSize({ width: 1920, height: 1080 });
     for (const route of routes) {
@@ -866,9 +865,16 @@ test("result hints stay inside their chart headings", { tag: ["@layout", "@both"
         const helpBox = await heading.locator(":scope > .result-help").boundingBox();
         expect(copyBox).not.toBeNull();
         expect(helpBox).not.toBeNull();
-        expect(copyBox!.width).toBeGreaterThanOrEqual(560);
-        expect(copyBox!.width).toBeLessThanOrEqual(576);
-        expect(helpBox!.x).toBeGreaterThanOrEqual(copyBox!.x + copyBox!.width);
+        if (route.path === "results/") {
+          const panelBox = await heading.boundingBox();
+          expect(panelBox).not.toBeNull();
+          expect(copyBox!.y).toBeGreaterThanOrEqual(helpBox!.y + helpBox!.height - 1);
+          expect(helpBox!.x + helpBox!.width).toBeLessThanOrEqual(panelBox!.x + panelBox!.width);
+        } else {
+          expect(copyBox!.width).toBeGreaterThanOrEqual(560);
+          expect(copyBox!.width).toBeLessThanOrEqual(576);
+          expect(helpBox!.x).toBeGreaterThanOrEqual(copyBox!.x + copyBox!.width);
+        }
       }
       await expectNoViewportOverflow(page);
     }
@@ -1237,4 +1243,20 @@ test("short desktop episode leaves room for a complete turn", { tag: ["@layout",
   expect(layout.heroHeight).toBeLessThanOrEqual(165);
   expect(layout.contentHeight).toBeGreaterThanOrEqual(380);
   expect(layout.contentHeight).toBeGreaterThanOrEqual(layout.turnHeight);
+});
+
+test("run model cards keep readable values beside the run sidebar at every desktop width", { tag: ["@layout", "@desktop"] }, async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name.startsWith("mobile"));
+  // The card's width is the window minus the sidebar, so window-width breakpoints alone squeezed it.
+  for (const width of [800, 900, 960, 1024, 1100, 1280, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(runPath);
+    await waitForPublication(page);
+    const narrowest = await page.locator(".run-model-facts dd").evaluateAll((values) =>
+      Math.min(...values.map((value) => value.getBoundingClientRect().width)));
+    expect(narrowest, `narrowest model fact at ${width}px`).toBeGreaterThanOrEqual(64);
+    await expectNoViewportOverflow(page);
+  }
 });

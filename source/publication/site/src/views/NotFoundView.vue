@@ -30,6 +30,9 @@ onActivated(applyRouteContext);
       <RouterLink class="button button-secondary" :to="editionRoute('results')">
         View results
       </RouterLink>
+      <RouterLink class="button button-secondary" :to="editionRoute('models')">
+        All models
+      </RouterLink>
     </div>
   </section>
 </template>

@@ -93,9 +93,11 @@ const routingLabel = (): string =>
 </template>
 
 <style scoped>
+/* The card sits beside the run sidebar, so it adapts to its own width, not the window's. */
 .run-model-card {
   display: flex;
   min-width: 0;
+  container-type: inline-size;
   padding: var(--workspace-panel-padding);
   border: var(--rule-default);
   flex-direction: column;
@@ -188,7 +190,7 @@ const routingLabel = (): string =>
 
 .featured .run-model-facts {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
   gap: 0 1.5rem;
   margin-top: 0;
 }
@@ -262,7 +264,8 @@ const routingLabel = (): string =>
   font-weight: var(--font-weight-bold);
 }
 
-@media (max-width: 760px) {
+/* Too narrow for identity and facts side by side: stack them. */
+@container (max-width: 52rem) {
   .run-model-card.featured {
     display: flex;
   }
@@ -272,15 +275,17 @@ const routingLabel = (): string =>
   }
 
   .featured .run-model-identity h3 {
+    max-width: none;
     margin-top: 0.9rem;
-    font-size: clamp(2rem, 10vw, 2.8rem);
+    font-size: clamp(2rem, 7cqi, 2.8rem);
   }
 
   .featured .run-model-facts {
-    display: block;
     margin-top: 1rem;
   }
+}
 
+@container (max-width: 30rem) {
   .provider-routing-row {
     grid-template-columns: 1fr 1fr;
     gap: 0.35rem 0.8rem;

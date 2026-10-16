@@ -7,7 +7,7 @@ import {
   peekLeaderboard,
   peekOfficialRuns,
 } from "./api";
-import { runRoute } from "./route-location";
+import { modelSummaryRoute } from "./route-location";
 import type { LeaderboardRow, PublicRunSummary, RunDocument } from "./types";
 import { usePublicationLoad } from "./use-publication-load";
 
@@ -40,7 +40,7 @@ export const useOfficialRunData = (): OfficialRunData => {
     modelId;
 
   const openRun = (run: PublicRunSummary): void => {
-    void router.push(runRoute(run.execution_id));
+    void router.push(modelSummaryRoute(run.model_id, run.execution_id));
   };
 
   return {

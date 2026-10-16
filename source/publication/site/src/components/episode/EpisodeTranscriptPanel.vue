@@ -2,8 +2,11 @@
 import { computed } from "vue";
 import { answerLabel } from "@/lib/use-edition-context";
 
+import { editionsIndex } from "@/lib/api";
 import { contractViolationDetails as violationDetails } from "@/lib/contract-violation-copy";
-import type { PublicEpisodeDetail } from "@/lib/types";
+import { dateTime } from "@/lib/format";
+import { episodeRoute } from "@/lib/route-location";
+import type { PublicEpisodeDetail, PublicHistoricalOracleCacheSource } from "@/lib/types";
 
 const props = withDefaults(
   defineProps<{
@@ -23,6 +26,7 @@ const turnMap = computed(() =>
         marker: turn.counted ? `Q${turn.counted_questions}` : "END",
         answer: "FORMAT",
         tone: "format",
+        question: false,
         label: `Turn ${turn.turn_number}: reply in the wrong format`,
       };
     }
@@ -33,9 +37,10 @@ const turnMap = computed(() =>
     return {
       turnNumber: turn.turn_number,
       marker: turn.counted ? `Q${turn.counted_questions}` : "G",
-      answer: answerLabel(turn.answer),
+      answer: turn.answer,
       tone: turn.answer.toLowerCase(),
-      label: `Turn ${turn.turn_number}: ${actionLabel}. ${turn.answer}`,
+      question: turn.action === "ASK",
+      label: `Turn ${turn.turn_number}: ${actionLabel}. ${answerLabel(turn.answer)}`,
     };
   }),
 );
@@ -43,12 +48,14 @@ const turnMap = computed(() =>
 const answerCounts = computed(() =>
   turnMap.value.reduce(
     (counts, turn) => {
+      // Totals describe answers to questions; the guess result is shown on its own marker.
+      if (turn.tone === "format") counts.format += 1;
+      if (!turn.question) return counts;
       if (turn.tone === "yes") counts.yes += 1;
       else if (turn.tone === "no") counts.no += 1;
       else if (turn.tone === "rather_yes") counts.ratherYes += 1;
       else if (turn.tone === "rather_no") counts.ratherNo += 1;
       else if (turn.tone === "unknown") counts.unknown += 1;
-      else counts.format += 1;
       return counts;
     },
     { yes: 0, no: 0, ratherYes: 0, ratherNo: 0, unknown: 0, format: 0 },
@@ -62,6 +69,38 @@ const sourceLabel = (sourceUrl: string): string => {
     return "source";
   }
 };
+
+const reusedAnswers = computed(
+  () =>
+    props.episode.turns.filter(
+      (turn) => turn.turn_type === "action" && turn.oracle_cache !== null && turn.oracle_cache !== undefined,
+    ).length,
+);
+const askedQuestions = computed(
+  () =>
+    props.episode.turns.filter((turn) => turn.turn_type === "action" && turn.action === "ASK")
+      .length,
+);
+
+// Reused answers name the run they came from and link to it when that run is published.
+const publishedRun = (executionId: string) =>
+  editionsIndex.value?.editions
+    .flatMap((edition) => edition.runs)
+    .find((run) => run.execution_id === executionId);
+const sourceModelName = (source: PublicHistoricalOracleCacheSource): string =>
+  publishedRun(source.execution_id)?.model_name ??
+  editionsIndex.value?.editions
+    .flatMap((edition) => edition.runs)
+    .find((run) => run.model_id === source.model_id)?.model_name ??
+  source.model_id;
+const sourceRoute = (source: PublicHistoricalOracleCacheSource) =>
+  publishedRun(source.execution_id) === undefined
+    ? null
+    : {
+        ...(episodeRoute(source.execution_id, source.target_id, source.trial_id) as object),
+        hash: `#turn-${source.turn_number}`,
+      };
+const roundNumber = (trialId: string): string => trialId.replace(/^trial-0*/, "");
 
 const jumpToTurn = (turnNumber: number): void => {
   const target = document.getElementById(`turn-${turnNumber}`);
@@ -140,25 +179,30 @@ const jumpToTurn = (turnNumber: number): void => {
             @click="jumpToTurn(turn.turnNumber)"
           >
             <span>{{ turn.marker }}</span>
-            <strong>{{ answerLabel(turn.answer) }}</strong>
+            <strong>{{ turn.answer === "FORMAT" ? "Format" : answerLabel(turn.answer) }}</strong>
           </button>
         </li>
       </ol>
-      <footer aria-label="Turn answer totals">
-        <span><i class="tone-yes" aria-hidden="true"></i>{{ answerCounts.yes }} YES</span>
+      <footer aria-label="Answers to questions">
+        <span><i class="tone-yes" aria-hidden="true"></i>{{ answerCounts.yes }} Yes</span>
         <span v-if="answerCounts.ratherYes > 0"><i class="tone-rather_yes" aria-hidden="true"></i>{{ answerCounts.ratherYes }} Rather yes</span>
         <span v-if="answerCounts.ratherNo > 0"><i class="tone-rather_no" aria-hidden="true"></i>{{ answerCounts.ratherNo }} Rather no</span>
-        <span><i class="tone-no" aria-hidden="true"></i>{{ answerCounts.no }} NO</span>
+        <span><i class="tone-no" aria-hidden="true"></i>{{ answerCounts.no }} No</span>
         <span
           ><i class="tone-unknown" aria-hidden="true"></i
-          >{{ answerCounts.unknown }} UNKNOWN</span
+          >{{ answerCounts.unknown }} Unknown</span
         >
         <span v-if="answerCounts.format > 0"
           ><i class="tone-format" aria-hidden="true"></i
-          >{{ answerCounts.format }} FORMAT</span
+          >{{ answerCounts.format }} format {{ answerCounts.format === 1 ? "error" : "errors" }}</span
         >
       </footer>
     </nav>
+
+    <p v-if="reusedAnswers > 0" class="reuse-note">
+      {{ reusedAnswers }} of {{ askedQuestions }} answers in this round reuse an earlier, fully
+      checked answer with its original evidence. No new search or check ran for those turns.
+    </p>
 
     <div class="turn-list">
       <article
@@ -200,18 +244,26 @@ const jumpToTurn = (turnNumber: number): void => {
               <strong v-if="turn.oracle_cache.scope === 'same_episode'">Answer reused from turn {{ turn.oracle_cache.turn_number }} of this game</strong>
               <strong v-else-if="turn.oracle_cache.scope === 'same_execution'">Answer reused from an earlier game in this benchmark run</strong>
               <strong v-else>Answer reused from an earlier benchmark run</strong>
-              <p>This answer and its evidence come from an earlier check. No new search or review ran for this turn.</p>
               <details>
                 <summary>View original response</summary>
                 <dl>
                   <template v-if="turn.oracle_cache.scope !== 'same_episode'">
-                  <div><dt>Execution</dt><dd>{{ turn.oracle_cache.execution_id }}</dd></div>
-                  <div><dt>Model / benchmark</dt><dd>{{ turn.oracle_cache.model_id }} / {{ turn.oracle_cache.benchmark_id }}</dd></div>
-                  <div><dt>Subject / round / turn</dt><dd>{{ turn.oracle_cache.target_id }} / {{ turn.oracle_cache.trial_id }} / {{ turn.oracle_cache.turn_number }}</dd></div>
+                    <div>
+                      <dt>Original run</dt>
+                      <dd>
+                        {{ sourceModelName(turn.oracle_cache) }}, round
+                        {{ roundNumber(turn.oracle_cache.trial_id) }}, turn
+                        {{ turn.oracle_cache.turn_number }}.
+                        <RouterLink
+                          v-if="sourceRoute(turn.oracle_cache)"
+                          :to="sourceRoute(turn.oracle_cache)!"
+                        >Open that turn →</RouterLink>
+                        <small>{{ turn.oracle_cache.execution_id }}</small>
+                      </dd>
+                    </div>
                   </template>
                   <div v-else><dt>Original turn</dt><dd><button type="button" @click="jumpToTurn(turn.oracle_cache.turn_number)">Go to turn {{ turn.oracle_cache.turn_number }}</button></dd></div>
-                  <div><dt>Episode</dt><dd>{{ turn.oracle_cache.episode_id }}</dd></div>
-                  <div><dt>Originally answered</dt><dd><time :datetime="turn.oracle_cache.answered_at">{{ turn.oracle_cache.answered_at }}</time></dd></div>
+                  <div><dt>Originally answered</dt><dd><time :datetime="turn.oracle_cache.answered_at">{{ dateTime(turn.oracle_cache.answered_at) }}</time></dd></div>
                   <div><dt>Original question</dt><dd>{{ turn.oracle_cache.question }}</dd></div>
                 </dl>
               </details>
@@ -378,16 +430,32 @@ const jumpToTurn = (turnNumber: number): void => {
 </template>
 
 <style scoped>
+/* A compact note per reused answer; the round-level note above the turns explains reuse once. */
 .cache-source {
-  margin-top: 1rem;
-  padding: 0.85rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.7rem;
+  border-left: 3px solid var(--blue);
+  background: var(--surface-accent-soft);
+  font-size: var(--text-caption);
+  overflow-wrap: anywhere;
+}
+.cache-source > details { flex: 1 1 12rem; }
+.cache-source > details[open] { flex-basis: 100%; }
+.cache-source summary { color: var(--blue-ink); cursor: pointer; font-weight: var(--font-weight-semibold); }
+.cache-source dd small { display: block; margin-top: 0.15rem; color: var(--muted); }
+.cache-source dd a { margin-left: 0.35rem; color: var(--blue-ink); font-weight: var(--font-weight-bold); }
+.reuse-note {
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 1rem;
   border-left: var(--border-emphasis-width) solid var(--blue);
   background: var(--surface-accent-soft);
   font-size: var(--text-small);
-  overflow-wrap: anywhere;
+  line-height: 1.5;
 }
-.cache-source p { margin: 0.5rem 0; line-height: 1.5; }
-.cache-source summary { cursor: pointer; padding-block: 0.5rem; }
 .cache-source dl { margin: 0; }
 .cache-source dl > div { margin-top: 0.6rem; }
 .cache-source dt { font-weight: var(--font-weight-bold); }

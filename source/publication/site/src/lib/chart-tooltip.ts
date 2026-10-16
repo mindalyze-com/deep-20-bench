@@ -18,7 +18,7 @@ export const chartTooltipRunLink = (
   spaced = false,
 ): string =>
   visible
-    ? `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight: var(--font-weight-bold);${spaced ? "letter-spacing:.06em;" : ""}text-transform:uppercase">View full run →</span>`
+    ? `<span style="display:block;margin-top:9px;color:${theme.accent};font-size:.75rem;font-weight: var(--font-weight-bold);${spaced ? "letter-spacing:.06em;" : ""}text-transform:uppercase">View model results →</span>`
     : "";
 
 export const chartTooltipTitle = (

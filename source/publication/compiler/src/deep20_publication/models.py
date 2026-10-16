@@ -30,6 +30,7 @@ EXECUTION_ID_PATTERN = r"^BX-[A-Za-z0-9][A-Za-z0-9._-]{0,43}$"
 TRIAL_ID_PATTERN = r"^trial-[0-9]{3,5}$"
 RUN_ID_PATTERN = r"^BR-[0-9a-f]{40}$"
 CALL_ID_PATTERN = r"^(?:GC|OC|VC)-[0-9a-f]{32}$"
+MODEL_SLUG_PATTERN = r"^[a-z0-9]+(?:-[a-z0-9]+)*$"
 EditionId = Annotated[str, Field(pattern=r"^[0-9]+\.[0-9]+$")]
 FactualAnswer = Literal["YES", "RATHER_YES", "RATHER_NO", "NO", "UNKNOWN"]
 IdentityAnswer = Literal["YES", "NO", "UNKNOWN"]
@@ -1790,12 +1791,39 @@ class CohortConfig(LegacyCohortConfig):
         return self
 
 
+class ModelSlugPin(FrozenModel):
+    """Keeps a model page URL stable when a display name changes."""
+
+    model_id: str = Field(pattern=MODEL_ID_PATTERN)
+    slug: str | None = Field(default=None, pattern=MODEL_SLUG_PATTERN)
+    previous_slugs: tuple[Annotated[str, Field(pattern=MODEL_SLUG_PATTERN)], ...] = ()
+
+    @model_validator(mode="after")
+    def distinct_slugs(self) -> ModelSlugPin:
+        slugs = (*(() if self.slug is None else (self.slug,)), *self.previous_slugs)
+        if not slugs:
+            raise ValueError("a model slug pin needs a slug or previous slugs")
+        if len(slugs) != len(set(slugs)):
+            raise ValueError("model slug pins must not repeat a slug")
+        return self
+
+
+def _unique_slug_pins(values: tuple[ModelSlugPin, ...]) -> tuple[ModelSlugPin, ...]:
+    model_ids = tuple(pin.model_id for pin in values)
+    if len(model_ids) != len(set(model_ids)):
+        raise ValueError("model slug pins must name each model once")
+    return values
+
+
 class PublicationConfig(FrozenModel):
     version: Literal[2] = 2
     site: PublicationSiteConfig
     score: ScorePolicy
     default_edition_id: EditionId = "1.0"
     cohorts: tuple[CohortConfig, ...] = Field(min_length=1)
+    model_slugs: tuple[ModelSlugPin, ...] = ()
+
+    _unique_model_slugs = field_validator("model_slugs")(_unique_slug_pins)
 
     @model_validator(mode="after")
     def valid_editions(self) -> PublicationConfig:
@@ -1816,6 +1844,9 @@ class PublicationConfig(FrozenModel):
 class PublicationSettings(FrozenModel):
     version: Literal[3]
     site: PublicationSiteConfig
+    model_slugs: tuple[ModelSlugPin, ...] = ()
+
+    _unique_model_slugs = field_validator("model_slugs")(_unique_slug_pins)
 
 
 class ReleasedEditionProfile(FrozenModel):
@@ -2346,6 +2377,18 @@ class PublicationRunReference(FrozenModel):
     classification: Literal["official", "lab"]
 
 
+PublicationDownloadPath = Literal[
+    "deep20bench-v10.json", "deep20bench-v10.schema.json", "leaderboard.csv"
+]
+
+
+class PublicationDownload(FrozenModel):
+    """Size of one edition download, shown beside its link on the Data page."""
+
+    path: PublicationDownloadPath
+    size_bytes: int = Field(ge=0)
+
+
 class PublicationManifestDocument(FrozenModel):
     document_type: Literal["manifest"] = "manifest"
     schema_version: Literal[2] = 2
@@ -2359,6 +2402,7 @@ class PublicationManifestDocument(FrozenModel):
     models: tuple[PublicModel, ...]
     official_runs: tuple[PublicationRunReference, ...]
     lab_runs: tuple[PublicationRunReference, ...]
+    downloads: tuple[PublicationDownload, ...] = ()
 
 
 class PublicationAppBuildDocument(FrozenModel):
@@ -2461,8 +2505,140 @@ class PublicationEpisodeDocument(FrozenModel):
     episode: PublicEpisodeDetail
 
 
+class PublicModelRound(FrozenModel):
+    target_id: str = Field(pattern=TARGET_ID_PATTERN)
+    trial_id: str = Field(pattern=TRIAL_ID_PATTERN)
+    trial_number: int = Field(ge=1)
+    status: Literal["success", "model_failure", "infrastructure_failure"]
+    terminal_reason: str | None
+    counted_questions: int = Field(ge=0)
+    penalized_questions: Decimal | None
+    rejected_guess_count: int = Field(ge=0)
+    format_errors: int = Field(ge=0)
+
+
+class PublicModelSubjectResult(FrozenModel):
+    target_id: str = Field(pattern=TARGET_ID_PATTERN)
+    display_name: str = Field(min_length=1, max_length=200)
+    entity_type: str
+    average_questions: Decimal | None
+    successful: int = Field(ge=0)
+    model_failed: int = Field(ge=0)
+    infrastructure_failed: int = Field(ge=0)
+    rank: int | None = Field(ge=1)
+    ranked_models: int = Field(ge=0)
+    rounds: tuple[PublicModelRound, ...]
+
+
+class PublicModelRoundReference(FrozenModel):
+    target_id: str = Field(pattern=TARGET_ID_PATTERN)
+    trial_id: str = Field(pattern=TRIAL_ID_PATTERN)
+
+
+class PublicModelObservation(FrozenModel):
+    """One count- or rank-based statement about the selected run, with supporting rounds."""
+
+    kind: Literal[
+        "strongest_subject",
+        "hardest_subject",
+        "fewest_questions",
+        "most_questions",
+        "model_failure",
+        "format_errors",
+        "uneven_subject",
+        "wrong_guesses",
+    ]
+    target_id: str | None = Field(default=None, pattern=TARGET_ID_PATTERN)
+    value: Decimal | None = None
+    count: int | None = Field(default=None, ge=0)
+    rounds: tuple[PublicModelRoundReference, ...] = Field(min_length=1)
+
+
+class PublicModelEditionLink(FrozenModel):
+    edition_id: EditionId
+    edition_label: str
+    slug: str = Field(pattern=MODEL_SLUG_PATTERN)
+    execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
+    rank: int | None
+    ranked_models: int = Field(ge=0)
+    question_score: Decimal | None
+
+
+class PublicSupersededRun(FrozenModel):
+    execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
+    completed_at: datetime
+
+
+class PublicationModelDocument(FrozenModel):
+    document_type: Literal["model"] = "model"
+    schema_version: Literal[1] = 1
+    edition_id: EditionId
+    slug: str = Field(pattern=MODEL_SLUG_PATTERN)
+    ranked_models: int = Field(ge=1)
+    iterations: int = Field(ge=1)
+    max_questions: int = Field(ge=1)
+    result: LeaderboardRow
+    subjects: tuple[PublicModelSubjectResult, ...] = Field(min_length=1)
+    observations: tuple[PublicModelObservation, ...]
+    other_editions: tuple[PublicModelEditionLink, ...]
+    superseded_runs: tuple[PublicSupersededRun, ...]
+
+    @model_validator(mode="after")
+    def observations_cite_published_rounds(self) -> PublicationModelDocument:
+        if self.result.execution_id is None:
+            raise ValueError("model documents require a selected run")
+        rounds = {
+            (item.target_id, item.trial_id)
+            for subject in self.subjects
+            for item in subject.rounds
+            if item.status != "infrastructure_failure"
+        }
+        if any(
+            (reference.target_id, reference.trial_id) not in rounds
+            for observation in self.observations
+            for reference in observation.rounds
+        ):
+            raise ValueError("model observations must cite published rounds")
+        if any(run.execution_id == self.result.execution_id for run in self.superseded_runs):
+            raise ValueError("the selected run cannot also be superseded")
+        return self
+
+
+class PublicModelIndexEntry(FrozenModel):
+    slug: str = Field(pattern=MODEL_SLUG_PATTERN)
+    model: PublicModel
+    execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
+    rank: int | None
+    question_score: Decimal | None
+    success_rate: Decimal | None
+    successful: int = Field(ge=0)
+    terminal_trials: int = Field(ge=0)
+
+
+class PublicationModelIndexDocument(FrozenModel):
+    document_type: Literal["model_index"] = "model_index"
+    schema_version: Literal[1] = 1
+    edition_id: EditionId
+    models: tuple[PublicModelIndexEntry, ...]
+
+    @model_validator(mode="after")
+    def unique_slugs(self) -> PublicationModelIndexDocument:
+        slugs = tuple(entry.slug for entry in self.models)
+        if len(slugs) != len(set(slugs)):
+            raise ValueError("model slugs must be unique within an edition")
+        model_ids = tuple(entry.model.model_id for entry in self.models)
+        if len(model_ids) != len(set(model_ids)):
+            raise ValueError("model index entries must be unique")
+        return self
+
+
 class EditionRunReference(PublicationRunReference):
     target_ids: tuple[str, ...]
+
+
+class EditionModelReference(FrozenModel):
+    model_id: str = Field(pattern=MODEL_ID_PATTERN)
+    slug: str = Field(pattern=MODEL_SLUG_PATTERN)
 
 
 class PublicationEditionReference(FrozenModel):
@@ -2473,11 +2649,12 @@ class PublicationEditionReference(FrozenModel):
     leaderboard_path: str
     repeat_averages_path: str
     runs: tuple[EditionRunReference, ...]
+    models: tuple[EditionModelReference, ...] = ()
 
 
 class PublicationEditionsDocument(FrozenModel):
     document_type: Literal["editions"] = "editions"
-    schema_version: Literal[1] = 1
+    schema_version: Literal[2] = 2
     default_edition_id: EditionId
     built_at: datetime
     editions: tuple[PublicationEditionReference, ...]
@@ -2501,7 +2678,9 @@ PublicationDocument = Annotated[
     | PublicationRepeatAveragesDocument
     | PublicationRunDocument
     | PublicationSubjectDocument
-    | PublicationEpisodeDocument,
+    | PublicationEpisodeDocument
+    | PublicationModelDocument
+    | PublicationModelIndexDocument,
     Field(discriminator="document_type"),
 ]
 
@@ -2618,7 +2797,9 @@ class PublicationDataBundle(FrozenModel):
 
 class StaticRouteEntry(FrozenModel):
     route: str
-    kind: Literal["home", "editorial", "run", "alias", "subject", "episode"]
+    kind: Literal[
+        "home", "editorial", "run", "alias", "subject", "episode", "model", "model-index",
+    ]
     indexable: Literal[True]
     sitemap_included: bool
     canonical_route: str
@@ -2629,6 +2810,7 @@ class StaticRouteEntry(FrozenModel):
     execution_id: str | None = Field(default=None, pattern=EXECUTION_ID_PATTERN)
     target_id: str | None = Field(default=None, pattern=TARGET_ID_PATTERN)
     trial_id: str | None = Field(default=None, pattern=TRIAL_ID_PATTERN)
+    model_id: str | None = Field(default=None, pattern=MODEL_ID_PATTERN)
 
     @model_validator(mode="after")
     def route_shape_matches_kind(self) -> StaticRouteEntry:
@@ -2650,13 +2832,19 @@ class StaticRouteEntry(FrozenModel):
             raise ValueError("static episode routes require a trial ID")
         if self.kind != "episode" and self.trial_id is not None:
             raise ValueError("only static episode routes may carry a trial ID")
+        if self.kind == "model" and self.model_id is None:
+            raise ValueError("static model routes require a model ID")
+        if self.kind not in {"model", "alias"} and self.model_id is not None:
+            raise ValueError("only static model routes and their aliases may carry a model ID")
+        if self.kind == "alias" and self.sitemap_included:
+            raise ValueError("static aliases stay outside the sitemap")
         if self.sitemap_included and self.route != self.canonical_route:
             raise ValueError("sitemap routes must be self-canonical")
         return self
 
 
 class StaticRouteManifest(FrozenModel):
-    schema_version: Literal[2] = 2
+    schema_version: Literal[3] = 3
     routes: tuple[StaticRouteEntry, ...]
 
     @model_validator(mode="after")

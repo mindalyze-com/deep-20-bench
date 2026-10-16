@@ -8,15 +8,24 @@ import { createVisitorIdReader, VISITOR_ID_STORAGE_KEY } from "../../src/lib/vis
 
 type TrackPayload = Parameters<NonNullable<Window["umami"]>["track"]>[0];
 type Pageview = ReturnType<TrackPayload>;
+type Identify = NonNullable<NonNullable<Window["umami"]>["identify"]>;
 
 let delivered: Pageview[];
 let stop: (() => void) | undefined;
 const defaults = { url: "https://stale.example/", title: "Stale", referrer: "",
   website: "fixture-website", hostname: "localhost", screen: "1280x720", language: "en" };
 const track = vi.fn((payload: TrackPayload): void => { delivered.push(payload(defaults)); });
-const identify = vi.fn((_id: string): void => undefined);
+const identify = vi.fn<Identify>(() => undefined);
+const viewportData = { viewport_width: 1024, viewport_height: 768 };
+const sessionData = { timezone: "Europe/Zurich", preferred_languages: "de-CH,en-US,fr", ...viewportData };
 
 beforeEach(() => {
+  vi.stubGlobal("innerWidth", viewportData.viewport_width);
+  vi.stubGlobal("innerHeight", viewportData.viewport_height);
+  const options = Intl.DateTimeFormat().resolvedOptions();
+  vi.spyOn(Intl.DateTimeFormat.prototype, "resolvedOptions")
+    .mockReturnValue({ ...options, timeZone: sessionData.timezone });
+  vi.spyOn(window.navigator, "languages", "get").mockReturnValue(["de-CH", "en-US", "fr"]);
   window.localStorage.clear();
   document.head.innerHTML = '<script id="deep20-analytics"></script>';
   delivered = [];
@@ -67,7 +76,7 @@ test("an early tracker records only the settled initial URL and covers new route
   const id = window.localStorage.getItem(VISITOR_ID_STORAGE_KEY);
   expect(id).toBeTruthy();
   expect(delivered.map(view => view.id)).toEqual([id, id]);
-  expect(identify).toHaveBeenCalledExactlyOnceWith(id);
+  expect(identify).toHaveBeenCalledExactlyOnceWith(id, sessionData);
   expect(identify.mock.invocationCallOrder[0]).toBeLessThan(track.mock.invocationCallOrder[0]!);
 });
 
@@ -85,6 +94,48 @@ test("late script loading preserves each visit's URL, title, and referrer withou
   expect(new URL(delivered[1]!.url).hash).toBe("");
   expect(identify).toHaveBeenCalledTimes(1);
   expect(delivered[0]?.id).toBe(delivered[1]?.id);
+  expect(identify).toHaveBeenCalledExactlyOnceWith(delivered[0]?.id, sessionData);
+});
+
+test.each(["missing", "throws", "empty"])("unavailable timezone (%s) preserves identification and page views", async mode => {
+  if (mode === "missing") vi.stubGlobal("Intl", undefined);
+  else if (mode === "throws") {
+    vi.spyOn(Intl, "DateTimeFormat").mockImplementation(() => { throw new Error("Unavailable"); });
+  } else {
+    const options = Intl.DateTimeFormat().resolvedOptions();
+    vi.spyOn(Intl.DateTimeFormat.prototype, "resolvedOptions").mockReturnValue({ ...options, timeZone: "" });
+  }
+  window.umami = { track, identify };
+  const router = await setup();
+  await router.push("/new-page/");
+  expect(delivered).toHaveLength(2);
+  expect(identify).toHaveBeenCalledExactlyOnceWith(delivered[0]?.id,
+    { preferred_languages: sessionData.preferred_languages, ...viewportData });
+  expect(delivered[1]?.id).toBe(delivered[0]?.id);
+});
+
+test.each(["empty", "throws"])("unavailable preferred languages (%s) preserve timezone and page views", async mode => {
+  const languages = vi.spyOn(window.navigator, "languages", "get");
+  if (mode === "empty") languages.mockReturnValue([]);
+  else languages.mockImplementation(() => { throw new Error("Unavailable"); });
+  window.umami = { track, identify };
+  const router = await setup();
+  await router.push("/new-page/");
+  expect(delivered).toHaveLength(2);
+  expect(identify).toHaveBeenCalledExactlyOnceWith(delivered[0]?.id, { timezone: sessionData.timezone, ...viewportData });
+  expect(delivered[1]?.id).toBe(delivered[0]?.id);
+});
+
+test("invalid viewport dimensions preserve other session data and page views", async () => {
+  vi.stubGlobal("innerWidth", 0);
+  vi.stubGlobal("innerHeight", Number.NaN);
+  window.umami = { track, identify };
+  const router = await setup();
+  await router.push("/new-page/");
+  expect(delivered).toHaveLength(2);
+  expect(identify).toHaveBeenCalledExactlyOnceWith(delivered[0]?.id,
+    { timezone: sessionData.timezone, preferred_languages: sessionData.preferred_languages });
+  expect(delivered[1]?.id).toBe(delivered[0]?.id);
 });
 
 test("same-page query, hash, slash, and duplicate updates do not add views", async () => {
@@ -149,7 +200,7 @@ test("a saved crypto UUID is reused when the application starts again", async ()
   stop?.();
   await setup();
   expect(randomUUID).toHaveBeenCalledTimes(1);
-  expect(identify.mock.calls).toEqual([[id], [id]]);
+  expect(identify.mock.calls).toEqual([[id, sessionData], [id, sessionData]]);
   expect(delivered.map(view => view.id)).toEqual([id, id]);
 });
 
@@ -221,7 +272,7 @@ test("each view consumes an existing ID or creates one after storage is cleared 
   expect(generate).toHaveBeenCalledTimes(1);
   expect(window.localStorage.getItem(VISITOR_ID_STORAGE_KEY)).toBe(newId);
   expect(delivered.map(view => view.id)).toEqual([initialId, changedId, newId]);
-  expect(identify.mock.calls).toEqual([[initialId], [changedId], [newId]]);
+  expect(identify.mock.calls).toEqual([[initialId, sessionData], [changedId, sessionData], [newId, sessionData]]);
 });
 
 test.each(["sync", "async"])("%s identification failure still sends page views with the ID", async mode => {

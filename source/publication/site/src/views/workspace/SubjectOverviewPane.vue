@@ -9,7 +9,7 @@ import {
   contractExampleRoute,
   firstBreachedTrial,
 } from "@/lib/contract-example";
-import { contractPercent, number } from "@/lib/format";
+import { contractPercent } from "@/lib/format";
 import {
   useRunWorkspace,
   useSubjectWorkspace,
@@ -47,13 +47,8 @@ const facts = computed<MetricGridItem[]>(() => {
     },
     {
       key: "successful",
-      label: "Successful",
+      label: "Solved",
       value: currentSubject.successful,
-    },
-    {
-      key: "average",
-      label: "Average",
-      value: number(currentSubject.average_questions),
     },
     {
       key: "contract",

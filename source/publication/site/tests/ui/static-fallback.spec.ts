@@ -14,6 +14,17 @@ interface ManifestFixture {
   official_runs: OfficialRunReference[];
 }
 
+interface EditionsFixture {
+  editions: Array<{ edition_id: string; models: Array<{ model_id: string; slug: string }> }>;
+}
+
+interface ModelFixture {
+  slug: string;
+  result: { execution_id: string; model: { display_name: string } };
+  subjects: Array<{ target_id: string; display_name: string }>;
+  superseded_runs: Array<{ execution_id: string }>;
+}
+
 interface RunFixture {
   run: {
     contract: { status: "clean" | "breached" | "not_evaluable" };
@@ -23,6 +34,15 @@ interface RunFixture {
 }
 
 const staticBase = "http://127.0.0.1:4174/";
+const editionsIndex = JSON.parse(
+  readFileSync(path.join(docsRoot, "data", "editions.json"), "utf8"),
+) as EditionsFixture;
+const modelDocuments = editionsIndex.editions.flatMap((edition) => edition.models.map((model) => ({
+  editionId: edition.edition_id,
+  document: JSON.parse(readFileSync(path.join(
+    docsRoot, "data", "editions", edition.edition_id, "models", `${model.slug}.json`,
+  ), "utf8")) as ModelFixture,
+})));
 const manifest = JSON.parse(
   readFileSync(path.join(docsRoot, "data", "manifest.json"), "utf8"),
 ) as ManifestFixture;
@@ -249,9 +269,9 @@ test(
     }
 
     await page.goto(new URL("editions/1.0/results/", staticBase).href);
-    for (const reference of manifest.official_runs) {
+    for (const { editionId, document } of modelDocuments.filter((item) => item.editionId === "1.0")) {
       await expect(
-        page.locator(`a[href="/runs/${reference.execution_id}/"]`).first(),
+        page.locator(`a[href="/editions/${editionId}/models/${document.slug}/"]`).first(),
       ).toBeAttached();
     }
     for (const routePath of staticPaths.filter((value) => value.startsWith("results/"))) {
@@ -279,7 +299,7 @@ test(
     );
     await expect(overview).toContainText("Question score");
     await expect(overview).toContainText("95% CI");
-    await expect(overview).toContainText("Success");
+    await expect(overview).toContainText("Solved");
     await expect(overview).toContainText("Valid format");
     await expect(overview).toContainText("Guesser cost");
     await expect(overview).toContainText("Total runtime");
@@ -342,11 +362,46 @@ test(
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(overview).toContainText("Average questions");
     await expect(overview).toContainText("Rounds");
-    await expect(overview).toContainText("Successful");
+    await expect(overview).toContainText("Solved");
     await expect(page.locator(".episode-list a")).toHaveCount(5);
     await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
     await expect(page.locator("html")).toHaveAttribute("data-prerendered", "true");
 
+    await context.close();
+  },
+);
+
+test(
+  "model pages and replaced-run addresses are complete without JavaScript",
+  { tag: ["@static-fallback", "@desktop"] },
+  async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    for (const { editionId, document } of modelDocuments) {
+      const url = new URL(`editions/${editionId}/models/${document.slug}/`, staticBase).href;
+      await page.goto(url);
+      await expect(page.getByRole("heading", { level: 1 }))
+        .toContainText(document.result.model.display_name.replace(/ \([^)]*\)$/, ""));
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://deep20bench.com/editions/${editionId}/models/${document.slug}/`);
+      await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+      await expect(page.locator(`a[href="/runs/${document.result.execution_id}/"]`).first()).toBeAttached();
+      for (const subject of document.subjects) {
+        await expect(page.locator(
+          `a[href="/runs/${document.result.execution_id}/subjects/${subject.target_id}/"]`,
+        )).toBeAttached();
+      }
+      await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(2);
+      for (const replaced of document.superseded_runs) {
+        await page.goto(new URL(`runs/${replaced.execution_id}/`, staticBase).href);
+        await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://deep20bench.com/editions/${editionId}/models/${document.slug}/`);
+        await expect(page.getByRole("heading", { level: 1 }))
+          .toContainText(document.result.model.display_name.replace(/ \([^)]*\)$/, ""));
+      }
+    }
+    for (const edition of editionsIndex.editions) {
+      await page.goto(new URL(`editions/${edition.edition_id}/models/`, staticBase).href);
+      await expect(page.locator("tbody tr")).toHaveCount(edition.models.length);
+    }
     await context.close();
   },
 );

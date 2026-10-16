@@ -6,10 +6,12 @@ from pathlib import Path
 from typing import cast
 
 from deep20_publication.compiler import _rank, _rank_efficiency
+from deep20_publication.model_pages import build_model_pages
 from deep20_publication.models import (
     PublicationAppBuildDocument,
     PublicationEditionsDocument,
     PublicationEditionReference,
+    EditionModelReference,
     EditionRunReference,
     PublicationDataBundle,
     PublishedDataset,
@@ -171,6 +173,7 @@ def main() -> None:
     dataset_path = REPOSITORY / "docs" / "data" / "editions" / "1.0" / "deep20bench-v10.json"
     dataset = PublishedDataset.model_validate_json(dataset_path.read_text(encoding="utf-8"))
     bundle = _synthetic_bundle(dataset)
+    (model_pages,) = build_model_pages((bundle,), (), {})
     if OUTPUT.exists():
         shutil.rmtree(OUTPUT)
     data = OUTPUT / "data"
@@ -192,6 +195,9 @@ def main() -> None:
                 model_name=run.run.model_name, classification=run.run.classification,
                 target_ids=run.run.target_ids,
             ) for run in bundle.runs),
+            models=tuple(EditionModelReference(
+                model_id=model.result.model.model_id, slug=model.slug,
+            ) for model in model_pages.models),
         ),),
     )
     _write_json(data / "editions.json", publication_document_json(index))
@@ -199,6 +205,15 @@ def main() -> None:
                            ("leaderboard.json", bundle.leaderboard),
                            ("repeat-averages.json", bundle.repeat_averages)):
         _write_json(data / "editions" / "1.0" / name, publication_document_json(document))
+    _write_json(
+        data / "editions" / "1.0" / "models.json",
+        publication_document_json(model_pages.index),
+    )
+    for model in model_pages.models:
+        _write_json(
+            data / "editions" / "1.0" / "models" / f"{model.slug}.json",
+            publication_document_json(model),
+        )
     _write_json(data / "manifest.json", publication_document_json(bundle.manifest))
     _write_json(data / "leaderboard.json", publication_document_json(bundle.leaderboard))
     _write_json(

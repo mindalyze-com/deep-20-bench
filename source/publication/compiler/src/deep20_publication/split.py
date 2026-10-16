@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+from .model_pages import EditionModelPages
 from .models import (
+    EditionModelReference,
     EditionRunReference,
     PublicationConfig,
     PublicationDataBundle,
@@ -171,8 +173,17 @@ def split_publication(dataset: PublishedDataset) -> PublicationDataBundle:
 
 
 def edition_index(
-    config: PublicationConfig, datasets: tuple[PublishedDataset, ...],
+    config: PublicationConfig,
+    datasets: tuple[PublishedDataset, ...],
+    model_pages: tuple[EditionModelPages, ...] = (),
 ) -> PublicationEditionsDocument:
+    slugs = {
+        pages.edition_id: tuple(
+            EditionModelReference(model_id=model.result.model.model_id, slug=model.slug)
+            for model in pages.models
+        )
+        for pages in model_pages
+    }
     return PublicationEditionsDocument(
         default_edition_id=config.default_edition_id,
         built_at=datasets[0].provenance.built_at,
@@ -193,6 +204,7 @@ def edition_index(
                         target_ids=run.target_ids,
                     ) for run in dataset.official_runs
                 ),
+                models=slugs.get(dataset.active_cohort.edition_id, ()),
             ) for dataset in datasets
         ),
     )

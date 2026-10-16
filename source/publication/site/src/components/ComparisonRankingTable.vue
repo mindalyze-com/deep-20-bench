@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import SortButton from "@/components/SortButton.vue";
+import type { SortDirection } from "@/lib/use-table-sort";
+
 type ComparisonRankingTableVariant = "home" | "results-overview";
 
 interface ComparisonColumn {
@@ -14,7 +17,10 @@ interface ComparisonColumn {
 const props = defineProps<{
   variant: ComparisonRankingTableVariant;
   label: string;
+  /** When given, column headers become sort buttons; the parent sorts its rows. */
+  sortDirection?: (key: string) => SortDirection | "none";
 }>();
+defineEmits<{ sort: [key: string] }>();
 
 const compactWidth = 4;
 const modelWidth = 24;
@@ -55,7 +61,7 @@ const variantColumns: Record<ComparisonRankingTableVariant, readonly ComparisonC
     },
     {
       key: "success",
-      labels: ["Success"],
+      labels: ["Solved"],
       className: "success-column",
       numeric: true,
       width: metricWidth,
@@ -78,7 +84,7 @@ const variantColumns: Record<ComparisonRankingTableVariant, readonly ComparisonC
   "results-overview": [
     {
       key: "success",
-      labels: ["Success"],
+      labels: ["Solved"],
       className: "success-column",
       numeric: true,
       width: metricWidth,
@@ -143,11 +149,18 @@ const tableClasses = computed(() => [
             :key="column.key"
             :class="column.className"
             :data-numeric="column.numeric ? '' : undefined"
+            :aria-sort="sortDirection && column.key !== 'rank' ? sortDirection(column.key) : undefined"
           >
             <template v-if="column.key === 'rank'">
               <span aria-hidden="true">#</span>
               <span class="visually-hidden">Rank</span>
             </template>
+            <SortButton
+              v-else-if="sortDirection"
+              :labels="column.labels"
+              :direction="sortDirection(column.key)"
+              @sort="$emit('sort', column.key)"
+            />
             <span v-else-if="column.labels.length > 1" class="table-header-stack">
               <span v-for="label in column.labels" :key="label">{{ label }}</span>
             </span>

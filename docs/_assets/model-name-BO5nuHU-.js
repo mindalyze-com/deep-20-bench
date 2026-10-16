@@ -1,0 +1,1 @@
+var e=/^(.*)\s+\((none|minimal|low|medium|high|extra[-_ ]high|xhigh|max|maximum|default|non[-_ ]thinking)\)$/i,t=t=>{let n=e.exec(t.trim());return n===null?{displayName:t,reasoningEffort:null}:{displayName:n[1]?.trim()||t,reasoningEffort:n[2]?.trim().toLowerCase().replaceAll(`_`,`-`)??null}};export{t};

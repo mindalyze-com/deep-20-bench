@@ -10,14 +10,15 @@ import RankingDataRow from "@/components/RankingDataRow.vue";
 import ReliabilityScatter from "@/components/ReliabilityScatter.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
 import ResultsContent from "@/components/ResultsContent.vue";
-import TableHeaderStack from "@/components/TableHeaderStack.vue";
+import SortButton from "@/components/SortButton.vue";
 import { confidenceIntervalWidth } from "@/lib/confidence-width";
 import { confidenceIntervalLabel, number, percent } from "@/lib/format";
 import type { ReliabilityChartItem } from "@/lib/reliability-chart";
 import { usePageRouteContext } from "@/lib/route-context";
-import { runRoute } from "@/lib/route-location";
+import { modelSummaryRoute } from "@/lib/route-location";
 import type { LeaderboardRow } from "@/lib/types";
 import { useLeaderboardResults } from "@/lib/use-leaderboard-results";
+import { useTableSort } from "@/lib/use-table-sort";
 
 interface ReliabilityEntry {
   row: LeaderboardRow;
@@ -57,6 +58,28 @@ const ranked = computed<ReliabilityEntry[]>(() => {
   }));
 });
 
+// The calculation example uses the most stable model's real interval.
+const example = computed(() => {
+  const entry = ranked.value[0];
+  const interval = entry?.row.question_score_confidence_interval;
+  return entry === undefined || interval === null || interval === undefined
+    ? null
+    : {
+        name: entry.row.model.display_name,
+        upper: number(interval.upper),
+        lower: number(interval.lower),
+        width: number(entry.intervalWidth),
+      };
+});
+
+const { sortedRows: sortedRanked, toggleSort, ariaSort } = useTableSort(ranked, {
+  model: (entry) => entry.row.model.display_name,
+  width: (entry) => entry.intervalWidth,
+  rank: (entry) => entry.row.rank,
+  score: (entry) => (entry.row.question_score === null ? null : Number(entry.row.question_score)),
+  success: (entry) => (entry.row.success_rate === null ? null : Number(entry.row.success_rate)),
+});
+
 const unranked = computed(() =>
   leaderboard.value.filter(
     (row) =>
@@ -77,7 +100,11 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
     label: "Largest CI width",
     value: number(ranked.value.at(-1)?.intervalWidth, 2),
   },
-  { key: "direction", label: "More stable", value: "Smaller CI width" },
+  {
+    key: "most-stable",
+    label: "Most stable",
+    value: ranked.value[0]?.row.model.display_name ?? "-",
+  },
 ]);
 
 const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
@@ -165,19 +192,27 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
                     <span aria-hidden="true">#</span>
                     <span class="visually-hidden">Stability rank</span>
                   </th>
-                  <th class="model-column">Model</th>
-                  <th data-numeric>
-                    <TableHeaderStack first="CI" second="width" />
+                  <th class="model-column" :aria-sort="ariaSort('model')">
+                    <SortButton :labels="['Model']" :direction="ariaSort('model')" @sort="toggleSort('model')" />
                   </th>
-                  <th data-numeric>Question rank</th>
-                  <th data-numeric>Question score</th>
+                  <th data-numeric :aria-sort="ariaSort('width')">
+                    <SortButton :labels="['CI', 'width']" :direction="ariaSort('width')" @sort="toggleSort('width')" />
+                  </th>
+                  <th data-numeric :aria-sort="ariaSort('rank')">
+                    <SortButton :labels="['Question rank']" :direction="ariaSort('rank')" @sort="toggleSort('rank')" />
+                  </th>
+                  <th data-numeric :aria-sort="ariaSort('score')">
+                    <SortButton :labels="['Question score']" :direction="ariaSort('score')" @sort="toggleSort('score')" />
+                  </th>
                   <th data-numeric>95% CI</th>
-                  <th data-numeric>Success</th>
+                  <th data-numeric :aria-sort="ariaSort('success')">
+                    <SortButton :labels="['Solved']" :direction="ariaSort('success')" @sort="toggleSort('success')" />
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 <RankingDataRow
-                  v-for="entry in ranked"
+                  v-for="entry in sortedRanked"
                   :key="entry.row.model.model_id"
                   :class="{
                     'result-row--clickable': entry.row.execution_id !== null,
@@ -189,7 +224,7 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
                   :to="
                     entry.row.execution_id === null
                       ? null
-                      : runRoute(entry.row.execution_id)
+                      : modelSummaryRoute(entry.row.model.model_id, entry.row.execution_id)
                   "
                   @click="openRun(entry.row)"
                 >
@@ -217,7 +252,7 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
               :to="
                 entry.row.execution_id === null
                   ? null
-                  : runRoute(entry.row.execution_id)
+                  : modelSummaryRoute(entry.row.model.model_id, entry.row.execution_id)
               "
               :metrics="[
                 { label: 'CI width', value: number(entry.intervalWidth, 2) },
@@ -228,7 +263,7 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
                     entry.row.question_score_confidence_interval,
                   ),
                 },
-                { label: 'Success', value: percent(entry.row.success_rate) },
+                { label: 'Solved', value: percent(entry.row.success_rate) },
               ]"
             />
           </div>
@@ -245,16 +280,16 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
             detail-summary="Steps, example, and limits"
           >
             <ol>
-              <li>Calculate the model's 95% CI from its repeated rounds.</li>
+              <li>
+                Calculate the model's 95% CI from the spread between repeated rounds of the
+                same subject. Differences between subjects do not widen it.
+              </li>
               <li>Subtract the lower end from the upper end.</li>
               <li>Sort the widths from smallest to largest.</li>
             </ol>
-            <p class="metric-example">
-              Example:
-              <strong>17.46 − 9.79 = 7.67 questions.</strong>
-            </p>
-            <p>
-              Every model uses the same 95% level, so only the width differs.
+            <p v-if="example" class="metric-example">
+              Example, {{ example.name }}:
+              <strong>{{ example.upper }} − {{ example.lower }} = {{ example.width }} questions.</strong>
             </p>
             <p>
               Stable does not mean good. A model that scores poorly but consistently can rank

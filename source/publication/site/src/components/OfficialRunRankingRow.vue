@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import RankingDataRow from "@/components/RankingDataRow.vue";
-import { runRoute } from "@/lib/route-location";
+import { modelSummaryRoute } from "@/lib/route-location";
 import type { PublicRunSummary } from "@/lib/types";
 
 defineProps<{
@@ -15,7 +15,7 @@ defineProps<{
     :rank="rank"
     :name="run.model_name"
     :meta="run.model_id"
-    :to="runRoute(run.execution_id)"
+    :to="modelSummaryRoute(run.model_id, run.execution_id)"
   >
     <slot></slot>
   </RankingDataRow>

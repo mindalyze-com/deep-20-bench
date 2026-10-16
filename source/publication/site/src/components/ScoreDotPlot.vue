@@ -24,6 +24,7 @@ import {
   confidenceWidthScale,
   type ConfidenceWidthBand,
 } from "@/lib/confidence-width";
+import { niceAxis } from "@/lib/chart-axis";
 import { number } from "@/lib/format";
 import { splitModelName } from "@/lib/model-name";
 import type { ScoreDot } from "@/lib/result-chart";
@@ -120,22 +121,16 @@ const props = withDefaults(
     repeatAverages?: PublicRepeatAverage[] | null;
     repeatAveragesLoading?: boolean;
     repeatAveragesError?: string | null;
-    context?: "publication" | "pilot";
   }>(),
   {
     repeatAverages: null,
     repeatAveragesLoading: false,
     repeatAveragesError: null,
-    context: "publication",
   },
 );
 
-const scoreCollectionLabel = computed(() =>
-  props.context === "pilot" ? "Pilot question scores" : "Official question scores",
-);
-const bestScoreLabel = computed(() =>
-  props.context === "pilot" ? "Lowest score in this pilot" : "Best score",
-);
+const scoreCollectionLabel = "Official question scores";
+const bestScoreLabel = "Best score";
 
 const emit = defineEmits<{
   requestRepeatAverages: [];
@@ -259,6 +254,9 @@ const scoreDomain = computed(() =>
       : []),
   ]),
 );
+// Round axis ends keep the first and last labels on tick values (10–40, not 10–36).
+const scoreAxis = (mobile: boolean) =>
+  niceAxis(scoreDomain.value.minimum, scoreDomain.value.maximum, mobile ? 3 : 5);
 const repeatCountLabel = computed(() => {
   if (props.repeatAveragesLoading) return "Loading averages by round…";
   if (props.repeatAverages === null) return "Repeated rounds across all subjects";
@@ -419,7 +417,7 @@ const scoreChartOption = (width: number): EChartsOption => {
     animationEasing: "cubicOut",
     aria: {
       enabled: true,
-      description: `${scoreCollectionLabel.value}. Each solid blue marker is the average question score; lower is better. Each colored line is the 95 percent confidence interval of that average. Its color matches the CI width plot.${showRepeatAverages.value ? " Grey diamonds show the average for each round number across all subjects; darker diamonds mean several averages are equal." : ""} The horizontal axis runs from ${scoreDomain.value.minimum} to ${scoreDomain.value.maximum}. ${props.items
+      description: `${scoreCollectionLabel}. Each solid blue marker is the average question score; lower is better. Each colored line is the 95 percent confidence interval of that average. Its color matches the CI width plot.${showRepeatAverages.value ? " Grey diamonds show the average for each round number across all subjects; darker diamonds mean several averages are equal." : ""} The horizontal axis runs from ${scoreAxis(mobile).min} to ${scoreAxis(mobile).max}. ${props.items
         .map(
           (item, index) => {
             const detail = confidenceDetailFor(item);
@@ -431,7 +429,7 @@ const scoreChartOption = (width: number): EChartsOption => {
               detail === undefined
                 ? ""
                 : `, width ${detail.display}, ${confidenceBandLongLabel(detail.band)}`
-            }${bestScoreModelIds.value.has(item.modelId) ? `, ${bestScoreLabel.value.toLowerCase()}` : ""}${
+            }${bestScoreModelIds.value.has(item.modelId) ? `, ${bestScoreLabel.toLowerCase()}` : ""}${
               tightestConfidenceModelIds.value.has(item.modelId)
                 ? ", smallest CI width"
                 : ""
@@ -442,9 +440,9 @@ const scoreChartOption = (width: number): EChartsOption => {
     },
     grid: {
       top: 18,
-      right: mobile ? 32 : 76,
+      right: mobile ? 18 : 76,
       bottom: 48,
-      left: mobile ? 154 : 278,
+      left: mobile ? 128 : 278,
     },
     tooltip: {
       ...chartTooltipStyle(theme, 11),
@@ -455,9 +453,9 @@ const scoreChartOption = (width: number): EChartsOption => {
     xAxis: {
       type: "value",
       scale: true,
-      min: scoreDomain.value.minimum,
-      max: scoreDomain.value.maximum,
-      splitNumber: mobile ? 3 : 5,
+      min: scoreAxis(mobile).min,
+      max: scoreAxis(mobile).max,
+      interval: scoreAxis(mobile).interval,
       name: "Question score · lower is better",
       nameLocation: "middle",
       nameGap: 33,
@@ -497,7 +495,7 @@ const scoreChartOption = (width: number): EChartsOption => {
         align: "right",
         fontFamily: chartFont,
         fontSize: categoryFontSize,
-        width: mobile ? 138 : 246,
+        width: mobile ? 116 : 246,
         overflow: "truncate",
         ellipsis: "…",
         margin: mobile ? 10 : 18,
@@ -512,7 +510,7 @@ const scoreChartOption = (width: number): EChartsOption => {
             fontSize: categoryFontSize,
             fontWeight: chartFontWeightBold,
             lineHeight: mobile ? 13 : 16,
-            width: mobile ? 94 : 192,
+            width: mobile ? 80 : 192,
             align: "right",
           },
           score: {
@@ -521,8 +519,8 @@ const scoreChartOption = (width: number): EChartsOption => {
             fontSize: chartTextSize(width, 10, 12),
             fontWeight: chartFontWeightSemibold,
             lineHeight: mobile ? 13 : 16,
-            width: mobile ? 40 : 46,
-            padding: [0, 0, 0, mobile ? 4 : 8],
+            width: mobile ? 34 : 46,
+            padding: [0, 0, 0, mobile ? 2 : 8],
             align: "right",
           },
           effort: {
@@ -531,7 +529,7 @@ const scoreChartOption = (width: number): EChartsOption => {
             fontSize: Math.max(8, categoryFontSize - 2),
             fontWeight: chartFontWeightSemibold,
             lineHeight: 11,
-            width: mobile ? 94 : 192,
+            width: mobile ? 80 : 192,
             align: "right",
           },
         },
@@ -543,13 +541,13 @@ const scoreChartOption = (width: number): EChartsOption => {
     },
     series: [
       {
-        name: "View full run",
+        name: "View model results",
         type: "bar",
         barWidth: mobile ? 38 : 42,
         cursor: props.items.some((item) => item.link !== undefined)
           ? "pointer"
           : "default",
-        data: props.items.map(() => scoreDomain.value.maximum),
+        data: props.items.map(() => scoreAxis(mobile).max),
         itemStyle: {
           color: "rgb(12 17 27 / 0.1%)",
         },
@@ -611,7 +609,8 @@ const scoreChartOption = (width: number): EChartsOption => {
           name: item.label,
           value: [item.value, item.label],
         })),
-        symbolSize: mobile ? 17 : 19,
+        // Smaller phone markers keep narrow confidence intervals visible.
+        symbolSize: mobile ? 11 : 19,
         cursor: props.items.some((item) => item.link !== undefined)
           ? "pointer"
           : "default",
@@ -645,7 +644,7 @@ const scoreChartOption = (width: number): EChartsOption => {
           show: true,
           position: "right",
           distance: 10,
-          formatter: bestScoreLabel.value,
+          formatter: bestScoreLabel,
           color: theme.inkSoft,
           backgroundColor: theme.surface,
           borderColor: theme.borderStrong,
@@ -688,7 +687,7 @@ const widthChartOption = (width: number): EChartsOption => {
     animationEasing: "cubicOut",
     aria: {
       enabled: true,
-      description: `CI widths for the ${scoreCollectionLabel.value.toLowerCase()}. This is the score-stability measure, and lower is better. Rows follow question-score order so the two plots can be compared directly. The horizontal scale runs from zero to ${maximum} questions and is split into three equal visual bands. The bands are a guide, not fixed quality thresholds. ${props.items
+      description: `CI widths for the ${scoreCollectionLabel.toLowerCase()}. This is the score-stability measure, and lower is better. Rows follow question-score order so the two plots can be compared directly. The horizontal scale runs from zero to ${maximum} questions and is split into three equal visual bands. The bands are a guide, not fixed quality thresholds. ${props.items
         .map((item, index) => {
           const detail = confidenceDetailFor(item);
           return `${index + 1}. ${item.label}, ${
@@ -999,7 +998,7 @@ watch(
             <small>lower is better</small>
           </span>
           <span class="score-dot-plot-confidence-legend">
-            <strong>95% CI · color = CI width</strong>
+            <strong>95% CI · shade = CI width</strong>
             <span
               v-for="entry in confidenceBandLegend"
               :key="entry.band"
@@ -1072,7 +1071,7 @@ watch(
           Smallest CI width.
         </span>
         <RouterLink v-if="item.link" :to="item.link" tabindex="-1">
-          View full run for {{ item.label }}
+          View results for {{ item.label }}
         </RouterLink>
       </li>
     </ol>

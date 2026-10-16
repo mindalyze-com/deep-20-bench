@@ -214,7 +214,7 @@ episodeView.preload();
                 ></i>
               </span>
             </span>
-            <span class="episode-score">{{ number(trial.penalized_questions) }}</span>
+            <span class="episode-score">{{ number(trial.penalized_questions, 0) }}</span>
             <i
               class="episode-status"
               :class="[
@@ -277,6 +277,30 @@ episodeView.preload();
 
 .mobile-run-back {
   display: none;
+}
+
+/* While a round is open on wider screens, the rail keeps only navigation. */
+@media (min-width: 761px) {
+  .subject-workspace.has-episode {
+    grid-template-columns: 17rem minmax(0, 1fr);
+  }
+
+  .subject-workspace.has-episode .mobile-run-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.9rem;
+    color: var(--muted);
+    font-size: var(--text-caption);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+  }
+
+  /* The subject overview pane and the round summary show these details on wider screens. */
+  .subject-workspace .episode-rail-heading > p:not(.eyebrow),
+  .subject-workspace .subject-score-line {
+    display: none;
+  }
 }
 
 .episode-rail-heading .eyebrow {

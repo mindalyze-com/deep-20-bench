@@ -48,8 +48,8 @@ const nullableStringValue = (value, label) => {
 
 const parseRouteManifest = (value) => {
   const manifest = objectValue(value, "route manifest");
-  if (manifest.schema_version !== 2 || !Array.isArray(manifest.routes)) {
-    throw new Error("Static route manifest schema version 2 is required.");
+  if (manifest.schema_version !== 3 || !Array.isArray(manifest.routes)) {
+    throw new Error("Static route manifest schema version 3 is required.");
   }
   const supportedKinds = new Set([
     "home",
@@ -58,6 +58,8 @@ const parseRouteManifest = (value) => {
     "alias",
     "subject",
     "episode",
+    "model",
+    "model-index",
   ]);
   return manifest.routes.map((candidate, index) => {
     const route = objectValue(candidate, `routes[${index}]`);
@@ -98,6 +100,10 @@ const parseRouteManifest = (value) => {
       trialId: nullableStringValue(
         route.trial_id,
         `routes[${index}].trial_id`,
+      ),
+      modelId: nullableStringValue(
+        route.model_id ?? null,
+        `routes[${index}].model_id`,
       ),
     };
   });
@@ -141,7 +147,7 @@ const subjectDocuments = new Map(
 );
 
 const serverEntryPath = join(serverRoot, "entry-server.js");
-const { renderPublicationPage, homepageStructuredData } = await import(pathToFileURL(serverEntryPath).href);
+const { renderPublicationPage, pageStructuredData } = await import(pathToFileURL(serverEntryPath).href);
 
 const escapeHtml = (value) =>
   value
@@ -203,6 +209,18 @@ const withPageStyles = (modules) => {
 const routeUrl = (route) =>
   route.length === 0 ? canonicalUrl : `${canonicalUrl}${route}/`;
 
+// Model pages and their aliases (retired slugs, replaced runs) render the canonical page.
+const modelPage = (route) => {
+  const match = route.canonicalRoute.match(/^editions\/([^/]+)\/models(?:\/([^/]+))?$/);
+  if (match === null) return null;
+  const [, editionId, slug] = match;
+  return slug === undefined
+    ? { kind: "model-index", editionId,
+      document: readJson(join(publicRoot, "data", "editions", editionId, "models.json")) }
+    : { kind: "model", editionId,
+      document: readJson(join(publicRoot, "data", "editions", editionId, "models", `${slug}.json`)) };
+};
+
 const pageDocuments = (route) => {
   const manifest = editionManifests.get(route.editionId);
   const leaderboard = editionLeaderboards.get(route.editionId);
@@ -214,6 +232,12 @@ const pageDocuments = (route) => {
   if (needsLeaderboard) documents.push(leaderboard);
   if (localRoute === "methodology") {
     documents.push(...[...editionManifests.values()].filter(item => item.edition_id !== route.editionId));
+  }
+  const model = modelPage(route);
+  if (model !== null) {
+    if (model.editionId !== route.editionId) throw new Error(`Model alias ${route.route} crosses editions.`);
+    documents.push(model.document);
+    return documents;
   }
   if (localRoute === "results/cost" || localRoute === "results/time") {
     documents.push(...manifest.official_runs.map(reference => runDocuments.get(reference.execution_id)));
@@ -235,6 +259,36 @@ const pageDocuments = (route) => {
     }
   }
   return documents;
+};
+
+const structuredData = (route) => {
+  const manifest = editionManifests.get(route.editionId);
+  const leaderboard = editionLeaderboards.get(route.editionId);
+  if (route.kind === "home") {
+    return pageStructuredData({ kind: "home", manifest, leaderboard }, canonicalUrl);
+  }
+  const model = modelPage(route);
+  if (model !== null) {
+    return pageStructuredData(
+      model.kind === "model"
+        ? { kind: "model", manifest, model: model.document }
+        : { kind: "model-index", manifest, index: model.document },
+      canonicalUrl,
+    );
+  }
+  if (route.canonicalRoute === `editions/${route.editionId}/data`) {
+    return pageStructuredData({ kind: "data", manifest, leaderboard }, canonicalUrl);
+  }
+  if (!["run", "subject", "episode"].includes(route.kind)) return [];
+  const run = runDocuments.get(route.executionId);
+  if (run === undefined) throw new Error(`Run document ${route.executionId} is missing.`);
+  return pageStructuredData({
+    kind: route.kind,
+    manifest,
+    run,
+    targetId: route.targetId,
+    trialId: route.trialId,
+  }, canonicalUrl);
 };
 
 const metadataHtml = (template, route, appHtml, documents) => {
@@ -298,13 +352,9 @@ const metadataHtml = (template, route, appHtml, documents) => {
   html = replaceUnique(
     html,
     /<!-- deep20-structured-data -->/g,
-    route.kind === "home"
-      ? homepageStructuredData(
-          editionManifests.get(route.editionId),
-          editionLeaderboards.get(route.editionId),
-          canonicalUrl,
-        ).map((data) => `<script type="application/ld+json">${safeJson(data)}</script>`).join("\n    ")
-      : "",
+    structuredData(route)
+      .map((data) => `<script type="application/ld+json">${safeJson(data)}</script>`)
+      .join("\n    "),
     "structured-data marker",
   );
   html = replaceUnique(

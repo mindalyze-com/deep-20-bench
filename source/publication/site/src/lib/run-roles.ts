@@ -13,8 +13,8 @@ export const runRoleCopy: Readonly<Record<PublicRunModel["role"], RunRoleCopy>> 
     description: "The tested model. Asks questions and makes guesses.",
   },
   oracle: {
-    costLabel: "Primary Oracle",
-    roleLabel: "Primary Oracle",
+    costLabel: "Oracle",
+    roleLabel: "Oracle",
     description: "Searches for evidence and proposes an answer.",
   },
   reviewer: {

@@ -41,20 +41,19 @@ test(
     await expect(page.locator(".results-table-wrap tbody tr").first()).toContainText(
       "Synthetic Model 12",
     );
+    await expect(page.locator(".results-table-wrap tbody tr").first()).toBeInViewport();
     await expect(page.getByText("Claude Fable 5", { exact: false })).toHaveCount(0);
   },
 );
 
-test("missing dynamic data shows a stable user-facing error", { tag: ["@functional", "@desktop", "@smoke"] }, async ({ page }) => {
-  await page.goto("runs/not-a-run/");
-  await waitForPublication(page);
-  const errorState = page.getByRole("alert");
-  await expect(errorState).toContainText("No publication data exists for this page.");
-  await expect(errorState).not.toContainText("Unexpected token");
-  await expect(errorState).not.toContainText("doctype");
-  await expect(errorState).not.toContainText("JSON");
-  await expect(errorState.getByRole("button", { name: "Try again" })).toBeVisible();
-  await expectNoViewportOverflow(page);
+test("unknown runs and models show the not-found page", { tag: ["@functional", "@desktop", "@smoke"] }, async ({ page }) => {
+  for (const path of ["runs/not-a-run/", "editions/1.0/models/not-a-model/"]) {
+    await page.goto(path);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Page not found.");
+    await expect(page.getByRole("link", { name: "All models" })).toBeVisible();
+    await expect(page.getByRole("alert")).toHaveCount(0);
+    await expectNoViewportOverflow(page);
+  }
 });
 
 test("source link includes the GitHub mark", { tag: ["@functional", "@desktop"] }, async ({ page }) => {
@@ -74,11 +73,11 @@ test("illustrative round connects the correct guess to its round score", { tag: 
 
   const hero = page.locator(".hero-copy");
   await expect(hero).toContainText(
-    "Deep20Bench is a public benchmark for large language models (LLMs)",
+    "Deep20Bench is a public AI benchmark for large language models (LLMs)",
   );
   const details = page.locator(".hero-details");
   await expect(details).toContainText(
-    "Each question, wrong guess, or reply in the wrong format adds one point.",
+    "Each question, wrong guess, or reply in the wrong format adds one to the score.",
   );
   await expect(details).toContainText(
     "50 questions, more than the traditional twenty, so more rounds can finish.",
@@ -268,6 +267,17 @@ test("homepage explains the game and keeps repeated-trial design on Method", { t
   await expect(trust).toContainText("Public records");
 });
 
+test("Why page explains the benchmark and links to the method", { tag: ["@functional", "@both"] }, async ({ page }) => {
+  await page.goto("why/");
+  await waitForPublication(page);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Easy to play, hard to play well.");
+  await expect(page.locator('.primary-navigation a[aria-current="page"]')).toContainText("Why");
+  await expect(page.locator("#reasons .numbered-points li")).toHaveCount(5);
+  await expect(page.locator("#limits")).toContainText("not a measure of general intelligence");
+  await expect(page.getByRole("link", { name: "How it works →" })).toHaveAttribute("href", /methodology\/$/);
+  await expectNoViewportOverflow(page);
+});
+
 test("Method explains the game before offering technical details", { tag: ["@functional", "@both"] }, async ({ page }) => {
   await page.goto("methodology/");
   await waitForPublication(page);
@@ -284,15 +294,17 @@ test("Method explains the game before offering technical details", { tag: ["@fun
   await expect(page.locator(".round-example")).toHaveAttribute(
     "aria-label", "Illustrative round: Garfield identified with a round score of 3",
   );
-  await expect(page.locator("#game")).toContainText("50 counted questions, followed by one final guess");
+  await expect(page.locator("#game")).toContainText("up to 50 counted questions, then one final guess");
   await expect(page.locator(".answer-roles li")).toHaveCount(3);
   await expect(page.locator(".isolation-callout")).toContainText("stay private");
-  await expect(page.locator("#answer-checks > .editorial-copy")).toContainText("The transcript marks reused answers");
-  await expect(page.locator(".score-rules")).toContainText("51 questions");
+  await expect(page.locator("#answer-checks > .editorial-copy")).toContainText("The transcript marks every reused answer");
+  await expect(page.locator(".score-rules")).toContainText("The round scores 51");
   await expect(page.locator("#repetition .lead")).toContainText("7 subjects 5 times each: 35 rounds in total");
   await expect(page.locator(".scope-note")).toContainText("do not rank general intelligence");
   await expect(page.locator(".scope-note")).toContainText("training data");
   await expect(page.locator("#publication")).toContainText("not independently verified");
+  await expect(page.locator("#publication").getByRole("link", { name: "Explore the results →" }))
+    .toHaveAttribute("href", /results\/$/);
   await expect(page.getByRole("link", { name: "read the story on Medium" })).toHaveAttribute(
     "href", "https://medium.com/@patrick.heusser/i-built-an-llm-benchmark-around-twenty-questions-the-hard-part-wasnt-the-game-e743c0683da8",
   );
@@ -334,26 +346,28 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(entries.nth(8).locator("time")).toHaveAttribute("datetime", "2026-09-05");
   await expect(entries.nth(8).locator("time")).toHaveText("5 September 2026");
   await expect(entries.nth(8)).toContainText("GPT-6 Astra (high) joins the leaderboard.");
-  await expect(entries.nth(8)).toContainText("15.1 in edition 1.0 (lower is better) and guessed the subject in 33 of 35 rounds.");
-  await expect(entries.nth(8).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(8)).toContainText("15.09 questions per round in edition 1.0, with 2 failed rounds out of 35.");
+  // News links model pages. The fixture only has model pages for its three synthetic runs,
+  // so other models fall back to the edition results.
+  await expect(entries.nth(8).getByRole("link", { name: "View model results" })).toHaveAttribute(
     "href",
-    "/deep-20-bench/runs/BX-20260904-official-M0022-001/",
+    "/deep-20-bench/editions/1.0/results/",
   );
   await expect(entries.nth(9).locator("time")).toHaveAttribute("datetime", "2026-09-04");
   await expect(entries.nth(9).locator("time")).toHaveText("4 September 2026");
   await expect(entries.nth(9)).toContainText("Gemini 3.8 Flash (high) joins the leaderboard.");
-  await expect(entries.nth(9)).toContainText("13.1 in edition 1.0 (lower is better) and guessed the subject in all 35 rounds.");
-  await expect(entries.nth(9).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(9)).toContainText("13.14 questions per round in edition 1.0, with no failed rounds.");
+  await expect(entries.nth(9).getByRole("link", { name: "View model results" })).toHaveAttribute(
     "href",
-    "/deep-20-bench/runs/BX-20260904-official-M0021-001/",
+    "/deep-20-bench/editions/1.0/results/",
   );
   await expect(entries.nth(10).locator("time")).toHaveAttribute("datetime", "2026-09-02");
   await expect(entries.nth(10).locator("time")).toHaveText("2 September 2026");
   await expect(entries.nth(10)).toContainText("Claude Fable 5.1 (high) joins the leaderboard.");
-  await expect(entries.nth(10)).toContainText("12.1 in edition 1.0 (lower is better) and guessed the subject in 34 of 35 rounds.");
-  await expect(entries.nth(10).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(10)).toContainText("12.11 questions per round in edition 1.0, with 1 failed round out of 35.");
+  await expect(entries.nth(10).getByRole("link", { name: "View model results" })).toHaveAttribute(
     "href",
-    "/deep-20-bench/runs/BX-20260902-official-M0020-001/",
+    "/deep-20-bench/editions/1.0/results/",
   );
   await expect(entries.nth(11).locator("time")).toHaveAttribute("datetime", "2026-08-30");
   await expect(entries.nth(11).locator("time")).toHaveText("30 August 2026");
@@ -369,34 +383,34 @@ test("About keeps the origin, adds dated news, and removes repeated explanations
   await expect(entries.nth(12).locator("time")).toHaveText("23 August 2026");
   await expect(entries.nth(12)).toContainText("We tried Ox Alpha (high) from OpenRouter.");
   await expect(entries.nth(12)).toContainText(
-    "An anonymous stealth model on OpenRouter. It scored 17.6 in edition 1.0 (lower is better), 12th of 15 models at the time, and guessed the subject in 32 of 35 rounds.",
+    "An anonymous stealth model on OpenRouter. It averaged 17.60 questions per round in edition 1.0, 12th of 15 models at the time.",
   );
-  await expect(entries.nth(12).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(12).getByRole("link", { name: "View model results" })).toHaveAttribute(
     "href",
-    "/deep-20-bench/runs/BX-20260823-official-M0017-018/",
+    "/deep-20-bench/editions/1.0/results/",
   );
   await expect(entries.nth(13).locator("time")).toHaveAttribute("datetime", "2026-08-17");
   await expect(entries.nth(13).locator("time")).toHaveText("17 August 2026");
   await expect(entries.nth(13)).toContainText("Gemini 3.7 Flash (high) joins the leaderboard.");
-  await expect(entries.nth(13)).toContainText("14.0 in edition 1.0 (lower is better) and guessed the subject in 34 of 35 rounds.");
-  await expect(entries.nth(13).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(13)).toContainText("14.03 questions per round in edition 1.0, with 1 failed round out of 35.");
+  await expect(entries.nth(13).getByRole("link", { name: "View model results" })).toHaveAttribute(
     "href",
-    "/deep-20-bench/runs/BX-20260817-official-M0016-015/",
+    "/deep-20-bench/editions/1.0/results/",
   );
   await expect(entries.nth(14).locator("time")).toHaveAttribute("datetime", "2026-08-15");
   await expect(entries.nth(14).locator("time")).toHaveText("15 August 2026");
   await expect(entries.nth(14)).toContainText("Grok 4.6 (high) joins the leaderboard.");
-  await expect(entries.nth(14)).toContainText("14.3 in edition 1.0 (lower is better) and guessed the subject in all 35 rounds.");
-  await expect(entries.nth(14).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(14)).toContainText("14.29 questions per round in edition 1.0, with no failed rounds.");
+  await expect(entries.nth(14).getByRole("link", { name: "View model results" })).toHaveAttribute(
     "href",
-    "/deep-20-bench/runs/BX-20260814-official-M0015-013/",
+    "/deep-20-bench/editions/1.0/results/",
   );
   await expect(entries.nth(15).locator("time")).toHaveAttribute("datetime", "2026-08-05");
   await expect(entries.nth(15).locator("time")).toHaveText("5 August 2026");
   await expect(entries.nth(15)).toContainText("Claude Fable 5 (high) joins the leaderboard.");
-  await expect(entries.nth(15).getByRole("link", { name: "View run" })).toHaveAttribute(
+  await expect(entries.nth(15).getByRole("link", { name: "View model results" })).toHaveAttribute(
     "href",
-    "/deep-20-bench/runs/BX-20260805-official-M0014-011/",
+    "/deep-20-bench/editions/1.0/models/synthetic-model-12-high/",
   );
 
   await expect(page.locator(".round-section, .scope-section, .apple-spotlight")).toHaveCount(0);
@@ -473,8 +487,8 @@ test("Data provides schema guidance, reuse terms, and next steps", { tag: ["@fun
     "href",
     /results\/$/,
   );
-  await expect(page.getByRole("link", { name: "How results are published" }))
-    .toHaveAttribute("href", /methodology\/#publication$/);
+  await expect(page.getByRole("link", { name: "How it works" }))
+    .toHaveAttribute("href", /methodology\/$/);
   await expectNoViewportOverflow(page);
 });
 
@@ -490,7 +504,7 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
     "lower is better",
   );
   await expect(page.locator(".score-dot-plot-caption")).toContainText(
-    "95% CI · color = CI width",
+    "95% CI · shade = CI width",
   );
   await expect(page.locator(".score-dot-plot-caption")).toContainText("Tighter");
   await expect(page.locator(".score-dot-plot-caption")).toContainText("Wider");
@@ -503,8 +517,7 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
     "Rows follow question-score order",
   );
   await expect(page.locator(".winner-card .score-confidence")).toContainText("95% CI");
-  await expect(page.locator('ol[aria-label="Pilot question scores"]')).toHaveCount(1);
-  await expect(page.locator('ol[aria-label="Official question scores"]')).toHaveCount(0);
+  await expect(page.locator('ol[aria-label="Official question scores"]')).toHaveCount(1);
 
   await page.goto("results/", { waitUntil: "networkidle" });
   await waitForPublication(page);
@@ -519,7 +532,7 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
     ),
   ).toHaveCSS(
     "background-color",
-    "rgb(39, 146, 60)",
+    "rgb(127, 138, 163)",
   );
   await expect(
     page.locator(
@@ -527,7 +540,7 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
     ),
   ).toHaveCSS(
     "background-color",
-    "rgb(223, 61, 50)",
+    "rgb(31, 40, 64)",
   );
   await expect(
     page.locator('[data-model-id="M-0006"]'),
@@ -587,7 +600,7 @@ test("result pages use shared metric names", { tag: ["@functional", "@desktop"] 
   await waitForPublication(page);
   const stability = page.locator("#route-content");
   await expect(stability.getByRole("heading", { name: "Stability" }).last()).toBeVisible();
-  await expect(stability).toContainText("Stability across rounds");
+  await expect(stability).toContainText("Score stability");
   await expect(stability).not.toContainText("Repeated-run stability");
   const stabilityChart = stability.locator(".reliability-scatter-canvas");
   await expect(stabilityChart).toHaveAttribute(
@@ -781,14 +794,14 @@ test("run overview explains its totals and keeps every subject row available", {
     `: ${runDocument.subjects.length} subjects,`,
   );
   await expect(page.locator(".run-deck")).toContainText(
-    "In this Twenty Questions LLM benchmark",
+    "In this Twenty Questions AI benchmark",
   );
   await expect(page.locator(".run-deck")).toContainText("scored rounds");
 
   const roleGuide = page.locator(".role-guide");
   await expect(roleGuide.locator("dt")).toHaveText([
     "Guesser",
-    "Primary Oracle",
+    "Oracle",
     "Reviewer",
     "Judge",
     "Validator",
@@ -830,10 +843,10 @@ test("run overview explains its totals and keeps every subject row available", {
   await expect(rail).toBeVisible();
 });
 
+// Round pages hide the run sidebar so the transcript gets the full width.
 for (const [label, routePath] of [
   ["run", runPath],
   ["subject", subjectPath],
-  ["round", episodePath],
 ] as const) {
   test(`${label} sidebar scrolls from its heading and keeps all subjects reachable`, {
     tag: ["@functional", "@desktop", "@smoke"],
@@ -863,13 +876,16 @@ for (const [label, routePath] of [
     await expect(links.first()).toBeInViewport({ ratio: 0.99 });
     await last.focus();
     await expect(last).toBeInViewport({ ratio: 0.99 });
+    const destination = await last.getAttribute("href");
+    expect(destination).not.toBeNull();
     await last.click();
+    await expect(page).toHaveURL(new URL(destination!, page.url()).href);
     await waitForPublication(page);
     await expect(last).toHaveAttribute("aria-current", "page");
   });
 }
 
-test("dates use the visitor locale and time zone", { tag: ["@functional", "@desktop"] }, async ({ browser }) => {
+test("dates use one UTC format in every locale", { tag: ["@functional", "@desktop"] }, async ({ browser }) => {
   const context = await browser.newContext({
     locale: "de-CH",
     timezoneId: "Europe/Zurich",
@@ -880,22 +896,13 @@ test("dates use the visitor locale and time zone", { tag: ["@functional", "@desk
   const publicationTime = page.locator(".site-footer time").first();
   const value = await publicationTime.getAttribute("datetime");
   expect(value).not.toBeNull();
-  const localization = await page.evaluate((dateValue) => {
-    const formatter = new Intl.DateTimeFormat(undefined, {
-      dateStyle: "medium",
-      timeStyle: "medium",
-    });
-    const options = formatter.resolvedOptions();
-    return {
-      expected: formatter.format(new Date(dateValue)),
-      locale: options.locale,
-      timeZone: options.timeZone,
-    };
-  }, value!);
-  expect(localization.locale).toBe("de-CH");
-  expect(localization.timeZone).toBe("Europe/Zurich");
-  await expect(publicationTime).toHaveText(localization.expected);
-  await expect(publicationTime).not.toContainText("UTC");
+  const timestamp = new Date(value!);
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const expected =
+    `${timestamp.getUTCDate()} ${months[timestamp.getUTCMonth()]} ${timestamp.getUTCFullYear()}, ` +
+    `${String(timestamp.getUTCHours()).padStart(2, "0")}:` +
+    `${String(timestamp.getUTCMinutes()).padStart(2, "0")} UTC`;
+  await expect(publicationTime).toHaveText(expected);
   await context.close();
 });
 
@@ -909,7 +916,7 @@ test("run model roles separate the Guesser from game support", { tag: ["@functio
   await expect(cards).toHaveCount(5);
   await expect(cards.locator(".run-model-role")).toHaveText([
     "Guesser",
-    "Primary Oracle",
+    "Oracle",
     "Reviewer",
     "Judge",
     "Guess Validator",

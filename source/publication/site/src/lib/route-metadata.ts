@@ -10,10 +10,10 @@ export interface RouteMetadata {
 export const parseRouteMetadata = (value: unknown): readonly RouteMetadata[] => {
   if (
     typeof value !== "object" || value === null ||
-    !("schema_version" in value) || value.schema_version !== 2 ||
+    !("schema_version" in value) || value.schema_version !== 3 ||
     !("routes" in value) || !Array.isArray(value.routes)
   ) {
-    throw new Error("Static route manifest schema version 2 is required.");
+    throw new Error("Static route manifest schema version 3 is required.");
   }
   const paths = new Set<string>();
   return value.routes.map((route: unknown): RouteMetadata => {

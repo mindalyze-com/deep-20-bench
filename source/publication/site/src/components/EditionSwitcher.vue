@@ -24,6 +24,7 @@ const handleToggle = (): void => {
 };
 const notices: Record<string, string> = {
   "missing-model": "This model has no complete result in the selected edition. Showing the results overview.",
+  "missing-model-page": "This model has no complete result in the selected edition. Showing all tested models.",
   "missing-subject": "This subject is not in the selected edition. Showing the model's run.",
   "episode-scope": "Rounds in different editions are separate games. Showing the subject instead.",
 };
@@ -69,9 +70,9 @@ onBeforeUnmount(() => {
       <details ref="picker" class="edition-picker" @keydown.esc="handleEscape" @toggle="handleToggle">
         <summary ref="trigger" class="edition-trigger" title="Change benchmark edition"
           :class="{ 'is-previous': isPreviousEdition }"
-          :aria-label="`Benchmark edition: v.${editionId}, ${selected?.status === 'current' ? 'Current' : 'Previous'}`">
+          :aria-label="`Benchmark edition: v${editionId}, ${selected?.status === 'current' ? 'Current' : 'Previous'}`">
           <span class="edition-indicator" :class="{ 'is-current': selected?.status === 'current' }" aria-hidden="true"></span>
-          <strong>v.{{ editionId }}</strong>
+          <strong>v{{ editionId }}</strong>
           <span class="edition-trigger-status">{{ selected?.status === 'current' ? 'Current' : 'Previous' }}</span>
           <svg class="edition-chevron" aria-hidden="true" width="12" height="8" viewBox="0 0 12 8"><path d="m1 1 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
         </summary>
@@ -85,7 +86,7 @@ onBeforeUnmount(() => {
               @pointerenter="previewEdition($event, edition.edition_id)"
               @focus="previewFocusedEdition($event, edition.edition_id)"
               :aria-disabled="pendingEditionId !== null ? 'true' : undefined" @click.capture="handleLink">
-              <strong>v.{{ edition.edition_id }}</strong>
+              <strong>v{{ edition.edition_id }}</strong>
               <span class="edition-option-status" :class="{ 'is-current': edition.status === 'current' }">{{ edition.status === 'current' ? 'Current' : 'Previous edition' }}</span>
               <svg v-if="editionId === edition.edition_id" class="edition-check" aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><path d="m3 8 3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.7" /></svg>
             </RouterLink>

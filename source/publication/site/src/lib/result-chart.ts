@@ -1,7 +1,7 @@
 import type { RouteLocationRaw } from "vue-router";
 
 import { confidenceIntervalLabel, number } from "./format";
-import { runRoute } from "./route-location";
+import { modelSummaryRoute } from "./route-location";
 import type { LeaderboardRow } from "./types";
 
 export interface ScoreDot {
@@ -31,12 +31,12 @@ export const leaderboardScoreDot = (
     confidenceDisplay:
       interval === null ? undefined : confidenceIntervalLabel(interval),
     detail,
-    link: row.execution_id === null ? undefined : runRoute(row.execution_id),
+    link: row.execution_id === null ? undefined : modelSummaryRoute(row.model.model_id, row.execution_id),
   };
 };
 
 export const questionScoreChartSummary =
-  "Lower is better. The blue marker is the average question score. The colored line is its 95% confidence interval (CI). The side plot shows each CI width, with three color bands of equal size.";
+  "Lower is better. The blue marker is the average question score. The line is its 95% confidence interval (CI); darker lines are wider. The side plot shows each CI width in three equal bands.";
 
 export const questionScoreRankingRule =
   "Models rank by exact average score, then by narrower 95% confidence interval (CI). Equal scores and CI widths share a rank.";

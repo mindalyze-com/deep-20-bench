@@ -61,7 +61,7 @@ The edition registry is `config/editions.yaml`. Shared release profiles under
 `config/edition-profiles/` own cohort settings and release pins. Site settings live in
 `config/publication.yml` (version 3).
 `default_edition_id` names the current cohort. Machine IDs are strings `1.0` and `1.1`;
-display labels are `1` and `1.1`. Edition identity is separate from artifact or dataset schemas.
+display labels are `1.0` and `1.1`. Edition identity is separate from artifact or dataset schemas.
 Subject catalog `status: inactive` affects new benchmark scheduling only. Publication keeps
 all registered identities and uses the cohort's explicit target IDs, so historical results
 for inactive subjects remain eligible. Its subject identity hash excludes status, matching
@@ -148,12 +148,16 @@ independently per edition. Never merge leaderboards or present an inter-edition 
 as model improvement. An edition with no qualified run publishes valid empty data and an
 explicit empty state; diagnostics are not substitutes for completed release runs.
 
-`data/editions.json` owns the default, document paths, and immutable run-to-edition mapping.
-Each `data/editions/<id>/` directory contains `manifest.json`, `leaderboard.json`,
-`repeat-averages.json`, `leaderboard.csv`, and `deep20bench-v10.json` with its schema.
+`data/editions.json` owns the default, document paths, the immutable run-to-edition mapping,
+and each edition's model-page slugs. Each `data/editions/<id>/` directory contains
+`manifest.json` (including the byte size of each download for the Data page),
+`leaderboard.json`, `repeat-averages.json`, `leaderboard.csv` (long decimals rounded to six
+places; the JSON keeps exact values),
+`deep20bench-v10.json` with its schema, `models.json`, and one `models/<slug>.json` per model.
 Run, subject, and episode documents retain their existing global paths and now carry
-`edition_id`. Split schema versions are manifest 2, leaderboard 4, repeat averages 2,
-run 4, subject 2, episode 3; application-build remains 1.
+`edition_id`. Split schema versions are editions 2, manifest 2, leaderboard 4, repeat
+averages 2, run 4, subject 2, episode 3, model 1, model index 1; application-build remains 1.
+The route manifest (`data/routes.json`) is schema 3.
 
 `data/deep20bench-v9.json` and its maintained schema remain current for all selected standard
 edition 1 data. v9 cannot represent qualified tokens or multiple editions. `legacy.py` is the
@@ -181,7 +185,7 @@ keeps the displayed edition selected and prevents a second edition change.
 The selector shares the top header row before Source at every screen width. Phones show
 the version, status indicator, and chevron; the full status remains in the accessible name
 and dropdown. Narrow phones use an icon-only Menu control. The dropdown aligns within the
-viewport, and all controls keep their touch targets. Choices display `v.1.0` and `v.1.1`;
+viewport, and all controls keep their touch targets. Choices display `v1.0` and `v1.1`;
 a lime indicator identifies the current edition. The selector panel stays dark, with a
 subtle selected row and lime checkmark for either edition. A Current badge identifies the
 latest edition; the compact settings and answer tokens below use the same dark palette.
@@ -189,8 +193,13 @@ Previous editions retain a small amber indicator. A compact, muted notice below 
 previous edition, including on direct detail links. Plain text links open the edition
 comparison or switch to the current edition using the selector's same destination rules.
 The notice is announced politely, works without JavaScript, and remains while a switch loads.
-The result header uses content-driven height and
-compact title/tab spacing. Data-load errors are separate from empty results.
+All five result views use one shared header component and CSS, without subtitles or per-view
+layout overrides. Titles match the result tabs' font size, with an edition badge and tabs
+beside the heading in one row on desktop and tablets, without wrapping. Phones omit the
+visible title instead of adding another row, while retaining its accessible page heading.
+Results start with a compact summary and ranked
+table or mobile cards; the score chart and its metric
+explanations follow. Data-load errors are separate from empty results.
 
 The Method page leads with the game concept and example under "How Deep20Bench works", with
 the selected edition in a small label. Five sections cover the game, answer checks, scoring,
@@ -223,7 +232,9 @@ uv run --project source/publication/compiler deep20-publication build
 
 The build:
 
-1. discovers `runs/M-????/BX-*/summary.yml`;
+1. discovers `runs/M-????/BX-*/summary.yml` and loads the runs in parallel worker processes,
+   parsing YAML with libyaml's C parser when PyYAML provides it (results are identical to the
+   pure-Python, sequential load; parsing large episode YAML files dominates build time);
 2. validates each signed summary, adjacent manifest, state, and referenced completed-trial
    artifact, including both the reference file hash and signed episode envelope;
 3. independently compiles every declared edition and its strict public episode projection from
@@ -309,7 +320,8 @@ Delayed route scroll restoration stops when the visitor has already moved the pa
 scrolling can reveal and load charts without being reset by a later restoration attempt.
 
 The generated pages have route-specific titles, descriptions, social metadata, canonical URLs,
-and accurate publication modification times in `sitemap.xml`. Every page includes `og:site_name`
+and content modification times in `sitemap.xml`: a page's run completion time, or the newest
+run completion for edition pages, so rebuilds without new runs keep `lastmod` stable. Every page includes `og:site_name`
 from the configured site title. The homepage includes separate Dataset and WebSite JSON-LD
 nodes, using the configured site identity and canonical URL, `https://deep20bench.com/`.
 The Dataset node identifies its CC BY 4.0 license using the same canonical license URL as the
@@ -321,11 +333,15 @@ The compiler's typed route manifest is also published as `data/routes.json`.
 Vite bundles its page metadata into the client, so initial HTML, hydration, and client navigation
 use the same titles, descriptions, social metadata, canonical URLs, and indexability rules
 without an extra metadata request. Short navigation labels never write document metadata.
-Homepage Dataset and WebSite JSON-LD use one shared generator for static HTML and browser
-navigation. Switching editions updates dataset identity, settings, and download URLs; leaving
-the homepage removes that markup. Late data loads cannot restore a previous page's markup.
-The sitemap contains canonical edition homepages, editorial URLs, every selected official run,
-every subject summary, and every episode transcript. All pages permit crawling and indexing
+JSON-LD uses one shared generator for static HTML and browser navigation. The homepage has
+Dataset and WebSite nodes; the Data page repeats the same Dataset identity as its landing page,
+plus a BreadcrumbList; run, subject, and episode pages have a BreadcrumbList. Model pages
+have a WebPage node about the edition Dataset plus a BreadcrumbList; the model list has a
+CollectionPage with an ItemList. No page uses rating, review, or product types. Switching editions
+updates dataset identity, settings, and download URLs; other pages carry no JSON-LD. Late data loads cannot restore a previous page's markup.
+The sitemap contains canonical edition homepages, editorial URLs, each edition's model list
+and model pages, every selected official run, every subject summary, and every episode
+transcript. All pages permit crawling and indexing
 and omit crawler directives, including aliases and the generated 404 page. Route manifests
 reject indexing exclusions. Aliases and downloads remain outside the sitemap. Private draft
 previews also omit crawler directives and remain local under `private/`.
@@ -343,6 +359,13 @@ A late tracker receives queued visits with each visit's original URL, title, and
 Every page view lazily reads `deep20bench.visitor-id.v1` from local storage, creates and saves
 a random UUID only when no valid ID is stored, then attaches that ID. The client identifies
 the visitor before the first page view and again only when the stored ID changes.
+Each identification includes the browser's IANA time zone (for example, `Europe/Zurich`)
+as the Umami session property `timezone`, read through `Intl.DateTimeFormat`. The session property
+`preferred_languages` contains `navigator.languages` as comma-separated language tags in browser
+preference order, for example `de-CH,en-US,fr`. Numeric `viewport_width` and `viewport_height`
+record `window.innerWidth` and `window.innerHeight` in CSS pixels when identification runs;
+resizing alone sends no update. Unavailable, empty, or invalid properties are omitted
+independently and identification continues. No extra page view or request is added.
 The ID is scoped to the site origin and browser profile; clearing site storage resets it on
 the next tracked view, including without a reload. Creating the reader does not access storage.
 Generation uses `crypto.randomUUID()` with a `Math.random()` fallback when crypto is unavailable.
@@ -562,6 +585,39 @@ All comparison values are derived after model calls from completed artifacts. Th
 reporting-only. They never enter a Guesser request, history, retry, session, cache namespace, or
 later trial. The feature does not change provider-side prompt caching or add application
 response caching.
+
+## Model pages
+
+Each model with a selected official run has one summary page per edition:
+
+```text
+/editions/<id>/models/            every model in the edition, A to Z
+/editions/<id>/models/<slug>/     one model's summary
+```
+
+The page keeps its address when a newer qualifying run replaces the selected run. Model names
+in the homepage, results tables, charts, and news link here; run pages link back with
+"Model summary". The slug comes from the display name of the selected signed run: lowercase,
+with each run of characters outside `a-z0-9` replaced by one hyphen (`GPT-6 Astra (high)` is
+`gpt-6-astra-high`). `config/publication.yml` may list `model_slugs` entries that pin a slug
+for a model ID and keep `previous_slugs` as aliases. The build fails on duplicate slugs in an
+edition, pins for unpublished models, and retired slugs that are still in use.
+
+The compiler builds the model documents after the edition split, from the leaderboard row and
+the selected run's public subject and episode documents. Subject ranks compare the exact
+subject averages of every model in the edition, with shared competition ranks for ties.
+Observations follow fixed rules and only report counts and ranks: the two best and two worst
+subject ranks, the fewest and most questions in a solved round, the largest spread between
+rounds of one subject, wrong guesses, every failed round, and every round with format errors.
+Each observation cites its rounds, and the page states the tested subjects and settings and
+that results do not predict other subjects or settings. Nothing groups subjects by type or
+claims a cause.
+
+A model page also links the same model ID in other editions and lists replaced qualifying runs
+in the same edition by ID and completion time. Their details stay unpublished. Each replaced
+run's former `/runs/<execution>/` address remains as an alias that shows the model page,
+canonicalizes to it, and stays outside the sitemap. Its former subject and round addresses are
+not kept. Unversioned `/models/...` paths follow the default edition, like other aliases.
 
 ## Public drill-down
 

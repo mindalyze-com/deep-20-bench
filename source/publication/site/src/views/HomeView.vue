@@ -31,7 +31,7 @@ import {
   percent,
 } from "@/lib/format";
 import { setRouteContext, useActiveRouteContext } from "@/lib/route-context";
-import { runRoute } from "@/lib/route-location";
+import { modelSummaryRoute } from "@/lib/route-location";
 import {
   leaderboardScoreDot,
   questionScoreChartSummary,
@@ -42,6 +42,7 @@ import { confidenceIntervalWidth } from "@/lib/confidence-width";
 import { hasScoreTies, rankPresentation } from "@/lib/rank-presentation";
 import { supportResource } from "@/lib/site-resources";
 import { useRepeatAverages } from "@/lib/use-repeat-averages";
+import { leaderboardSortAccessors, useTableSort } from "@/lib/use-table-sort";
 import type {
   LeaderboardDocument,
   LeaderboardRow,
@@ -92,6 +93,13 @@ if (manifest.value === null || leaderboard.value === null) void load();
 const evaluated = computed(() =>
   (leaderboard.value?.leaderboard ?? []).filter((row) => row.status === "evaluated"),
 );
+// The home table's cost column is the whole benchmark run cost.
+const homeSortAccessors = {
+  ...leaderboardSortAccessors,
+  cost: (row: LeaderboardRow) =>
+    row.total_cost_usd === null ? null : Number(row.total_cost_usd),
+};
+const { sortedRows, toggleSort, ariaSort } = useTableSort(evaluated, homeSortAccessors);
 const failurePenalty = computed(() => {
   const value = manifest.value;
   return value === null
@@ -129,13 +137,15 @@ const leaderSummary = computed(() => {
     const questions = Math.round(Number(first.question_score) * first.terminal_trials);
     const count = winnerRows.value.length;
     const models = count === 1 ? "This model" : count === 2 ? "Both models" : `All ${numberWords[count] ?? count} models`;
-    return `${models} guessed the subject in all ${first.terminal_trials} rounds ` +
-      `(${cohort.target_ids.length} subjects × ${cohort.iterations}), ` +
-      `using ${questions} questions${count === 1 ? '' : ' each'}.`;
+    return `${models} used ${questions} questions${count === 1 ? '' : ' each'} over ` +
+      `${first.terminal_trials} rounds (${cohort.target_ids.length} subjects × ` +
+      `${cohort.iterations}) and solved every round.`;
   }
   if (winnerRows.value.length === 1) {
-    return `Guessed the subject in ${first.successful} of ${first.terminal_trials} rounds ` +
-      `(${cohort.target_ids.length} subjects × ${cohort.iterations}).`;
+    const missed = first.terminal_trials - first.successful;
+    return `Average over ${first.terminal_trials} rounds (${cohort.target_ids.length} subjects × ` +
+      `${cohort.iterations}), including ${missed} failed ${missed === 1 ? "round" : "rounds"} ` +
+      `scored at ${failurePenalty.value}.`;
   }
   return `These models have the same average score over ${first.terminal_trials} rounds each.`;
 });
@@ -146,7 +156,7 @@ const intervalWidthLabel = (row: LeaderboardRow): string => {
   );
 };
 const openRun = (row: LeaderboardRow): void => {
-  if (row.execution_id !== null) void router.push(runRoute(row.execution_id));
+  if (row.execution_id !== null) void router.push(modelSummaryRoute(row.model.model_id, row.execution_id));
 };
 const scoreDots = computed<ScoreDot[]>(() =>
   evaluated.value.map((row) => leaderboardScoreDot(row)),
@@ -165,30 +175,32 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <p class="eyebrow">Deep20Bench {{ manifest.active_cohort.edition_label }} · {{ manifest.active_cohort.edition_status === 'current' ? 'Current edition' : 'Previous edition' }}</p>
             <h1>How well can AI models play Twenty Questions?</h1>
             <p class="hero-lead">
-              Deep20Bench is a public benchmark for large language models (LLMs). It measures how
+              Deep20Bench is a public AI benchmark for large language models (LLMs). It measures how
               many questions a model needs to identify a hidden subject: a person, character, or
               thing.
-              <template v-if="qualified">Answers are Yes, Rather yes, Rather no, No, or
-                Unknown when the information is unclear.</template>
-              <template v-else>Answers are Yes, No, or Unknown.</template>
+              <template v-if="qualified">Most questions get a clear <strong>Yes</strong> or
+                <strong>No</strong>. When the facts are less clear, the answer can be Rather yes,
+                Rather no, or Unknown.</template>
+              <template v-else>Most questions get a clear <strong>Yes</strong> or
+                <strong>No</strong>. When the facts are unclear, the answer is Unknown.</template>
             </p>
             <div class="hero-actions">
               <RouterLink class="button button-primary" :to="editionRoute('results')">
-                Explore results ↓
+                Explore results →
               </RouterLink>
             </div>
           </div>
-          <IllustrativeRoundExample :qualified="qualified" />
+          <IllustrativeRoundExample />
           <div class="hero-details">
             <article>
               <p class="hero-detail-label">How scoring works</p>
               <p>
-                The model only knows a broad category, such as "video game character". It gets
+                The model only knows a broad category, such as “video game character”. It gets
                 up to {{ manifest.active_cohort.max_questions }} questions,
-                more than the traditional twenty, so more rounds can finish. Each question, wrong guess, or reply
-                in the wrong format adds one point. If the model never finds the subject, the
-                round scores {{ failurePenalty }}. Scores are averaged over all rounds; lower is
-                better.
+                more than the traditional twenty, so more rounds can finish. Each question, wrong
+                guess, or reply in the wrong format adds one to the score. If the model never
+                finds the subject, the round scores {{ failurePenalty }}. The final score is the
+                average over all rounds; lower is better.
               </p>
             </article>
             <article class="hero-pilot-note">
@@ -197,13 +209,13 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 This edition compares {{ evaluated.length }} models on
                 {{ countWord(manifest.active_cohort.target_ids.length) }} subjects, with
                 {{ countWord(manifest.active_cohort.iterations) }} rounds per subject. All
-                results, transcripts, and scoring data are public. Each edition has its own comparison settings and results.
+                results and transcripts are public. Each edition has its own comparison settings and results.
               </p>
               <p v-else>
                 Edition {{ manifest.active_cohort.edition_label }} has
                 {{ manifest.active_cohort.target_ids.length }} subjects, with
                 {{ manifest.active_cohort.iterations }} rounds per subject. No model has a
-                complete result yet. Edition 1 results are still available.
+                complete result yet. Edition 1.0 results are still available.
               </p>
               <div class="hero-discussions">
                 <p>Suggest what we should test next on GitHub Discussions.</p>
@@ -236,7 +248,10 @@ const scoreDots = computed<ScoreDot[]>(() =>
               <p class="eyebrow">What the game tests</p>
               <h2>The game combines several abilities.</h2>
             </div>
-            <p>Each answer should improve the model’s next question.</p>
+            <p>
+              Each answer should improve the model’s next question.
+              <RouterLink class="text-link" :to="editionRoute('why')">Why this game works →</RouterLink>
+            </p>
           </header>
           <div class="ability-grid">
             <article>
@@ -296,10 +311,10 @@ const scoreDots = computed<ScoreDot[]>(() =>
           <header class="section-heading">
             <div>
               <p class="eyebrow">Edition {{ manifest.active_cohort.edition_label }} results</p>
-              <h2>{{ evaluated.length === 1 ? 'One tested model.' : 'How the models compare.' }}</h2>
+              <h2>{{ evaluated.length === 1 ? 'One tested model.' : 'The Twenty Questions LLM leaderboard.' }}</h2>
             </div>
             <p>
-              Lower is better. A failed round scores {{ failurePenalty }} points.
+              Lower is better. A failed round scores {{ failurePenalty }}.
             </p>
           </header>
 
@@ -311,7 +326,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 <ul class="winner-list" aria-label="Models tied for first place">
                   <li v-for="row in winnerRows" :key="row.model.model_id">
                     <RankBadge :rank="row.rank" v-bind="rankPresentation(row, evaluated)" dark />
-                    <RouterLink class="winner-link" :to="runRoute(row.execution_id)">
+                    <RouterLink class="winner-link" :to="modelSummaryRoute(row.model.model_id, row.execution_id)">
                       {{ row.model.display_name }} →
                     </RouterLink>
                     <span v-if="row.question_score_confidence_interval !== null" class="winner-meta">
@@ -319,7 +334,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                     </span>
                     <span v-else class="winner-meta">95% CI unavailable</span>
                     <span v-if="!allLeadersSucceeded" class="winner-meta">
-                      Guessed the subject in {{ row.successful }} of {{ row.terminal_trials }} rounds
+                      Failed {{ row.terminal_trials - row.successful }} of {{ row.terminal_trials }} rounds
                     </span>
                   </li>
                 </ul>
@@ -329,8 +344,8 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 <h3 class="winner-identity"><RankBadge :rank="1" :note="winnerRows[0] ? rankPresentation(winnerRows[0], evaluated).note : undefined" dark /> <span>{{ manifest.winner.display_names[0] }}</span></h3>
                 <div v-for="row in winnerRows" :key="row.model.model_id" class="winner-meta-row">
                   <ReasoningEffort :effort="row.model.reasoning_effort" dark />
-                  <RouterLink class="winner-link" :to="runRoute(row.execution_id)">
-                    View full run →
+                  <RouterLink class="winner-link" :to="modelSummaryRoute(row.model.model_id, row.execution_id)">
+                    View model results →
                   </RouterLink>
                 </div>
                 </template>
@@ -339,7 +354,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                   Same average score as
                   <template v-for="(row, index) in scorePeers" :key="row.model.model_id">
                     {{ index > 0 ? ', ' : '' }}
-                    <RouterLink :to="runRoute(row.execution_id)">{{ row.model.display_name }}</RouterLink>
+                    <RouterLink :to="modelSummaryRoute(row.model.model_id, row.execution_id)">{{ row.model.display_name }}</RouterLink>
                     <RankBadge :rank="row.rank" v-bind="rankPresentation(row, evaluated)" dark /></template><template v-if="scorePeers.length === 1 && winnerRows[0]?.question_score_confidence_interval && scorePeers[0]?.question_score_confidence_interval">;
                     ranked higher by narrower 95% CI
                     ({{ intervalWidthLabel(winnerRows[0]!) }} vs {{ intervalWidthLabel(scorePeers[0]!) }}).
@@ -366,7 +381,6 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 <p class="chart-description">{{ questionScoreChartSummary }}</p>
                 <ScoreDotPlot
                   :items="scoreDots"
-                  context="pilot"
                   :repeat-averages="repeatAverages"
                   :repeat-averages-loading="repeatAveragesLoading"
                   :repeat-averages-error="repeatAveragesError"
@@ -377,11 +391,13 @@ const scoreDots = computed<ScoreDot[]>(() =>
 
             <ComparisonRankingTable
               variant="home"
-              label="Pilot result table"
+              label="Leaderboard table"
+              :sort-direction="ariaSort"
+              @sort="toggleSort"
             >
                 <tbody>
                   <tr
-                    v-for="row in evaluated"
+                    v-for="row in sortedRows"
                     :key="row.model.model_id"
                     :class="{
                       'result-row--clickable': row.execution_id !== null,
@@ -393,7 +409,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                     <td class="model-column">
                       <ModelRunLink
                         v-if="row.execution_id"
-                        :to="runRoute(row.execution_id)"
+                        :to="modelSummaryRoute(row.model.model_id, row.execution_id)"
                         :name="row.model.display_name"
                         :meta="`${row.model.model_id} · ${row.model.provider}`"
                       />
@@ -429,7 +445,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 </tbody>
             </ComparisonRankingTable>
 
-            <div class="mobile-result-list" aria-label="Pilot results">
+            <div class="mobile-result-list" aria-label="Leaderboard">
               <MobileResultCard
                 v-for="row in evaluated"
                 :key="`mobile-${row.model.model_id}`"
@@ -438,7 +454,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 :rank-note="rankPresentation(row, evaluated).note"
                 :name="row.model.display_name"
                 :provider="row.model.provider"
-                :to="row.execution_id === null ? null : runRoute(row.execution_id)"
+                :to="row.execution_id === null ? null : modelSummaryRoute(row.model.model_id, row.execution_id)"
                 :metrics="[
                   {
                     label: 'Question score',
@@ -450,7 +466,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                       row.question_score_confidence_interval,
                     ),
                   },
-                  { label: 'Success', value: percent(row.success_rate) },
+                  { label: 'Solved', value: percent(row.success_rate) },
                   { label: 'Benchmark run cost', value: money(row.total_cost_usd) },
                 ]"
               />
@@ -468,7 +484,13 @@ const scoreDots = computed<ScoreDot[]>(() =>
               <p class="eyebrow">How to read the results</p>
               <h2>Same test setup, limited conclusions.</h2>
             </div>
-            <p>We test only a small set of subjects. The setup and all game records are public, so you can check the results.</p>
+            <p>
+              We test a small, fixed set of subjects. Every game record is public, so you can
+              check the results.
+              <RouterLink class="text-link" :to="editionRoute('methodology', { hash: '#repetition' })">
+                What the results can show →
+              </RouterLink>
+            </p>
           </header>
           <div class="trust-grid">
             <article>
@@ -479,7 +501,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
             <article>
               <span>02</span>
               <h3>Failures stay visible</h3>
-              <p>A failed round gets a fixed score. A reply in the wrong format uses up a turn.</p>
+              <p>A failed round gets a fixed score. Before the question limit, a reply in the wrong format uses up a turn.</p>
             </article>
             <article>
               <span>03</span>
@@ -734,7 +756,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(17rem, 1fr);
   gap: clamp(2rem, 5vw, 5rem);
-  align-items: end;
+  align-items: start;
   margin-top: clamp(3rem, 6vw, 5rem);
   padding: clamp(2rem, 4vw, 3.5rem);
   background: var(--ink);
@@ -958,15 +980,12 @@ dd {
 .origin-strip-inner {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(20rem, 1fr);
-  gap: clamp(2rem, 8vw, 8rem);
+  column-gap: clamp(2rem, 8vw, 8rem);
+  row-gap: 1.25rem;
 }
 
 .origin-strip h2 {
   font-size: clamp(2.5rem, 4vw, 4rem);
-}
-
-.origin-strip-inner > div:last-child {
-  align-self: end;
 }
 
 .origin-strip-inner > div:last-child > p {

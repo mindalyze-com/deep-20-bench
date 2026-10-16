@@ -45,7 +45,15 @@ the preview; leaving or closing the panel restores the active edition's settings
 Escape returns focus to the trigger; outside clicks and navigation close the panel after
 hydration. Controls have 44-pixel touch targets, and the panel fits narrow screens with its
 own scroll area on short viewports. The settings no longer occupy separate page-wide rows.
-The results header uses content-driven height and compact spacing above its title and tabs.
+All five result views share one header component and CSS, without subtitles or per-view
+layout overrides. Titles use the same font size as the result tabs, with a small edition
+badge. Titles and result tabs share one row on desktop and tablets, without wrapping.
+Phones omit the visible title instead of adding another row; the page heading stays available to screen
+readers, and the result tabs remain visible below the site header.
+The score view, "AI leaderboard", shows a compact summary followed by the ranked table or
+mobile cards. The score chart follows the rankings, with its explanations in a compact header.
+The first screen shows model results on desktop and phones. Scores, confidence intervals,
+sorting, and model links keep their existing meaning.
 The selector shares the dark header row on desktop, tablets, and phones. Phones show the
 version and status indicator; the full status remains in the accessible name and dropdown.
 Narrow phones use an icon-only Menu control. Header controls keep their touch targets,
@@ -308,7 +316,8 @@ This calculation:
   artificially cheap trials.
 - Keeps equal unrounded scores equal.
 
-The overview displays the question score to one decimal place and ranks on the exact unrounded
+Every page displays average question scores to two decimal places (single rounds as whole
+questions) and ranks on the exact unrounded
 value, then the exact 95% confidence-interval width (upper bound minus lower bound). A narrower
 interval ranks first when scores match. Equal scores and widths share a competition rank; the
 next rank skips the tied positions. An unavailable interval follows available intervals within
@@ -359,6 +368,10 @@ The site is a focused Vue publication with build-time static rendering and hydra
 - Explorer with score comparison, subject-by-model heatmap, raw trial spread, and cost
   trade-offs.
 - Selected-model metadata with the current official result and per-subject results.
+- One stable summary page per model and edition at `/editions/<id>/models/<slug>/`, plus a
+  model list. It keeps its address when a newer run replaces the selected one, and its
+  observations cite the rounds behind them. See the
+  [publication README](../source/publication/README.md#model-pages).
 - One official run detail tree per selected model.
 - A static drill-down from an execution to its subjects and then to every completed episode.
 - An episode transcript headed by the disclosed hidden subject (for example, “Finding
@@ -403,14 +416,22 @@ on this origin until site storage is cleared; the next tracked view picks up sto
 without requiring a reload. Generation uses `crypto.randomUUID()` or falls back to
 `Math.random()`; denied storage limits persistence to the current page session. Identification
 does not add a page view or delay rendering.
+Identification includes the browser's IANA time zone as the Umami session property `timezone`.
+It is read through `Intl.DateTimeFormat`. The session property `preferred_languages` reads
+`navigator.languages` and joins the language tags with commas in browser preference order.
+Numeric `viewport_width` and `viewport_height` record `window.innerWidth` and `window.innerHeight`
+in CSS pixels when identification runs; resizing alone sends no update. Unavailable, empty, or
+invalid properties are omitted independently, without adding requests or page views.
 Each prerendered page also links the CSS for its rendered Vue components directly in its head,
 using Vite's SSR asset manifest. The browser applies these styles before showing the initial
 content, so slow JavaScript cannot expose an unstyled intermediate layout. Complete content,
 ordinary links, and search metadata remain in the HTML, including without JavaScript.
 Hydration keeps that content in place. The asset manifest remains a build-only file.
 
-Each edition homepage and its editorial/result pages, each selected official run summary, and every
-subject summary and episode transcript are rendered as complete HTML. Run pages include model
+Each edition homepage and its editorial/result pages, its model list and model pages, each
+selected official run summary, and every subject summary and episode transcript are rendered as
+complete HTML. Model pages use the newest run completion in their edition as `lastmod`, because
+their subject ranks compare every model in that edition. Run pages include model
 identity, provider,
 reasoning effort, rank, question score and confidence interval, success and output-contract
 results, cost and timing, and links to every subject. Subject pages include the model and subject
@@ -419,13 +440,24 @@ their complete transcript and embedded public run, subject, and episode document
 internal navigation only after hydration.
 
 The sitemap contains canonical edition homepages and editorial/result URLs, the shared About
-page, every selected official run URL, every subject summary URL, and every episode transcript
-URL. Aliases are excluded. The route manifest determines the count, so a cohort change cannot
-leave the sitemap contract or its tests tied to an old model count. Every listed page uses unique
-metadata, a self-referencing canonical URL, and the modification time of the generated
-publication. All pages omit crawler directives and permit crawling and indexing, including
-episode transcripts, aliases, the generated 404 page, and local draft previews. Route manifests
-reject indexing exclusions. The `/story/` alias stays outside the sitemap.
+page, each edition's model list and model pages, every selected official run URL, every subject
+summary URL, and every episode transcript URL. Aliases are excluded. The route manifest
+determines the count, so a cohort change cannot leave the sitemap contract or its tests tied to
+an old model count. Every listed page uses unique metadata, a self-referencing canonical URL,
+and the time its published content last changed: run, subject, and episode pages use their run's
+completion time; edition pages use the newest run completion in that edition; the shared About
+page uses the newest across all editions. A rebuild without new runs therefore keeps every
+`lastmod` unchanged. Edition page titles attach the edition to the brand
+(`... | Deep20Bench 1.1`) to stay short in search results, and descriptions end with the
+edition (`... Edition 1.1.`) so snippets start with the content. Titles, headings, and
+descriptions use both search terms, "AI benchmark" and "LLM": the homepage title is
+`A Twenty Questions AI Benchmark for LLMs`, and other pages say "AI benchmark" or "AI model"
+unless "LLM" is the more precise word. Run pages are titled
+`<model> Run, <date> | Deep20Bench 1.1`, distinct from the model page; two same-day runs of
+one model use the execution ID instead of the date. All pages omit crawler
+directives and permit crawling and indexing, including episode transcripts, aliases, the generated 404 page, and local draft
+previews. Route manifests reject indexing exclusions. The `/story/` alias stays outside the
+sitemap.
 
 GitHub Pages hosts this repository at `https://deep20bench.com/`, with base path `/`.
 The prerenderer derives CNAME and robots files from the canonical URL on every rebuild. The root `robots.txt` allows
@@ -434,6 +466,11 @@ sitemap through Google Search Console. Preserve and verify the original GitHub P
 `data/deep20bench-v9.json` and its schema through the domain migration. See
 Google's [robots.txt location rules](https://developers.google.com/crawling/docs/robots-txt/create-robots-txt)
 and [sitemap submission guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap).
+
+Visible text writes answers as Yes, Rather yes, Rather no, No, and Unknown, uses "solved" and
+"failed" rounds, "Oracle", and "answer-checking cost", and shows dates as `9 Sep 2026` or
+`9 Sep 2026, 10:31 UTC`. Result tables sort by column; ranks keep their published order.
+CI-width bands use three shades of one neutral hue so they do not read as grades.
 
 Result views use a fixed accent mapping: score is blue, Stability is violet, cost is coral,
 time is lime, and Efficiency is teal. The active tab, section labels, summary accent, and
@@ -564,9 +601,13 @@ uses the configured title, short title, and canonical domain-root URL alongside 
 Dataset node. That Dataset has a stable fragment ID and the canonical CC BY 4.0 license URL,
 shared with the Data page and footer. The Data page explains data reuse and distinguishes the
 software's source-available license. The domain root supports Google's site-name placement requirements.
-Static rendering and browser navigation share the same homepage JSON-LD generator. Edition
-switches update the Dataset identity, settings, and downloads. Other routes remove homepage
-markup, and late document loads cannot overwrite the current route's structured data.
+Static rendering and browser navigation share one page JSON-LD generator. The Data page repeats
+the edition's Dataset node with the same `@id`; its `url` names the Data page as the dataset
+landing page, and its description lists the published contents. The Data page also has a
+BreadcrumbList, and run, subject, and episode pages have a BreadcrumbList from the edition
+through results, model, subject, and round. Edition switches update the Dataset identity,
+settings, and downloads. Other routes remove the markup, and late document loads cannot
+overwrite the current route's structured data.
 
 The static build performs strict Vue and TypeScript checks. Browser validation covers:
 

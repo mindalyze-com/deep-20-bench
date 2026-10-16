@@ -58,7 +58,7 @@ test(
     await expect(chart.locator("svg")).toHaveCount(0);
     await expect(page.locator(".ranking-table tbody tr").first()).toBeAttached();
     await expect(page.locator(".ranking-table tbody tr a").first())
-      .toHaveAttribute("href", /\/runs\//);
+      .toHaveAttribute("href", /\/editions\/1\.0\/models\//);
     expect(errors).toEqual([]);
   },
 );

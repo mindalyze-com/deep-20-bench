@@ -19,7 +19,7 @@ defineProps<{
     <li v-for="item in items" :key="item.key">
       {{ item.description }}
       <RouterLink v-if="item.link" :to="item.link" tabindex="-1">
-        View full run for {{ item.label }}
+        View results for {{ item.label }}
       </RouterLink>
     </li>
   </ol>

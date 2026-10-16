@@ -127,6 +127,12 @@ export const chartTextSize = (
   return Math.round(desktopSize * scale * 10) / 10;
 };
 
+// Touch screens open tooltips by tap only, so scrolling past a chart does not open one.
+const coarsePointer = (): boolean =>
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(pointer: coarse)").matches;
+
 export const useResponsiveEChart = (
   options: ResponsiveChartOptions,
 ): ResponsiveChart => {
@@ -155,6 +161,10 @@ export const useResponsiveEChart = (
 
   const resetPointerCursor = (): void => {
     chartElement.value?.style.removeProperty("cursor");
+  };
+
+  const hideTooltip = (): void => {
+    chart?.dispatchAction({ type: "hideTip" });
   };
 
   const render = (): void => {
@@ -192,6 +202,7 @@ export const useResponsiveEChart = (
         chart.on("mouseover", updatePointerCursor);
         chart.on("mouseout", resetPointerCursor);
       }
+      window.addEventListener("scroll", hideTooltip, { passive: true });
     } else if (dimensionsChanged) {
       chart.resize({ width, height });
     }
@@ -200,6 +211,7 @@ export const useResponsiveEChart = (
     observedHeight = height;
     if (optionDirty) {
       chart.setOption(options.option(width), true);
+      if (coarsePointer()) chart.setOption({ tooltip: { triggerOn: "click" } });
       optionDirty = false;
     }
   };
@@ -272,6 +284,7 @@ export const useResponsiveEChart = (
       chart?.off("mouseover", updatePointerCursor);
       chart?.off("mouseout", resetPointerCursor);
     }
+    if (typeof window !== "undefined") window.removeEventListener("scroll", hideTooltip);
     chart?.dispose();
     chart = null;
   });

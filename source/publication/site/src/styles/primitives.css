@@ -29,8 +29,9 @@
 .page-hero-inner {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.52fr);
-  gap: clamp(2rem, 6vw, 6rem);
-  align-items: end;
+  column-gap: clamp(2rem, 6vw, 6rem);
+  row-gap: 1.25rem;
+  align-items: start;
 }
 
 .page-hero h1,
@@ -82,8 +83,10 @@
   align-items: end;
 }
 
+/* Editorial headings align to the top: intro text starts level with the eyebrow. */
 .section-heading {
   grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.52fr);
+  align-items: start;
   margin-bottom: clamp(2rem, 4vw, 3.25rem);
 }
 
@@ -403,6 +406,20 @@ a.card:hover {
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+/* Row headers name a model or subject; they keep normal case unlike column headers. */
+.data-table tbody th {
+  color: var(--text-primary);
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.data-table tbody th a {
+  color: var(--blue-ink);
+  font-weight: var(--font-weight-bold);
 }
 
 .data-table tbody tr:last-child td {

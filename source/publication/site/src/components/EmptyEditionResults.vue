@@ -15,7 +15,7 @@ const other = computed(() => editionsIndex.value?.editions.find(edition =>
     </div>
     <RouterLink v-if="other" class="button button-primary"
       :to="{ name: 'results', params: { editionId: other.edition_id } }">
-      View version {{ other.label }} results →
+      View edition {{ other.label }} results →
     </RouterLink>
   </section>
 </template>

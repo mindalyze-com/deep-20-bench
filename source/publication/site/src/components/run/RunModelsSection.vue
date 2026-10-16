@@ -118,6 +118,12 @@ const supportModels = computed(() =>
   background: var(--surface-rail);
 }
 
+/* Cards choose their layout from the space they actually have beside the run sidebar. */
+.guesser-model,
+.support-section {
+  container-type: inline-size;
+}
+
 .support-model-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -133,7 +139,7 @@ const supportModels = computed(() =>
   margin-top: -1px;
 }
 
-@media (min-width: 761px) and (max-width: 900px) {
+@container (max-width: 44rem) {
   .support-model-grid {
     grid-template-columns: 1fr;
   }

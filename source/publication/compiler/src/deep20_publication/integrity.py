@@ -7,6 +7,12 @@ import yaml
 from pydantic import JsonValue, TypeAdapter
 from yaml.constructor import ConstructorError
 
+try:
+    # libyaml's C parser is several times faster on the large signed run artifacts.
+    from yaml import CSafeLoader as _SafeLoader
+except ImportError:  # PyYAML built without libyaml: same results, slower parsing.
+    from yaml import SafeLoader as _SafeLoader  # type: ignore[assignment]
+
 _JSON_OBJECT = TypeAdapter(dict[str, JsonValue])
 
 
@@ -14,8 +20,12 @@ class PublicationInputError(RuntimeError):
     """Raised when a publication source cannot be trusted or validated."""
 
 
-class _UniqueKeyLoader(yaml.SafeLoader):
-    pass
+class _UniqueKeyLoader(_SafeLoader):
+    """Safe YAML loading with the duplicate-key check below.
+
+    With libyaml only scanning and parsing run in C; construction keeps PyYAML's safe
+    constructor.
+    """
 
 
 def _construct_unique_mapping(

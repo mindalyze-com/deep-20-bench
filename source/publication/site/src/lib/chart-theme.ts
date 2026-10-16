@@ -59,23 +59,23 @@ export const readChartTheme = (): ChartTheme => {
       efficiency: customProperty(styles, "--result-efficiency", "#168c76"),
     },
     confidenceWidth: {
-      tight: customProperty(styles, "--confidence-tight", "#27923c"),
-      middle: customProperty(styles, "--confidence-middle", "#d08a00"),
-      wide: customProperty(styles, "--confidence-wide", "#df3d32"),
+      tight: customProperty(styles, "--confidence-tight", "#7f8aa3"),
+      middle: customProperty(styles, "--confidence-middle", "#4f5c7a"),
+      wide: customProperty(styles, "--confidence-wide", "#1f2840"),
       tightFill: customProperty(
         styles,
         "--confidence-tight-fill",
-        "rgb(39 146 60 / 8%)",
+        "rgb(98 112 144 / 4%)",
       ),
       middleFill: customProperty(
         styles,
         "--confidence-middle-fill",
-        "rgb(208 138 0 / 8%)",
+        "rgb(98 112 144 / 8%)",
       ),
       wideFill: customProperty(
         styles,
         "--confidence-wide-fill",
-        "rgb(223 61 50 / 8%)",
+        "rgb(98 112 144 / 13%)",
       ),
       neutral: customProperty(styles, "--confidence-neutral", "#8b8f99"),
     },
@@ -108,5 +108,8 @@ export const chartTooltipStyle = (
   borderColor: theme.border,
   borderWidth: 1,
   padding,
-  extraCssText: `box-shadow:${theme.tooltipShadow};`,
+  // Long lines wrap so a tooltip never runs past a phone screen.
+  extraCssText:
+    `box-shadow:${theme.tooltipShadow};white-space:normal;` +
+    "max-width:min(300px, calc(100vw - 32px));",
 });

@@ -396,6 +396,12 @@ export interface ManifestDocument {
   models: PublicModel[];
   official_runs: PublicationRunReference[];
   lab_runs: PublicationRunReference[];
+  downloads?: PublicationDownload[];
+}
+
+export interface PublicationDownload {
+  path: "deep20bench-v10.json" | "deep20bench-v10.schema.json" | "leaderboard.csv";
+  size_bytes: number;
 }
 
 export interface AppBuildDocument {
@@ -470,12 +476,93 @@ export interface EditionReference {
   repeat_averages_path: string;
   runs: { execution_id: string; model_id: string; model_name: string;
     classification: "official" | "lab"; target_ids: string[] }[];
+  models: { model_id: string; slug: string }[];
 }
 
 export interface EditionsDocument {
   document_type: "editions";
-  schema_version: 1;
+  schema_version: 2;
   default_edition_id: string;
   built_at: string;
   editions: EditionReference[];
+}
+
+export interface PublicModelRound {
+  target_id: string;
+  trial_id: string;
+  trial_number: number;
+  status: "success" | "model_failure" | "infrastructure_failure";
+  terminal_reason: string | null;
+  counted_questions: number;
+  penalized_questions: string | null;
+  rejected_guess_count: number;
+  format_errors: number;
+}
+
+export interface PublicModelSubjectResult {
+  target_id: string;
+  display_name: string;
+  entity_type: string;
+  average_questions: string | null;
+  successful: number;
+  model_failed: number;
+  infrastructure_failed: number;
+  rank: number | null;
+  ranked_models: number;
+  rounds: PublicModelRound[];
+}
+
+export interface PublicModelObservation {
+  kind:
+    | "strongest_subject"
+    | "hardest_subject"
+    | "fewest_questions"
+    | "most_questions"
+    | "model_failure"
+    | "format_errors"
+    | "uneven_subject"
+    | "wrong_guesses";
+  target_id: string | null;
+  value: string | null;
+  count: number | null;
+  rounds: { target_id: string; trial_id: string }[];
+}
+
+export interface ModelDocument {
+  document_type: "model";
+  schema_version: 1;
+  edition_id: string;
+  slug: string;
+  ranked_models: number;
+  iterations: number;
+  max_questions: number;
+  result: LeaderboardRow;
+  subjects: PublicModelSubjectResult[];
+  observations: PublicModelObservation[];
+  other_editions: {
+    edition_id: string;
+    edition_label: string;
+    slug: string;
+    execution_id: string;
+    rank: number | null;
+    ranked_models: number;
+    question_score: string | null;
+  }[];
+  superseded_runs: { execution_id: string; completed_at: string }[];
+}
+
+export interface ModelIndexDocument {
+  document_type: "model_index";
+  schema_version: 1;
+  edition_id: string;
+  models: {
+    slug: string;
+    model: PublicModel;
+    execution_id: string;
+    rank: number | null;
+    question_score: string | null;
+    success_rate: string | null;
+    successful: number;
+    terminal_trials: number;
+  }[];
 }

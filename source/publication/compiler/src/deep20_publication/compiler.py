@@ -44,6 +44,7 @@ from .models import (
     PublicRunModel,
     PublicRunTotals,
     PublicSubject,
+    PublicSupersededRun,
     PublicTrial,
     PublishedDataset,
     QualifiedEligibility,
@@ -1120,6 +1121,38 @@ def _select_latest_qualified_runs(
         if matches:
             selected.append(matches[0])
     return tuple(selected)
+
+
+def superseded_qualified_runs(
+    runs: tuple[LoadedRun, ...],
+    cohort: CohortConfig,
+) -> dict[str, tuple[PublicSupersededRun, ...]]:
+    """Return each model's qualifying runs that a newer qualifying run replaced, newest first.
+
+    These runs once met the edition contract, so their identity is public history. Their
+    details stay unpublished; only the selected run is projected.
+    """
+    qualified_by_model: dict[str, list[LoadedRun]] = defaultdict(list)
+    for run in runs:
+        model_id = run.summary.model.model_id
+        if model_id in cohort.model_ids and not _reason_codes(run, cohort):
+            qualified_by_model[model_id].append(run)
+    superseded: dict[str, tuple[PublicSupersededRun, ...]] = {}
+    for model_id, matches in qualified_by_model.items():
+        ordered = sorted(
+            matches,
+            key=lambda run: (run.state.updated_at, run.summary.execution_id),
+            reverse=True,
+        )
+        if len(ordered) > 1:
+            superseded[model_id] = tuple(
+                PublicSupersededRun(
+                    execution_id=run.summary.execution_id,
+                    completed_at=run.state.updated_at,
+                )
+                for run in ordered[1:]
+            )
+    return superseded
 
 
 def compile_publication(

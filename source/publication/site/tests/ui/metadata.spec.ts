@@ -26,6 +26,20 @@ if (firstSubject === undefined || secondSubject === undefined) {
 const episode = routes.find((entry) => entry.route.startsWith(`${firstSubject.route}/episodes/`));
 if (episode === undefined) throw new Error("Metadata tests require a public episode.");
 
+// Results link each model's stable page; the run is one step further.
+const editionsIndex = JSON.parse(readFileSync(path.join(docsRoot, "data", "editions.json"), "utf8")) as {
+  editions: { edition_id: string; models: { model_id: string; slug: string }[] }[];
+};
+const modelRouteForRun = (runRoute: string): string => {
+  const run = JSON.parse(readFileSync(path.join(docsRoot, "data", `${runRoute}.json`), "utf8")) as {
+    edition_id: string; run: { model_id: string };
+  };
+  const slug = editionsIndex.editions.find((edition) => edition.edition_id === run.edition_id)
+    ?.models.find((model) => model.model_id === run.run.model_id)?.slug;
+  if (slug === undefined) throw new Error(`Run ${runRoute} has no model page.`);
+  return `editions/${run.edition_id}/models/${slug}`;
+};
+
 const readHead = (page: Page) => page.evaluate(() => ({
   title: document.title,
   description: document.querySelector('meta[name="description"]')?.getAttribute("content") ?? null,
@@ -55,6 +69,8 @@ test("initial SEO metadata survives hydration", { tag: ["@metadata", "@desktop"]
       `${secondSubject.route}/`,
       `${episode.route}/`,
     ];
+    // Every edition page is checked, including one page per model, so allow time per page.
+    test.setTimeout(Math.max(30_000, paths.length * 1_000));
     for (const route of paths) {
       const url = new URL(route, staticBase).href;
       await initial.goto(url);
@@ -75,14 +91,18 @@ test("client navigation keeps full metadata and permits indexing on every page",
   const editionHome = `editions/${owner.edition_id}`;
   await page.goto(new URL(`${editionHome}/`, staticBase).href);
   await waitForPublication(page);
+  const firstRun = firstSubject.route.split("/subjects/")[0]!;
+  const secondRun = secondSubject.route.split("/subjects/")[0]!;
   const paths = [
     `${editionHome}/results`,
-    firstSubject.route.split("/subjects/")[0]!,
+    modelRouteForRun(firstRun),
+    firstRun,
     firstSubject.route,
     episode.route,
     firstSubject.route,
     `${editionHome}/results`,
-    secondSubject.route.split("/subjects/")[0]!,
+    modelRouteForRun(secondRun),
+    secondRun,
     secondSubject.route,
     editionHome,
   ];

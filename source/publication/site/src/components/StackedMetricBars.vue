@@ -7,6 +7,7 @@ import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import ChartLoadNotice from "@/components/ChartLoadNotice.vue";
+import { niceAxis } from "@/lib/chart-axis";
 import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import {
   chartTooltipPrimary,
@@ -105,9 +106,10 @@ const chartOption = (width: number): EChartsOption => {
     row.values.reduce((sum, value) => sum + value, 0),
   );
   const maximum = Math.max(
-    1,
+    0,
     ...totals.filter((value) => Number.isFinite(value) && value >= 0),
   );
+  const axis = niceAxis(0, maximum > 0 ? maximum : 1, mobile ? 3 : 5);
   const lastSeries = props.segments.length - 1;
   return {
     animation: chartAnimationEnabled(),
@@ -122,7 +124,7 @@ const chartOption = (width: number): EChartsOption => {
       top: 18,
       right: mobile ? 54 : 82,
       bottom: 42,
-      left: mobile ? 128 : 205,
+      left: mobile ? 128 : 210,
     },
     tooltip: {
       ...chartTooltipStyle(theme, 10),
@@ -134,7 +136,8 @@ const chartOption = (width: number): EChartsOption => {
     xAxis: {
       type: "value",
       min: 0,
-      splitNumber: mobile ? 3 : 5,
+      max: axis.max,
+      interval: axis.interval,
       axisLine: { show: true, lineStyle: { color: theme.border } },
       axisTick: { show: false },
       axisLabel: {
@@ -161,7 +164,7 @@ const chartOption = (width: number): EChartsOption => {
         fontFamily: chartFont,
         fontSize: categoryFontSize,
         fontWeight: chartFontWeightSemibold,
-        width: mobile ? 108 : 180,
+        width: mobile ? 108 : 190,
         overflow: "truncate",
         ellipsis: "…",
         margin: mobile ? 12 : 18,
@@ -205,14 +208,14 @@ const chartOption = (width: number): EChartsOption => {
         },
       })),
       {
-        name: "View full run",
+        name: "View model results",
         type: "bar",
         barGap: "-100%",
         barWidth: mobile ? 38 : 42,
         cursor: props.rows.some((row) => row.link !== undefined)
           ? "pointer"
           : "default",
-        data: props.rows.map(() => maximum),
+        data: props.rows.map(() => axis.max),
         itemStyle: {
           color: "rgb(12 17 27 / 0.1%)",
         },
@@ -273,7 +276,7 @@ watch(
       </ul>
     </figcaption>
     <ChartLoadNotice v-if="loadError" />
-    <p class="chart-run-cue">Select a model row to view its full run.</p>
+    <p class="chart-run-cue">Select a model row to view its results.</p>
     <details v-if="breakdownLabels.length > 0" class="stacked-chart-breakdown">
       <summary>Exact answer-checking costs</summary>
       <div
@@ -324,7 +327,7 @@ watch(
           {{ entry.label }} {{ entry.display }}.
         </span>
         <RouterLink v-if="row.link" :to="row.link" tabindex="-1">
-          View full run for {{ row.label }}
+          View results for {{ row.label }}
         </RouterLink>
       </li>
     </ol>

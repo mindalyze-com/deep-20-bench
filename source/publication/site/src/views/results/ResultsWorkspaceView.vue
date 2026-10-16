@@ -31,42 +31,27 @@ const copy = computed(() => {
   switch (route.name) {
     case "results-reliability":
       return {
-        label: "Stability across rounds",
-        title: "Stability",
-        description:
-          "How similar a model's scores are when it plays the same subjects again.",
+        title: "Score stability",
         tone: "stability",
       };
     case "results-cost":
       return {
-        label: "Recorded costs",
-        title: "Cost",
-        description:
-          "Recorded provider costs for the tested model and the answer-checking models.",
+        title: "Model cost",
         tone: "cost",
       };
     case "results-time":
       return {
-        label: "Model and benchmark time",
-        title: "Time",
-        description:
-          "Time spent in model calls, and total benchmark runtime.",
+        title: "Model time",
         tone: "time",
       };
     case "results-efficiency":
       return {
-        label: "Cost and quality",
-        title: "Efficiency",
-        description:
-          "Question score compared with the cost of the tested model.",
+        title: "Cost efficiency",
         tone: "efficiency",
       };
     default:
       return {
-        label: "Official comparison",
-        title: "Results",
-        description:
-          "Question score, stability, cost, and time for the current official runs.",
+        title: "AI leaderboard",
         tone: "score",
       };
   }
@@ -82,11 +67,9 @@ const copy = computed(() => {
   >
     <header class="results-workspace-header site-boundary-shell">
       <div class="results-workspace-header-inner site-boundary">
-        <div>
-          <p class="eyebrow">{{ copy.label }}</p>
+        <div class="results-heading">
           <h1>{{ copy.title }} <span class="results-edition">{{ cohort?.edition_label }}</span></h1>
         </div>
-        <p>{{ copy.description }}</p>
         <ResultsNav />
       </div>
     </header>
@@ -103,7 +86,6 @@ const copy = computed(() => {
 </template>
 
 <style scoped>
-.results-edition { font-family: var(--font-body); font-size: .45em; color: var(--text-secondary); letter-spacing: 0; }
 .results-workspace {
   --result-accent: var(--blue);
   --result-accent-ink: var(--blue-ink);
@@ -137,129 +119,113 @@ const copy = computed(() => {
   --result-accent-soft: var(--result-efficiency-soft);
 }
 
+/* Every result view shares the same compact header and responsive layout. */
 .results-workspace-header {
-  padding-top: 1rem;
+  --results-nav-font-size: 0.875rem;
+
   border-bottom: var(--rule-default);
   background: var(--paper-bright);
 }
 
 .results-workspace-header-inner {
-  display: grid;
-  grid-template-columns: minmax(12rem, 0.45fr) minmax(16rem, 0.55fr) auto;
-  gap: clamp(1.5rem, 4vw, 4rem);
-  align-items: end;
-
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.results-workspace-header-inner > div { padding-bottom: .9rem; }
+.results-heading {
+  flex-shrink: 0;
+  min-width: 0;
+}
 
-.results-workspace-header .eyebrow {
-  margin-bottom: 0.25rem;
-  color: var(--result-accent-ink);
+.results-workspace-header h1 {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--results-nav-font-size);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.results-workspace-header .results-edition {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0.15rem 0.45rem;
+  border: var(--rule-default);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.results-workspace-header :deep(.results-nav) {
+  flex-shrink: 0;
+  align-self: stretch;
+  align-items: end;
+  padding-inline: 0;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.results-workspace-header :deep(.results-nav a) {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.9rem;
+  font-size: var(--results-nav-font-size);
 }
 
 .results-workspace :deep(.results-view .eyebrow) {
   color: var(--result-accent-ink);
 }
 
-.results-workspace-header h1 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 4vw, 4rem);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: -0.055em;
-  line-height: 0.9;
-}
-
-.results-workspace-header-inner > p {
-  max-width: 30rem;
-  margin: 0 0 1rem;
-  color: var(--muted);
-  font-size: var(--text-small);
-  line-height: 1.55;
-}
-
-.results-workspace-header :deep(.results-nav) {
-  align-self: stretch;
-  border-bottom: 0;
-  background: transparent;
-  padding-inline: 0;
-}
-
-.results-workspace-header :deep(.results-nav a) {
-  display: inline-flex;
-  align-items: end;
-  padding-block: .8rem 1rem;
-}
-
 .edition-empty-container { padding-block: 1.5rem 3rem; }
 
-.results-workspace-body {
-  min-height: 1px;
-}
-
+.results-workspace-body,
 .results-workspace-body :deep(.results-view) {
   min-height: 1px;
 }
 
 .results-workspace-body :deep(.results-view > .content-section) {
-  padding-block: clamp(1.4rem, 3vw, 3rem);
-}
-
-@media (max-width: 1200px) {
-  .results-workspace-header {
-    min-height: 0;
-  }
-
-  .results-workspace-header-inner {
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: .35rem 2rem;
-    min-height: 0;
-  }
-
-  .results-workspace-header :deep(.results-nav) {
-    grid-column: 1 / -1;
-    order: 3;
-  }
-
-  .results-workspace-header-inner > p {
-    margin-bottom: .9rem;
-  }
+  padding-block: clamp(1.25rem, 2vw, 2rem);
+  padding-top: 0.75rem;
 }
 
 @media (max-width: 760px) {
-  .results-workspace {
-    min-height: 100%;
-  }
+  .results-workspace { min-height: 100%; }
 
   .results-workspace-header {
-    padding-top: 0.85rem;
+    --results-nav-font-size: 0.8125rem;
   }
 
-  .results-workspace-header-inner {
-    grid-template-columns: 1fr;
-    gap: 0.35rem;
-  }
-
-  .results-workspace-header-inner > div { padding-bottom: .25rem; }
-
-  .results-workspace-header h1 {
-    font-size: 2.65rem;
-  }
-
-  .results-workspace-header-inner > p {
-    display: none;
+  /* Keep the page heading accessible without reserving a mobile title row. */
+  .results-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .results-workspace-header :deep(.results-nav) {
-    grid-column: 1;
+    width: 100%;
   }
 
   .results-workspace-header :deep(.results-nav a) {
     min-width: 44px;
-    padding: 0.8rem 0.45rem;
+    padding: 0.65rem 0.7rem;
     justify-content: center;
+    font-size: var(--results-nav-font-size);
   }
-
 }
 </style>

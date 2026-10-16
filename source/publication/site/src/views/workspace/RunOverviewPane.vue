@@ -59,12 +59,16 @@ const runDeck = computed(() => {
     `${current.terminal_trials} scored rounds: ${subjects.value.length} subjects, ` +
     `${current.iterations} rounds each.`;
   if (row?.rank === null || row?.rank === undefined) {
-    return `This Twenty Questions LLM benchmark run has ${trialSummary}`;
+    return `This Twenty Questions AI benchmark run has ${trialSummary}`;
   }
+  const missed = current.model_failed === 0
+    ? "It solved every round."
+    : `It failed ${current.model_failed} of ${current.terminal_trials} rounds.`;
   return (
-    `In this Twenty Questions LLM benchmark, ${current.model_name} ranks ${row.rank} of ` +
-    `${evaluatedCount.value}, with a question score of ${number(current.question_score)} ` +
-    `(lower is better) and ${percent(current.success_rate)} success. The run has ${trialSummary}`
+    `In this Twenty Questions AI benchmark, ${current.model_name} ranks ${row.rank} of ` +
+    `${evaluatedCount.value} with a question score of ${number(current.question_score)}: ` +
+    `the average number of questions per round, where lower is better. ${missed} ` +
+    `The run has ${trialSummary}`
   );
 });
 
@@ -145,7 +149,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => {
   return [
     {
       key: "success",
-      label: "Success",
+      label: "Solved",
       value: percent(current.success_rate),
     },
     {
@@ -297,7 +301,7 @@ const roleGuide = runRoleOrder.map((role) => ({
           :total-display="money(run.totals.costs_usd.total)"
         />
         <div v-if="hasExcludedRepairCost && excludedRepair" class="excluded-repair-cost">
-          <span>Excluded repair cost</span>
+          <span>Rerun cost (excluded)</span>
           <strong>{{ money(excludedRepair.cost_usd) }}</strong>
           <small>
             {{ integer(excludedRepair.superseded_attempts) }} earlier
@@ -347,7 +351,8 @@ const roleGuide = runRoleOrder.map((role) => ({
 .run-workspace-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(19rem, 0.65fr);
-  gap: clamp(2rem, 5vw, 5rem);
+  column-gap: clamp(2rem, 5vw, 5rem);
+  row-gap: 1.5rem;
   align-items: center;
   padding: clamp(0.5rem, 1vw, 1rem) 0 clamp(1.5rem, 3vw, 2.5rem);
 }

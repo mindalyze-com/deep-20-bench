@@ -14,6 +14,8 @@ export const scatterSeriesPresentation = (
   color: string,
   hideOverlap: boolean,
   formatter: (parameters: CallbackDataParams) => string,
+  // Shifting can push a label onto another one; numbered markers can hide names instead.
+  moveOverlap = true,
 ) => ({
   itemStyle: {
     color,
@@ -32,10 +34,9 @@ export const scatterSeriesPresentation = (
     ellipsis: "…",
     formatter,
   },
-  labelLayout: {
-    hideOverlap,
-    moveOverlap: "shiftY" as const,
-  },
+  labelLayout: moveOverlap
+    ? { hideOverlap, moveOverlap: "shiftY" as const }
+    : { hideOverlap },
   emphasis: {
     scale: 1.35,
     itemStyle: {

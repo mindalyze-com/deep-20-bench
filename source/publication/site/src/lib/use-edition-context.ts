@@ -47,15 +47,32 @@ export const editionDestination = (
     return { name: "run", params: { executionId: target.execution_id },
       query: typeof targetId === "string" ? { editionNotice: "missing-subject" } : {} };
   }
+  const slug = route.params.slug;
+  if (route.name === "model" && typeof slug === "string") {
+    const source = editionsIndex.value?.editions.find(item => item.edition_id === selectedEditionId.value)
+      ?.models.find(model => model.slug === slug);
+    const target = edition.models.find(model => model.model_id === source?.model_id);
+    return target === undefined
+      ? { name: "models", params: { editionId: edition.edition_id },
+        query: { editionNotice: "missing-model-page" } }
+      : { name: "model", params: { editionId: edition.edition_id, slug: target.slug } };
+  }
   const name = typeof route.name === "string" &&
     ["home", "results", "results-cost", "results-time", "results-efficiency",
-      "results-reliability", "methodology", "about", "data"].includes(route.name)
+      "results-reliability", "why", "methodology", "about", "data", "models"].includes(route.name)
     ? route.name : "home";
   const query = { ...route.query };
   delete query.editionNotice;
   return { name, params: { editionId: edition.edition_id }, query, hash: route.hash };
 };
 
-export const answerLabel = (answer: string): string =>
-  ({ RATHER_YES: "Rather yes", RATHER_NO: "Rather no" })[answer as "RATHER_YES" | "RATHER_NO"]
-  ?? answer;
+const answerLabels: Readonly<Record<string, string>> = {
+  YES: "Yes",
+  RATHER_YES: "Rather yes",
+  RATHER_NO: "Rather no",
+  NO: "No",
+  UNKNOWN: "Unknown",
+};
+
+// Visible text uses one case for every answer; wire tokens stay unchanged in data and code.
+export const answerLabel = (answer: string): string => answerLabels[answer] ?? answer;

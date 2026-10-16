@@ -30,15 +30,27 @@ import {
   waitForPublication,
 } from "./support/publication";
 
-test("question score CI width treatment matches the visual baseline", { tag: ["@visual", "@both", "@visual"] }, async ({
+test("leaderboard layout and score chart match the visual baseline", { tag: ["@visual", "@both"] }, async ({
   page,
 }, testInfo) => {
+  await page.goto("results/");
+  await waitForPublication(page);
+  const firstResult = page.locator(
+    ".ranking-section tbody tr:visible, .ranking-section .mobile-result-card:visible",
+  ).first();
+  await expect(firstResult).toBeInViewport();
+  await expect(page).toHaveScreenshot("leaderboard.webp");
+  await expect(page.locator(".results-workspace-header")).toHaveScreenshot(
+    "results-workspace-header.webp",
+  );
+  await expect(page.locator(".results-view .metric-grid").first()).toHaveScreenshot(
+    "results-summary-metrics.webp",
+  );
   await page.setViewportSize({
     width: testInfo.project.name.startsWith("mobile") ? 390 : 1280,
     height: testInfo.project.name.startsWith("mobile") ? 2200 : 1600,
   });
-  await page.goto("results/");
-  await waitForPublication(page);
+  await page.locator(".comparison-panel").scrollIntoViewIfNeeded();
   await expect(page.locator(".comparison-panel .score-dot-plot")).toHaveScreenshot(
     "results-question-score-ci-widths.webp",
   );

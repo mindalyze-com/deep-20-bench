@@ -5,6 +5,8 @@ import type {
   EpisodeDocument,
   LeaderboardDocument,
   ManifestDocument,
+  ModelDocument,
+  ModelIndexDocument,
   RepeatAveragesDocument,
   RunDocument,
   SubjectDocument,
@@ -28,7 +30,12 @@ export type PublicationDocument =
   | RepeatAveragesDocument
   | RunDocument
   | SubjectDocument
-  | EpisodeDocument;
+  | EpisodeDocument
+  | ModelDocument
+  | ModelIndexDocument;
+
+const modelPath = (editionId: string, slug: string): string =>
+  editionPath(`models/${encodeURIComponent(slug)}.json`, editionId);
 
 const documentPath = (document: PublicationDocument): string => {
   switch (document.document_type) {
@@ -48,6 +55,10 @@ const documentPath = (document: PublicationDocument): string => {
       return `runs/${encodeURIComponent(document.execution_id)}/subjects/${encodeURIComponent(document.target_id)}.json`;
     case "episode":
       return `runs/${encodeURIComponent(document.execution_id)}/subjects/${encodeURIComponent(document.target_id)}/episodes/${encodeURIComponent(document.trial_id)}.json`;
+    case "model":
+      return modelPath(document.edition_id, document.slug);
+    case "model_index":
+      return editionPath("models.json", document.edition_id);
   }
 };
 
@@ -62,7 +73,7 @@ export const parsePublicationDocument = (value: unknown): PublicationDocument =>
     throw new Error("Preloaded publication data contains an unsupported document.");
   }
   const expectedVersions: Readonly<Record<string, number>> = {
-    editions: 1,
+    editions: 2,
     manifest: 2,
     app_build: 1,
     leaderboard: 4,
@@ -70,6 +81,8 @@ export const parsePublicationDocument = (value: unknown): PublicationDocument =>
     run: 4,
     subject: 2,
     episode: 3,
+    model: 1,
+    model_index: 1,
   };
   const expectedVersion = expectedVersions[candidate.document_type];
   if (expectedVersion === undefined || candidate.schema_version !== expectedVersion) {
@@ -91,7 +104,18 @@ export const parsePublicationDocument = (value: unknown): PublicationDocument =>
       if (edition === null || typeof edition.edition_id !== "string" ||
           !/^[0-9]+\.[0-9]+$/.test(edition.edition_id) || ids.has(edition.edition_id) ||
           typeof edition.label !== "string" || !["current", "previous"].includes(String(edition.status)) ||
-          !Array.isArray(edition.runs)) throw new Error("Publication edition index is invalid.");
+          !Array.isArray(edition.runs) || !Array.isArray(edition.models)) {
+        throw new Error("Publication edition index is invalid.");
+      }
+      const slugs = new Set<string>();
+      for (const rawModel of edition.models) {
+        const model = objectValue(rawModel);
+        if (model === null || typeof model.model_id !== "string" || typeof model.slug !== "string" ||
+            !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(model.slug) || slugs.has(model.slug)) {
+          throw new Error("Publication edition model pages are invalid.");
+        }
+        slugs.add(model.slug);
+      }
       ids.add(edition.edition_id);
       for (const rawRun of edition.runs) {
         const run = objectValue(rawRun);
@@ -126,6 +150,17 @@ export const parsePublicationDocument = (value: unknown): PublicationDocument =>
       throw new Error("Preloaded evidence data has no route identity.");
     }
   }
+  if (candidate.document_type === "model") {
+    const result = objectValue(candidate.result);
+    if (typeof candidate.slug !== "string" || result === null ||
+        typeof result.execution_id !== "string" || !Array.isArray(candidate.subjects) ||
+        !Array.isArray(candidate.observations)) {
+      throw new Error("Preloaded model summary is invalid.");
+    }
+  }
+  if (candidate.document_type === "model_index" && !Array.isArray(candidate.models)) {
+    throw new Error("Preloaded model index is invalid.");
+  }
   if (candidate.document_type === "episode" && typeof candidate.trial_id !== "string") {
     throw new Error("Preloaded episode data has no trial identity.");
   }
@@ -155,6 +190,13 @@ const validateOwnership = (document: PublicationDocument): void => {
     if (run === undefined || (document.document_type !== "run" && !run.target_ids.includes(document.target_id))) {
       throw new Error("Publication evidence belongs to a different edition.");
     }
+  }
+  if (document.document_type === "model" && (
+    !edition.runs.some(run => run.execution_id === document.result.execution_id) ||
+    !edition.models.some(model =>
+      model.slug === document.slug && model.model_id === document.result.model.model_id)
+  )) {
+    throw new Error("Publication model summary belongs to a different edition.");
   }
   if (document.document_type === "episode" &&
       peekManifest(document.edition_id)?.active_cohort.eligibility.kind === "historical_standard" &&
@@ -221,6 +263,17 @@ export const peekEpisode = (
   peek<EpisodeDocument>(
     `runs/${encodeURIComponent(executionId)}/subjects/${encodeURIComponent(targetId)}/episodes/${encodeURIComponent(trialId)}.json`,
   );
+
+export const peekModel = (editionId: string, slug: string): ModelDocument | null =>
+  peek<ModelDocument>(modelPath(editionId, slug));
+
+export const peekModelIndex = (editionId = selectedEditionId.value): ModelIndexDocument | null =>
+  peek<ModelIndexDocument>(editionPath("models.json", editionId));
+
+/** The stable model-page slug for a model in an edition, from the always-loaded edition index. */
+export const modelSlug = (modelId: string, editionId = selectedEditionId.value): string | null =>
+  editionsIndex.value?.editions.find(edition => edition.edition_id === editionId)
+    ?.models.find(model => model.model_id === modelId)?.slug ?? null;
 
 export const peekOfficialRuns = (): RunDocument[] | null => {
   const manifest = peekManifest();
@@ -339,6 +392,17 @@ export const getEpisode = (
     }
     return document;
   });
+
+export const getModel = (editionId: string, slug: string): Promise<ModelDocument> =>
+  request<ModelDocument>(modelPath(editionId, slug), "model").then((document) => {
+    if (document.slug !== slug || document.edition_id !== editionId) {
+      throw new Error("Publication data could not be read. Try again.");
+    }
+    return document;
+  });
+
+export const getModelIndex = (editionId = selectedEditionId.value): Promise<ModelIndexDocument> =>
+  request<ModelIndexDocument>(editionPath("models.json", editionId), "model_index");
 
 export const getOfficialRuns = async (): Promise<RunDocument[]> => {
   const manifest = await getManifest();

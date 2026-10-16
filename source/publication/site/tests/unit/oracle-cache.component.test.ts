@@ -21,7 +21,7 @@ describe("historical Oracle answers", () => {
     const wrapper = mount(EpisodeTranscriptPanel, { props: { episode } });
     const source = wrapper.get('[aria-label="Earlier game answer source"]');
     expect(source.text()).toContain("Answer reused from an earlier game in this benchmark run");
-    expect(source.text()).toContain("trial-001 / 7");
+    expect(source.text()).toContain("round 1, turn 7");
     expect(source.find("button").exists()).toBe(false);
     for (const evidence of turn.evidence) expect(wrapper.text()).toContain(evidence.excerpt);
   });
@@ -51,7 +51,7 @@ describe("historical Oracle answers", () => {
     const source = wrapper.get('[aria-label="Historical answer source"]');
     expect(source.text()).toContain("Answer reused from an earlier benchmark run");
     expect(source.text()).toContain("BX-earlier-source");
-    expect(source.text()).toContain("trial-002 / 7");
+    expect(source.text()).toContain("round 2, turn 7");
     expect(source.text()).toContain("The ORIGINAL question?");
     expect(source.find("details summary").text()).toBe("View original response");
     expect(source.get("time").attributes("datetime")).toBe(turn.oracle_cache.answered_at);

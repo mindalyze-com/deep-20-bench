@@ -14,10 +14,12 @@ import RankingTable from "@/components/RankingTable.vue";
 import RankingDataRow from "@/components/RankingDataRow.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
 import ResultsContent from "@/components/ResultsContent.vue";
+import SortButton from "@/components/SortButton.vue";
 import TableHeaderStack from "@/components/TableHeaderStack.vue";
 import { moneyEpisode, number, percent } from "@/lib/format";
+import { leaderboardSortAccessors, useTableSort } from "@/lib/use-table-sort";
 import { usePageRouteContext } from "@/lib/route-context";
-import { runRoute } from "@/lib/route-location";
+import { modelSummaryRoute } from "@/lib/route-location";
 import type { LeaderboardRow } from "@/lib/types";
 import { useLeaderboardResults } from "@/lib/use-leaderboard-results";
 
@@ -61,6 +63,13 @@ const ranked = computed(() =>
     ),
 );
 
+const { sortedRows: sortedRanked, toggleSort, ariaSort } = useTableSort(ranked, {
+  ...leaderboardSortAccessors,
+  distance: (row) => (row.ideal_distance_score === null ? null : Number(row.ideal_distance_score)),
+  pareto: (row) => (row.pareto_efficient ? 0 : 1),
+  rank: (row) => row.rank,
+});
+
 const unranked = computed(() =>
   leaderboard.value.filter((row) => idealDistanceRank(row) === null),
 );
@@ -90,7 +99,11 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
     value: `${paretoCount.value} of ${ranked.value.length}`,
     tone: "accent",
   },
-  { key: "direction", label: "Direction", value: "Lower is better" },
+  {
+    key: "most-efficient",
+    label: "Most efficient",
+    value: ranked.value[0]?.model.display_name ?? "-",
+  },
 ]);
 
 const efficiencyBars = computed(() =>
@@ -277,28 +290,32 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                     <span aria-hidden="true">#</span>
                     <span class="visually-hidden">Ideal-distance rank</span>
                   </th>
-                  <th class="model-column">Model</th>
-                  <th data-numeric>
-                    <TableHeaderStack first="Ideal" second="distance" />
+                  <th class="model-column" :aria-sort="ariaSort('model')">
+                    <SortButton :labels="['Model']" :direction="ariaSort('model')" @sort="toggleSort('model')" />
+                  </th>
+                  <th data-numeric :aria-sort="ariaSort('distance')">
+                    <SortButton :labels="['Ideal', 'distance']" :direction="ariaSort('distance')" @sort="toggleSort('distance')" />
                   </th>
                   <th class="pareto-column">
                     <TableHeaderStack first="Pareto" second="efficient" centered />
                   </th>
-                  <th data-numeric>
-                    <TableHeaderStack first="Question" second="rank" />
+                  <th data-numeric :aria-sort="ariaSort('rank')">
+                    <SortButton :labels="['Question', 'rank']" :direction="ariaSort('rank')" @sort="toggleSort('rank')" />
                   </th>
-                  <th data-numeric>
-                    <TableHeaderStack first="Question" second="score" />
+                  <th data-numeric :aria-sort="ariaSort('score')">
+                    <SortButton :labels="['Question', 'score']" :direction="ariaSort('score')" @sort="toggleSort('score')" />
                   </th>
-                  <th data-numeric>
-                    <TableHeaderStack first="Guesser cost" second="per round" />
+                  <th data-numeric :aria-sort="ariaSort('cost')">
+                    <SortButton :labels="['Guesser cost', 'per round']" :direction="ariaSort('cost')" @sort="toggleSort('cost')" />
                   </th>
-                  <th data-numeric>Success</th>
+                  <th data-numeric :aria-sort="ariaSort('success')">
+                    <SortButton :labels="['Solved']" :direction="ariaSort('success')" @sort="toggleSort('success')" />
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 <RankingDataRow
-                  v-for="row in ranked"
+                  v-for="row in sortedRanked"
                   :key="row.model.model_id"
                   :class="{
                     'result-row--clickable': row.execution_id !== null,
@@ -308,7 +325,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                   :name="row.model.display_name"
                   :meta="row.model.provider"
                   :to="
-                    row.execution_id === null ? null : runRoute(row.execution_id)
+                    row.execution_id === null ? null : modelSummaryRoute(row.model.model_id, row.execution_id)
                   "
                   @click="openRun(row)"
                 >
@@ -338,7 +355,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
               :rank="idealDistanceRank(row) ?? '-'"
               :name="row.model.display_name"
               :provider="row.model.provider"
-              :to="row.execution_id === null ? null : runRoute(row.execution_id)"
+              :to="row.execution_id === null ? null : modelSummaryRoute(row.model.model_id, row.execution_id)"
               :metrics="[
                 {
                   label: 'Ideal distance',

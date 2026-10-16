@@ -11,7 +11,7 @@ defineProps<{
   <RouterLink
     class="run-table-action"
     :to="to"
-    :aria-label="`View full run for ${name}`"
+    :aria-label="`View results for ${name}`"
     @click.stop
   >
     View <span aria-hidden="true">→</span>

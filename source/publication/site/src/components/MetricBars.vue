@@ -7,6 +7,7 @@ import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import ChartLoadNotice from "@/components/ChartLoadNotice.vue";
+import { durationAxisLabel, niceAxis, niceDurationAxis } from "@/lib/chart-axis";
 import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
 import {
   chartTooltipPrimary,
@@ -54,10 +55,7 @@ const chartHeight = computed(() =>
 
 const axisValue = (value: number): string => {
   if (props.valueFormat === "currency") return money(value);
-  if (props.valueFormat === "duration") {
-    if (value >= 60_000) return `${number(value / 60_000, 0)}m`;
-    return `${number(value / 1_000, 0)}s`;
-  }
+  if (props.valueFormat === "duration") return durationAxisLabel(value);
   return number(value, value < 10 ? 2 : 0);
 };
 
@@ -101,11 +99,16 @@ const chartOption = (width: number): EChartsOption => {
   const categoryFontSize = chartTextSize(width, 10, 12);
   const valueFontSize = chartTextSize(width, 11, 14);
   const maximum = Math.max(
-    1,
+    props.valueFormat === "duration" ? 1_000 : 0,
     ...props.items
       .map((item) => item.value)
       .filter((value) => Number.isFinite(value) && value >= 0),
   );
+  const ticks = mobile ? 3 : 5;
+  const axis =
+    props.valueFormat === "duration"
+      ? niceDurationAxis(maximum, ticks)
+      : niceAxis(0, maximum > 0 ? maximum : 1, ticks);
   return {
     animation: chartAnimationEnabled(),
     animationDuration: 420,
@@ -131,7 +134,8 @@ const chartOption = (width: number): EChartsOption => {
     xAxis: {
       type: "value",
       min: 0,
-      splitNumber: mobile ? 3 : 5,
+      max: axis.max,
+      interval: axis.interval,
       axisLine: {
         show: true,
         lineStyle: { color: theme.border, width: 1 },
@@ -205,14 +209,14 @@ const chartOption = (width: number): EChartsOption => {
         },
       },
       {
-        name: "View full run",
+        name: "View model results",
         type: "bar",
         barGap: "-100%",
         barWidth: mobile ? 38 : 42,
         cursor: props.items.some((item) => item.link !== undefined)
           ? "pointer"
           : "default",
-        data: props.items.map(() => maximum),
+        data: props.items.map(() => axis.max),
         itemStyle: {
           color: "rgb(12 17 27 / 0.1%)",
         },
@@ -265,7 +269,7 @@ watch(
   <figure class="metric-chart" :class="`metric-chart--${color}`">
     <figcaption>
       <span>{{ directionLabel }}</span>
-      <small><i aria-hidden="true"></i>Select a model row to view its full run</small>
+      <small><i aria-hidden="true"></i>Select a model row to view its results</small>
     </figcaption>
     <ChartLoadNotice v-if="loadError" />
     <div
@@ -278,7 +282,7 @@ watch(
         {{ index + 1 }}. {{ item.label }}: {{ item.display }}.
         <span v-if="item.detail">{{ item.detail }}.</span>
         <RouterLink v-if="item.link" :to="item.link" tabindex="-1">
-          View full run for {{ item.label }}
+          View results for {{ item.label }}
         </RouterLink>
       </li>
     </ol>

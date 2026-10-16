@@ -1,6 +1,8 @@
 import {
+  START_LOCATION,
   createRouter,
   type RouteComponent,
+  type RouteLocationNormalized,
   type Router,
   type RouterHistory,
   type RouteRecordRaw,
@@ -11,11 +13,18 @@ import {
   getEditions,
   getLeaderboard,
   getManifest,
+  getModel,
+  getModelIndex,
+  getRun,
   pendingEditionId,
   selectedEditionId,
 } from "@/lib/api";
 import { applyPageMetadata } from "@/lib/page-metadata";
-import { applyStructuredData, homepageStructuredData } from "@/lib/structured-data";
+import {
+  applyStructuredData,
+  pageStructuredData,
+  type StructuredDataPage,
+} from "@/lib/structured-data";
 
 interface LazyView {
   (): Promise<{ default: RouteComponent }>;
@@ -38,6 +47,7 @@ export const subjectWorkspaceView = lazyView(
   () => import("@/views/workspace/SubjectWorkspaceView.vue"),
 );
 export const episodeView = lazyView(() => import("@/views/EpisodeView.vue"));
+export const modelView = lazyView(() => import("@/views/ModelView.vue"));
 
 const routes: RouteRecordRaw[] = [
   {
@@ -109,6 +119,13 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: "/editions/:editionId?/why/",
+    alias: "/why/",
+    name: "why",
+    component: () => import("@/views/WhyView.vue"),
+    meta: { depth: 1, nav: "Why", title: "Why" },
+  },
+  {
     path: "/editions/:editionId?/methodology/",
     alias: "/methodology/",
     name: "methodology",
@@ -133,6 +150,20 @@ const routes: RouteRecordRaw[] = [
     name: "data",
     component: () => import("@/views/DataView.vue"),
     meta: { depth: 1, nav: "Data", title: "Data" },
+  },
+  {
+    path: "/editions/:editionId?/models/",
+    alias: "/models/",
+    name: "models",
+    component: () => import("@/views/ModelIndexView.vue"),
+    meta: { depth: 1, nav: "Results", title: "Models" },
+  },
+  {
+    path: "/editions/:editionId?/models/:slug/",
+    alias: "/models/:slug/",
+    name: "model",
+    component: modelView,
+    meta: { depth: 2, nav: "Results", title: "Model" },
   },
   {
     path: "/runs/:executionId/",
@@ -182,6 +213,50 @@ const routes: RouteRecordRaw[] = [
   },
 ];
 
+// Browser messages for a dynamic import whose module file is missing (Chromium, Firefox, Safari).
+const isStaleModuleError = (error: unknown): boolean =>
+  error instanceof Error
+  && /dynamically imported module|Importing a module script failed/i.test(error.message);
+
+const routeParam = (to: RouteLocationNormalized, name: string): string | null => {
+  const value = to.params[name];
+  return typeof value === "string" ? value : null;
+};
+
+/** Load the documents behind a page's JSON-LD, or return null for pages without it. */
+const structuredDataPage = (
+  to: RouteLocationNormalized,
+  editionId: string,
+): Promise<StructuredDataPage> | null => {
+  const name = String(to.name);
+  if (name === "home" || name === "data") {
+    const kind = name;
+    return Promise.all([getManifest(editionId), getLeaderboard(editionId)])
+      .then(([manifest, leaderboard]) => ({ kind, manifest, leaderboard }));
+  }
+  if (name === "models") {
+    return Promise.all([getManifest(editionId), getModelIndex(editionId)])
+      .then(([manifest, index]) => ({ kind: "model-index", manifest, index }));
+  }
+  const slug = routeParam(to, "slug");
+  if (name === "model" && slug !== null) {
+    return Promise.all([getManifest(editionId), getModel(editionId, slug)])
+      .then(([manifest, model]) => ({ kind: "model", manifest, model }));
+  }
+  const executionId = routeParam(to, "executionId");
+  if (executionId === null || !["run", "subject", "episode"].includes(name)) return null;
+  const targetId = routeParam(to, "targetId");
+  const trialId = routeParam(to, "trialId");
+  return Promise.all([getManifest(editionId), getRun(executionId)])
+    .then(([manifest, run]): StructuredDataPage => {
+      if (name === "episode" && targetId !== null && trialId !== null) {
+        return { kind: "episode", manifest, run, targetId, trialId };
+      }
+      if (name === "subject" && targetId !== null) return { kind: "subject", manifest, run, targetId };
+      return { kind: "run", manifest, run };
+    });
+};
+
 export const createPublicationRouter = (history: RouterHistory): Router => {
   const router = createRouter({ history, routes });
   let pendingEditionPath: string | null = null;
@@ -196,20 +271,50 @@ export const createPublicationRouter = (history: RouterHistory): Router => {
     return typeof to.params.editionId === "string" ? to.params.editionId
       : editionsIndex.value?.default_edition_id ?? "1.0";
   };
+  // Retired model slugs and replaced runs are static aliases of a stable model page.
+  const modelAliasTarget = (path: string, name: string, slug: string | null) => {
+    const metadata = metadataByRoute.get(path.replace(/^\/+|\/+$/g, ""));
+    const target = metadata?.canonical_route.match(/^editions\/([^/]+)\/models\/([^/]+)$/);
+    if (target === undefined || target === null) return null;
+    const [, editionId, targetSlug] = target;
+    if (name !== "run" && !(name === "model" && slug !== targetSlug)) return null;
+    return { name: "model", params: { editionId, slug: targetSlug } };
+  };
   router.beforeEach(async to => {
     pendingEditionId.value = null;
     pendingEditionPath = null;
     if (["edition-unavailable", "publication-unavailable", "not-found"].includes(String(to.name))) return;
+    const alias = modelAliasTarget(to.path, String(to.name), routeParam(to, "slug"));
+    if (alias !== null) return { ...alias, query: to.query, hash: to.hash, replace: true };
     try {
       const index = await getEditions();
       const id = editionForRoute(to);
-      if (!index.editions.some(edition => edition.edition_id === id)) {
+      const edition = index.editions.find(candidate => candidate.edition_id === id);
+      if (edition === undefined) {
         return { name: "edition-unavailable", params: { editionId: id }, replace: true };
+      }
+      // Unknown model slugs and run IDs are missing pages, not unavailable data.
+      const slug = routeParam(to, "slug");
+      const executionId = routeParam(to, "executionId");
+      if ((to.name === "model" && slug !== null
+          && !edition.models.some(model => model.slug === slug))
+        || (executionId !== null
+          && !index.editions.some(item => item.runs.some(run => run.execution_id === executionId)))) {
+        return {
+          name: "not-found",
+          params: { pathMatch: to.path.split("/").filter(Boolean) },
+          query: to.query,
+          hash: to.hash,
+          replace: true,
+        };
       }
       if (typeof to.params.editionId !== "string" && typeof to.params.executionId !== "string"
           && ["home", "results", "results-cost", "results-time", "results-efficiency",
-            "results-reliability", "methodology", "about", "data"].includes(String(to.name))) {
-        return { name: to.name, params: { editionId: id }, query: to.query, hash: to.hash, replace: true };
+            "results-reliability", "why", "methodology", "about", "data", "models", "model",
+          ].includes(String(to.name))) {
+        return {
+          name: to.name, params: { ...to.params, editionId: id }, query: to.query, hash: to.hash, replace: true,
+        };
       }
       if (id !== selectedEditionId.value) {
         pendingEditionPath = to.fullPath;
@@ -235,25 +340,31 @@ export const createPublicationRouter = (history: RouterHistory): Router => {
     );
     if (typeof document === "undefined") return;
     const version = ++structuredDataVersion;
-    if (to.name !== "home") {
+    const page = structuredDataPage(to, editionForRoute(to));
+    if (page === null) {
       applyStructuredData([]);
       return;
     }
-    const editionId = editionForRoute(to);
-    // These public documents share the homepage loader's cache. A late response must
-    // never restore another edition's markup after a subsequent navigation.
-    void Promise.all([getManifest(editionId), getLeaderboard(editionId)])
-      .then(([manifest, leaderboard]) => {
+    // These public documents share the page loaders' cache. A late response must
+    // never restore another page's markup after a subsequent navigation.
+    void page
+      .then((resolved) => {
         if (version !== structuredDataVersion) return;
-        applyStructuredData(homepageStructuredData(manifest, leaderboard, __DEEP20_CANONICAL_URL__));
+        applyStructuredData(pageStructuredData(resolved, __DEEP20_CANONICAL_URL__));
       })
       .catch(() => {
         if (version === structuredDataVersion) applyStructuredData([]);
       });
   });
-  router.onError(() => {
+  router.onError((error: unknown, to: RouteLocationNormalized, from: RouteLocationNormalized) => {
     pendingEditionId.value = null;
     pendingEditionPath = null;
+    // A new deployment replaces hashed route modules. A page loaded before it can no longer
+    // fetch them, so the click would do nothing. Load the target as a full page instead.
+    // The initial route is excluded so a genuinely missing module cannot cause a reload loop.
+    if (typeof window !== "undefined" && from !== START_LOCATION && isStaleModuleError(error)) {
+      window.location.assign(router.resolve(to).href);
+    }
   });
   return router;
 };

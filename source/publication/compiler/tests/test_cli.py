@@ -18,8 +18,11 @@ from deep20_publication.cli import (
     read_publication_config,
 )
 from deep20_publication.legacy import legacy_dataset_schema_json
+from deep20_publication.model_pages import EditionModelPages
 from deep20_publication.models import (
     PublicationAppBuildDocument,
+    PublicationModelDocument,
+    PublicationModelIndexDocument,
     PublishedDataset,
     StaticRouteManifest,
 )
@@ -85,6 +88,48 @@ def test_search_files_follow_the_static_route_manifest() -> None:
         f"User-agent: *\nAllow: /\n\nSitemap: {CANONICAL_URL}sitemap.xml\n"
     )
     assert (REPOSITORY / "docs" / "CNAME").read_text(encoding="utf-8") == "deep20bench.com\n"
+
+
+def test_sitemap_dates_follow_published_content_not_build_time() -> None:
+    config = read_publication_config(REPOSITORY / "config/publication.yml")
+    bundles = {
+        cohort.edition_id: split_publication(_published_dataset(cohort.edition_id))
+        for cohort in config.cohorts
+    }
+    completed = {
+        document.run.execution_id: document.run.completed_at
+        for bundle in bundles.values()
+        for document in bundle.runs
+    }
+    newest = {
+        edition_id: max(document.run.completed_at for document in bundle.runs)
+        for edition_id, bundle in bundles.items()
+    }
+    for entry in _published_routes().routes:
+        if entry.execution_id is not None:
+            assert entry.last_modified == completed[entry.execution_id]
+        elif entry.canonical_route == "about":
+            assert entry.last_modified == max(newest.values())
+        else:
+            assert entry.last_modified == newest[entry.edition_id]
+
+
+def test_edition_titles_and_descriptions_stay_short() -> None:
+    routes = _published_routes().routes
+    home = next(entry for entry in routes if entry.route == "editions/1.1")
+
+    assert home.browser_title == "Deep20Bench 1.1: A Twenty Questions AI Benchmark for LLMs"
+    assert all(" - Edition " not in entry.browser_title for entry in routes)
+    run_titles = [entry.browser_title for entry in routes if entry.kind == "run"]
+    assert all(re.search(r" Run, \d{1,2} [A-Z][a-z]{2} \d{4} \| Deep20Bench ", title)
+               for title in run_titles)
+    assert len(set(run_titles)) == len(run_titles)
+    assert all(not entry.description.startswith("Edition ") for entry in routes)
+    assert all(
+        re.search(r" Edition [0-9.]+\.$", entry.description)
+        for entry in routes
+        if entry.canonical_route != "about"
+    )
 
 
 def test_sitemap_contains_every_canonical_content_route() -> None:
@@ -169,17 +214,25 @@ def test_generated_homepage_has_prerendered_vue_content() -> None:
     assert 'content="https://deep20bench.com/og.webp"' in entry
     assert "og.png" not in entry
     assert "How well can AI models play Twenty Questions?" in entry
-    assert "public benchmark for large language models (LLMs)" in entry
+    assert "public AI benchmark for large language models (LLMs)" in entry
     assert "What the game tests" in entry
     assert "more than the traditional twenty" in entry_copy
     current = _published_dataset("1.1")
     if current.official_runs:
         assert "No complete 1.1 results yet" not in entry_copy
+        editions = json.loads(
+            (REPOSITORY / "docs" / "data" / "editions.json").read_text(encoding="utf-8")
+        )
+        slugs = {
+            model["model_id"]: model["slug"]
+            for edition in editions["editions"] if edition["edition_id"] == "1.1"
+            for model in edition["models"]
+        }
         for run in current.official_runs:
-            assert f'href="/runs/{run.execution_id}/"' in entry
+            assert f'href="/editions/1.1/models/{slugs[run.model_id]}/"' in entry
     else:
         assert "No complete 1.1 results yet" in entry_copy
-    assert "RATHER YES" in entry_copy
+    assert "Rather yes" in entry_copy
     assert "small first step" not in entry
     assert "not a definitive ranking" not in entry
     assert "https://github.com/mindalyze-com/deep-20-bench/discussions" in entry
@@ -260,13 +313,13 @@ def test_static_route_manifest_covers_sitemap_and_evidence_routes() -> None:
     }
 
     episode_routes = {entry.route for entry in routes.values() if entry.kind == "episode"}
-    assert len(routes) == (10 + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes))
+    assert len(routes) == (11 + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes))
     assert {
         entry.route for entry in routes.values() if entry.sitemap_included
     } == editorial_routes | run_routes | subject_routes | episode_routes
     assert all(routes[page].sitemap_included for page in (
         "", "results", "results/reliability", "results/cost", "results/time",
-        "results/efficiency", "methodology", "about", "data",
+        "results/efficiency", "why", "methodology", "about", "data",
     ))
     assert all(
         routes[f"runs/{run.run.execution_id}"].sitemap_included
@@ -310,7 +363,7 @@ def test_generated_run_subject_and_episode_are_prerendered_and_indexable() -> No
     assert run.run.model_name in entry
     assert "Question score" in entry
     assert "95% CI" in entry
-    assert "Success" in entry
+    assert "Solved" in entry
     assert "Valid format" in entry
     assert "Guesser cost" in entry
     assert "Total runtime" in entry
@@ -526,10 +579,35 @@ def test_split_public_data_is_complete_and_removes_stale_files(
     ).read_text(encoding="utf-8")
 
 
+def _published_model_pages(edition_id: str) -> EditionModelPages:
+    root = REPOSITORY / "docs/data/editions" / edition_id
+    index = PublicationModelIndexDocument.model_validate_json(
+        (root / "models.json").read_text(encoding="utf-8")
+    )
+    documents = {
+        entry.model.model_id: PublicationModelDocument.model_validate_json(
+            (root / "models" / f"{entry.slug}.json").read_text(encoding="utf-8")
+        )
+        for entry in index.models
+    }
+    # Model routes follow leaderboard order, as in the build.
+    leaderboard = json.loads((root / "leaderboard.json").read_text(encoding="utf-8"))
+    return EditionModelPages(
+        edition_id=edition_id,
+        index=index,
+        models=tuple(
+            documents[row["model"]["model_id"]]
+            for row in leaderboard["leaderboard"]
+            if row["model"]["model_id"] in documents
+        ),
+    )
+
+
 def _published_routes() -> StaticRouteManifest:
     config = read_publication_config(REPOSITORY / "config/publication.yml")
     datasets = tuple(PublishedDataset.model_validate_json(
         (REPOSITORY / "docs/data/editions" / cohort.edition_id / "deep20bench-v10.json")
         .read_text(encoding="utf-8")
     ) for cohort in config.cohorts)
-    return _edition_route_manifest(config, datasets)
+    pages = tuple(_published_model_pages(cohort.edition_id) for cohort in config.cohorts)
+    return _edition_route_manifest(config, datasets, pages)

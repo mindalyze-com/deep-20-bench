@@ -22,7 +22,7 @@ qualification rules. Activation requires a separate publication decision.
 
 Present **Deep20Bench 1.1** as the current edition and **Deep20Bench 1** as the previous edition. Both use the same application, result views, scoring implementation, and transcript components. Each edition owns its comparison cohort, selected runs, rankings, methodology, and downloads.
 
-Use a persistent **Benchmark edition** selector with `v.1.1 · Current` first and `v.1.0 · Previous` second. Fresh visits open 1.1. Explicit links to edition 1 always open edition 1. An edition is part of the benchmark's public identity, including page titles and citations.
+Use a persistent **Benchmark edition** selector with `v1.1 · Current` first and `v1.0 · Previous` second. Fresh visits open 1.1. Explicit links to edition 1 always open edition 1. An edition is part of the benchmark's public identity, including page titles and citations.
 
 The four directional answer classes are `YES`, `RATHER_YES`, `RATHER_NO`, and `NO`; only the two qualified classes are new. `UNKNOWN` remains a fifth possible ASK token. Describe this as **four directional answers plus Unknown**. Guess validation still accepts only `YES`, `NO`, and `UNKNOWN`. These labels must not imply that qualified answers represent numeric probabilities.
 

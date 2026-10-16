@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { editionRoute } from "@/lib/route-location";
+import { editionRoute, modelSummaryRoute } from "@/lib/route-location";
 import {
   computed,
   onActivated,
@@ -37,6 +37,7 @@ const selectedTargetId = computed(() =>
   typeof route.params.targetId === "string" ? route.params.targetId : null,
 );
 const isRunOverview = computed(() => route.name === "run");
+const isEpisode = computed(() => route.name === "episode");
 
 provide(runWorkspaceKey, {
   document,
@@ -50,7 +51,7 @@ const applyRunContext = (): void => {
   if (current === null || route.name !== "run") return;
   setRouteContext({
     title: current.model_name,
-    description: `Official Deep20Bench results for ${current.model_name}: ${number(current.question_score)} question score across ${current.terminal_trials} rounds with ${percent(current.success_rate)} success.`,
+    description: `Official Deep20Bench results for ${current.model_name}: ${number(current.question_score)} question score across ${current.terminal_trials} rounds, ${percent(current.success_rate)} solved.`,
     level: "Run workspace",
     position: `${subjects.value.length} subjects`,
     crumbs: [
@@ -76,7 +77,7 @@ subjectWorkspaceView.preload();
   <div
     id="route-content"
     class="benchmark-workspace"
-    :class="{ 'is-run-overview': isRunOverview }"
+    :class="{ 'is-run-overview': isRunOverview, 'is-episode': isEpisode }"
     tabindex="-1"
   >
     <LoadingState v-if="loading && document === null" label="Loading run workspace" />
@@ -91,6 +92,9 @@ subjectWorkspaceView.preload();
           </RouterLink>
           <p class="eyebrow">Model under test</p>
           <h2><ModelName :name="run.model_name" compact dark /></h2>
+          <RouterLink class="rail-model-link" :to="modelSummaryRoute(run.model_id, run.execution_id)">
+            Model summary →
+          </RouterLink>
           <div v-if="!isRunOverview" class="rail-score">
             <QuestionScore
               :score="run.question_score"
@@ -110,7 +114,7 @@ subjectWorkspaceView.preload();
           <span class="rail-item-index" aria-hidden="true">00</span>
           <span>
             <strong>Run overview</strong>
-            <small>{{ run.terminal_trials }} rounds · {{ percent(run.success_rate) }} success</small>
+            <small>{{ run.terminal_trials }} rounds · {{ number(run.question_score) }} avg questions</small>
           </span>
         </RouterLink>
 
@@ -213,6 +217,21 @@ subjectWorkspaceView.preload();
 }
 
 .rail-back:hover {
+  color: var(--text-inverse);
+}
+
+.rail-model-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--text-inverse-subtle);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+}
+
+.rail-model-link:hover,
+.rail-model-link:focus-visible {
   color: var(--text-inverse);
 }
 
@@ -459,6 +478,17 @@ subjectWorkspaceView.preload();
 @media (max-width: 1080px) {
   .benchmark-workspace {
     grid-template-columns: 15.5rem minmax(0, 1fr);
+  }
+}
+
+/* A round transcript gets the full width; the subject rail and breadcrumbs lead back. */
+@media (min-width: 761px) {
+  .benchmark-workspace.is-episode {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .benchmark-workspace.is-episode .model-rail {
+    display: none;
   }
 }
 

@@ -26,6 +26,15 @@ usePageRouteContext({
 const { loading, error } = usePublicationLoad(async () => {
   manifest.value = await getManifest();
 }, "Publication data is unavailable.", initialManifest !== null);
+
+const sizeLabel = (bytes: number): string =>
+  bytes >= 1_000_000
+    ? `${(bytes / 1_000_000).toFixed(1)} MB`
+    : `${Math.max(1, Math.round(bytes / 1_000))} KB`;
+const downloadSize = (path: string): string | null => {
+  const download = manifest.value?.downloads?.find((item) => item.path === path);
+  return download === undefined ? null : sizeLabel(download.size_bytes);
+};
 </script>
 
 <template>
@@ -40,17 +49,14 @@ const { loading, error } = usePublicationLoad(async () => {
         <div class="page-hero-inner site-boundary">
           <div>
             <p class="eyebrow">Public data</p>
-            <h1>Edition {{ manifest.active_cohort.edition_label }} data.</h1>
+            <h1>Deep20Bench {{ manifest.active_cohort.edition_label }} dataset.</h1>
           </div>
           <div class="lede data-lede">
             <p>
               Deep20Bench publishes all the data behind its leaderboard, not only the averages:
-              runs, rounds, transcripts, evidence, outcomes, cost, and timing.
-            </p>
-            <p>
-              Project-authored result data and documentation are licensed under
-              <a :href="dataLicenseResource.href">CC BY 4.0</a> and may be reused with attribution.
-              Evidence excerpts from third-party sources are not covered.
+              runs, rounds, transcripts, evidence, outcomes, cost, and timing. Project-authored
+              data may be reused under <a :href="dataLicenseResource.href">CC BY 4.0</a> with
+              attribution; third-party evidence excerpts are not covered.
             </p>
             <ul aria-label="What the public data supports">
               <li>Trace each published result.</li>
@@ -69,8 +75,7 @@ const { loading, error } = usePublicationLoad(async () => {
               <h2 id="download-title">Pick the file you need.</h2>
             </div>
             <p>
-              The JSON file has the complete public record. The CSV file has the current
-              rankings. The schema describes and validates the JSON file.
+              Start with the JSON file. It holds everything in the CSV file and more.
             </p>
           </header>
 
@@ -84,19 +89,24 @@ const { loading, error } = usePublicationLoad(async () => {
                 :href="editionDownloadUrl('deep20bench-v10.json')"
                 download
               >
-                Download JSON ↓
+                Download JSON<template v-if="downloadSize('deep20bench-v10.json')">
+                  ({{ downloadSize("deep20bench-v10.json") }})</template> ↓
               </a>
             </article>
             <article class="card download-card">
               <p class="file-type">CSV · UTF-8</p>
               <h3>Leaderboard table</h3>
-              <p>One row per ranked model.</p>
+              <p>
+                One row per ranked model. Long decimals are rounded to 6 places; the JSON file
+                keeps exact values.
+              </p>
               <a
                 class="button button-secondary"
                 :href="editionDownloadUrl('leaderboard.csv')"
                 download
               >
-                Download CSV ↓
+                Download CSV<template v-if="downloadSize('leaderboard.csv')">
+                  ({{ downloadSize("leaderboard.csv") }})</template> ↓
               </a>
             </article>
             <article class="card download-card">
@@ -108,7 +118,8 @@ const { loading, error } = usePublicationLoad(async () => {
                 :href="editionDownloadUrl('deep20bench-v10.schema.json')"
                 download
               >
-                Download schema ↓
+                Download schema<template v-if="downloadSize('deep20bench-v10.schema.json')">
+                  ({{ downloadSize("deep20bench-v10.schema.json") }})</template> ↓
               </a>
             </article>
           </div>
@@ -120,8 +131,8 @@ const { loading, error } = usePublicationLoad(async () => {
           <h2>Older v9 download</h2>
           <p>The <a :href="publicDownloadUrl('deep20bench-v9.json')">v9 dataset</a> and
             <a :href="publicDownloadUrl('deep20bench-v9.schema.json')">v9 schema</a> are still
-            updated for edition 1. Version 9 cannot hold both editions or Rather yes and Rather no
-            answers, so edition 1.1 results are only in the v10 download above.</p>
+            updated for edition 1.0. Version 9 cannot hold Rather yes and Rather no answers, so
+            edition 1.1 results are only in the v10 files above.</p>
         </div>
       </section>
       <section class="content-section flow-stage" aria-labelledby="field-guide-title">
@@ -138,7 +149,7 @@ const { loading, error } = usePublicationLoad(async () => {
             <dl class="field-paths">
               <div>
                 <dt><code>leaderboard[]</code></dt>
-                <dd>Ranks, models, question scores, success, format errors, cost, and time.</dd>
+                <dd>Ranks, models, question scores, solved rounds, format errors, cost, and time.</dd>
               </div>
               <div>
                 <dt><code>official_runs[]</code></dt>
@@ -161,6 +172,28 @@ const { loading, error } = usePublicationLoad(async () => {
               <pre><code>jq -r '.leaderboard[] | [.rank, .model.display_name, .question_score] | @tsv' deep20bench-v10.json</code></pre>
             </div>
           </div>
+
+          <p class="eyebrow csv-notes-title">CSV column notes</p>
+          <dl class="csv-notes" aria-label="CSV column notes">
+            <div>
+              <dt><code>ideal_distance_rank</code></dt>
+              <dd>The rank shown on the Efficiency page.</dd>
+            </div>
+            <div>
+              <dt><code>efficiency_rank</code></dt>
+              <dd>
+                An older cost-adjusted rank, the same as <code>product_efficiency_rank</code>.
+                Kept for existing users of the file.
+              </dd>
+            </div>
+            <div>
+              <dt><code>contract_status</code></dt>
+              <dd>
+                Reply format: <code>clean</code> (no format errors), <code>breached</code> (at
+                least one format error), or <code>not_evaluable</code> (not checked).
+              </dd>
+            </div>
+          </dl>
         </div>
       </section>
 
@@ -176,16 +209,25 @@ const { loading, error } = usePublicationLoad(async () => {
 
           <dl class="stats-grid release-facts" aria-label="Build details">
             <div>
-              <dt>Validated source runs</dt>
-              <dd>{{ manifest.provenance.source_run_count }}</dd>
+              <dt>Run files checked</dt>
+              <dd>
+                {{ manifest.provenance.source_run_count }}
+                <small>All editions, including replaced and unranked runs.</small>
+              </dd>
             </div>
             <div>
-              <dt>Ranked official runs</dt>
-              <dd>{{ manifest.provenance.official_run_count }}</dd>
+              <dt>Ranked runs</dt>
+              <dd>
+                {{ manifest.provenance.official_run_count }}
+                <small>The newest complete run of each model in this edition.</small>
+              </dd>
             </div>
             <div>
-              <dt>Benchmark protocol</dt>
-              <dd>v{{ manifest.active_cohort.benchmark_version }}</dd>
+              <dt>Game engine version</dt>
+              <dd>
+                v{{ manifest.active_cohort.benchmark_version }}
+                <small>Not the data format version.</small>
+              </dd>
             </div>
             <div>
               <dt>Latest completion</dt>
@@ -199,8 +241,11 @@ const { loading, error } = usePublicationLoad(async () => {
               </dd>
             </div>
             <div>
-              <dt>Comparison ID</dt>
-              <dd>{{ manifest.active_cohort.cohort_id }}</dd>
+              <dt>Edition rules ID</dt>
+              <dd>
+                <code>{{ manifest.active_cohort.cohort_id }}</code>
+                <small>Names the accepted settings of this edition in the data.</small>
+              </dd>
             </div>
             <div class="release-checksum">
               <dt>Subject catalog SHA-256</dt>
@@ -208,7 +253,7 @@ const { loading, error } = usePublicationLoad(async () => {
             </div>
           </dl>
 
-          <section class="data-contract" aria-labelledby="contract-title">
+          <section id="published-contents" class="data-contract" aria-labelledby="contract-title">
             <div class="contract-intro">
               <p class="eyebrow">Contents</p>
               <h3 id="contract-title">What is and is not published.</h3>
@@ -283,9 +328,9 @@ const { loading, error } = usePublicationLoad(async () => {
             </RouterLink>
             <RouterLink
               class="button button-secondary"
-              :to="editionRoute('methodology', { hash: '#publication' })"
+              :to="editionRoute('methodology')"
             >
-              How results are published →
+              How it works →
             </RouterLink>
           </div>
         </nav>
@@ -446,8 +491,46 @@ const { loading, error } = usePublicationLoad(async () => {
   margin-bottom: 1rem;
 }
 
+.release-facts dd small {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  line-height: 1.4;
+}
+
+.release-facts dd code {
+  font-size: var(--text-small);
+  overflow-wrap: anywhere;
+}
+
 .release-checksum {
   grid-column: 1 / -1;
+}
+
+.csv-notes-title {
+  margin: 2rem 0 0;
+}
+
+.csv-notes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0.75rem 0 0;
+}
+
+.csv-notes dd {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: var(--text-small);
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .csv-notes {
+    grid-template-columns: 1fr;
+  }
 }
 
 .release-checksum dd {
@@ -545,7 +628,7 @@ const { loading, error } = usePublicationLoad(async () => {
   display: flex;
   justify-content: space-between;
   gap: 2rem;
-  align-items: end;
+  align-items: start;
 }
 
 .data-next h2 {

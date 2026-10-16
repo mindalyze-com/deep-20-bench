@@ -63,13 +63,13 @@ describe("publication page metadata", () => {
   test("rejects malformed manifests and duplicate routes at the build boundary", () => {
     expect(() => parseRouteMetadata({ schema_version: 1, routes: [subject] })).toThrow();
     expect(() => parseRouteMetadata({
-      schema_version: 2, routes: [{ ...subject, indexable: "false" }],
+      schema_version: 3, routes: [{ ...subject, indexable: "false" }],
     })).toThrow();
     expect(() => parseRouteMetadata({
-      schema_version: 2, routes: [{ ...subject, indexable: false }],
+      schema_version: 3, routes: [{ ...subject, indexable: false }],
     })).toThrow();
-    expect(() => parseRouteMetadata({ schema_version: 2, routes: [subject, subject] }))
+    expect(() => parseRouteMetadata({ schema_version: 3, routes: [subject, subject] }))
       .toThrow(/duplicate/);
-    expect(parseRouteMetadata({ schema_version: 2, routes: [subject] })).toEqual([subject]);
+    expect(parseRouteMetadata({ schema_version: 3, routes: [subject] })).toEqual([subject]);
   });
 });

@@ -11,7 +11,7 @@ import ChartAccessibleData, {
 import ChartModelKey, {
   type ChartModelKeyItem,
 } from "@/components/ChartModelKey.vue";
-import { chartValueAxis } from "@/lib/chart-axis";
+import { chartValueAxis, niceAxis } from "@/lib/chart-axis";
 import ChartLoadNotice from "@/components/ChartLoadNotice.vue";
 import { scatterSeriesPresentation } from "@/lib/chart-series";
 import { chartTooltipStyle, readChartTheme } from "@/lib/chart-theme";
@@ -24,6 +24,8 @@ import {
 import type { ReliabilityChartItem } from "@/lib/reliability-chart";
 import {
   chartAnimationEnabled,
+  chartFont,
+  chartFontWeightBold,
   chartTextSize,
   chartValueDomain,
   escapeHtml,
@@ -35,17 +37,22 @@ const props = defineProps<{
 }>();
 
 const chartHeight = computed(() => 430);
-const widthDomain = computed(() =>
-  chartValueDomain(props.items.map((item) => item.intervalWidth)),
-);
-const scoreDomain = computed(() =>
-  chartValueDomain(props.items.map((item) => item.score)),
-);
+// Round axis ends keep the first and last labels on tick values.
+const widthAxis = (mobile: boolean) => {
+  const domain = chartValueDomain(props.items.map((item) => item.intervalWidth));
+  return niceAxis(domain.minimum, domain.maximum, mobile ? 4 : 6);
+};
+const scoreAxis = (mobile: boolean) => {
+  const domain = chartValueDomain(props.items.map((item) => item.score));
+  return niceAxis(domain.minimum, domain.maximum, mobile ? 4 : 6);
+};
+// Each dot shows its stability rank, which matches the # column of the table below
+// and the numbered key on phones, so crowded points stay identifiable.
 const modelKeyItems = computed<ChartModelKeyItem[]>(() =>
   props.items.map((item) => ({
     key: item.label,
-    label: item.label,
-    detail: `${item.scoreDisplay} q · CI width ${item.intervalWidthDisplay}`,
+    label: `${item.reliabilityRank}. ${item.label}`,
+    detail: `${item.scoreDisplay} questions · CI width ${item.intervalWidthDisplay}`,
     link: item.link,
   })),
 );
@@ -140,9 +147,9 @@ const chartOption = (width: number): EChartsOption => {
         (value) =>
           value.toLocaleString("en-US", { maximumFractionDigits: 1 }),
       ),
-      scale: true,
-      min: widthDomain.value.minimum,
-      max: widthDomain.value.maximum,
+      min: widthAxis(mobile).min,
+      max: widthAxis(mobile).max,
+      interval: widthAxis(mobile).interval,
     },
     yAxis: {
       ...chartValueAxis(
@@ -151,16 +158,16 @@ const chartOption = (width: number): EChartsOption => {
         "Question score",
         mobile ? 40 : 51,
       ),
-      scale: true,
-      min: scoreDomain.value.minimum,
-      max: scoreDomain.value.maximum,
+      min: scoreAxis(mobile).min,
+      max: scoreAxis(mobile).max,
+      interval: scoreAxis(mobile).interval,
     },
     series: [
       {
         name: "Models",
         type: "scatter",
         data: pointData(),
-        symbolSize: mobile ? 14 : 17,
+        symbolSize: 19,
         cursor: props.items.some((item) => item.link !== undefined)
           ? "pointer"
           : "default",
@@ -169,9 +176,34 @@ const chartOption = (width: number): EChartsOption => {
           width,
           mobile,
           theme.results.stability,
-          false,
+          true,
           (parameters) => chartLabel(parameters.name),
+          false,
         ),
+      },
+      {
+        name: "Stability rank",
+        type: "scatter",
+        silent: true,
+        tooltip: { show: false },
+        data: props.items.map((item) => ({
+          name: item.label,
+          value: [item.intervalWidth, item.score],
+        })),
+        symbolSize: 19,
+        itemStyle: { color: "transparent" },
+        label: {
+          show: true,
+          position: "inside",
+          color: "#ffffff",
+          fontFamily: chartFont,
+          fontSize: 9,
+          fontWeight: chartFontWeightBold,
+          formatter: (parameters: CallbackDataParams): string =>
+            String(props.items.find((item) => item.label === parameters.name)?.reliabilityRank ?? ""),
+        },
+        labelLayout: { hideOverlap: false },
+        z: 3,
       },
     ],
   };
@@ -189,7 +221,7 @@ void chartElement;
   <figure class="scatter-chart reliability-scatter">
     <figcaption class="scatter-chart-caption">
       <span>Lower-left is better</span>
-      <span>Select a point to open the model's run</span>
+      <span>Numbers match the table rank. Select a point to open the model's results.</span>
     </figcaption>
     <ChartLoadNotice v-if="loadError" />
     <div

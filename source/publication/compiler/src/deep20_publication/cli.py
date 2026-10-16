@@ -6,16 +6,19 @@ import os
 import shutil
 import subprocess
 import tempfile
+from collections import Counter
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
+from itertools import repeat
 from pathlib import Path
 from typing import Annotated
 
 import typer
 from pydantic import JsonValue
 
-from .compiler import compile_publication
+from .compiler import compile_publication, superseded_qualified_runs
 from .draft import load_draft, render_draft
 from .edition_registry import EditionRegistry
 from .integrity import (
@@ -34,6 +37,7 @@ from .loader import (
     parse_run,
     parse_subject_catalog,
 )
+from .model_pages import EditionModelPages, build_model_pages
 from .models import (
     CompletedTrialSummary,
     DiagnosticErrorOutputRecord,
@@ -45,6 +49,8 @@ from .models import (
     PublicationAppBuildDocument,
     PublicationConfig,
     PublicationDataBundle,
+    PublicationDownload,
+    PublicationDownloadPath,
     PublicationEditionsDocument,
     PublicationManifestDocument,
     PublicRejectedOutput,
@@ -94,49 +100,57 @@ class _EditorialPage:
 _EDITORIAL_PAGES = (
     _EditorialPage(
         route="results",
-        browser_title="LLM Benchmark Results and Leaderboard | Deep20Bench",
+        browser_title="AI Model Leaderboard: LLM Benchmark Results | Deep20Bench",
         description=(
-            "Compare official Twenty Questions LLM benchmark scores, outcomes, costs, "
-            "runtime, and stability across rounds."
+            "Compare official Twenty Questions AI benchmark scores for LLMs: outcomes, "
+            "costs, runtime, and stability across rounds."
         ),
     ),
     _EditorialPage(
         route="results/reliability",
-        browser_title="LLM Benchmark Stability and Reliability | Deep20Bench",
+        browser_title="AI Benchmark Stability and Reliability | Deep20Bench",
         description=(
-            "Compare how consistent LLM scores are across repeated rounds, their confidence "
+            "Compare how consistent AI model scores are across repeated rounds, their confidence "
             "intervals, and how often models use the required reply format."
         ),
     ),
     _EditorialPage(
         route="results/cost",
-        browser_title="LLM Benchmark Cost Comparison | Deep20Bench",
+        browser_title="AI Benchmark Cost Comparison | Deep20Bench",
         description=(
-            "Compare LLM benchmark costs by tested model, answer-checking model, run, "
+            "Compare AI benchmark costs by tested model, answer-checking model, run, "
             "and round."
         ),
     ),
     _EditorialPage(
         route="results/time",
-        browser_title="LLM Benchmark Runtime and Response Time | Deep20Bench",
+        browser_title="AI Benchmark Runtime and Response Time | Deep20Bench",
         description=(
-            "Compare how long tested models take per round and per call, and total LLM "
+            "Compare how long tested models take per round and per call, and total AI "
             "benchmark runtime."
         ),
     ),
     _EditorialPage(
         route="results/efficiency",
-        browser_title="LLM Benchmark Cost Efficiency | Deep20Bench",
+        browser_title="AI Benchmark Cost Efficiency | Deep20Bench",
         description=(
             "Compare question score and tested-model cost across official "
-            "Twenty Questions LLM benchmark runs."
+            "Twenty Questions AI benchmark runs."
+        ),
+    ),
+    _EditorialPage(
+        route="why",
+        browser_title="Why Twenty Questions Is a Good AI Benchmark | Deep20Bench",
+        description=(
+            "Why Twenty Questions makes a simple, repeatable AI benchmark for LLMs: easy "
+            "to play, hard to play well."
         ),
     ),
     _EditorialPage(
         route="methodology",
-        browser_title="Twenty Questions LLM Benchmark Method | Deep20Bench",
+        browser_title="Twenty Questions AI Benchmark Method | Deep20Bench",
         description=(
-            "How the Deep20Bench Twenty Questions LLM benchmark works: the game, answer "
+            "How the Deep20Bench Twenty Questions AI benchmark works: the game, answer "
             "checks, scoring, and publication."
         ),
     ),
@@ -144,8 +158,8 @@ _EDITORIAL_PAGES = (
         route="about",
         browser_title="Deep20Bench Origin and Related LLM Research",
         description=(
-            "How the Deep20Bench LLM benchmark began, project news, and related Twenty "
-            "Questions research."
+            "How the Deep20Bench AI benchmark began, project news, and related Twenty "
+            "Questions LLM research."
         ),
     ),
     _EditorialPage(
@@ -313,7 +327,19 @@ def _discover_runs(
     violation_snapshot: GuesserViolationSnapshot | None = None,
 ) -> tuple[LoadedRun, ...]:
     candidates = sorted((repository / "runs").glob("M-[0-9][0-9][0-9][0-9]/BX-*/summary.yml"))
-    runs = tuple(_load_run(path, repository, violation_snapshot) for path in candidates)
+    workers = min(len(candidates), os.cpu_count() or 1)
+    if workers <= 1:
+        runs = tuple(_load_run(path, repository, violation_snapshot) for path in candidates)
+    else:
+        # YAML construction dominates build time; runs are independent, and map keeps their
+        # order and re-raises the first failing run's error, exactly like a sequential load.
+        with ProcessPoolExecutor(max_workers=workers) as pool:
+            runs = tuple(pool.map(
+                _load_run,
+                candidates,
+                repeat(repository),
+                repeat(violation_snapshot),
+            ))
     if violation_snapshot is not None:
         attached = sum(
             len(episode.violation_disclosures) for run in runs for episode in run.episodes
@@ -450,6 +476,7 @@ def _write_public_data(
     *,
     datasets: tuple[PublishedDataset, ...] | None = None,
     editions: PublicationEditionsDocument | None = None,
+    model_pages: tuple[EditionModelPages, ...] = (),
 ) -> None:
     public_directory.mkdir(parents=True, exist_ok=True)
     data_directory = public_directory / "data"
@@ -474,10 +501,22 @@ def _write_public_data(
         for item in datasets:
             bundle = split_publication(item)
             prefix = f"editions/{item.active_cohort.edition_id}/"
-            write(prefix + "deep20bench-v10.json", dataset_json(item))
-            write(prefix + "deep20bench-v10.schema.json", dataset_schema_json())
-            write(prefix + "leaderboard.csv", leaderboard_csv(item))
-            for filename, document in (("manifest.json", bundle.manifest),
+            downloads: tuple[tuple[PublicationDownloadPath, str], ...] = (
+                ("deep20bench-v10.json", dataset_json(item)),
+                ("deep20bench-v10.schema.json", dataset_schema_json()),
+                ("leaderboard.csv", leaderboard_csv(item)),
+            )
+            for download_path, content in downloads:
+                write(prefix + download_path, content)
+            manifest = bundle.manifest.model_copy(
+                update={
+                    "downloads": tuple(
+                        PublicationDownload(path=path, size_bytes=len(text.encode()))
+                        for path, text in downloads
+                    )
+                }
+            )
+            for filename, document in (("manifest.json", manifest),
                                        ("leaderboard.json", bundle.leaderboard),
                                        ("repeat-averages.json", bundle.repeat_averages)):
                 write(prefix + filename, publication_document_json(document))
@@ -485,6 +524,12 @@ def _write_public_data(
                     write(filename, publication_document_json(document))
             for run in bundle.runs:
                 write(f"runs/{run.run.execution_id}.json", publication_document_json(run))
+            for pages in model_pages:
+                if pages.edition_id != item.active_cohort.edition_id:
+                    continue
+                write(prefix + "models.json", publication_document_json(pages.index))
+                for model in pages.models:
+                    write(prefix + f"models/{model.slug}.json", publication_document_json(model))
             for subject in bundle.subjects:
                 write(f"runs/{subject.execution_id}/subjects/{subject.target_id}.json",
                       publication_document_json(subject))
@@ -516,8 +561,84 @@ def _percent_text(value: Decimal) -> str:
     return f"{value * Decimal(100):.1f}".rstrip("0").rstrip(".")
 
 
-def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest:
-    last_modified = bundle.manifest.provenance.built_at
+def _content_modified(bundle: PublicationDataBundle) -> datetime:
+    """Return when the edition's published results last changed: its newest run completion."""
+    return max(
+        (document.run.completed_at for document in bundle.runs),
+        default=bundle.manifest.provenance.built_at,
+    )
+
+
+def _model_routes(
+    bundle: PublicationDataBundle, pages: EditionModelPages,
+) -> tuple[StaticRouteEntry, ...]:
+    """Return the edition's model index and one stable summary route per model."""
+    # Subject ranks on a model page compare every model, so any new run can change them.
+    last_modified = _content_modified(bundle)
+    subject_names = {
+        subject.target_id: subject.display_name
+        for document in bundle.runs
+        for subject in document.subjects
+    }
+    index = StaticRouteEntry(
+        route="models",
+        kind="model-index",
+        indexable=True,
+        sitemap_included=True,
+        canonical_route="models",
+        browser_title="Models Tested on Twenty Questions | Deep20Bench",
+        description=(
+            f"All {len(pages.models)} models with an official Deep20Bench result, with rank, "
+            "question score, and rounds solved. Each links to a model summary."
+        ),
+        last_modified=last_modified,
+    )
+    models: list[StaticRouteEntry] = []
+    for document in pages.models:
+        result = document.result
+        name = result.model.display_name
+        score = (
+            _decimal_text(result.question_score)
+            if result.question_score is not None
+            else "unavailable"
+        )
+        standing = (
+            f"ranks {result.rank} of {document.ranked_models} models"
+            if result.rank is not None
+            else "has no ranked result"
+        )
+        strongest = next(
+            (
+                subject_names[observation.target_id]
+                for observation in document.observations
+                if observation.kind == "strongest_subject" and observation.target_id is not None
+            ),
+            None,
+        )
+        models.append(StaticRouteEntry(
+            route=f"models/{document.slug}",
+            kind="model",
+            indexable=True,
+            sitemap_included=True,
+            canonical_route=f"models/{document.slug}",
+            browser_title=f"{name} Twenty Questions Results | Deep20Bench",
+            description=(
+                f"{name} {standing} on Deep20Bench with a {score} question score "
+                f"(lower is better) and solved {result.successful} of "
+                f"{result.terminal_trials} rounds."
+                + (f" Strongest subject: {strongest}." if strongest is not None else "")
+                + " See every round."
+            ),
+            last_modified=last_modified,
+            model_id=result.model.model_id,
+        ))
+    return (index, *models)
+
+
+def _static_route_manifest(
+    bundle: PublicationDataBundle, pages: EditionModelPages | None = None,
+) -> StaticRouteManifest:
+    last_modified = _content_modified(bundle)
     evaluated_count = sum(
         row.status == "evaluated" for row in bundle.leaderboard.leaderboard
     )
@@ -527,7 +648,7 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
         indexable=True,
         sitemap_included=True,
         canonical_route="",
-        browser_title="Deep20Bench: A Twenty Questions LLM Benchmark",
+        browser_title="Deep20Bench: A Twenty Questions AI Benchmark for LLMs",
         description=(
             f"Compare {evaluated_count} AI models playing Twenty Questions: how they choose "
             "questions, use earlier answers, follow the rules, and compare on score, cost, and time."
@@ -559,9 +680,19 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
         for row in bundle.leaderboard.leaderboard
         if row.execution_id is not None
     }
+    # Model pages own "<model> Twenty Questions Results"; a run page names its date instead of
+    # its opaque execution ID, which keeps titles short. Same-day runs keep the ID to stay unique.
+    run_dates = Counter(
+        (document.run.model_name, document.run.completed_at.date()) for document in bundle.runs
+    )
     runs: list[StaticRouteEntry] = []
     for run_document in bundle.runs:
         run = run_document.run
+        run_label = (
+            f"{run.completed_at.day} {run.completed_at:%b %Y}"
+            if run_dates[(run.model_name, run.completed_at.date())] == 1
+            else run.execution_id
+        )
         row = leaderboard_by_execution.get(run.execution_id)
         score = (
             _decimal_text(run.question_score)
@@ -581,14 +712,14 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
                 indexable=True,
                 sitemap_included=True,
                 canonical_route=f"runs/{run.execution_id}",
-                browser_title=f"{run.model_name} Benchmark Results | Deep20Bench",
+                browser_title=f"{run.model_name} Run, {run_label} | Deep20Bench",
                 description=(
-                    f"Official Twenty Questions LLM benchmark results for {run.model_name}: "
+                    f"Official Twenty Questions AI benchmark results for {run.model_name}: "
                     f"{rank}"
                     f"{score} question score across {run.terminal_trials} rounds with "
                     f"{success} success."
                 ),
-                last_modified=last_modified,
+                last_modified=run.completed_at,
                 execution_id=run.execution_id,
             )
         )
@@ -626,7 +757,7 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
                     f"{subject.successful} of {len(subject_document.trials)}. "
                     "See every question, answer, and source."
                 ),
-                last_modified=last_modified,
+                last_modified=run.completed_at,
                 execution_id=subject_document.execution_id,
                 target_id=subject_document.target_id,
             )
@@ -655,27 +786,46 @@ def _static_route_manifest(bundle: PublicationDataBundle) -> StaticRouteManifest
                 f"{episode_document.episode.subject_name} in "
                 f"{_round_label(episode_document.trial_id).lower()}."
             ),
-            last_modified=last_modified,
+            last_modified=runs_by_execution[episode_document.execution_id].run.completed_at,
             execution_id=episode_document.execution_id,
             target_id=episode_document.target_id,
             trial_id=episode_document.trial_id,
         )
         for episode_document in bundle.episodes
     )
+    models = () if pages is None else _model_routes(bundle, pages)
     return StaticRouteManifest(
-        routes=(home, *editorial, *runs, *aliases, *subjects, *episodes),
+        routes=(home, *editorial, *models, *runs, *aliases, *subjects, *episodes),
     )
 
 
+def _edition_title(title: str, edition_label: str) -> str:
+    """Attach the edition to the brand, keeping titles short enough for search results."""
+    brand = "Deep20Bench"
+    if title.startswith((f"{brand}: ", f"{brand} ")):
+        return f"{brand} {edition_label}{title.removeprefix(brand)}"
+    if title.endswith(f" | {brand}"):
+        return f"{title} {edition_label}"
+    raise ValueError(f"edition page title must name {brand}: {title}")
+
+
 def _edition_route_manifest(
-    config: PublicationConfig, datasets: tuple[PublishedDataset, ...],
+    config: PublicationConfig,
+    datasets: tuple[PublishedDataset, ...],
+    model_pages: tuple[EditionModelPages, ...] = (),
 ) -> StaticRouteManifest:
     entries: list[StaticRouteEntry] = []
-    for dataset in datasets:
+    bundles = tuple(split_publication(dataset) for dataset in datasets)
+    pages_by_edition = {pages.edition_id: pages for pages in model_pages}
+    # The shared About page carries project news, which follows the newest published run.
+    about_modified = max(_content_modified(bundle) for bundle in bundles)
+    for dataset, bundle in zip(datasets, bundles, strict=True):
         cohort = dataset.active_cohort
         prefix = f"editions/{cohort.edition_id}"
-        for entry in _static_route_manifest(split_publication(dataset)).routes:
+        pages = pages_by_edition.get(cohort.edition_id)
+        for entry in _static_route_manifest(bundle, pages).routes:
             if entry.route in {"about", "story"}:
+                entry = entry.model_copy(update={"last_modified": about_modified})
                 if cohort.edition_id == config.default_edition_id:
                     entries.append(entry.model_copy(update={"edition_id": cohort.edition_id}))
                 if entry.route == "about":
@@ -693,15 +843,46 @@ def _edition_route_manifest(
                 "route": route,
                 "canonical_route": canonical,
                 "edition_id": cohort.edition_id,
-                "browser_title": f"{entry.browser_title} - Edition {cohort.edition_label}",
-                "description": f"Edition {cohort.edition_label}. {entry.description}",
+                "browser_title": _edition_title(entry.browser_title, cohort.edition_label),
+                "description": f"{entry.description} Edition {cohort.edition_label}.",
             })
             entries.append(updated)
             if scoped and cohort.edition_id == config.default_edition_id:
                 entries.append(updated.model_copy(update={
                     "route": entry.route, "sitemap_included": False,
                 }))
+        if pages is not None:
+            entries.extend(_model_aliases(entries, pages, prefix,
+                                          cohort.edition_id == config.default_edition_id))
     return StaticRouteManifest(routes=tuple(entries))
+
+
+def _model_aliases(
+    entries: list[StaticRouteEntry],
+    pages: EditionModelPages,
+    prefix: str,
+    default_edition: bool,
+) -> tuple[StaticRouteEntry, ...]:
+    """Keep retired model slugs and replaced run URLs pointing at the stable model page."""
+    model_entries = {
+        entry.route: entry for entry in entries
+        if entry.kind == "model" and entry.route.startswith(f"{prefix}/models/")
+    }
+    aliases: list[StaticRouteEntry] = []
+
+    def alias(route: str, slug: str) -> StaticRouteEntry:
+        return model_entries[f"{prefix}/models/{slug}"].model_copy(
+            update={"route": route, "kind": "alias", "sitemap_included": False},
+        )
+
+    for previous, slug in sorted(pages.slug_aliases.items()):
+        aliases.append(alias(f"{prefix}/models/{previous}", slug))
+        if default_edition:
+            aliases.append(alias(f"models/{previous}", slug))
+    for document in pages.models:
+        for run in document.superseded_runs:
+            aliases.append(alias(f"runs/{run.execution_id}", document.slug))
+    return tuple(aliases)
 
 
 def _build_site(
@@ -757,6 +938,7 @@ def read_publication_config(path: Path) -> PublicationConfig:
         raise ValueError("released editions must declare the same score policy")
     profiles.sort(key=lambda profile: profile.cohort.edition_id != registry.default_edition_id)
     config = PublicationConfig(site=settings.site, score=profiles[0].score,
+                               model_slugs=settings.model_slugs,
                                default_edition_id=registry.default_edition_id,
                                cohorts=tuple(p.cohort for p in profiles))
     registry.validate_publication(config)
@@ -803,7 +985,12 @@ def build(
         )
         dataset = next(item for item in datasets
                        if item.active_cohort.edition_id == config.default_edition_id)
-        editions = edition_index(config, datasets)
+        model_pages = build_model_pages(
+            tuple(split_publication(item) for item in datasets),
+            config.model_slugs,
+            {cohort.edition_id: superseded_qualified_runs(runs, cohort) for cohort in config.cohorts},
+        )
+        editions = edition_index(config, datasets, model_pages)
         selected_ids = {run.execution_id for item in datasets for run in item.official_runs}
         for run in runs:
             if run.summary.execution_id not in selected_ids:
@@ -826,11 +1013,15 @@ def build(
                 public_root,
                 ignore=shutil.ignore_patterns("data"),
             )
-            _write_public_data(public_root, dataset, app_build, datasets=datasets, editions=editions)
+            _write_public_data(
+                public_root, dataset, app_build,
+                datasets=datasets, editions=editions, model_pages=model_pages,
+            )
             candidate = staging_root / "docs"
             route_manifest_path = public_root / "data" / "routes.json"
             route_manifest_path.write_text(
-                _edition_route_manifest(config, datasets).model_dump_json(indent=2) + "\n",
+                _edition_route_manifest(config, datasets, model_pages).model_dump_json(indent=2)
+                + "\n",
                 encoding="utf-8",
             )
             _build_site(

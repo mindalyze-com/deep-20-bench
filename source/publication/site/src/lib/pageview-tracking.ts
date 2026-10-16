@@ -9,11 +9,50 @@ interface Pageview {
   readonly id?: string;
 }
 
+interface SessionData {
+  readonly timezone?: string;
+  readonly preferred_languages?: string;
+  readonly viewport_width?: number;
+  readonly viewport_height?: number;
+}
+
+const readViewportDimension = (property: "innerWidth" | "innerHeight"): number | undefined => {
+  try {
+    const value = window[property];
+    return Number.isInteger(value) && value > 0 ? value : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const readSessionData = (): SessionData => {
+  let timezone: string | undefined;
+  let preferredLanguages: string | undefined;
+  try {
+    timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch {
+    // Unavailable time zone data must not suppress other session properties.
+  }
+  try {
+    preferredLanguages = navigator.languages?.join(",");
+  } catch {
+    // Optional browser preferences must not prevent identification.
+  }
+  const viewportWidth = readViewportDimension("innerWidth");
+  const viewportHeight = readViewportDimension("innerHeight");
+  return {
+    ...(timezone ? { timezone } : {}),
+    ...(preferredLanguages ? { preferred_languages: preferredLanguages } : {}),
+    ...(viewportWidth ? { viewport_width: viewportWidth } : {}),
+    ...(viewportHeight ? { viewport_height: viewportHeight } : {}),
+  };
+};
+
 declare global {
   interface Window {
     umami?: {
       track: (payload: (defaults: Pageview) => Pageview) => void | Promise<void>;
-      identify?: (id: string) => void | Promise<void>;
+      identify?: (id: string, data?: SessionData) => void | Promise<void>;
     };
   }
 }
@@ -48,7 +87,7 @@ export const installPageviewTracking = (router: Router): (() => void) => {
         identifiedVisitorId = visitorId;
         try {
           // Umami sets its distinct ID synchronously before its identify request.
-          void Promise.resolve(tracker.identify?.(visitorId)).catch(() => undefined);
+          void Promise.resolve(tracker.identify?.(visitorId, readSessionData())).catch(() => undefined);
         } catch {
           // Keep recording views if identification is unsupported or fails.
         }

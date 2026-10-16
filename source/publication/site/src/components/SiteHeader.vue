@@ -8,11 +8,12 @@ const route = useRoute();
 const mobileNavigation = ref<HTMLDetailsElement | null>(null);
 const mobileNavigationSummary = ref<HTMLElement | null>(null);
 const links = [
-  { label: "Overview", name: "home", glyph: "◉" },
-  { label: "Results", name: "results", glyph: "▥" },
-  { label: "Method", name: "methodology", glyph: "⌁" },
-  { label: "About", name: "about", glyph: "✦" },
-  { label: "Data", name: "data", glyph: "↓" },
+  { label: "Overview", name: "home" },
+  { label: "Results", name: "results" },
+  { label: "Why", name: "why" },
+  { label: "Method", name: "methodology" },
+  { label: "About", name: "about" },
+  { label: "Data", name: "data" },
 ] as const;
 
 const active = computed(() =>
@@ -47,7 +48,6 @@ watch(() => route.fullPath, closeMobileNavigation);
           :to="editionRoute(link.name)"
           :aria-current="active === link.label ? 'page' : undefined"
         >
-          <span class="nav-glyph" aria-hidden="true">{{ link.glyph }}</span>
           <span>{{ link.label }}</span>
         </RouterLink>
       </nav>
@@ -92,6 +92,11 @@ watch(() => route.fullPath, closeMobileNavigation);
           </svg>
           <span>Menu</span>
         </summary>
+        <div
+          class="mobile-navigation-backdrop"
+          aria-hidden="true"
+          @click="closeMobileNavigation"
+        ></div>
         <nav aria-label="Mobile primary navigation">
           <RouterLink
             v-for="link in links"
@@ -100,7 +105,6 @@ watch(() => route.fullPath, closeMobileNavigation);
             :aria-current="active === link.label ? 'page' : undefined"
             @click="closeMobileNavigation"
           >
-            <span class="nav-glyph" aria-hidden="true">{{ link.glyph }}</span>
             <span>{{ link.label }}</span>
           </RouterLink>
         </nav>

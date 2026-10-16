@@ -9,11 +9,12 @@ import OfficialRunRankingRow from "@/components/OfficialRunRankingRow.vue";
 import RankingTable from "@/components/RankingTable.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
 import ResultsContent from "@/components/ResultsContent.vue";
-import TableHeaderStack from "@/components/TableHeaderStack.vue";
+import SortButton from "@/components/SortButton.vue";
 import { duration, integer } from "@/lib/format";
 import { usePageRouteContext } from "@/lib/route-context";
-import { runRoute } from "@/lib/route-location";
+import { modelSummaryRoute } from "@/lib/route-location";
 import { useOfficialRunData } from "@/lib/use-official-run-data";
+import { useTableSort } from "@/lib/use-table-sort";
 
 const { documents, loading, error, providerFor, openRun } =
   useOfficialRunData();
@@ -42,6 +43,21 @@ const benchmarkRuns = computed(() =>
       left.model_name.localeCompare(right.model_name),
   ),
 );
+
+// Rank comes from model time and stays fixed while sorting other columns.
+const runEntries = computed(() =>
+  guesserRuns.value.map((run, index) => ({ run, rank: index + 1 })),
+);
+const milliseconds = (value: string | number | null): number | null =>
+  value === null ? null : Number(value);
+const { sortedRows: sortedEntries, toggleSort, ariaSort } = useTableSort(runEntries, {
+  model: (entry) => entry.run.model_name,
+  model_time: (entry) => entry.run.totals.guesser_think_time_ms,
+  runtime: (entry) => entry.run.totals.runtime_ms,
+  per_round: (entry) => milliseconds(entry.run.comparison.guesser_think_time_per_episode_ms),
+  per_call: (entry) => milliseconds(entry.run.comparison.guesser_latency_per_call_ms),
+  calls: (entry) => entry.run.totals.guesser_calls,
+});
 
 const guesserTimeValues = computed(() =>
   guesserRuns.value.map((run) => run.totals.guesser_think_time_ms),
@@ -191,7 +207,8 @@ const benchmarkTimeBars = computed(() =>
               </div>
               <p>
                 Each bar is the clock time from start to finish of the run. It includes model
-                calls, answer checks, and waiting.
+                calls, answer checks, web search, and waiting for provider rate limits, so it
+                says more about the test setup than about the model. It is sorted, not ranked.
               </p>
             </header>
             <MetricBars
@@ -210,23 +227,31 @@ const benchmarkTimeBars = computed(() =>
                   <span aria-hidden="true">#</span>
                   <span class="visually-hidden">Model-time rank</span>
                 </th>
-                <th class="model-column">Model</th>
-                <th data-numeric>Model time</th>
-                <th data-numeric>End-to-end time</th>
-                <th data-numeric>
-                  <TableHeaderStack first="Model time" second="per round" />
+                <th class="model-column" :aria-sort="ariaSort('model')">
+                  <SortButton :labels="['Model']" :direction="ariaSort('model')" @sort="toggleSort('model')" />
                 </th>
-                <th data-numeric>
-                  <TableHeaderStack first="Model time" second="per call" />
+                <th data-numeric :aria-sort="ariaSort('model_time')">
+                  <SortButton :labels="['Model time']" :direction="ariaSort('model_time')" @sort="toggleSort('model_time')" />
                 </th>
-                <th data-numeric>Model calls</th>
+                <th data-numeric :aria-sort="ariaSort('runtime')">
+                  <SortButton :labels="['End-to-end time']" :direction="ariaSort('runtime')" @sort="toggleSort('runtime')" />
+                </th>
+                <th data-numeric :aria-sort="ariaSort('per_round')">
+                  <SortButton :labels="['Model time', 'per round']" :direction="ariaSort('per_round')" @sort="toggleSort('per_round')" />
+                </th>
+                <th data-numeric :aria-sort="ariaSort('per_call')">
+                  <SortButton :labels="['Model time', 'per call']" :direction="ariaSort('per_call')" @sort="toggleSort('per_call')" />
+                </th>
+                <th data-numeric :aria-sort="ariaSort('calls')">
+                  <SortButton :labels="['Model calls']" :direction="ariaSort('calls')" @sort="toggleSort('calls')" />
+                </th>
               </tr>
             </thead>
             <tbody>
               <OfficialRunRankingRow
-                v-for="(run, index) in guesserRuns"
+                v-for="{ run, rank } in sortedEntries"
                 :key="run.execution_id"
-                :rank="index + 1"
+                :rank="rank"
                 :run="run"
                 @click="openRun(run)"
               >
@@ -260,7 +285,7 @@ const benchmarkTimeBars = computed(() =>
             :rank="index + 1"
             :name="run.model_name"
             :provider="providerFor(run.model_id)"
-            :to="runRoute(run.execution_id)"
+            :to="modelSummaryRoute(run.model_id, run.execution_id)"
             :metrics="[
               {
                 label: 'Model time',
@@ -284,8 +309,8 @@ const benchmarkTimeBars = computed(() =>
         </div>
 
         <p class="results-note">
-          The first chart ranks model time. The second ranks end-to-end time, so the
-          order can change.
+          Models rank by model time. The end-to-end chart is only sorted by duration,
+          because answer checks and rate limits dominate it.
         </p>
     </ResultsContent>
   </div>

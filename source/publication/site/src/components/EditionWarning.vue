@@ -22,12 +22,12 @@ const preventPendingNavigation = (event: MouseEvent): void => {
             <path d="M3 10a9 9 0 1 1 2.6 8.4M3 4v6h6M12 7v5l3 2" />
           </svg>
         </span>
-        <p class="edition-warning-copy">You're viewing a previous edition (v.{{ selectedEdition.edition_id }}).</p>
+        <p class="edition-warning-copy">You're viewing a previous edition (v{{ selectedEdition.edition_id }}).</p>
         <div class="edition-warning-actions">
           <RouterLink class="edition-warning-upgrade" :to="editionDestination(route, currentEdition)"
             :aria-disabled="pendingEditionId !== null ? 'true' : undefined"
             @click.capture="preventPendingNavigation">
-            <span>View latest <span class="edition-warning-version">(v.{{ currentEdition.edition_id }})</span></span>
+            <span>View latest <span class="edition-warning-version">(v{{ currentEdition.edition_id }})</span></span>
             <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"
               stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 8h10M9 4l4 4-4 4" />
