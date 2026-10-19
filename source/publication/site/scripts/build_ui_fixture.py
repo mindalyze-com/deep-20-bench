@@ -8,12 +8,12 @@ from typing import cast
 from deep20_publication.compiler import _rank, _rank_efficiency
 from deep20_publication.model_pages import build_model_pages
 from deep20_publication.models import (
-    PublicationAppBuildDocument,
-    PublicationEditionsDocument,
-    PublicationEditionReference,
     EditionModelReference,
     EditionRunReference,
+    PublicationAppBuildDocument,
     PublicationDataBundle,
+    PublicationEditionReference,
+    PublicationEditionsDocument,
     PublishedDataset,
 )
 from deep20_publication.serialize import publication_document_json

@@ -470,7 +470,9 @@ and [sitemap submission guidance](https://developers.google.com/search/docs/craw
 Visible text writes answers as Yes, Rather yes, Rather no, No, and Unknown, uses "solved" and
 "failed" rounds, "Oracle", and "answer-checking cost", and shows dates as `9 Sep 2026` or
 `9 Sep 2026, 10:31 UTC`. Result tables sort by column; ranks keep their published order.
-CI-width bands use three shades of one neutral hue so they do not read as grades.
+CI-width bands use green, amber, and red for narrow, medium, and wide intervals. Keep width
+labels and numeric values visible, and explain that colors describe CI width while question
+scores are compared separately. The bands divide the displayed scale into three equal ranges.
 
 Result views use a fixed accent mapping: score is blue, Stability is violet, cost is coral,
 time is lime, and Efficiency is teal. The active tab, section labels, summary accent, and

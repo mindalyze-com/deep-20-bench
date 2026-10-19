@@ -504,10 +504,11 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
     "lower is better",
   );
   await expect(page.locator(".score-dot-plot-caption")).toContainText(
-    "95% CI · shade = CI width",
+    "95% CI · color = CI width",
   );
-  await expect(page.locator(".score-dot-plot-caption")).toContainText("Tighter");
-  await expect(page.locator(".score-dot-plot-caption")).toContainText("Wider");
+  await expect(page.locator(".score-dot-plot-caption")).toContainText("Narrow");
+  await expect(page.locator(".score-dot-plot-caption")).toContainText("Medium");
+  await expect(page.locator(".score-dot-plot-caption")).toContainText("Wide");
   await expect(page.locator(".confidence-width-caption")).toContainText("CI width");
   await expect(page.locator(".confidence-width-caption")).toContainText("stability");
   await expect(page.locator(".confidence-width-caption")).toContainText(
@@ -515,6 +516,9 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
   );
   await expect(page.locator(".confidence-width-caption")).toContainText(
     "Rows follow question-score order",
+  );
+  await expect(page.locator(".confidence-width-caption")).toContainText(
+    "Colors describe CI width. Compare question scores separately.",
   );
   await expect(page.locator(".winner-card .score-confidence")).toContainText("95% CI");
   await expect(page.locator('ol[aria-label="Official question scores"]')).toHaveCount(1);
@@ -532,7 +536,15 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
     ),
   ).toHaveCSS(
     "background-color",
-    "rgb(127, 138, 163)",
+    "rgb(39, 146, 60)",
+  );
+  await expect(
+    page.locator(
+      '.score-dot-plot-confidence-band i[data-confidence-band="middle"]',
+    ),
+  ).toHaveCSS(
+    "background-color",
+    "rgb(208, 138, 0)",
   );
   await expect(
     page.locator(
@@ -540,11 +552,11 @@ test("question scores show repeated-trial confidence intervals", { tag: ["@funct
     ),
   ).toHaveCSS(
     "background-color",
-    "rgb(31, 40, 64)",
+    "rgb(223, 61, 50)",
   );
   await expect(
     page.locator('[data-model-id="M-0006"]'),
-  ).toContainText("CI width: 1.86 questions; tighter band");
+  ).toContainText("CI width: 1.86 questions; narrow band");
   await expect(page.locator('[data-model-id="M-0014"]')).toContainText(
     "Best score",
   );
@@ -865,9 +877,14 @@ for (const [label, routePath] of [
     await expect(last).not.toBeInViewport();
 
     await rail.locator(".model-rail-heading").hover();
-    await page.mouse.wheel(0, 2000);
-    await expect.poll(() => rail.evaluate((element) => element.scrollTop))
-      .toBeGreaterThan(0);
+    // Firefox can limit one wheel event to about one viewport of scrolling.
+    await expect.poll(async () => {
+      const remaining = await rail.evaluate((element) =>
+        element.scrollHeight - element.clientHeight - element.scrollTop);
+      if (remaining > 1) await page.mouse.wheel(0, 2000);
+      return remaining;
+    }).toBeLessThanOrEqual(1);
+    expect(await rail.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
     // Allow fractional pixel rounding at the scroll limits.
     await expect(last).toBeInViewport({ ratio: 0.99 });
     expect(await page.evaluate(() => window.scrollY)).toBe(0);

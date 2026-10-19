@@ -63,9 +63,9 @@ const confidenceBandLegend: readonly {
   band: ConfidenceWidthBand;
   label: string;
 }[] = [
-  { band: "tight", label: "Tighter" },
-  { band: "middle", label: "Middle" },
-  { band: "wide", label: "Wider" },
+  { band: "tight", label: "Narrow" },
+  { band: "middle", label: "Medium" },
+  { band: "wide", label: "Wide" },
 ];
 
 const confidenceBandColor = (
@@ -90,10 +90,10 @@ const confidenceBandLongLabel = (
   band === null
     ? "not grouped"
     : band === "tight"
-      ? "tighter band"
+      ? "narrow band"
       : band === "middle"
-        ? "middle band"
-        : "wider band";
+        ? "medium band"
+        : "wide band";
 
 const formatModelAxisLabel = (
   label: string,
@@ -998,7 +998,7 @@ watch(
             <small>lower is better</small>
           </span>
           <span class="score-dot-plot-confidence-legend">
-            <strong>95% CI · shade = CI width</strong>
+            <strong>95% CI · color = CI width</strong>
             <span
               v-for="entry in confidenceBandLegend"
               :key="entry.band"
@@ -1038,6 +1038,7 @@ watch(
       <div class="confidence-width-caption">
         <strong>CI width <span aria-hidden="true">·</span> stability</strong>
         <small>Rows follow question-score order · lower is better</small>
+        <small>Colors describe CI width. Compare question scores separately.</small>
       </div>
       <div
         ref="scoreChartElement"
