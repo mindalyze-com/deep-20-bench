@@ -19,6 +19,7 @@ import {
 } from "@/lib/format";
 import {
   editionRoute,
+  comparisonRoute,
   episodeRoute,
   modelRoute,
   runRoute,
@@ -200,6 +201,9 @@ watch(result, applyContext);
             <div class="button-row">
               <RouterLink class="button button-primary" :to="runRoute(executionId)">
                 See all {{ result.terminal_trials }} rounds →
+              </RouterLink>
+              <RouterLink class="button button-secondary" :to="comparisonRoute([result.model.model_id], editionId)">
+                Compare this model
               </RouterLink>
               <RouterLink class="button button-secondary" :to="editionRoute('models')">
                 All models

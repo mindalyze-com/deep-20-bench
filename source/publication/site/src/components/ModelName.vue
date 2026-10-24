@@ -5,16 +5,23 @@ import { reasoningEffortLabel } from "@/lib/format";
 import { splitModelName } from "@/lib/model-name";
 
 const props = withDefaults(
-  defineProps<{ name: string; compact?: boolean; dark?: boolean }>(),
-  { compact: false, dark: false },
+  defineProps<{ name: string; compact?: boolean; dark?: boolean; separated?: boolean }>(),
+  { compact: false, dark: false, separated: false },
 );
 
 const parts = computed(() => splitModelName(props.name));
+const heading = computed(() => {
+  const match = /^(\S+)\s+(.+)$/.exec(parts.value.displayName);
+  return match === null ? null : { family: match[1], model: match[2] };
+});
 </script>
 
 <template>
-  <span class="model-name" :class="{ compact, dark }">
-    <span class="model-name-label">{{ parts.displayName }}</span>
+  <span class="model-name" :class="{ compact, dark, separated }">
+    <span class="model-name-label">
+      <template v-if="separated && heading"><span class="model-name-family">{{ heading.family }}</span>{{ ' ' }}<span class="model-name-variant">{{ heading.model }}</span></template>
+      <template v-else>{{ parts.displayName }}</template>
+    </span>
     <span
       v-if="parts.reasoningEffort"
       class="model-name-effort"

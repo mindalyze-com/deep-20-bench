@@ -45,7 +45,7 @@ the preview; leaving or closing the panel restores the active edition's settings
 Escape returns focus to the trigger; outside clicks and navigation close the panel after
 hydration. Controls have 44-pixel touch targets, and the panel fits narrow screens with its
 own scroll area on short viewports. The settings no longer occupy separate page-wide rows.
-All five result views share one header component and CSS, without subtitles or per-view
+All six result views share one header component and CSS, without subtitles or per-view
 layout overrides. Titles use the same font size as the result tabs, with a small edition
 badge. Titles and result tabs share one row on desktop and tablets, without wrapping.
 Phones omit the visible title instead of adding another row; the page heading stays available to screen
@@ -71,6 +71,59 @@ Data pages identify their edition and explain what changed. About has edition-sc
 with shared content and canonical `/about/`, so it preserves the selected edition. While an
 edition loads, the selector continues to identify the displayed data and shows a loading label.
 No cross-edition ranking is shown.
+
+The Compare result tab opens a 1-5 model comparison. A "Compare this model" link on each model
+summary opens the same page with that model selected. One compiler-produced comparison bundle
+per edition supplies main metrics, existing subject averages, and expandable round summaries.
+The picker shows chosen models as disabled entries marked selected, rejects repeat additions,
+and makes removed models available again.
+The browser selects columns, compares exact decimals, highlights best/worst values with cell
+colors, and calculates descriptive differences. No comparison permutations are generated.
+Scored rounds use their published penalty on failure; full round cost and elapsed duration
+are labelled separately from tested-model costs and response time. Transcripts load on demand.
+
+URLs preserve ordered model IDs, reference model, metric, subject order, and expanded subjects.
+They follow the latest published result for each model and expose the actual run ID and date.
+Share opens the device's native share sheet when available on HTTPS. Otherwise it opens a
+link panel with Copy and Close controls. Share toggles the panel; Escape closes it and returns
+focus to Share. Copy uses the Clipboard API, then selected-text copying for HTTP previews,
+and leaves the link selected for manual copying if both are blocked. Native cancellation
+closes quietly; other native sharing failures open the link panel.
+Edition switching keeps available model IDs and uses that edition's subject and round counts.
+Tables grow with the page. Narrow tables fit two model columns beside sticky row labels;
+additional models scroll horizontally. Narrow model headers stack brand, model/version, and
+reasoning effort, with redundant provider names hidden. Wider headers retain the inline name.
+Model headers reserve the tallest name's text height so reasoning labels and run controls
+stay aligned. The reserved space updates with column widths, loaded fonts, and model selection;
+removing a long name releases the extra space. Wrapped model names are centered in narrow columns.
+Swipe guidance appears only when the table overflows. Model selection and subject expansion
+have keyboard access and 44-pixel touch targets. See
+the [comparison data contract](../source/publication/README.md#selected-model-comparison).
+Comparison highlights and subject/round outcomes retain screen-reader descriptions without visible labels.
+Subject rows have one blue disclosure control beside the name. Its brief rotation respects
+reduced-motion preferences. Names stay dark while hover and keyboard focus shade the full
+subject row, including its label column. Clicking the name or any colored
+average expands or collapses the same subject, with one keyboard stop per subject. Averages
+never navigate away. After expansion, Open subject links appear at the left of each average
+cell, beside its bold value. The inset rounds below use regular-weight values and labeled
+Open round links. Narrow cells shorten the visible links to Subject and Round while preserving
+their full accessible labels. Navigation actions are absent from collapsed subjects and stay in the same
+tab. Round cells highlight fully on hover and keyboard focus. Counted questions appear only
+when they differ from the scored value.
+This follows the progressive disclosure pattern in
+[Carbon's expandable tables](https://www.carbondesignsystem.com/building-blocks/core/components/data-table/guidelines)
+and uses the [WAI disclosure button semantics](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/).
+Main metric rows show concise labels. A shared direction guide identifies the higher-is-better
+exception, and About metrics contains the longer definitions instead of repeating them in each row.
+Main costs, question score, and stability use two decimal places. Subject and round costs
+retain four decimal places. Exact published values still determine highlights and differences.
+Opening a model, subject, or round from Compare keeps a validated local return URL. The detail
+header shows Back to comparison on desktop and mobile, including after navigating between
+details or reloading. Returning preserves the view settings and restores page and table scroll
+positions during the session, including after refreshing a detail page. Positions use bounded
+session storage for the current browser tab, with an in-memory fallback when storage is unavailable.
+Compact model headers stay visible while reading each table and track horizontal scrolling.
+Solved-rate differences use percentage points (pp); the rates themselves remain percentages.
 
 The Method page starts with "How Deep20Bench works" and a small selected-edition label.
 Five sections explain the game, answer checks, scoring, comparisons, and how to inspect results.
@@ -483,6 +536,12 @@ chart header. They use a third column on wide screens and sit below the explanat
 space is limited. Stability and Efficiency keep their formula and plain-language interpretation
 in a contained card aligned with the result panels. Longer steps, examples, and limits use a
 native details disclosure inside that card instead of a separate full-width section.
+All short explanations use the shared InfoPopover component. Panels open beside their trigger
+on phones, tablets, and desktop, flip above it when needed, and remain within the visible
+viewport. A small pointer identifies the trigger. Native popovers keep panels above surrounding
+content and provide outside-click, Escape, and single-panel dismissal. Close restores focus;
+scrolling a trigger out of view closes its panel. Long explanations scroll inside the panel
+while the title and close control remain visible. Panels follow resizing and page scrolling.
 
 The story page must distinguish an independent origin from a priority claim. Deep20Bench began
 with Patrick Heusser and Markus Tuor developing the initial idea together while playing Twenty

@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { comparisonReturnPath, isComparisonDetail } from "@/lib/comparison-navigation";
 
 import { routeContext } from "@/lib/route-context";
 
 const route = useRoute();
+const router = useRouter();
+const comparisonReturn = computed(() => isComparisonDetail(route.name)
+  ? comparisonReturnPath(router, route.query) : null);
 const level = computed(() => {
   if (routeContext.level) return routeContext.level;
   return typeof route.meta.context === "string" ? route.meta.context : "Publication";
@@ -21,7 +25,10 @@ const mobileCrumbs = computed(() => crumbs.value.slice(-2));
 <template>
   <div class="drilldown-bar" :data-drilldown-level="level">
     <div class="drilldown-inner">
-      <div class="drilldown-label">
+      <RouterLink v-if="comparisonReturn" class="comparison-return" :to="comparisonReturn">
+        <span aria-hidden="true">←</span> Back to comparison
+      </RouterLink>
+      <div v-else class="drilldown-label">
         <span>{{ level }}</span>
         <strong v-if="routeContext.position">{{ routeContext.position }}</strong>
       </div>
@@ -32,7 +39,7 @@ const mobileCrumbs = computed(() => crumbs.value.slice(-2));
           <span v-else aria-current="page">{{ crumb.label }}</span>
         </template>
       </nav>
-      <nav class="drilldown-mobile-crumbs" aria-label="Current location">
+      <nav v-if="!comparisonReturn" class="drilldown-mobile-crumbs" aria-label="Current location">
         <template
           v-for="(crumb, index) in mobileCrumbs"
           :key="`mobile-${crumb.label}-${index}`"
@@ -71,3 +78,8 @@ const mobileCrumbs = computed(() => crumbs.value.slice(-2));
     </div>
   </div>
 </template>
+
+<style scoped>
+.comparison-return { display: inline-flex; align-items: center; gap: 0.4rem; min-width: 0; min-height: 44px; color: var(--blue-ink); font-size: var(--text-small); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.comparison-return:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+</style>

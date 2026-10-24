@@ -2505,6 +2505,59 @@ class PublicationEpisodeDocument(FrozenModel):
     episode: PublicEpisodeDetail
 
 
+class PublicComparisonSubject(PublicSubjectSummary):
+    """Existing subject results and round summaries, without transcript content."""
+
+    model_config = ConfigDict(strict=True)
+    rounds: tuple[PublicTrialSummary, ...]
+
+
+class PublicComparisonModel(FrozenModel):
+    model_config = ConfigDict(strict=True)
+    result: LeaderboardRow
+    totals: PublicRunTotals
+    subjects: tuple[PublicComparisonSubject, ...]
+
+
+class PublicationComparisonDocument(FrozenModel):
+    """One edition's selected official results for client-side comparisons."""
+
+    model_config = ConfigDict(strict=True)
+    document_type: Literal["comparison"] = "comparison"
+    schema_version: Literal[1] = 1
+    edition_id: EditionId
+    iterations: int = Field(ge=1)
+    max_questions: int = Field(ge=1)
+    target_ids: tuple[Annotated[str, Field(pattern=TARGET_ID_PATTERN)], ...]
+    models: tuple[PublicComparisonModel, ...]
+
+    @model_validator(mode="after")
+    def complete_unique_results(self) -> PublicationComparisonDocument:
+        model_ids = tuple(model.result.model.model_id for model in self.models)
+        executions = tuple(model.result.execution_id for model in self.models)
+        if len(set(model_ids)) != len(model_ids) or len(set(executions)) != len(executions):
+            raise ValueError("comparison models and runs must be unique")
+        if len(set(self.target_ids)) != len(self.target_ids):
+            raise ValueError("comparison subject identities must be unique")
+        for model in self.models:
+            if model.result.status != "evaluated" or model.result.execution_id is None:
+                raise ValueError("comparison requires selected official results")
+            if model.result.terminal_trials != len(self.target_ids) * self.iterations:
+                raise ValueError("comparison requires full scored coverage")
+            if tuple(subject.target_id for subject in model.subjects) != self.target_ids:
+                raise ValueError("comparison subjects must match the edition")
+            for subject in model.subjects:
+                if len({item.trial_id for item in subject.rounds}) != len(subject.rounds):
+                    raise ValueError("comparison round identities must be unique")
+                if tuple(item.trial_number for item in subject.rounds) != tuple(
+                    range(1, self.iterations + 1)
+                ):
+                    raise ValueError("comparison rounds must match the edition")
+                if any(item.penalized_questions is None for item in subject.rounds):
+                    raise ValueError("comparison requires scored rounds")
+        return self
+
+
 class PublicModelRound(FrozenModel):
     target_id: str = Field(pattern=TARGET_ID_PATTERN)
     trial_id: str = Field(pattern=TRIAL_ID_PATTERN)
@@ -2680,7 +2733,8 @@ PublicationDocument = Annotated[
     | PublicationSubjectDocument
     | PublicationEpisodeDocument
     | PublicationModelDocument
-    | PublicationModelIndexDocument,
+    | PublicationModelIndexDocument
+    | PublicationComparisonDocument,
     Field(discriminator="document_type"),
 ]
 

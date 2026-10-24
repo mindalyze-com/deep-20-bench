@@ -313,13 +313,13 @@ def test_static_route_manifest_covers_sitemap_and_evidence_routes() -> None:
     }
 
     episode_routes = {entry.route for entry in routes.values() if entry.kind == "episode"}
-    assert len(routes) == (11 + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes))
+    assert len(routes) == (12 + len(bundle.runs) + len(bundle.subjects) + len(bundle.episodes))
     assert {
         entry.route for entry in routes.values() if entry.sitemap_included
     } == editorial_routes | run_routes | subject_routes | episode_routes
     assert all(routes[page].sitemap_included for page in (
         "", "results", "results/reliability", "results/cost", "results/time",
-        "results/efficiency", "why", "methodology", "about", "data",
+        "results/efficiency", "results/compare", "why", "methodology", "about", "data",
     ))
     assert all(
         routes[f"runs/{run.run.execution_id}"].sitemap_included

@@ -228,7 +228,7 @@ const pageDocuments = (route) => {
   const localRoute = route.route.replace(/^editions\/[^/]+(?:\/|$)/, "");
   const documents = [editionsDocument, manifest];
   const needsLeaderboard = route.kind === "home" || route.kind === "run" ||
-    localRoute === "results" || localRoute.startsWith("results/");
+    localRoute === "results" || (localRoute.startsWith("results/") && localRoute !== "results/compare");
   if (needsLeaderboard) documents.push(leaderboard);
   if (localRoute === "methodology") {
     documents.push(...[...editionManifests.values()].filter(item => item.edition_id !== route.editionId));
@@ -239,7 +239,9 @@ const pageDocuments = (route) => {
     documents.push(model.document);
     return documents;
   }
-  if (localRoute === "results/cost" || localRoute === "results/time") {
+  if (localRoute === "results/compare") {
+    documents.push(readJson(join(publicRoot, "data", "editions", route.editionId, "compare.json")));
+  } else if (localRoute === "results/cost" || localRoute === "results/time") {
     documents.push(...manifest.official_runs.map(reference => runDocuments.get(reference.execution_id)));
   } else if (route.kind === "run") {
     const run = runDocuments.get(route.executionId);

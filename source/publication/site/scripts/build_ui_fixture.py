@@ -7,6 +7,7 @@ from typing import cast
 
 from deep20_publication.compiler import _rank, _rank_efficiency
 from deep20_publication.model_pages import build_model_pages
+from deep20_publication.comparison import build_comparison
 from deep20_publication.models import (
     EditionModelReference,
     EditionRunReference,
@@ -201,6 +202,7 @@ def main() -> None:
         ),),
     )
     _write_json(data / "editions.json", publication_document_json(index))
+    _write_json(data / "editions" / "1.0" / "compare.json", build_comparison(bundle).model_dump_json() + "\n")
     for name, document in (("manifest.json", bundle.manifest),
                            ("leaderboard.json", bundle.leaderboard),
                            ("repeat-averages.json", bundle.repeat_averages)):

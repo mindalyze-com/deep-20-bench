@@ -431,6 +431,32 @@ finished with `stop`, and reported 1,104 input tokens, 1,221 output tokens (1,16
 both zero. This verifies the route and action contract, not prefix reuse or game performance.
 The supporting record is `private/reviews/gemini4-20261014/smoke.json`.
 
+Date: 2026-10-23T17:50:39+02:00
+
+Claude Haiku 5.5 (`M-0035`) uses `anthropic/claude-haiku-5.5` pinned to Anthropic
+with high reasoning, strict JSON Schema output, no provider seed, and disabled fallbacks.
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/anthropic/claude-haiku-5.5/endpoints)
+advertises reasoning effort and structured outputs, but no seed parameter. Prices per million
+tokens below 100,000 prompt tokens are $0.10 input, $0.50 output, $0.01 cache reads, and
+$0.125 five-minute cache writes; the advertised rates increase fivefold from that tier.
+[OpenRouter's caching guide](https://openrouter.ai/docs/guides/best-practices/prompt-caching)
+documents a 512-token minimum and five-minute lifetime. The configuration uses best-effort
+`ephemeral_5m`, that minimum, a 300-second lifetime, and a 1.25 write multiplier.
+
+Keep the fixed prefix and append-only visible transcript, with a separate configuration
+namespace and no padding, response reuse, or privileged state. Registration was checked against
+public metadata and offline tests. Recheck the exact route before later paid launches.
+
+Date: 2026-10-23T17:53:39+02:00
+
+The authorized edition 1.1 `qualified_v1` opening-turn canary passed the exact Anthropic route
+and strict action contract with one request and a valid ASK action. It finished with `stop`,
+using 1,570 input tokens, 179 output tokens (132 reasoning), 5,189 milliseconds of latency,
+and $0.00028565 cost. It reported 1,566 cache-write tokens and zero cache-read tokens.
+Retries were disabled; the registered output ceiling and timeout were retained. This verifies
+route operation and cache creation, not prefix reuse, savings, or game performance. The
+supporting record is `private/reviews/haiku55-smoke-20261023/smoke-175334.json`.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input

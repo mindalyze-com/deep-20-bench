@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from "vue";
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { selectedEditionId } from "@/lib/api";
+import { comparisonScroll } from "@/lib/comparison-navigation";
 import DrilldownBar from "@/components/DrilldownBar.vue";
 import EditionWarning from "@/components/EditionWarning.vue";
 import SiteFooter from "@/components/SiteFooter.vue";
@@ -80,7 +81,8 @@ const restoreScroll = async (): Promise<void> => {
   }
   const hash = route.hash.slice(1);
   if (hash) {
-    const target = document.getElementById(decodeURIComponent(hash));
+    // Vue Router already decodes the fragment, including literal percent signs.
+    const target = document.getElementById(hash);
     if (target !== null) {
       // Match native fragment navigation when the target is inside a closed disclosure.
       for (let parent = target.parentElement; parent !== null; parent = parent.parentElement) {
@@ -90,20 +92,11 @@ const restoreScroll = async (): Promise<void> => {
       return;
     }
   }
-  const targetPosition = scrollPositions.get(route.path) ?? 0;
-  let lastAppliedPosition: number | null = null;
+  const targetPosition = (route.name === "results-compare" ? comparisonScroll(route.fullPath)?.top : undefined)
+    ?? scrollPositions.get(route.path) ?? 0;
   const apply = (): void => {
     if (version !== scrollRestoreVersion) return;
-    // A scroll, focus change or touch gesture takes precedence over delayed restoration.
-    if (
-      lastAppliedPosition !== null &&
-      Math.abs(readScrollTop(element) - lastAppliedPosition) > 1
-    ) {
-      scrollRestoreVersion += 1;
-      return;
-    }
     writeScrollTop(element, Math.min(targetPosition, maximumScrollTop(element)));
-    lastAppliedPosition = readScrollTop(element);
   };
   apply();
   window.setTimeout(apply, 70);
@@ -156,8 +149,18 @@ watch(
   },
 );
 
+// Layout changes while cached views resume can also move the page. Cancel retries only
+// for actual user input, so those layout changes cannot discard the saved position.
+const cancelScrollRestore = (): void => { scrollRestoreVersion += 1; };
+const scrollInputEvents = ["wheel", "touchstart", "pointerdown", "keydown"] as const;
 onMounted(() => {
+  for (const event of scrollInputEvents) {
+    window.addEventListener(event, cancelScrollRestore, { passive: true });
+  }
   void restoreScroll();
+});
+onBeforeUnmount(() => {
+  for (const event of scrollInputEvents) window.removeEventListener(event, cancelScrollRestore);
 });
 </script>
 

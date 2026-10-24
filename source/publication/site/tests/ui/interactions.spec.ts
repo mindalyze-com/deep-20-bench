@@ -100,6 +100,8 @@ test("mobile score plots preserve vertical pan and open model runs", { tag: ["@i
       await expect(scoreCanvases.last()).toHaveCSS("pointer-events", "auto");
       await expect(scoreCanvases.last()).toHaveCSS("touch-action", "pan-y");
 
+      // Start with user input so pending route restoration yields to this scroll.
+      await page.mouse.wheel(0, 1);
       await scoreCanvases.first().scrollIntoViewIfNeeded();
       await expect(scoreCanvases.first().locator("svg")).toBeVisible();
       const chartBounds = await scoreCanvases.first().boundingBox();
@@ -175,7 +177,7 @@ test("primary and result navigation use distinct section names", { tag: ["@inter
   await expect(page.locator(".primary-navigation a").filter({ hasText: "Story" })).toHaveCount(0);
 
   const resultLinks = page.locator(".results-nav a");
-  await expect(resultLinks).toHaveText(["Score", "Stability", "Cost", "Time", "Efficiency"]);
+  await expect(resultLinks).toHaveText(["Score", "Stability", "Cost", "Time", "Efficiency", "Compare"]);
   await expect(page.locator(".results-nav a.active")).toHaveText("Score");
   await expect(
     page.locator(".results-nav").getByRole("link", { name: "Overview", exact: true }),
@@ -210,6 +212,24 @@ test("canonical URL resolves aliases and follows client navigation", { tag: ["@i
     "href",
     "https://mindalyze-com.github.io/deep-20-bench/about/",
   );
+});
+
+test("encoded and malformed fragments leave Method navigation usable", { tag: ["@interactions", "@both", "@smoke"] }, async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+
+  for (const fragment of ["%25", "%E0%A4%A", "answer%2Dchecks"]) {
+    await page.goto(`methodology/#${fragment}`);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("How Deep20Bench works");
+    if (fragment === "answer%2Dchecks") {
+      await expect(page.locator("#answer-checks")).toBeInViewport();
+    }
+    await page.locator('.method-nav a[href="#answer-checks"]').click();
+    await expect(page).toHaveURL(/#answer-checks$/);
+    await expect(page.locator("#answer-checks")).toBeInViewport();
+  }
+
+  expect(errors).toEqual([]);
 });
 
 test("leaderboard links and headers remain clear while scrolling", { tag: ["@interactions", "@desktop"] }, async ({
@@ -504,6 +524,7 @@ test("result navigation, tables, and charts use the shared results layout", { ta
     "results/cost/",
     "results/time/",
     "results/efficiency/",
+    "results/compare/",
   ]) {
     await page.goto(routePath);
     await waitForPublication(page);
@@ -515,6 +536,8 @@ test("result navigation, tables, and charts use the shared results layout", { ta
   }
 
   await page.goto("results/cost/");
+  await page.locator(".metric-chart-canvas").first().waitFor({ state: "visible" });
+  await page.mouse.wheel(0, 1);
   await page.locator(".metric-chart-canvas").first().scrollIntoViewIfNeeded();
   await expect(page.locator(".metric-chart-canvas svg").first()).toBeVisible();
   await page.locator(".stacked-chart-canvas").scrollIntoViewIfNeeded();
@@ -577,6 +600,8 @@ test("result navigation, tables, and charts use the shared results layout", { ta
   );
 
   await page.goto("results/time/");
+  await page.locator(".metric-chart-canvas").first().waitFor({ state: "visible" });
+  await page.mouse.wheel(0, 1);
   await page.locator(".metric-chart-canvas").first().scrollIntoViewIfNeeded();
   await expect(page.locator(".metric-chart-canvas svg").first()).toBeVisible();
   await expect(page.locator(".time-panel + .runtime-ledger")).toHaveCount(1);
@@ -588,10 +613,14 @@ test("result navigation, tables, and charts use the shared results layout", { ta
   );
 
   await page.goto("results/efficiency/");
+  await page.locator(".efficiency-scatter-canvas").waitFor({ state: "visible" });
+  await page.mouse.wheel(0, 1);
   await page.locator(".efficiency-scatter-canvas").scrollIntoViewIfNeeded();
   await expect(page.locator(".efficiency-scatter-canvas svg")).toBeVisible();
 
   await page.goto("results/reliability/");
+  await page.locator(".reliability-scatter-canvas").waitFor({ state: "visible" });
+  await page.mouse.wheel(0, 1);
   await page.locator(".reliability-scatter-canvas").scrollIntoViewIfNeeded();
   await expect(page.locator(".reliability-scatter-canvas svg")).toBeVisible();
   await expect(page.locator(".reliability-comparison")).toHaveCount(0);

@@ -7,6 +7,21 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-10-23",
+    displayDate: "23 October 2026",
+    title: "Claude Haiku 5.5 (high) joins the leaderboard.",
+    summary:
+      "It averaged 20.00 questions per round in edition 1.1, 15th of 21 models, with 5 failed rounds out of 30. " +
+      "Compared with GPT-6 Luna (high) at 21.17, it needed fewer questions on seven of the ten subjects, " +
+      "with clear leads on Garfield and Achilles. Spider web was its weak spot: 30, 38, and 21 questions, " +
+      "against Luna’s 16, 22, and 15.",
+    link: {
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0035",
+    },
+  },
+  {
     date: "2026-10-14",
     displayDate: "14 October 2026",
     title: "Gemini 4 Argon (high) matches the lowest average score.",
@@ -399,7 +414,7 @@ onActivated(applyRouteContext);
               aria-controls="news-list"
               @click="showOlderNews"
             >
-              Show {{ nextNewsCount }} older updates
+              Show {{ nextNewsCount }} older {{ nextNewsCount === 1 ? "update" : "updates" }}
             </button>
             <button
               v-if="visibleNewsCount > newsBatchSize"

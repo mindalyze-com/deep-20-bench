@@ -480,7 +480,7 @@ sessions, caches, retries, adjudication, or later trials.
 
 ## Cross-model stability, cost, time, and efficiency
 
-The static Results area has five views:
+The static Results area has six views:
 
 ```text
 /results/             score, outcome, stability, cost, and time overview
@@ -488,6 +488,7 @@ The static Results area has five views:
 /results/cost/        full-run component costs and per-episode costs
 /results/time/        tested-model response time and end-to-end benchmark runtime
 /results/efficiency/  normalized ideal-distance ranking and cost-quality trade-off
+/results/compare/     selected models, absolute metrics, subjects, and expandable rounds
 ```
 
 Every model uses the same 95% confidence level. The Stability view therefore ranks by
@@ -580,11 +581,76 @@ related chart header: in a third column on wide screens and below the explanator
 space is limited. Stability and Efficiency use a contained metric-definition card for the
 formula and interpretation. Longer calculation details remain available through a native
 details disclosure inside the card.
+The shared `InfoPopover` also serves comparison metrics and run score explanations.
+It uses native auto popovers for top-layer rendering, light dismissal, and one open panel at
+a time. Placement stays beside the trigger at every screen size, flips above it when needed,
+and follows the visible viewport during scrolling and resizing. Long content has a separate
+scroll area below the fixed title and close control. Closing restores focus; an off-screen
+trigger closes its panel instead of leaving detached help on screen.
 
 All comparison values are derived after model calls from completed artifacts. They are
 reporting-only. They never enter a Guesser request, history, retry, session, cache namespace, or
 later trial. The feature does not change provider-side prompt caching or add application
 response caching.
+
+### Selected-model comparison
+
+Compare shows 1-5 models from the selected edition. Its Results tab opens the picker;
+"Compare this model" on a model page preselects that model. Main metrics retain the published
+score, interval, rank, recorded costs, time, solved count, and format errors. Subject averages
+expand into round summaries and links to the existing transcripts. Clicking a subject name
+or any average only expands or collapses its rows. Expanded averages show labeled subject
+links beside their bold values; inset round rows have labeled links and regular-weight values.
+These actions are absent from collapsed rows. Round cost is the full
+round cost; round duration includes answer checks. Scored question comparisons use
+`penalized_questions`, including the edition's failure penalty, with counted questions and
+the outcome shown separately. Existing average-then-average scoring does not change.
+The picker marks chosen models as selected and disables them. Repeat additions are rejected;
+removing a model makes it available again.
+
+The compiler builds compact `data/editions/<id>/compare.json` directly from its typed
+publication graph. The versioned `comparison` document contains the edition's subject IDs,
+round count, question limit, selected official leaderboard rows, run totals, subject summaries,
+and round summaries. It contains no transcripts, prompts, evidence, or provider traces. It is
+site data, outside the Data page's advertised downloads. It is embedded in the canonical
+comparison page for static rendering; client navigation fetches one bundle per edition through
+the existing publication loader. Model selection, sorting, differences, and expansion need no
+additional requests. Opening a transcript uses the existing detail loader.
+
+The GUI compares exact decimal values before display rounding. Best and worst marks refer
+only to the selected models and preserve ties. Cell colors show best and worst values; labels
+remain available to screen readers. An all-equal row stays neutral; one available value remains
+unmarked. Official ranks retain their edition-wide meaning. Differences and interval widths are
+descriptive, not pairwise significance tests.
+Unavailable values remain unavailable. Cost-efficiency normalization is not recalculated for
+the selected subset.
+
+Share URLs store ordered stable model IDs in `models`, expanded subject IDs in `expanded`,
+the round `metric`, optional `baseline`, and subject `sort`. They select each model's latest
+published qualifying run; run IDs and completion dates are available in the table. They do
+not promise historical run snapshots. Edition switches retain matching model IDs and subjects,
+drop unavailable models with a notice, and read the destination's round counts. Round rows
+align by subject ID and round number within an edition, without implying statistical pairing.
+Share prefers the native Web Share API, which requires a secure context. Its fallback panel
+provides Copy and manual link selection, and closes with Close, Share again, or Escape.
+Copy prefers the Clipboard API and attempts selected-text copying for HTTP LAN previews.
+Blocked copying leaves the link selected. Native cancellation does not open the fallback;
+other native sharing failures do.
+Tables grow with the page, without an inner vertical scroll area. Narrow tables fit two model
+columns beside sticky row labels; further columns scroll horizontally. Compact headers stack
+brand, model/version, and reasoning effort when their column is narrow, hiding the redundant
+provider line. Wider headers keep the inline name. Swipe guidance appears only for overflowing
+tables. Narrow detail cells show Subject and Round links with their full accessible labels.
+Headers align reasoning labels and run controls using the tallest name's text height, including
+after resizing, font loading, and model selection changes. Removed long names do not leave
+their reserved space behind. Pinned headers use the same alignment behavior.
+Controls remain keyboard accessible with touch targets of at least 44 pixels.
+Compact model headers remain visible during document scrolling and stay aligned with horizontal
+table scrolling. Return positions use bounded tab-local session storage so a detail-page refresh
+preserves them; denied storage falls back to memory. Solved-rate differences use percentage points.
+
+This publication feature makes no LLM calls. Provider prompt caching and benchmark answer
+reuse were evaluated and remain unchanged; the browser retains only already-public site data.
 
 ## Model pages
 

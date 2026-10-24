@@ -9,6 +9,7 @@ const links = [
   { label: "Cost", name: "results-cost" },
   { label: "Time", name: "results-time" },
   { label: "Efficiency", name: "results-efficiency" },
+  { label: "Compare", name: "results-compare" },
 ] as const;
 
 const route = useRoute();

@@ -20,6 +20,7 @@ import {
   selectedEditionId,
 } from "@/lib/api";
 import { applyPageMetadata } from "@/lib/page-metadata";
+import { comparisonReturnPath, isComparisonDetail } from "@/lib/comparison-navigation";
 import {
   applyStructuredData,
   pageStructuredData,
@@ -78,6 +79,12 @@ const routes: RouteRecordRaw[] = [
       context: "Official results",
     },
     children: [
+      {
+        path: "compare/",
+        name: "results-compare",
+        component: () => import("@/views/results/ResultsCompareView.vue"),
+        meta: { depth: 1, nav: "Results", title: "Compare models" },
+      },
       {
         path: "",
         name: "results",
@@ -280,7 +287,7 @@ export const createPublicationRouter = (history: RouterHistory): Router => {
     if (name !== "run" && !(name === "model" && slug !== targetSlug)) return null;
     return { name: "model", params: { editionId, slug: targetSlug } };
   };
-  router.beforeEach(async to => {
+  router.beforeEach(async (to, from) => {
     pendingEditionId.value = null;
     pendingEditionPath = null;
     if (["edition-unavailable", "publication-unavailable", "not-found"].includes(String(to.name))) return;
@@ -310,7 +317,7 @@ export const createPublicationRouter = (history: RouterHistory): Router => {
       }
       if (typeof to.params.editionId !== "string" && typeof to.params.executionId !== "string"
           && ["home", "results", "results-cost", "results-time", "results-efficiency",
-            "results-reliability", "why", "methodology", "about", "data", "models", "model",
+            "results-reliability", "results-compare", "why", "methodology", "about", "data", "models", "model",
           ].includes(String(to.name))) {
         return {
           name: to.name, params: { ...to.params, editionId: id }, query: to.query, hash: to.hash, replace: true,
@@ -321,6 +328,13 @@ export const createPublicationRouter = (history: RouterHistory): Router => {
         pendingEditionId.value = id;
       }
       await getManifest(id);
+      if (isComparisonDetail(to.name) && to.query.compare === undefined) {
+        const origin = from.name === "results-compare" ? from.fullPath
+          : isComparisonDetail(from.name) ? comparisonReturnPath(router, from.query) : null;
+        if (origin !== null) {
+          return { path: to.path, query: { ...to.query, compare: origin }, hash: to.hash };
+        }
+      }
     } catch {
       return { name: "publication-unavailable", query: { retry: to.fullPath }, replace: true };
     }

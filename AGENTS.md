@@ -28,6 +28,7 @@
 
 - Keep replies and notes short, concise, and in simple language.
 - Write in English unless the user requests another language. Use hyphens, not em dashes.
+- Lead benchmark reports with score or question counts; wins are secondary because most games are won.
 - Website copy and documentation: simple and clear, no marketing language. Start a document with
   what it is for; put policy and change notes after that. Website terms follow the public copy
   rules in `documentation/homepage-creation.md#purpose`.

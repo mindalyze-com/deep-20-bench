@@ -434,6 +434,26 @@ export interface RepeatAveragesDocument {
   averages: PublicRepeatAverage[];
 }
 
+export interface ComparisonSubject extends PublicSubjectSummary {
+  rounds: PublicTrialSummary[];
+}
+
+export interface ComparisonModel {
+  result: LeaderboardRow;
+  totals: PublicRunTotals;
+  subjects: ComparisonSubject[];
+}
+
+export interface ComparisonDocument {
+  document_type: "comparison";
+  schema_version: 1;
+  edition_id: string;
+  iterations: number;
+  max_questions: number;
+  target_ids: string[];
+  models: ComparisonModel[];
+}
+
 export interface RunDocument {
   document_type: "run";
   schema_version: 4;

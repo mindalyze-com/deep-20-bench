@@ -2132,7 +2132,6 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
         source_root / "components" / "ChartAccessibleData.vue"
     ).read_text(encoding="utf-8")
     cost_donut = (source_root / "components" / "CostDonut.vue").read_text(encoding="utf-8")
-    info_popover = (source_root / "components" / "InfoPopover.vue").read_text(encoding="utf-8")
     question_score = (source_root / "components" / "QuestionScore.vue").read_text(encoding="utf-8")
     stacked_costs = (source_root / "components" / "StackedMetricBars.vue").read_text(
         encoding="utf-8"
@@ -2171,10 +2170,7 @@ def test_result_metric_charts_use_tree_shaken_echarts() -> None:
     assert "ResizeObserver" in responsive_runtime
     assert 'chart.on("click", options.onClick)' in responsive_runtime
     assert "<InfoPopover" in question_score
-    assert 'event.key === "Escape"' in info_popover
-    assert 'document.addEventListener("pointerdown"' in info_popover
-    assert "position: absolute;" in info_popover
-    assert "position: fixed;" in info_popover
+    # The browser suite checks popover dismissal, focus, and placement.
     assert 'radius: ["58%", "83%"]' in cost_donut
     assert 'stack: "full-cost"' in stacked_costs
     assert 'name: "Adaptive axis offset"' not in stacked_costs

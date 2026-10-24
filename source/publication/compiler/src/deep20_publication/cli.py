@@ -18,6 +18,7 @@ from typing import Annotated
 import typer
 from pydantic import JsonValue
 
+from .comparison import build_comparison
 from .compiler import compile_publication, superseded_qualified_runs
 from .draft import load_draft, render_draft
 from .edition_registry import EditionRegistry
@@ -98,6 +99,14 @@ class _EditorialPage:
 
 
 _EDITORIAL_PAGES = (
+    _EditorialPage(
+        route="results/compare",
+        browser_title="Compare AI Models Side by Side | Deep20Bench",
+        description=(
+            "Compare up to five AI models side by side: question score, stability, cost, "
+            "time, and results for each subject and round."
+        ),
+    ),
     _EditorialPage(
         route="results",
         browser_title="AI Model Leaderboard: LLM Benchmark Results | Deep20Bench",
@@ -501,6 +510,7 @@ def _write_public_data(
         for item in datasets:
             bundle = split_publication(item)
             prefix = f"editions/{item.active_cohort.edition_id}/"
+            write(prefix + "compare.json", build_comparison(bundle).model_dump_json() + "\n")
             downloads: tuple[tuple[PublicationDownloadPath, str], ...] = (
                 ("deep20bench-v10.json", dataset_json(item)),
                 ("deep20bench-v10.schema.json", dataset_schema_json()),

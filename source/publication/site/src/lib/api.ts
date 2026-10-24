@@ -1,5 +1,7 @@
 import { shallowRef } from "vue";
+import { parseComparisonDocument } from "./comparison-data";
 import type {
+  ComparisonDocument,
   AppBuildDocument,
   EditionsDocument,
   EpisodeDocument,
@@ -32,7 +34,8 @@ export type PublicationDocument =
   | SubjectDocument
   | EpisodeDocument
   | ModelDocument
-  | ModelIndexDocument;
+  | ModelIndexDocument
+  | ComparisonDocument;
 
 const modelPath = (editionId: string, slug: string): string =>
   editionPath(`models/${encodeURIComponent(slug)}.json`, editionId);
@@ -59,6 +62,8 @@ const documentPath = (document: PublicationDocument): string => {
       return modelPath(document.edition_id, document.slug);
     case "model_index":
       return editionPath("models.json", document.edition_id);
+    case "comparison":
+      return editionPath("compare.json", document.edition_id);
   }
 };
 
@@ -83,6 +88,7 @@ export const parsePublicationDocument = (value: unknown): PublicationDocument =>
     episode: 3,
     model: 1,
     model_index: 1,
+    comparison: 1,
   };
   const expectedVersion = expectedVersions[candidate.document_type];
   if (expectedVersion === undefined || candidate.schema_version !== expectedVersion) {
@@ -93,6 +99,7 @@ export const parsePublicationDocument = (value: unknown): PublicationDocument =>
       throw new Error("Publication document has no valid edition identity.");
     }
   }
+  if (candidate.document_type === "comparison") return parseComparisonDocument(value);
   if (candidate.document_type === "editions") {
     if (typeof candidate.default_edition_id !== "string" || !Array.isArray(candidate.editions)) {
       throw new Error("Publication edition index is invalid.");
@@ -184,6 +191,16 @@ const validateOwnership = (document: PublicationDocument): void => {
   if (index === null || document.document_type === "app_build" || document.document_type === "editions") return;
   const edition = index.editions.find(item => item.edition_id === document.edition_id);
   if (edition === undefined) throw new Error("Publication edition is unavailable.");
+  if (document.document_type === "comparison") {
+    for (const model of document.models) {
+      const run = edition.runs.find(item => item.execution_id === model.result.execution_id);
+      if (run === undefined || run.model_id !== model.result.model.model_id ||
+          run.classification !== "official" || run.target_ids.length !== model.subjects.length ||
+          model.subjects.some(subject => !run.target_ids.includes(subject.target_id))) {
+        throw new Error("Comparison results belong to a different edition.");
+      }
+    }
+  }
   if (document.document_type === "run" || document.document_type === "subject" || document.document_type === "episode") {
     const executionId = document.document_type === "run" ? document.run.execution_id : document.execution_id;
     const run = edition.runs.find(item => item.execution_id === executionId);
@@ -269,6 +286,9 @@ export const peekModel = (editionId: string, slug: string): ModelDocument | null
 
 export const peekModelIndex = (editionId = selectedEditionId.value): ModelIndexDocument | null =>
   peek<ModelIndexDocument>(editionPath("models.json", editionId));
+
+export const peekComparison = (editionId = selectedEditionId.value): ComparisonDocument | null =>
+  peek<ComparisonDocument>(editionPath("compare.json", editionId));
 
 /** The stable model-page slug for a model in an edition, from the always-loaded edition index. */
 export const modelSlug = (modelId: string, editionId = selectedEditionId.value): string | null =>
@@ -403,6 +423,9 @@ export const getModel = (editionId: string, slug: string): Promise<ModelDocument
 
 export const getModelIndex = (editionId = selectedEditionId.value): Promise<ModelIndexDocument> =>
   request<ModelIndexDocument>(editionPath("models.json", editionId), "model_index");
+
+export const getComparison = (editionId = selectedEditionId.value): Promise<ComparisonDocument> =>
+  request<ComparisonDocument>(editionPath("compare.json", editionId), "comparison");
 
 export const getOfficialRuns = async (): Promise<RunDocument[]> => {
   const manifest = await getManifest();

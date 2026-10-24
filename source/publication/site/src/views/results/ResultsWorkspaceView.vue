@@ -12,8 +12,10 @@ const isResultsWorkspaceRoute = computed(() =>
   route.matched.some((record) => record.path.endsWith("/results/")),
 );
 const resetResultsScroll = async (): Promise<void> => {
+  // The app restores the comparison's saved position when returning from a detail page.
+  if (!isResultsWorkspaceRoute.value || route.name === "results-compare") return;
   await nextTick();
-  window.scrollTo({ top: 0, left: 0 });
+  if (isResultsWorkspaceRoute.value && route.name !== "results-compare") window.scrollTo({ top: 0, left: 0 });
 };
 
 onActivated(() => {
@@ -29,6 +31,8 @@ watch(
 
 const copy = computed(() => {
   switch (route.name) {
+    case "results-compare":
+      return { title: "Compare models", tone: "score" };
     case "results-reliability":
       return {
         title: "Score stability",
@@ -168,7 +172,7 @@ const copy = computed(() => {
 }
 
 .results-workspace-header :deep(.results-nav) {
-  flex-shrink: 0;
+  flex-shrink: 1;
   align-self: stretch;
   align-items: end;
   padding-inline: 0;

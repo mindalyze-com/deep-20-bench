@@ -2,6 +2,7 @@ import { computed } from "vue";
 import type { RouteLocationNormalizedLoaded, RouteLocationRaw } from "vue-router";
 
 import { editionsIndex, peekManifest, selectedEditionId } from "./api";
+import { comparisonState } from "./comparison";
 import type { CohortConfig, EditionReference } from "./types";
 
 export const editionAnswers = (cohort: CohortConfig | null): readonly string[] =>
@@ -30,6 +31,17 @@ export const editionDestination = (
   edition: EditionReference,
 ): RouteLocationRaw => {
   if (edition.edition_id === selectedEditionId.value) return route.fullPath;
+  if (route.name === "results-compare") {
+    const state = comparisonState(route.query);
+    const kept = state.modelIds.filter(id => edition.models.some(model => model.model_id === id));
+    const targets = new Set(edition.runs.filter(run => kept.includes(run.model_id)).flatMap(run => run.target_ids));
+    return { name: "results-compare", params: { editionId: edition.edition_id }, query: {
+      ...route.query, models: kept.join(",") || undefined,
+      baseline: kept.includes(state.baseline) ? state.baseline : undefined,
+      expanded: state.expanded.filter(id => targets.has(id)).join(",") || undefined,
+      comparisonNotice: kept.length < state.modelIds.length ? "missing-models" : undefined,
+    } };
+  }
   const executionId = route.params.executionId;
   if (typeof executionId === "string") {
     const source = editionsIndex.value?.editions.flatMap(item => item.runs)

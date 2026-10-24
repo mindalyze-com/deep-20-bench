@@ -620,6 +620,7 @@ test("question score and CI width plots align on desktop and stack on mobile", {
   await waitForPublication(page);
   const scoreCanvas = page.locator(".score-dot-plot-canvas--score");
   const widthCanvas = page.locator(".score-dot-plot-canvas--width");
+  await page.mouse.wheel(0, 1);
   await scoreCanvas.scrollIntoViewIfNeeded();
   await expect(scoreCanvas.locator("svg")).toBeVisible();
   await widthCanvas.scrollIntoViewIfNeeded();
@@ -940,7 +941,7 @@ test("workspace model names separate reasoning effort and panels stay aligned", 
 
   const scoreCard = page.locator(".run-primary-score");
   const scoreLabelBox = await scoreCard.locator(".score-label").boundingBox();
-  const scoreValueBox = await scoreCard.locator("strong").boundingBox();
+  const scoreValueBox = await scoreCard.locator(":scope > strong").boundingBox();
   const scoreCardBox = await scoreCard.boundingBox();
   expect(scoreLabelBox).not.toBeNull();
   expect(scoreValueBox).not.toBeNull();
@@ -1092,8 +1093,9 @@ test("result charts remain contained across the mobile breakpoint", { tag: ["@la
     await page.setViewportSize({ width: 1000, height: 900 });
     await page.goto(routePath);
     await waitForPublication(page);
+    await page.mouse.wheel(0, 1);
     await page.locator(".result-chart-panel").first().scrollIntoViewIfNeeded();
-    await expect(page.locator(".result-chart-panel svg").first()).toBeVisible();
+    await expect(page.locator(".result-chart-panel [class*='-canvas'] svg").first()).toBeVisible();
 
     for (const width of [720, 840, 720]) {
       await page.setViewportSize({ width, height: 900 });
@@ -1113,7 +1115,7 @@ test("result charts remain contained across the mobile breakpoint", { tag: ["@la
               });
             });
             const canvases = [
-              ...document.querySelectorAll(".result-chart-panel [class$='-canvas']"),
+              ...document.querySelectorAll(".result-chart-panel [class*='-canvas']"),
             ];
             const chartsResized = canvases.every((canvas) => {
               const renderer = canvas.firstElementChild;

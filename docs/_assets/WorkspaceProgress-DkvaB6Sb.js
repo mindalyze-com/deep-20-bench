@@ -1,1 +1,0 @@
-import{T as e,g as t,l as n,u as r}from"./runtime-core.esm-bundler-CNMtQn0S.js";var i={key:0,class:`workspace-progress`,"aria-hidden":`true`},a=t({__name:`WorkspaceProgress`,props:{active:{type:Boolean}},setup(t){return(a,o)=>t.active?(e(),r(`div`,i)):n(``,!0)}});export{a as t};
