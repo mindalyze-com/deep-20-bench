@@ -294,8 +294,15 @@ needs it. Subject pages embed their run and subject documents so their aggregate
 ordinary episode links exist in the initial HTML. Episode pages also embed their episode document
 and render the transcript before JavaScript loads. The complete version 10 datasets and version 9
 compatibility JSON remain downloads and are not imported into the
-application bundle. Browser promise caching applies only to immutable public reporting files.
-It cannot affect model requests, benchmark execution, or Guesser-visible state.
+application bundle. Browser promise caching applies only to public reporting files. After a
+deployment, an older embedded edition index can briefly disagree with a newer comparison file
+at the same URL. On that specific ownership mismatch, the loader revalidates the edition index,
+edition manifest and comparison once with HTTP `no-cache`, bypassing its promise cache. It
+checks the run ownership, selected runs and edition settings before replacing the cached set
+together. Concurrent callers share the recovery; late requests from the older cache cannot
+repopulate it. Normal visits make no extra requests. Failed recovery keeps the existing error
+screen and manual retry, without automatic reloads or retry loops. This reporting cache cannot
+affect model requests, benchmark execution, or Guesser-visible state.
 
 The build uses Vue server rendering with a memory-history router, then hydrates the same tree
 with a web-history router in the browser. The homepage, eight editorial and result pages, and

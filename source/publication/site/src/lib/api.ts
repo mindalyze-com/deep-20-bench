@@ -22,6 +22,7 @@ const editionPath = (file: string, editionId = selectedEditionId.value): string 
 
 const cache = new Map<string, Promise<unknown>>();
 const preloaded = new Map<string, unknown>();
+const dataRevision = shallowRef(0);
 const dataBase = `${import.meta.env.BASE_URL}data/`;
 
 export type PublicationDocument =
@@ -186,18 +187,27 @@ export const parsePublicationDocument = (value: unknown): PublicationDocument =>
   return candidate as unknown as PublicationDocument;
 };
 
-const validateOwnership = (document: PublicationDocument): void => {
-  const index = editionsIndex.value;
+class ComparisonInventoryMismatch extends Error {}
+
+const validateOwnership = (
+  document: PublicationDocument,
+  index: EditionsDocument | null = editionsIndex.value,
+): void => {
   if (index === null || document.document_type === "app_build" || document.document_type === "editions") return;
   const edition = index.editions.find(item => item.edition_id === document.edition_id);
-  if (edition === undefined) throw new Error("Publication edition is unavailable.");
+  if (edition === undefined) {
+    if (document.document_type === "comparison") {
+      throw new ComparisonInventoryMismatch("Publication edition is unavailable.");
+    }
+    throw new Error("Publication edition is unavailable.");
+  }
   if (document.document_type === "comparison") {
     for (const model of document.models) {
       const run = edition.runs.find(item => item.execution_id === model.result.execution_id);
       if (run === undefined || run.model_id !== model.result.model.model_id ||
           run.classification !== "official" || run.target_ids.length !== model.subjects.length ||
           model.subjects.some(subject => !run.target_ids.includes(subject.target_id))) {
-        throw new Error("Comparison results belong to a different edition.");
+        throw new ComparisonInventoryMismatch("Comparison results belong to a different edition.");
       }
     }
   }
@@ -226,6 +236,7 @@ const validateOwnership = (document: PublicationDocument): void => {
 export const resetPublicationData = (): void => {
   cache.clear();
   preloaded.clear();
+  dataRevision.value++;
   selectedEditionId.value = "1.0";
   pendingEditionId.value = null;
   editionsIndex.value = null;
@@ -246,11 +257,14 @@ export const seedPublicationData = (documents: readonly unknown[]): void => {
     preloaded.set(path, document);
     cache.set(`${dataBase}${path}`, Promise.resolve(document));
   }
-  parsed.forEach(validateOwnership);
+  parsed.forEach(document => validateOwnership(document));
 };
 
-const peek = <Document>(path: string): Document | null =>
-  (preloaded.get(path) as Document | undefined) ?? null;
+const peek = <Document>(path: string): Document | null => {
+  // Refreshing the publication also updates computed edition settings.
+  void dataRevision.value;
+  return (preloaded.get(path) as Document | undefined) ?? null;
+};
 
 export const peekManifest = (editionId = selectedEditionId.value): ManifestDocument | null =>
   peek<ManifestDocument>(editionPath("manifest.json", editionId));
@@ -306,46 +320,85 @@ export const peekOfficialRuns = (): RunDocument[] | null => {
     : null;
 };
 
+const fetchDocument = async <Document extends PublicationDocument>(
+  path: string,
+  expectedType: Document["document_type"],
+  cacheMode: RequestCache = "default",
+): Promise<Document> => {
+  const response = await fetch(`${dataBase}${path}`, { credentials: "same-origin", cache: cacheMode });
+  if (!response.ok) {
+    throw new Error(response.status === 404
+      ? "No publication data exists for this page."
+      : "Publication data could not be loaded. Try again.");
+  }
+  let value: unknown;
+  try {
+    value = await response.json();
+  } catch {
+    throw new Error("Publication data is unavailable for this page.");
+  }
+  if (objectValue(value)?.document_type !== expectedType) {
+    throw new Error("Publication data could not be read. Try again.");
+  }
+  const parsed = parsePublicationDocument(value);
+  if (documentPath(parsed) !== path) {
+    throw new Error("Publication document does not match the requested edition or route.");
+  }
+  return parsed as Document;
+};
+
+const refreshComparison = async (editionId: string, revision: number): Promise<ComparisonDocument> => {
+  // Stable Pages URLs can briefly combine an older embedded index with newer data.
+  // Revalidate once, outside the promise cache, and publish only a validated set.
+  const [index, manifest, comparison] = await Promise.all([
+    fetchDocument<EditionsDocument>("editions.json", "editions", "no-cache"),
+    fetchDocument<ManifestDocument>(editionPath("manifest.json", editionId), "manifest", "no-cache"),
+    fetchDocument<ComparisonDocument>(editionPath("compare.json", editionId), "comparison", "no-cache"),
+  ]);
+  validateOwnership(manifest, index);
+  validateOwnership(comparison, index);
+  const cohort = manifest.active_cohort;
+  if (cohort.iterations !== comparison.iterations || cohort.max_questions !== comparison.max_questions
+      || cohort.target_ids.length !== comparison.target_ids.length
+      || comparison.target_ids.some(id => !cohort.target_ids.includes(id))
+      || manifest.official_runs.length !== comparison.models.length
+      || comparison.models.some(model => !manifest.official_runs.some(run =>
+        run.execution_id === model.result.execution_id && run.model_id === model.result.model.model_id
+        && run.classification === "official"))) {
+    throw new Error("The site was updated, but its data could not be refreshed. Try again.");
+  }
+  if (revision === dataRevision.value) {
+    cache.clear();
+    preloaded.clear();
+    seedPublicationData([index, manifest, comparison]);
+    dataRevision.value++;
+  }
+  return comparison;
+};
+
 const request = <Document extends PublicationDocument>(
   path: string,
-  expectedType: Document extends { document_type: infer Type } ? Type : never,
+  expectedType: Document["document_type"],
 ): Promise<Document> => {
   const url = `${dataBase}${path}`;
   const existing = cache.get(url);
   if (existing !== undefined) return existing as Promise<Document>;
-  const pending = fetch(url, { credentials: "same-origin" })
-    .then(async (response) => {
-      if (!response.ok) {
-        throw new Error(
-          response.status === 404
-            ? "No publication data exists for this page."
-            : "Publication data could not be loaded. Try again.",
-        );
-      }
-      let value: unknown;
+  const revision = dataRevision.value;
+  const pending = fetchDocument<Document>(path, expectedType)
+    .then(async document => {
       try {
-        value = await response.json();
-      } catch {
-        throw new Error("Publication data is unavailable for this page.");
+        validateOwnership(document);
+      } catch (error: unknown) {
+        if (document.document_type !== "comparison" || !(error instanceof ComparisonInventoryMismatch)) {
+          throw error;
+        }
+        return await refreshComparison(document.edition_id, revision) as Document;
       }
-      if (
-        typeof value !== "object" ||
-        value === null ||
-        !("document_type" in value) ||
-        value.document_type !== expectedType
-      ) {
-        throw new Error("Publication data could not be read. Try again.");
-      }
-      const parsed = parsePublicationDocument(value);
-      validateOwnership(parsed);
-      if (documentPath(parsed) !== path) {
-        throw new Error("Publication document does not match the requested edition or route.");
-      }
-      preloaded.set(path, parsed);
-      return parsed as Document;
+      if (revision === dataRevision.value) preloaded.set(path, document);
+      return document;
     })
     .catch((error: unknown) => {
-      cache.delete(url);
+      if (cache.get(url) === pending) cache.delete(url);
       throw error;
     });
   cache.set(url, pending);
@@ -353,8 +406,9 @@ const request = <Document extends PublicationDocument>(
 };
 
 export const getEditions = async (): Promise<EditionsDocument> => {
+  const revision = dataRevision.value;
   const document = await request<EditionsDocument>("editions.json", "editions");
-  editionsIndex.value = document;
+  if (revision === dataRevision.value) editionsIndex.value = document;
   return document;
 };
 
