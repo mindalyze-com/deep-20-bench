@@ -7,6 +7,23 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-10-28",
+    displayDate: "28 October 2026",
+    title: "GPT-6.1 Terra (high) joins the leaderboard.",
+    summary:
+      "It averaged 18.83 questions per round in edition 1.1, 14th of 22 models, " +
+      "with 3 failed rounds out of 30 and no format errors. GPT-6.1 Sol (high) averaged 15.23. " +
+      "Terra needed fewer questions on Door handle (28.00 against 33.33), " +
+      "but more on Albert Schweitzer (39.33 against 19.33), where two rounds failed. " +
+      "The tested model cost $0.57 over 30 rounds, compared with Sol’s $1.13. " +
+      "These costs exclude answer checks and the earlier attempts of rounds repeated after technical failures.",
+    link: {
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0036",
+    },
+  },
+  {
     date: "2026-10-23",
     displayDate: "23 October 2026",
     title: "Claude Haiku 5.5 (high) joins the leaderboard.",

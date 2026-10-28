@@ -457,6 +457,30 @@ Retries were disabled; the registered output ceiling and timeout were retained. 
 route operation and cache creation, not prefix reuse, savings, or game performance. The
 supporting record is `private/reviews/haiku55-smoke-20261023/smoke-175334.json`.
 
+Date: 2026-10-27T08:09:15+01:00
+
+GPT-6.1 Terra (`M-0036`) uses `openai/gpt-6.1-terra` pinned to OpenAI with high
+reasoning, strict JSON Schema output, provider seed support, and disabled fallbacks.
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/openai/gpt-6.1-terra/endpoints)
+advertised standard input/output/cache-read/cache-write prices of $1/$5/$0.05/$1.25 per
+million tokens below 272,000 prompt tokens. Above that tier, the advertised rates are
+$2/$7.50/$0.10/$2.50. The endpoint marked implicit caching as unsupported.
+[OpenRouter's caching guide](https://openrouter.ai/docs/guides/best-practices/prompt-caching)
+documents automatic OpenAI caching from 1,024 prompt tokens. The configuration uses
+best-effort automatic caching, that minimum, a 1,800-second observation window inherited
+from GPT-6.1 Sol, and a 1.25 write multiplier. The window is not a measured retention guarantee.
+Keep the fixed prefix and append-only visible history without padding or response reuse;
+no cache savings are assumed. Recheck the exact route before later paid launches.
+
+The authorized edition 1.1 `qualified_v1` opening-turn canary passed the exact OpenAI route
+and strict action contract with one request and a valid ASK action. It finished with `stop`,
+using 759 input tokens, 66 output tokens (30 reasoning), 3,681 milliseconds of latency,
+and $0.001089 cost. It reported zero cache-read/write tokens and no reported cache discount.
+Retries were disabled; the registered 32,768-token output ceiling and 120-second timeout
+were retained. This sub-threshold call verifies routing and the action contract; prefix
+reuse and game performance remain unmeasured. The supporting record is
+`private/reviews/terra61-smoke-20261027/smoke.json`.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input

@@ -372,6 +372,7 @@ def test_repository_model_catalog_has_expected_active_ids() -> None:
         "M-0033",
         "M-0034",
         "M-0035",
+        "M-0036",
     )
 
 

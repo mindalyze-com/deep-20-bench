@@ -5,9 +5,9 @@ import shutil
 from pathlib import Path
 from typing import cast
 
+from deep20_publication.comparison import build_comparison
 from deep20_publication.compiler import _rank, _rank_efficiency
 from deep20_publication.model_pages import build_model_pages
-from deep20_publication.comparison import build_comparison
 from deep20_publication.models import (
     EditionModelReference,
     EditionRunReference,
