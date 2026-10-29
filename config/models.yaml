@@ -906,3 +906,32 @@ models:
         input_usd_per_million: "1.00"
         cached_input_usd_per_million: "0.05"
         cache_write_multiplier: "1.25"
+
+  M-0037:
+    model_id: M-0037
+    display_name: DeepSeek V4.1 Flash 1017 (high)
+    configuration:
+      configuration_id: M-0037
+      gateway: openrouter
+      model: deepseek/deepseek-v4.1-flash-1017
+      # DeepInfra advertises strict JSON Schema, effort, seed, and automatic
+      # prefix caching on its FP8 routes on 2026-10-28.
+      provider: deepinfra
+      reasoning_effort: high
+      allow_fallbacks: false
+      max_output_tokens: 32768
+      timeout_seconds: 120
+      recovery: *default_recovery
+      seed_capability: supported
+      prompt_cache:
+        policy: best_effort
+        control: automatic
+        # Inherited observation settings, not verified thresholds or retention.
+        minimum_cacheable_tokens: 1024
+        ttl_seconds: 300
+        # Standard FP8 input/output/cache reads: $0.098/$0.294/$0.00294
+        # per million tokens, including a 51% discount on 2026-10-28.
+        # Recheck prices and the selected service tier before later live runs.
+        input_usd_per_million: "0.098"
+        cached_input_usd_per_million: "0.00294"
+        cache_write_multiplier: "1.00"

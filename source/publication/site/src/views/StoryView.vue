@@ -7,6 +7,23 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-10-29",
+    displayDate: "29 October 2026",
+    title: "DeepSeek V4.1 Flash 1017 (high) joins the leaderboard.",
+    summary:
+      "It finished edition 1.1 with a question score of 22.70, 21st of 23 models, " +
+      "solving 25 of 30 rounds. Five rounds failed and five format errors were recorded. " +
+      "gpt-oss 120B (high) scored 22.23. DeepSeek scored 9.33 on Albert Einstein, " +
+      "slightly below leader GPT-6 Astra’s 9.67, but 40.00 on Bike pump against 26.33. " +
+      "Eyebrow and Door handle accounted for four of its five failed rounds. " +
+      "The tested model cost $0.30 over 30 rounds, excluding answer checks.",
+    link: {
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0037",
+    },
+  },
+  {
     date: "2026-10-28",
     displayDate: "28 October 2026",
     title: "GPT-6.1 Terra (high) joins the leaderboard.",

@@ -481,6 +481,30 @@ were retained. This sub-threshold call verifies routing and the action contract;
 reuse and game performance remain unmeasured. The supporting record is
 `private/reviews/terra61-smoke-20261027/smoke.json`.
 
+Date: 2026-10-28T21:01:54+01:00
+
+DeepSeek V4.1 Flash 1017 (`M-0037`) uses the October 17 snapshot
+`deepseek/deepseek-v4.1-flash-1017`, pinned to DeepInfra with high reasoning,
+strict JSON Schema output, advertised seed support, and disabled fallbacks.
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/deepseek/deepseek-v4.1-flash-1017/endpoints)
+advertised automatic prefix caching and standard FP8 input/output/cache-read prices of
+$0.098/$0.294/$0.00294 per million tokens, including a 51% discount. Other service tiers
+have different prices; recheck the selected route and discount before later live runs.
+No separate cache-write price was advertised. Keep the 1.00 write multiplier and automatic
+best-effort caching. The inherited 1,024-token minimum and 300-second window are observation
+settings, not verified provider thresholds or retention guarantees.
+
+The existing fixed prefix and append-only visible transcript remain unchanged, with no
+padding, explicit cache storage, response reuse, or shared privileged state. The authorized
+edition 1.1 `qualified_v1` opening-turn canary passed the exact model/provider route and
+strict action contract with one valid ASK response, HTTP 200, and a `stop` finish. It used
+625 input tokens and 339 output tokens (293 reasoning), took 7,019 milliseconds, and cost
+$0.000160916. Cache-read/write tokens were zero and no cache discount was reported. Retries
+were disabled; the registered 32,768-token output ceiling and 120-second timeout were retained.
+Seed support was checked in metadata; the existing canary sends no provider seed. Prefix reuse,
+cache savings, and game performance remain unmeasured. The supporting record is
+`private/reviews/deepseek41-flash-smoke-20261028/smoke.json`.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input
