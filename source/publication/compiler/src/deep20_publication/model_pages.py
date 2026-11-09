@@ -276,7 +276,7 @@ def build_model_pages(
         slugs = slugs_by_edition[edition_id]
         rows = _published_rows(bundle)
         ranked_models = sum(row.rank is not None for row in rows)
-        official = {reference.execution_id for reference in bundle.manifest.official_runs}
+        official = {row.execution_id for row in bundle.leaderboard.leaderboard}
         subject_averages: dict[str, list[Decimal]] = defaultdict(list)
         for run_document in bundle.runs:
             if run_document.run.execution_id not in official:
@@ -323,8 +323,12 @@ def build_model_pages(
                 observations=_observations(subjects),
                 other_editions=other_editions,
                 superseded_runs=superseded.get(edition_id, {}).get(model_id, ()),
+                runs=tuple(item for item in (bundle.leaderboard.runs or bundle.leaderboard.leaderboard)
+                           if item.model.model_id == model_id),
             ))
             entries.append(PublicModelIndexEntry(
+                completed_at=row.completed_at,
+                run_count=sum(item.model.model_id == model_id for item in (bundle.leaderboard.runs or bundle.leaderboard.leaderboard)),
                 slug=slugs[model_id],
                 model=row.model,
                 execution_id=execution_id,

@@ -14,6 +14,7 @@ defineProps<{
     class="result-row--clickable result-row--navigable"
     :rank="rank"
     :name="run.model_name"
+    :date="run.completed_at"
     :meta="run.model_id"
     :to="modelSummaryRoute(run.model_id, run.execution_id)"
   >

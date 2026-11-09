@@ -135,6 +135,7 @@ def split_publication(dataset: PublishedDataset) -> PublicationDataBundle:
         leaderboard=PublicationLeaderboardDocument(
             edition_id=edition_id,
             leaderboard=dataset.leaderboard,
+            runs=dataset.run_results or dataset.leaderboard,
         ),
         repeat_averages=PublicationRepeatAveragesDocument(
             edition_id=edition_id,
@@ -197,6 +198,7 @@ def edition_index(
                 repeat_averages_path=f"editions/{dataset.active_cohort.edition_id}/repeat-averages.json",
                 runs=tuple(
                     EditionRunReference(
+                        completed_at=run.completed_at,
                         execution_id=run.execution_id,
                         model_id=run.model_id,
                         model_name=run.model_name,

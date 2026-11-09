@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { runLabel, useRunSelection } from "@/lib/run-selection";
 import { computed } from "vue";
 
 import InfoPopover from "@/components/InfoPopover.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import RunHistoryChart from "@/components/RunHistoryChart.vue";
+import { runHistory } from "@/lib/run-history-chart";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import OfficialRunRankingRow from "@/components/OfficialRunRankingRow.vue";
@@ -16,8 +19,10 @@ import { modelSummaryRoute } from "@/lib/route-location";
 import { useOfficialRunData } from "@/lib/use-official-run-data";
 import { useTableSort } from "@/lib/use-table-sort";
 
-const { documents, loading, error, providerFor, openRun } =
+const { documents, allDocuments, latestDocuments, loading, error, providerFor, openRun } =
   useOfficialRunData();
+
+const { allRuns } = useRunSelection();
 
 usePageRouteContext({
   title: "Time results",
@@ -91,7 +96,7 @@ const totalBenchmarkTime = computed(() =>
 );
 
 const summaryMetrics = computed<MetricGridItem[]>(() => [
-  { key: "runs", label: "Models", value: guesserRuns.value.length },
+  { key: "runs", label: allRuns.value ? "Dated runs" : "Models", value: guesserRuns.value.length },
   {
     key: "median",
     label: "Median model time",
@@ -112,7 +117,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
 
 const guesserTimeBars = computed(() =>
   guesserRuns.value.map((run) => ({
-    label: run.model_name,
+    label: runLabel(run.model_name, run.completed_at),
     value: run.totals.guesser_think_time_ms,
     display: duration(run.totals.guesser_think_time_ms),
     detail: `${duration(
@@ -124,7 +129,7 @@ const guesserTimeBars = computed(() =>
 
 const benchmarkTimeBars = computed(() =>
   benchmarkRuns.value.map((run) => ({
-    label: run.model_name,
+    label: runLabel(run.model_name, run.completed_at),
     value: run.totals.runtime_ms,
     display: duration(run.totals.runtime_ms),
     detail: `${duration(
@@ -136,6 +141,15 @@ const benchmarkTimeBars = computed(() =>
   })),
 );
 
+const latestIds = computed(() => new Set(latestDocuments.value.map(document => document.run.execution_id)));
+const modelTimeHistory = computed(() => runHistory(
+  allDocuments.value.map(document => document.run).sort((left,right)=>left.totals.guesser_think_time_ms-right.totals.guesser_think_time_ms),
+  latestIds.value, run=>({x:run.totals.guesser_think_time_ms,xDisplay:duration(run.totals.guesser_think_time_ms)}),
+));
+const benchmarkTimeHistory = computed(() => runHistory(
+  allDocuments.value.map(document => document.run).sort((left,right)=>left.totals.runtime_ms-right.totals.runtime_ms),
+  latestIds.value, run=>({x:run.totals.runtime_ms,xDisplay:duration(run.totals.runtime_ms)}),
+));
 </script>
 
 <template>
@@ -188,7 +202,9 @@ const benchmarkTimeBars = computed(() =>
                 </InfoPopover>
               </ResultHelp>
             </header>
+            <RunHistoryChart v-if="allRuns" :items="modelTimeHistory" mode="bar" x-label="Model time" value-format="duration" color="acid" />
             <MetricBars
+              v-else
               :items="guesserTimeBars"
               direction-label="Model time · lower is faster"
               color="acid"
@@ -211,7 +227,9 @@ const benchmarkTimeBars = computed(() =>
                 says more about the test setup than about the model. It is sorted, not ranked.
               </p>
             </header>
+            <RunHistoryChart v-if="allRuns" :items="benchmarkTimeHistory" mode="bar" x-label="End-to-end runtime" value-format="duration" />
             <MetricBars
+              v-else
               :items="benchmarkTimeBars"
               direction-label="End-to-end time · lower is faster"
               color="blue"
@@ -285,6 +303,7 @@ const benchmarkTimeBars = computed(() =>
             :rank="index + 1"
             :name="run.model_name"
             :provider="providerFor(run.model_id)"
+            :date="run.completed_at"
             :to="modelSummaryRoute(run.model_id, run.execution_id)"
             :metrics="[
               {

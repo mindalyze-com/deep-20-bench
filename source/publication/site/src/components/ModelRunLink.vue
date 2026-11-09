@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import PublicationTime from "@/components/PublicationTime.vue";
 import type { RouteLocationRaw } from "vue-router";
 
 import { modelView } from "@/router";
 
 defineProps<{
+  date?: string | null;
   name: string;
   meta?: string;
   to: RouteLocationRaw;
@@ -22,6 +24,7 @@ defineProps<{
     <span class="model-run-link-copy">
       <span class="model-run-link-name">{{ name }}</span>
       <span v-if="meta" class="model-run-link-meta">{{ meta }}</span>
+      <span v-if="date" class="run-date"><PublicationTime :value="date" date-only /></span>
     </span>
     <span class="model-run-link-chevron" aria-hidden="true">→</span>
   </RouterLink>
@@ -95,3 +98,5 @@ defineProps<{
   }
 }
 </style>
+
+<style scoped>.run-date { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem; white-space: nowrap; }</style>

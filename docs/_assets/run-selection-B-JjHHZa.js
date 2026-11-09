@@ -1,0 +1,1 @@
+import{i as e}from"./runtime-core.esm-bundler-1UjAsBqw.js";import{h as t,m as n}from"./useApi-CROJJdhE-Pqx_e-8O.js";import{a as r}from"./format-CXmkO2no.js";var i=e=>e?r(e):`Date unavailable`,a=(e,t)=>`${e} · ${i(t)}`,o=()=>{let r=n(),i=t();return{allRuns:e(()=>r.query.history===`all`),select:e=>{i.push({query:{...r.query,history:e?`all`:void 0}})}}};export{a as n,o as r,i as t};

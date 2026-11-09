@@ -53,7 +53,7 @@ test("per-round cost comparisons keep sub-cent values and differences visible", 
 test("URL selection preserves order, bounds the selection, and reads shared view settings", () => {
   expect(comparisonState({ models: ["M-0006,M-0001,M-0006", "M-0014"],
     expanded: "T-0005,T-0001", baseline: "M-0001", metric: "cost", sort: "gap" })).toEqual({
-    modelIds: ["M-0006", "M-0001", "M-0014"], expanded: ["T-0005", "T-0001"],
+    modelIds: ["M-0006", "M-0001", "M-0014"], runIds: [], expanded: ["T-0005", "T-0001"],
     baseline: "M-0001", metric: "cost", sort: "gap",
   });
   expect(comparisonState({ models: "M-0001,M-0002,M-0003,M-0004,M-0005,M-0006", metric: "wrong", baseline: "M-0006" }))
@@ -97,5 +97,38 @@ test("edition switching matches model IDs and removes unavailable models and sub
     query: { models: `${first},${second}`, baseline: second, expanded: "T-0001,T-0002", metric: "cost" }, hash: "",
   } as unknown as RouteLocationNormalizedLoaded;
   expect(editionDestination(route, target)).toEqual({ name: "results-compare", params: { editionId: "1.1" },
-    query: { models: first, baseline: undefined, expanded: "T-0001", metric: "cost", comparisonNotice: "missing-models" } });
+    query: { runs: undefined, models: first, baseline: undefined, expanded: "T-0001", metric: "cost", comparisonNotice: "missing-models" } });
+});
+
+test("dated selection permits two dates of one model and pins its baseline", () => {
+  const first = "BX-20260926-B-0003-official-M0030-001";
+  const second = "BX-20261103-B-0003-official-M0030-001";
+  expect(comparisonState({ runs: `${first},${second},${first}`, baseline: first }))
+    .toMatchObject({ runIds: [first, second], baseline: first });
+  const dated = structuredClone(document);
+  dated.schema_version = 2;
+  dated.models = [structuredClone(document.models[0]!), structuredClone(document.models[0]!)];
+  dated.models[0]!.result.is_latest = true;
+  const earlier = dated.models[1]!.result;
+  earlier.execution_id = first;
+  earlier.is_latest = false;
+  earlier.rank = null; earlier.ideal_distance_score = null;
+  earlier.efficiency_rank = null; earlier.ideal_distance_rank = null; earlier.product_efficiency_rank = null;
+  earlier.normalized_question_score = null; earlier.normalized_guesser_cost = null;
+  expect(parsePublicationDocument(dated)).toEqual(dated);
+  earlier.rank = 1;
+  expect(() => parsePublicationDocument(dated)).toThrow(/Comparison data/);
+});
+
+test("switching editions explicitly clears dates and picks destination model results", () => {
+  seedPublicationData([editions]);
+  const source = editions.editions[0]!;
+  const run = source.runs[0]!;
+  const target = { ...source, edition_id: "1.1" };
+  const route = { name: "results-compare", params: { editionId: "1.0" }, fullPath: "/",
+    query: { runs: run.execution_id, baseline: run.execution_id }, hash: "",
+  } as unknown as RouteLocationNormalizedLoaded;
+  expect(editionDestination(route, target)).toMatchObject({
+    query: { runs: undefined, models: run.model_id, baseline: undefined, comparisonNotice: "edition-runs" },
+  });
 });

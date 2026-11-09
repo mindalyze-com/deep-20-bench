@@ -214,15 +214,15 @@ const repeatAverageGroups = computed<RepeatAverageGroup[]>(() => {
   const itemsByModel = new Map(props.items.map((item) => [item.modelId, item]));
   const groups = new Map<string, RepeatAverageGroup>();
   for (const average of props.repeatAverages) {
-    const item = itemsByModel.get(average.model_id);
+    const item = itemsByModel.get(average.execution_id);
     if (item === undefined) continue;
     const value = Number(average.average_questions);
     if (!Number.isFinite(value)) continue;
-    const key = `${average.model_id}\u0000${average.average_questions}`;
+    const key = `${average.execution_id}\u0000${average.average_questions}`;
     const existing = groups.get(key);
     if (existing === undefined) {
       groups.set(key, {
-        modelId: average.model_id,
+        modelId: average.execution_id,
         label: item.label,
         value,
         averages: [average],
@@ -262,7 +262,7 @@ const repeatCountLabel = computed(() => {
   if (props.repeatAverages === null) return "Repeated rounds across all subjects";
   const counts = new Map<string, number>();
   for (const average of props.repeatAverages) {
-    counts.set(average.model_id, (counts.get(average.model_id) ?? 0) + 1);
+    counts.set(average.execution_id, (counts.get(average.execution_id) ?? 0) + 1);
   }
   const values = [...counts.values()];
   return values.length > 0 && values.every((value) => value === values[0])
@@ -1085,7 +1085,7 @@ watch(
         v-for="average in repeatAverages ?? []"
         :key="`${average.execution_id}-${average.trial_number}`"
       >
-        {{ items.find((item) => item.modelId === average.model_id)?.label }},
+        {{ items.find((item) => item.modelId === average.execution_id)?.label }},
         round {{ average.trial_number }}: {{ average.average_questions }} questions,
         averaged across {{ average.subject_count }} subjects.
       </li>

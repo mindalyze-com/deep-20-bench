@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 
 import EmptyEditionResults from "@/components/EmptyEditionResults.vue";
 import { useEditionContext } from "@/lib/use-edition-context";
+import RunSelection from "@/components/RunSelection.vue";
 import ResultsNav from "@/components/ResultsNav.vue";
 
 const route = useRoute();
@@ -32,7 +33,7 @@ watch(
 const copy = computed(() => {
   switch (route.name) {
     case "results-compare":
-      return { title: "Compare models", tone: "score" };
+      return { title: "Compare runs", tone: "score" };
     case "results-reliability":
       return {
         title: "Score stability",
@@ -79,6 +80,7 @@ const copy = computed(() => {
     </header>
 
     <div class="results-workspace-body">
+      <RunSelection v-if="route.name !== 'results-compare'" />
       <div v-if="manifest?.official_runs.length === 0" class="site-boundary-shell edition-empty-container"><div class="site-boundary"><EmptyEditionResults /></div></div>
       <RouterView v-else-if="isResultsWorkspaceRoute" v-slot="{ Component }">
         <KeepAlive>

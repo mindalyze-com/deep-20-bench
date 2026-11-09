@@ -7,6 +7,21 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-11-09",
+    displayDate: "9 November 2026",
+    title: "Claude Fable 5.2 (high) joins the leaderboard.",
+    summary:
+      "It averaged 14.57 questions per round in edition 1.1, third of 24 models, " +
+      "and solved all 30 rounds with no format errors. GPT-6 Astra and Gemini 4 Argon both scored 13.67. " +
+      "Bike pump was its hardest subject at 33.33 questions per round. " +
+      "The tested model cost $3.29 over 30 rounds, excluding answer checks and the earlier attempt of one round retried after a technical failure.",
+    link: {
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0038",
+    },
+  },
+  {
     date: "2026-10-29",
     displayDate: "29 October 2026",
     title: "DeepSeek V4.1 Flash 1017 (high) joins the leaderboard.",

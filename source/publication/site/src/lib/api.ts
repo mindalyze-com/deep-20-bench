@@ -92,7 +92,7 @@ export const parsePublicationDocument = (value: unknown): PublicationDocument =>
     comparison: 1,
   };
   const expectedVersion = expectedVersions[candidate.document_type];
-  if (expectedVersion === undefined || candidate.schema_version !== expectedVersion) {
+  if (expectedVersion === undefined || (candidate.schema_version !== expectedVersion && !(candidate.document_type === "comparison" && candidate.schema_version === 2))) {
     throw new Error("Preloaded publication data uses an unsupported schema version.");
   }
   if (candidate.document_type !== "app_build" && candidate.document_type !== "editions") {

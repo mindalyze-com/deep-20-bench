@@ -96,6 +96,7 @@ def _reconstruct(bundle: PublicationDataBundle) -> PublishedDataset:
         provenance=bundle.manifest.provenance,
         winner=bundle.manifest.winner,
         leaderboard=bundle.leaderboard.leaderboard,
+        run_results=bundle.leaderboard.runs,
         models=bundle.manifest.models,
         official_runs=official_runs,
         lab_runs=lab_runs,

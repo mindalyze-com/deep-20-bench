@@ -60,7 +60,7 @@ def build_comparison(bundle: PublicationDataBundle) -> PublicationComparisonDocu
                     for summary in runs[row.execution_id].subjects
                 ),
             )
-            for row in bundle.leaderboard.leaderboard
+            for row in (bundle.leaderboard.runs or bundle.leaderboard.leaderboard)
             if row.status == "evaluated" and row.execution_id is not None
             and row.execution_id in official
         ),

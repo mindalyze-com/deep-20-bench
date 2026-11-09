@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { editionRoute, modelSummaryRoute } from "@/lib/route-location";
+import { editionRoute, modelRoute, modelSummaryRoute } from "@/lib/route-location";
 import {
   computed,
   onActivated,
@@ -13,7 +13,7 @@ import LoadingState from "@/components/LoadingState.vue";
 import ModelName from "@/components/ModelName.vue";
 import QuestionScore from "@/components/QuestionScore.vue";
 import WorkspaceProgress from "@/components/WorkspaceProgress.vue";
-import { getRun, getSubject, peekRun } from "@/lib/api";
+import { getRun, getSubject, peekRun, modelSlug } from "@/lib/api";
 import { contractStatusLabel, number, percent } from "@/lib/format";
 import { setRouteContext } from "@/lib/route-context";
 import { useKeyedPublicationLoad } from "@/lib/use-keyed-publication-load";
@@ -92,7 +92,7 @@ subjectWorkspaceView.preload();
           </RouterLink>
           <p class="eyebrow">Model under test</p>
           <h2><ModelName :name="run.model_name" compact dark /></h2>
-          <RouterLink class="rail-model-link" :to="modelSummaryRoute(run.model_id, run.execution_id)">
+          <RouterLink class="rail-model-link" :to="modelSlug(run.model_id) ? modelRoute(modelSlug(run.model_id)!) : modelSummaryRoute(run.model_id, run.execution_id)">
             Model summary →
           </RouterLink>
           <div v-if="!isRunOverview" class="rail-score">
@@ -188,7 +188,7 @@ subjectWorkspaceView.preload();
 
 .model-rail {
   display: grid;
-  grid-template-rows: auto auto auto minmax(min-content, 1fr);
+  grid-template-rows: max-content max-content max-content minmax(min-content, 1fr);
   min-width: 0;
   min-height: 0;
   overflow-x: hidden;
@@ -325,10 +325,10 @@ subjectWorkspaceView.preload();
 }
 
 .subject-list-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.4rem;
+  align-items: start;
   min-height: 42px;
   padding: 0.65rem 0.9rem;
   border-bottom: var(--rule-inverse-subtle);
@@ -348,7 +348,10 @@ subjectWorkspaceView.preload();
 
 .status-legend {
   display: flex;
-  gap: 0.6rem;
+  flex-wrap: wrap;
+  column-gap: 0.8rem;
+  row-gap: 0.35rem;
+  line-height: 1.35;
   color: var(--text-inverse-subtle);
   font-size: var(--text-caption);
   font-weight: var(--font-weight-bold);
@@ -356,11 +359,14 @@ subjectWorkspaceView.preload();
 
 .status-legend > span {
   display: inline-flex;
+  flex: 0 0 auto;
   gap: 0.25rem;
   align-items: center;
+  white-space: nowrap;
 }
 
 .status-legend i {
+  flex: 0 0 7px;
   width: 7px;
   height: 7px;
   border-radius: 50%;

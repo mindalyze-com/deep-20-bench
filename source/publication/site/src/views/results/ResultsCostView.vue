@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { runLabel, useRunSelection } from "@/lib/run-selection";
 import { computed } from "vue";
 
 import InfoPopover from "@/components/InfoPopover.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import RunHistoryChart from "@/components/RunHistoryChart.vue";
+import { runHistory } from "@/lib/run-history-chart";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
 import OfficialRunRankingRow from "@/components/OfficialRunRankingRow.vue";
@@ -22,8 +25,10 @@ import type { PublicRunSummary } from "@/lib/types";
 import { useOfficialRunData } from "@/lib/use-official-run-data";
 import { useTableSort } from "@/lib/use-table-sort";
 
-const { documents, loading, error, providerFor, openRun } =
+const { documents, allDocuments, latestDocuments, loading, error, providerFor, openRun } =
   useOfficialRunData();
+
+const { allRuns } = useRunSelection();
 
 usePageRouteContext({
   title: "Cost results",
@@ -88,7 +93,7 @@ const mobileCostMetrics = (run: PublicRunSummary) => {
 };
 
 const summaryMetrics = computed<MetricGridItem[]>(() => [
-  { key: "runs", label: "Models", value: runs.value.length },
+  { key: "runs", label: allRuns.value ? "Dated runs" : "Models", value: runs.value.length },
   {
     key: "spend",
     label: "Total benchmark cost",
@@ -109,7 +114,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
 
 const guesserCostBars = computed(() =>
   guesserRuns.value.map((run) => ({
-    label: run.model_name,
+    label: runLabel(run.model_name, run.completed_at),
     value: Number(run.totals.costs_usd.guesser),
     display: money(run.totals.costs_usd.guesser),
     link: `/runs/${run.execution_id}/`,
@@ -151,7 +156,7 @@ const componentValue = (
 
 const stackedRows = computed<StackedBarRow[]>(() =>
   runs.value.map((run) => ({
-    label: run.model_name,
+    label: runLabel(run.model_name, run.completed_at),
     display: money(run.totals.costs_usd.total),
     values: componentRows.map((component) =>
       componentValue(run, component.key),
@@ -173,6 +178,21 @@ const costBand = (index: number): "good" | "middle" | "bad" => {
   if (position >= 2 / 3) return "bad";
   return "middle";
 };
+const latestIds = computed(() => new Set(latestDocuments.value.map(document => document.run.execution_id)));
+const costHistory = computed(() => runHistory(
+  allDocuments.value.map(document => document.run).sort((left,right) => Number(left.totals.costs_usd.guesser)-Number(right.totals.costs_usd.guesser)),
+  latestIds.value,
+  run => ({x:run.totals.costs_usd.guesser,xDisplay:money(run.totals.costs_usd.guesser)}),
+));
+const fullCostHistory = computed(() => runHistory(
+  allDocuments.value.map(document => document.run).sort((left,right) => Number(left.totals.costs_usd.total)-Number(right.totals.costs_usd.total)),
+  latestIds.value,
+  run => ({
+    x:run.totals.costs_usd.total, xDisplay:money(run.totals.costs_usd.total),
+    components:componentRows.map(component => ({label:component.label,value:componentValue(run,component.key),display:money(componentValue(run,component.key)),color:component.color})),
+    detail:adjudicationRows.map(component => `${component.label} ${money(run.totals.costs_usd[component.key])}`).join(' · '),
+  }),
+));
 
 // Rank and band come from the published cost order and stay fixed while sorting.
 const runEntries = computed(() =>
@@ -255,7 +275,9 @@ const { sortedRows: sortedEntries, toggleSort, ariaSort } = useTableSort(runEntr
                 </InfoPopover>
               </ResultHelp>
             </header>
+            <RunHistoryChart v-if="allRuns" :items="costHistory" mode="bar" x-label="Guesser cost ($)" value-format="currency" color="coral" />
             <MetricBars
+              v-else
               :items="guesserCostBars"
               direction-label="Guesser cost · lower is better"
               color="coral"
@@ -278,7 +300,9 @@ const { sortedRows: sortedEntries, toggleSort, ariaSort } = useTableSort(runEntr
                 exact breakdown to compare those three.
               </p>
             </header>
+            <RunHistoryChart v-if="allRuns" :items="fullCostHistory" mode="bar" x-label="Total benchmark cost ($)" value-format="currency" color="coral" />
             <StackedMetricBars
+              v-else
               :rows="stackedRows"
               :segments="stackedSegments"
               direction-label="Total benchmark cost by component"
@@ -352,6 +376,7 @@ const { sortedRows: sortedEntries, toggleSort, ariaSort } = useTableSort(runEntr
             :rank="index + 1"
             :name="run.model_name"
             :provider="providerFor(run.model_id)"
+            :date="run.completed_at"
             :to="modelSummaryRoute(run.model_id, run.execution_id)"
             :metrics="mobileCostMetrics(run)"
           />

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { runLabel, useRunSelection } from "@/lib/run-selection";
 import { computed, ref } from "vue";
 
 import EfficiencyScatter, {
@@ -7,6 +8,8 @@ import EfficiencyScatter, {
 import EfficiencyMarkerLegend from "@/components/EfficiencyMarkerLegend.vue";
 import InfoPopover from "@/components/InfoPopover.vue";
 import MetricBars from "@/components/MetricBars.vue";
+import RunHistoryChart from "@/components/RunHistoryChart.vue";
+import { resultHistory } from "@/lib/run-history-chart";
 import MetricDefinitionCard from "@/components/MetricDefinitionCard.vue";
 import MetricGrid, { type MetricGridItem } from "@/components/MetricGrid.vue";
 import MobileResultCard from "@/components/MobileResultCard.vue";
@@ -19,11 +22,13 @@ import TableHeaderStack from "@/components/TableHeaderStack.vue";
 import { moneyEpisode, number, percent } from "@/lib/format";
 import { leaderboardSortAccessors, useTableSort } from "@/lib/use-table-sort";
 import { usePageRouteContext } from "@/lib/route-context";
-import { modelSummaryRoute } from "@/lib/route-location";
+import PublicationTime from "@/components/PublicationTime.vue";
+import { comparisonRoute, runRoute, modelSummaryRoute } from "@/lib/route-location";
 import type { LeaderboardRow } from "@/lib/types";
 import { useLeaderboardResults } from "@/lib/use-leaderboard-results";
 
-const { leaderboard, loading, error, openRun } = useLeaderboardResults();
+const { leaderboard, allRows, loading, error, openRun } = useLeaderboardResults();
+const { allRuns } = useRunSelection();
 const expandedChartDialog = ref<HTMLDialogElement | null>(null);
 const expandedChartOpen = ref(false);
 
@@ -70,8 +75,11 @@ const { sortedRows: sortedRanked, toggleSort, ariaSort } = useTableSort(ranked, 
   rank: (row) => row.rank,
 });
 
+const earlier = computed(() => leaderboard.value.filter(row => row.is_latest === false));
+const latestExecution = (row: LeaderboardRow): string | undefined => leaderboard.value.find(item => item.is_latest !== false && item.model.model_id === row.model.model_id)?.execution_id ?? undefined;
+
 const unranked = computed(() =>
-  leaderboard.value.filter((row) => idealDistanceRank(row) === null),
+  leaderboard.value.filter((row) => row.is_latest !== false && idealDistanceRank(row) === null),
 );
 
 const paretoCount = computed(
@@ -108,7 +116,7 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
 
 const efficiencyBars = computed(() =>
   ranked.value.map((row) => ({
-    label: row.model.display_name,
+    label: runLabel(row.model.display_name, row.completed_at),
     value: Number(row.ideal_distance_score),
     display: number(row.ideal_distance_score, 3),
     detail: `${number(row.normalized_question_score, 3)} scaled question score · ${number(
@@ -122,7 +130,7 @@ const efficiencyBars = computed(() =>
 
 const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
   ranked.value.map((row) => ({
-    label: row.model.display_name,
+    label: runLabel(row.model.display_name, row.completed_at),
     rank: idealDistanceRank(row) ?? 0,
     cost: Number(row.guesser_cost_per_episode_usd ?? 0),
     costDisplay: moneyEpisode(row.guesser_cost_per_episode_usd),
@@ -137,6 +145,11 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
   })),
 );
 
+const efficiencyHistory = computed(() => resultHistory(
+  [...ranked.value, ...allRows.value.filter(row=>row.is_latest===false)]
+    .filter(row=>row.guesser_cost_per_episode_usd!==null && Number(row.guesser_cost_per_episode_usd)>0),
+  row=>({x:row.guesser_cost_per_episode_usd,xDisplay:moneyEpisode(row.guesser_cost_per_episode_usd),y:row.question_score,yDisplay:number(row.question_score)}),
+));
 </script>
 
 <template>
@@ -191,6 +204,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
               direction-label="Distance on the shared scale · lower is better"
               color="efficiency"
             />
+            <p v-if="allRuns" class="results-note">Only the latest run per model is ranked here. Earlier dates appear on the actual-cost map below.</p>
           </section>
 
           <section
@@ -200,12 +214,13 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
             <div class="tradeoff-layout">
               <header class="tradeoff-copy">
                 <p class="eyebrow">Trade-off map</p>
-                <h3 id="tradeoff-title">Cost and question score on a shared scale.</h3>
-                <p>
+                <h3 id="tradeoff-title">{{ allRuns ? 'Cost and question score across dates.' : 'Cost and question score on a shared scale.' }}</h3>
+                <p v-if="allRuns">Actual recorded Guesser cost per round and question score. Earlier dates share these axes and do not receive current efficiency ranks.</p>
+                <p v-else>
                   Both axes use the same 0-to-1 scale. Dashed curves connect points at
                   equal distance from the lower-left corner.
                 </p>
-                <ResultHelp label="Trade-off map explanation">
+                <ResultHelp v-if="!allRuns" label="Trade-off map explanation">
                   <InfoPopover label="Trade-off map">
                     <p>
                       Axis labels and tooltips show the actual question score and Guesser
@@ -213,7 +228,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                     </p>
                   </InfoPopover>
                 </ResultHelp>
-                <EfficiencyMarkerLegend />
+                <EfficiencyMarkerLegend v-if="!allRuns" />
                 <button
                   class="button button-secondary chart-expand-button"
                   type="button"
@@ -225,7 +240,8 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                 </button>
               </header>
               <div class="tradeoff-visual">
-                <EfficiencyScatter :items="efficiencyPoints" />
+                <RunHistoryChart v-if="allRuns" :items="efficiencyHistory" mode="scatter" x-label="Guesser cost per round ($)" y-label="Question score" value-format="episode-cost" color="efficiency" />
+                <EfficiencyScatter v-else :items="efficiencyPoints" />
               </div>
             </div>
           </section>
@@ -242,14 +258,14 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                 <div>
                   <p class="eyebrow">Expanded trade-off map</p>
                   <h2 id="expanded-tradeoff-title">
-                    Cost and question score on a shared scale.
+                    {{ allRuns ? 'Cost and question score across dates.' : 'Cost and question score on a shared scale.' }}
                   </h2>
                 </div>
                 <p id="expanded-tradeoff-description">
-                  Lower-left is better. Curves show equal distance from the ideal.
+                  {{ allRuns ? 'Lower-left is better. Each date keeps its own recorded cost and score.' : 'Lower-left is better. Curves show equal distance from the ideal.' }}
                 </p>
                 <div class="expanded-chart-legend">
-                  <EfficiencyMarkerLegend />
+                  <EfficiencyMarkerLegend v-if="!allRuns" />
                 </div>
                 <button
                   class="button button-secondary expanded-chart-close"
@@ -260,8 +276,9 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                 </button>
               </header>
               <div class="expanded-chart-visual">
+                <RunHistoryChart v-if="expandedChartOpen && allRuns" :items="efficiencyHistory" mode="scatter" x-label="Guesser cost per round ($)" y-label="Question score" value-format="episode-cost" color="efficiency" />
                 <EfficiencyScatter
-                  v-if="expandedChartOpen"
+                  v-else-if="expandedChartOpen"
                   :items="efficiencyPoints"
                   expanded
                 />
@@ -316,7 +333,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
               <tbody>
                 <RankingDataRow
                   v-for="row in sortedRanked"
-                  :key="row.model.model_id"
+                  :key="row.execution_id!"
                   :class="{
                     'result-row--clickable': row.execution_id !== null,
                     'result-row--navigable': row.execution_id !== null,
@@ -324,6 +341,7 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
                   :rank="idealDistanceRank(row)"
                   :name="row.model.display_name"
                   :meta="row.model.provider"
+                      :date="row.completed_at"
                   :to="
                     row.execution_id === null ? null : modelSummaryRoute(row.model.model_id, row.execution_id)
                   "
@@ -351,10 +369,11 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
           <div class="mobile-result-list" aria-label="Efficiency ranking">
             <MobileResultCard
               v-for="row in ranked"
-              :key="`mobile-${row.model.model_id}`"
+              :key="`mobile-${row.execution_id}`"
               :rank="idealDistanceRank(row) ?? '-'"
               :name="row.model.display_name"
               :provider="row.model.provider"
+              :date="row.completed_at"
               :to="row.execution_id === null ? null : modelSummaryRoute(row.model.model_id, row.execution_id)"
               :metrics="[
                 {
@@ -371,11 +390,25 @@ const efficiencyPoints = computed<EfficiencyPoint[]>(() =>
             />
           </div>
 
+          <p v-if="leaderboard.some(row => row.is_latest === false)" class="results-note">Efficiency ranks use the latest run of each model as their reference set. Earlier dates keep their recorded score and cost in Compare and their complete run reports.</p>
           <p v-if="unranked.length > 0" class="results-note">
             {{ unranked.length }} model{{ unranked.length === 1 ? " is" : "s are" }}
             not ranked because a question score or a Guesser cost above zero is
             missing.
           </p>
+
+          <section v-if="earlier.length" class="earlier-efficiency" aria-label="Earlier dated runs">
+            <h3>Earlier dated runs</h3>
+            <p>Recorded scores and model costs. Current normalized efficiency ranks apply to the latest dates only.</p>
+            <div class="table-wrap"><table class="data-table"><thead><tr><th>Model</th><th>Completed</th><th>Question score</th><th>Model cost / round</th><th>Compare</th></tr></thead>
+              <tbody><tr v-for="row in earlier" :key="row.execution_id!">
+                <th scope="row"><RouterLink :to="runRoute(row.execution_id!)">{{ row.model.display_name }}</RouterLink></th>
+                <td><PublicationTime v-if="row.completed_at" :value="row.completed_at" date-only /></td>
+                <td>{{ number(row.question_score) }}</td><td>{{ moneyEpisode(row.guesser_cost_per_episode_usd) }}</td>
+                <td><RouterLink v-if="latestExecution(row)" :to="comparisonRoute([row.execution_id!, latestExecution(row)!], undefined, row.execution_id!)">Compare with latest →</RouterLink></td>
+              </tr></tbody>
+            </table></div>
+          </section>
 
           <MetricDefinitionCard
             title="Distance from the lowest score and cost."

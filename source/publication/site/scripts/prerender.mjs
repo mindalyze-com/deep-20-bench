@@ -227,7 +227,10 @@ const pageDocuments = (route) => {
   if (manifest === undefined || leaderboard === undefined) throw new Error(`Missing edition ${route.editionId}`);
   const localRoute = route.route.replace(/^editions\/[^/]+(?:\/|$)/, "");
   const documents = [editionsDocument, manifest];
-  const needsLeaderboard = route.kind === "home" || route.kind === "run" ||
+  const runHasHistory = (route.kind === "subject" || route.kind === "episode") &&
+    editionsDocument.editions.find(edition => edition.edition_id === route.editionId)?.runs
+      .filter(run => run.model_id === runDocuments.get(route.executionId)?.run.model_id && run.classification === "official").length > 1;
+  const needsLeaderboard = route.kind === "home" || route.kind === "run" || runHasHistory ||
     localRoute === "results" || (localRoute.startsWith("results/") && localRoute !== "results/compare");
   if (needsLeaderboard) documents.push(leaderboard);
   if (localRoute === "methodology") {

@@ -2293,6 +2293,7 @@ class PublicModel(FrozenModel):
 
 
 class LeaderboardRow(FrozenModel):
+    is_latest: bool = True
     rank: int | None
     model: PublicModel
     efficiency_rank: int | None = None
@@ -2329,6 +2330,8 @@ class LeaderboardRow(FrozenModel):
     @model_validator(mode="after")
     def confidence_interval_matches_score(self) -> LeaderboardRow:
         interval = self.question_score_confidence_interval
+        if not self.is_latest and any(value is not None for value in (self.rank, self.efficiency_rank, self.ideal_distance_rank, self.product_efficiency_rank, self.ideal_distance_score, self.normalized_question_score, self.normalized_guesser_cost)):
+            raise ValueError("earlier runs cannot inherit current ranks or normalized efficiency")
         if interval is not None and interval.estimate != self.question_score:
             raise ValueError("leaderboard score and confidence interval disagree")
         return self
@@ -2367,6 +2370,7 @@ class PublishedDataset(FrozenModel):
     leaderboard: tuple[LeaderboardRow, ...]
     models: tuple[PublicModel, ...]
     official_runs: tuple[PublicRun, ...]
+    run_results: tuple[LeaderboardRow, ...] = ()
     lab_runs: tuple[PublicRun, ...]
 
 
@@ -2423,6 +2427,7 @@ class PublicationLeaderboardDocument(FrozenModel):
     schema_version: Literal[4] = 4
     edition_id: EditionId = "1.0"
     leaderboard: tuple[LeaderboardRow, ...]
+    runs: tuple[LeaderboardRow, ...] = ()
 
 
 class PublicRepeatAverage(FrozenModel):
@@ -2524,7 +2529,7 @@ class PublicationComparisonDocument(FrozenModel):
 
     model_config = ConfigDict(strict=True)
     document_type: Literal["comparison"] = "comparison"
-    schema_version: Literal[1] = 1
+    schema_version: Literal[2] = 2
     edition_id: EditionId
     iterations: int = Field(ge=1)
     max_questions: int = Field(ge=1)
@@ -2533,10 +2538,9 @@ class PublicationComparisonDocument(FrozenModel):
 
     @model_validator(mode="after")
     def complete_unique_results(self) -> PublicationComparisonDocument:
-        model_ids = tuple(model.result.model.model_id for model in self.models)
         executions = tuple(model.result.execution_id for model in self.models)
-        if len(set(model_ids)) != len(model_ids) or len(set(executions)) != len(executions):
-            raise ValueError("comparison models and runs must be unique")
+        if len(set(executions)) != len(executions):
+            raise ValueError("comparison runs must be unique")
         if len(set(self.target_ids)) != len(self.target_ids):
             raise ValueError("comparison subject identities must be unique")
         for model in self.models:
@@ -2635,6 +2639,7 @@ class PublicationModelDocument(FrozenModel):
     observations: tuple[PublicModelObservation, ...]
     other_editions: tuple[PublicModelEditionLink, ...]
     superseded_runs: tuple[PublicSupersededRun, ...]
+    runs: tuple[LeaderboardRow, ...] = ()
 
     @model_validator(mode="after")
     def observations_cite_published_rounds(self) -> PublicationModelDocument:
@@ -2658,6 +2663,8 @@ class PublicationModelDocument(FrozenModel):
 
 
 class PublicModelIndexEntry(FrozenModel):
+    completed_at: datetime | None = None
+    run_count: int = Field(default=1, ge=1)
     slug: str = Field(pattern=MODEL_SLUG_PATTERN)
     model: PublicModel
     execution_id: str = Field(pattern=EXECUTION_ID_PATTERN)
@@ -2686,6 +2693,7 @@ class PublicationModelIndexDocument(FrozenModel):
 
 
 class EditionRunReference(PublicationRunReference):
+    completed_at: datetime | None = None
     target_ids: tuple[str, ...]
 
 
@@ -2776,6 +2784,20 @@ class PublicationDataBundle(FrozenModel):
             for average in self.repeat_averages.averages
         ):
             raise ValueError("repeat averages must belong to official runs")
+
+        result_rows = self.leaderboard.runs
+        if result_rows:
+            row_ids = tuple(row.execution_id for row in result_rows)
+            if len(set(row_ids)) != len(row_ids) or set(row_ids) != {item.execution_id for item in self.manifest.official_runs}:
+                raise ValueError("dated results must identify every official run exactly once")
+            if {row.execution_id for row in result_rows if row.is_latest} != {row.execution_id for row in self.leaderboard.leaderboard}:
+                raise ValueError("latest dated results must match the leaderboard")
+            for row in result_rows:
+                if row.execution_id is None:
+                    raise ValueError("dated result requires a run identity")
+                recorded_run = run_documents[row.execution_id].run
+                if row.model.model_id != recorded_run.model_id or row.question_score != recorded_run.question_score or row.completed_at != recorded_run.completed_at:
+                    raise ValueError("dated result differs from its recorded run")
 
         subject_documents = {
             (document.execution_id, document.target_id): document for document in self.subjects

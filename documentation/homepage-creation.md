@@ -3,6 +3,12 @@
 Status: implemented publication for benchmark editions 1 and 1.1, with separate
 latest-qualified-run selection and 1.1 as the GUI default.
 
+## Dated benchmark results
+
+Publish each qualifying date as a separate run with its own score and report. Rank the latest qualifying run per model; never average different dates. Results can show all dated runs, and Compare selects exact executions, including several dates of the same model. Shared comparison URLs pin those executions. Earlier reports remain crawlable, canonical and in the sitemap. Historical runs do not inherit current ranks or normalized efficiency values. See the publication README for the dated-run data contract.
+
+All dated runs overlays earlier dates as hollow markers while the latest run keeps the solid marker or bar and determines the model order. Hover and keyboard focus reveal dates and connect a model's observations; overlapping markers offer an explicit date choice. The accessible date list includes each recorded value and a difference defined as earlier minus latest. Efficiency history uses actual cost and score on shared axes, separate from the current normalized ranking.
+
 ## Purpose
 
 Deep20Bench publishes a static GitHub Pages website derived from completed benchmark
@@ -72,18 +78,18 @@ with shared content and canonical `/about/`, so it preserves the selected editio
 edition loads, the selector continues to identify the displayed data and shows a loading label.
 No cross-edition ranking is shown.
 
-The Compare result tab opens a 1-5 model comparison. A "Compare this model" link on each model
-summary opens the same page with that model selected. One compiler-produced comparison bundle
+The Compare result tab opens a 1-5 dated-run comparison. A "Compare this run" link on each model
+summary opens the same page with that exact run selected. Multiple dates of one model are allowed. One compiler-produced comparison bundle
 per edition supplies main metrics, existing subject averages, and expandable round summaries.
-The picker shows chosen models as disabled entries marked selected, rejects repeat additions,
-and makes removed models available again.
+The picker shows chosen runs as disabled entries marked selected, rejects duplicate execution IDs,
+and makes removed runs available again.
 The browser selects columns, compares exact decimals, highlights best/worst values with cell
 colors, and calculates descriptive differences. No comparison permutations are generated.
 Scored rounds use their published penalty on failure; full round cost and elapsed duration
 are labelled separately from tested-model costs and response time. Transcripts load on demand.
 
-URLs preserve ordered model IDs, reference model, metric, subject order, and expanded subjects.
-They follow the latest published result for each model and expose the actual run ID and date.
+URLs preserve ordered execution IDs, a reference execution, metric, subject order, and expanded subjects.
+They pin exact execution IDs and expose their completion dates. Legacy model-only links resolve to the latest published runs once.
 Share opens the device's native share sheet when available on HTTPS. Otherwise it opens a
 link panel with Copy and Close controls. Share toggles the panel; Escape closes it and returns
 focus to Share. Copy uses the Clipboard API, then selected-text copying for HTTP previews,

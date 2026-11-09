@@ -11,6 +11,7 @@ export type ValueMark = "best" | "worst" | "tie" | null;
 export interface ComparisonValue { numerator: string; denominator: number }
 export interface ComparisonState {
   modelIds: string[];
+  runIds: string[];
   expanded: string[];
   metric: RoundMetric;
   baseline: string;
@@ -24,11 +25,12 @@ export const queryList = (value: LocationQuery[string] | undefined): string[] =>
 
 export const comparisonState = (query: LocationQuery): ComparisonState => {
   const modelIds = queryList(query.models).filter(id => /^M-\d{4}$/.test(id)).slice(0, MAX_COMPARISON_MODELS);
+  const runIds = queryList(query.runs).filter(id => /^BX-[a-zA-Z0-9._-]+$/.test(id)).slice(0, MAX_COMPARISON_MODELS);
   return {
-    modelIds,
+    modelIds, runIds,
     expanded: queryList(query.expanded).filter(id => /^T-\d{4}$/.test(id)),
     metric: ROUND_METRICS.includes(query.metric as RoundMetric) ? query.metric as RoundMetric : "questions",
-    baseline: typeof query.baseline === "string" && modelIds.includes(query.baseline) ? query.baseline : "",
+    baseline: typeof query.baseline === "string" && [...modelIds, ...runIds].includes(query.baseline) ? query.baseline : "",
     sort: query.sort === "name" || query.sort === "gap" ? query.sort : "original",
   };
 };
@@ -110,7 +112,7 @@ export const mainComparisonMetrics: readonly MainComparisonMetric[] = [
       const interval = model.result.question_score_confidence_interval;
       return interval === null ? null : scalar(subtractDecimal(interval.upper, interval.lower));
     } },
-  { key: "rank", label: "Leaderboard rank", format: "integer", note: "Position among all models in this edition. Equal scores are ranked by CI width.",
+  { key: "rank", label: "Leaderboard rank", format: "integer", note: "Current position among the latest runs in this edition. Earlier runs have no current rank. Equal scores are ranked by CI width.",
     value: model => scalar(model.result.rank) },
   { key: "model-cost", label: "Model cost per round", format: "money-precise", note: "Tested model only.",
     value: model => scalar(model.result.guesser_cost_per_episode_usd) },

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PublicationTime from "@/components/PublicationTime.vue";
 import { RouterLink, type RouteLocationRaw } from "vue-router";
 import RankBadge from "@/components/RankBadge.vue";
 
@@ -11,6 +12,7 @@ defineProps<{
   rank: number | string;
   rankTied?: boolean;
   rankNote?: string;
+  date?: string | null;
   name: string;
   provider: string;
   metrics: ResultMetric[];
@@ -30,6 +32,7 @@ defineProps<{
       <span class="mobile-result-identity">
         <strong>{{ name }}</strong>
         <small>{{ provider }}</small>
+        <small v-if="date"><PublicationTime :value="date" date-only /></small>
       </span>
       <span v-if="metrics[0]" class="mobile-result-primary">
         <strong>{{ metrics[0].value }}</strong>
@@ -174,3 +177,5 @@ defineProps<{
   }
 }
 </style>
+
+<style scoped>.run-date { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem; white-space: nowrap; }</style>

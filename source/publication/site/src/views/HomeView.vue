@@ -412,6 +412,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                         :to="modelSummaryRoute(row.model.model_id, row.execution_id)"
                         :name="row.model.display_name"
                         :meta="`${row.model.model_id} · ${row.model.provider}`"
+                        :date="row.completed_at"
                       />
                       <strong v-else>{{ row.model.display_name }}</strong>
                       <small v-if="row.execution_id === null">
@@ -454,6 +455,7 @@ const scoreDots = computed<ScoreDot[]>(() =>
                 :rank-note="rankPresentation(row, evaluated).note"
                 :name="row.model.display_name"
                 :provider="row.model.provider"
+                :date="row.completed_at"
                 :to="row.execution_id === null ? null : modelSummaryRoute(row.model.model_id, row.execution_id)"
                 :metrics="[
                   {

@@ -101,7 +101,7 @@ class _EditorialPage:
 _EDITORIAL_PAGES = (
     _EditorialPage(
         route="results/compare",
-        browser_title="Compare AI Models Side by Side | Deep20Bench",
+        browser_title="Compare Dated Benchmark Runs | Deep20Bench",
         description=(
             "Compare up to five AI models side by side: question score, stability, cost, "
             "time, and results for each subject and round."
@@ -696,6 +696,7 @@ def _static_route_manifest(
         (document.run.model_name, document.run.completed_at.date()) for document in bundle.runs
     )
     runs: list[StaticRouteEntry] = []
+    run_labels: dict[str, str] = {}
     for run_document in bundle.runs:
         run = run_document.run
         run_label = (
@@ -703,6 +704,7 @@ def _static_route_manifest(
             if run_dates[(run.model_name, run.completed_at.date())] == 1
             else run.execution_id
         )
+        run_labels[run.execution_id] = run_label
         row = leaderboard_by_execution.get(run.execution_id)
         score = (
             _decimal_text(run.question_score)
@@ -727,7 +729,7 @@ def _static_route_manifest(
                     f"Official Twenty Questions AI benchmark results for {run.model_name}: "
                     f"{rank}"
                     f"{score} question score across {run.terminal_trials} rounds with "
-                    f"{success} success."
+                    f"{success} success. Run completed {run_label}."
                 ),
                 last_modified=run.completed_at,
                 execution_id=run.execution_id,
@@ -759,13 +761,13 @@ def _static_route_manifest(
                 sitemap_included=True,
                 canonical_route=route,
                 browser_title=(
-                    f"{run.model_name} on {subject.display_name} | Deep20Bench"
+                    f"{run.model_name} on {subject.display_name}, {run_labels[run.execution_id]} | Deep20Bench"
                 ),
                 description=(
                     f"{run.model_name} scored {score} questions on {subject.display_name} "
                     f"across {len(subject_document.trials)} Deep20Bench rounds, solving "
                     f"{subject.successful} of {len(subject_document.trials)}. "
-                    "See every question, answer, and source."
+                    f"Run completed {run_labels[run.execution_id]}. See every question, answer, and source."
                 ),
                 last_modified=run.completed_at,
                 execution_id=subject_document.execution_id,
@@ -788,13 +790,14 @@ def _static_route_manifest(
             browser_title=(
                 f"{runs_by_execution[episode_document.execution_id].run.model_name} on "
                 f"{episode_document.episode.subject_name} - "
-                f"{_round_label(episode_document.trial_id)} | Deep20Bench"
+                f"{_round_label(episode_document.trial_id)}, {run_labels[episode_document.execution_id]} | Deep20Bench"
             ),
             description=(
                 "Questions, final answers, and Oracle evidence for "
                 f"{runs_by_execution[episode_document.execution_id].run.model_name} finding "
                 f"{episode_document.episode.subject_name} in "
-                f"{_round_label(episode_document.trial_id).lower()}."
+                f"{_round_label(episode_document.trial_id).lower()}. "
+                f"Run completed {run_labels[episode_document.execution_id]}."
             ),
             last_modified=runs_by_execution[episode_document.execution_id].run.completed_at,
             execution_id=episode_document.execution_id,
@@ -891,6 +894,8 @@ def _model_aliases(
             aliases.append(alias(f"models/{previous}", slug))
     for document in pages.models:
         for run in document.superseded_runs:
+            if any(entry.route == f"runs/{run.execution_id}" for entry in entries):
+                continue
             aliases.append(alias(f"runs/{run.execution_id}", document.slug))
     return tuple(aliases)
 

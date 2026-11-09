@@ -10,9 +10,13 @@ const props = withDefaults(
   defineProps<{
     label: string;
     align?: "start" | "end";
+    showIndicator?: boolean;
+    closeLabel?: string;
   }>(),
   {
     align: "end",
+    showIndicator: true,
+    closeLabel: "Close explanation",
   },
 );
 
@@ -111,6 +115,7 @@ onBeforeUnmount(() => {
   close();
   stopTracking();
 });
+defineExpose({ close });
 </script>
 
 <template>
@@ -127,7 +132,7 @@ onBeforeUnmount(() => {
       aria-haspopup="dialog"
       :popovertarget="panelId"
     >
-      <span class="info-popover-indicator" aria-hidden="true">i</span>
+      <span v-if="showIndicator" class="info-popover-indicator" aria-hidden="true">i</span>
       <slot name="trigger">{{ label }}</slot>
     </button>
 
@@ -145,7 +150,7 @@ onBeforeUnmount(() => {
           <strong :id="titleId">{{ label }}</strong>
           <button
             type="button"
-            aria-label="Close explanation"
+            :aria-label="closeLabel"
             @click="close(true)"
           >
             <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><path d="m5 5 10 10M15 5 5 15" /></svg>

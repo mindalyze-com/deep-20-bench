@@ -565,7 +565,8 @@ def test_split_public_data_is_complete_and_removes_stale_files(
         run.iterations for run in dataset.official_runs if run.question_score is not None
     )
     assert (
-        leaderboard["leaderboard"]
+        [{key: value for key, value in row.items() if key != "is_latest"}
+         for row in leaderboard["leaderboard"]]
         == json.loads((data / "deep20bench-v9.json").read_text(encoding="utf-8"))["leaderboard"]
     )
 

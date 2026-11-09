@@ -1130,7 +1130,7 @@ def superseded_qualified_runs(
     """Return each model's qualifying runs that a newer qualifying run replaced, newest first.
 
     These runs once met the edition contract, so their identity is public history. Their
-    details stay unpublished; only the selected run is projected.
+    details are published alongside the selected run. Only the latest run is ranked.
     """
     qualified_by_model: dict[str, list[LoadedRun]] = defaultdict(list)
     for run in runs:
@@ -1153,6 +1153,35 @@ def superseded_qualified_runs(
                 for run in ordered[1:]
             )
     return superseded
+
+
+def public_result_row(run: PublicRun, model: PublicModel) -> LeaderboardRow:
+    """Project the recorded values of exactly one run, before ranking."""
+    return LeaderboardRow(
+        rank=None,
+        model=model,
+        status="evaluated",
+        execution_id=run.execution_id,
+        completed_at=run.completed_at,
+        question_score=run.question_score,
+        question_score_confidence_interval=(
+            run.question_score_confidence_interval
+        ),
+        success_rate=run.success_rate,
+        total_cost_usd=run.total_cost_usd,
+        guesser_cost_per_episode_usd=(run.comparison.guesser_cost_per_episode_usd),
+        full_cost_per_episode_usd=(run.comparison.full_cost_per_episode_usd),
+        runtime_per_episode_ms=(run.comparison.runtime_per_episode_ms),
+        guesser_think_time_per_episode_ms=(
+            run.comparison.guesser_think_time_per_episode_ms
+        ),
+        guesser_latency_per_call_ms=(run.comparison.guesser_latency_per_call_ms),
+        cost_adjusted_question_score=(run.comparison.cost_adjusted_question_score),
+        efficiency_status=run.comparison.efficiency_status,
+        successful=run.successful,
+        terminal_trials=run.terminal_trials,
+        contract=_contract(run.contract),
+    )
 
 
 def compile_publication(
@@ -1210,31 +1239,7 @@ def compile_publication(
         if selected_run is None:
             continue
         rows.append(
-            LeaderboardRow(
-                rank=None,
-                model=public_models_by_id[model_id],
-                status="evaluated",
-                execution_id=selected_run.execution_id,
-                completed_at=selected_run.completed_at,
-                question_score=selected_run.question_score,
-                question_score_confidence_interval=(
-                    selected_run.question_score_confidence_interval
-                ),
-                success_rate=selected_run.success_rate,
-                total_cost_usd=selected_run.total_cost_usd,
-                guesser_cost_per_episode_usd=(selected_run.comparison.guesser_cost_per_episode_usd),
-                full_cost_per_episode_usd=(selected_run.comparison.full_cost_per_episode_usd),
-                runtime_per_episode_ms=(selected_run.comparison.runtime_per_episode_ms),
-                guesser_think_time_per_episode_ms=(
-                    selected_run.comparison.guesser_think_time_per_episode_ms
-                ),
-                guesser_latency_per_call_ms=(selected_run.comparison.guesser_latency_per_call_ms),
-                cost_adjusted_question_score=(selected_run.comparison.cost_adjusted_question_score),
-                efficiency_status=selected_run.comparison.efficiency_status,
-                successful=selected_run.successful,
-                terminal_trials=selected_run.terminal_trials,
-                contract=_contract(selected_run.contract),
-            )
+            public_result_row(selected_run, public_models_by_id[model_id])
         )
     leaderboard = _rank_efficiency(_rank(tuple(rows)))
     evaluated = tuple(row for row in leaderboard if row.question_score is not None)
@@ -1260,7 +1265,7 @@ def compile_publication(
         provenance=DatasetProvenance(
             built_at=built_at,
             source_run_count=len(runs),
-            official_run_count=len(selected),
+            official_run_count=len(projected_runs),
             lab_run_count=0,
             latest_completed_at=max(selected_dates) if selected_dates else None,
             subject_catalog_hash=subject_catalog_hash,
@@ -1269,7 +1274,13 @@ def compile_publication(
         leaderboard=leaderboard,
         models=public_models,
         official_runs=tuple(
-            sorted(selected, key=lambda run: (run.completed_at, run.execution_id), reverse=True)
+            sorted(projected_runs, key=lambda run: (run.completed_at, run.execution_id), reverse=True)
+        ),
+        run_results=tuple(
+            next((row for row in leaderboard if row.execution_id == run.execution_id),
+                 public_result_row(run, _public_model(loaded_by_identity[(run.model_id, run.execution_id)]))
+                 .model_copy(update={"is_latest": False}))
+            for run in sorted(projected_runs, key=lambda item: (item.completed_at, item.execution_id), reverse=True)
         ),
         lab_runs=(),
     )

@@ -24,7 +24,7 @@ const contract = (value: unknown): void => {
 /** Validate fetched JSON before it becomes comparison state. */
 export const parseComparisonDocument = (value: unknown): ComparisonDocument => {
   const document = object(value);
-  if (document.document_type !== "comparison" || document.schema_version !== 1 ||
+  if (document.document_type !== "comparison" || ![1, 2].includes(Number(document.schema_version)) ||
       !/^\d+\.\d+$/.test(text(document.edition_id))) invalid();
   const iterations = integer(document.iterations, 1);
   const limit = integer(document.max_questions, 1);
@@ -35,9 +35,11 @@ export const parseComparisonDocument = (value: unknown): ComparisonDocument => {
   for (const raw of array(document.models)) {
     const model = object(raw); const result = object(model.result); const identity = object(result.model);
     const modelId = text(identity.model_id); const executionId = text(result.execution_id);
-    if (!/^M-\d{4}$/.test(modelId) || modelIds.has(modelId) || executions.has(executionId) ||
+    if (!/^M-\d{4}$/.test(modelId) || (document.schema_version === 1 && modelIds.has(modelId)) || executions.has(executionId) ||
         result.status !== "evaluated") invalid();
     modelIds.add(modelId); executions.add(executionId);
+    if (document.schema_version === 2 && typeof result.is_latest !== "boolean") invalid();
+    if (result.is_latest === false && ["rank", "efficiency_rank", "ideal_distance_rank", "product_efficiency_rank", "ideal_distance_score", "normalized_question_score", "normalized_guesser_cost"].some(key => result[key] !== null)) invalid();
     text(identity.display_name); text(identity.provider); text(identity.reasoning_effort);
     if (!Number.isFinite(Date.parse(text(result.completed_at)))) invalid();
     if (result.rank !== null) integer(result.rank, 1);

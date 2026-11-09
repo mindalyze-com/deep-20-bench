@@ -2,11 +2,23 @@
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { comparisonReturnPath, isComparisonDetail } from "@/lib/comparison-navigation";
+import RunHistoryPicker from "@/components/run/RunHistoryPicker.vue";
+import { getRun, peekRun } from "@/lib/api";
+import { useKeyedPublicationLoad } from "@/lib/use-keyed-publication-load";
 
 import { routeContext } from "@/lib/route-context";
 
 const route = useRoute();
 const router = useRouter();
+const executionId = computed(() => ["run", "subject", "episode"].includes(String(route.name)) && typeof route.params.executionId === "string"
+  ? route.params.executionId : "");
+const { document: runDocument } = useKeyedPublicationLoad({
+  parameters: (): [string] => [executionId.value],
+  load: getRun,
+  initial: () => executionId.value ? peekRun(executionId.value) : null,
+  fallbackError: "Run could not be loaded.",
+  clearBeforeLoad: true,
+});
 const comparisonReturn = computed(() => isComparisonDetail(route.name)
   ? comparisonReturnPath(router, route.query) : null);
 const level = computed(() => {
@@ -52,28 +64,31 @@ const mobileCrumbs = computed(() => crumbs.value.slice(-2));
           <span v-else aria-current="page">{{ crumb.label }}</span>
         </template>
       </nav>
-      <div
-        v-if="routeContext.previous || routeContext.next"
-        class="sibling-controls"
-        aria-label="Sibling navigation"
-      >
-        <RouterLink
-          v-if="routeContext.previous"
-          :to="routeContext.previous.to"
-          rel="prev"
-          :aria-label="`Previous: ${routeContext.previous.label}`"
+      <div class="drilldown-actions">
+        <RunHistoryPicker v-if="executionId && runDocument" :run="runDocument.run" :edition-id="runDocument.edition_id" />
+        <div
+          v-if="routeContext.previous || routeContext.next"
+          class="sibling-controls"
+          aria-label="Sibling navigation"
         >
-          <span aria-hidden="true">←</span><span>{{ routeContext.previous.label }}</span>
-        </RouterLink>
-        <span v-else aria-hidden="true"></span>
-        <RouterLink
-          v-if="routeContext.next"
-          :to="routeContext.next.to"
-          rel="next"
-          :aria-label="`Next: ${routeContext.next.label}`"
-        >
-          <span>{{ routeContext.next.label }}</span><span aria-hidden="true">→</span>
-        </RouterLink>
+          <RouterLink
+            v-if="routeContext.previous"
+            :to="routeContext.previous.to"
+            rel="prev"
+            :aria-label="`Previous: ${routeContext.previous.label}`"
+          >
+            <span aria-hidden="true">←</span><span>{{ routeContext.previous.label }}</span>
+          </RouterLink>
+          <span v-else aria-hidden="true"></span>
+          <RouterLink
+            v-if="routeContext.next"
+            :to="routeContext.next.to"
+            rel="next"
+            :aria-label="`Next: ${routeContext.next.label}`"
+          >
+            <span>{{ routeContext.next.label }}</span><span aria-hidden="true">→</span>
+          </RouterLink>
+        </div>
       </div>
     </div>
   </div>
@@ -82,4 +97,5 @@ const mobileCrumbs = computed(() => crumbs.value.slice(-2));
 <style scoped>
 .comparison-return { display: inline-flex; align-items: center; gap: 0.4rem; min-width: 0; min-height: 44px; color: var(--blue-ink); font-size: var(--text-small); font-weight: 600; text-decoration: none; white-space: nowrap; }
 .comparison-return:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.drilldown-actions { display: flex; align-items: center; justify-content: end; gap: 0.7rem; }
 </style>

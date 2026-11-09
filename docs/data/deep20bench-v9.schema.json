@@ -114,6 +114,83 @@
       "title": "DatasetProvenance",
       "type": "object"
     },
+    "CohortConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "active": {
+          "default": false,
+          "title": "Active",
+          "type": "boolean"
+        },
+        "base_seed": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Base Seed",
+          "type": "integer"
+        },
+        "benchmark_id": {
+          "pattern": "^B-[0-9]{4}$",
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "benchmark_version": {
+          "const": 9,
+          "default": 9,
+          "title": "Benchmark Version",
+          "type": "integer"
+        },
+        "cohort_id": {
+          "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+          "title": "Cohort Id",
+          "type": "string"
+        },
+        "display_name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Display Name",
+          "type": "string"
+        },
+        "iterations": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Iterations",
+          "type": "integer"
+        },
+        "max_questions": {
+          "minimum": 1,
+          "title": "Max Questions",
+          "type": "integer"
+        },
+        "model_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Model Ids",
+          "type": "array"
+        },
+        "target_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Target Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "cohort_id",
+        "display_name",
+        "benchmark_id",
+        "target_ids",
+        "iterations",
+        "base_seed",
+        "max_questions",
+        "model_ids"
+      ],
+      "title": "CohortConfig",
+      "type": "object"
+    },
     "LeaderboardRow": {
       "additionalProperties": false,
       "properties": {
@@ -412,83 +489,6 @@
         "status"
       ],
       "title": "LeaderboardRow",
-      "type": "object"
-    },
-    "CohortConfig": {
-      "additionalProperties": false,
-      "properties": {
-        "active": {
-          "default": false,
-          "title": "Active",
-          "type": "boolean"
-        },
-        "base_seed": {
-          "maximum": 2147483647,
-          "minimum": 0,
-          "title": "Base Seed",
-          "type": "integer"
-        },
-        "benchmark_id": {
-          "pattern": "^B-[0-9]{4}$",
-          "title": "Benchmark Id",
-          "type": "string"
-        },
-        "benchmark_version": {
-          "const": 9,
-          "default": 9,
-          "title": "Benchmark Version",
-          "type": "integer"
-        },
-        "cohort_id": {
-          "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
-          "title": "Cohort Id",
-          "type": "string"
-        },
-        "display_name": {
-          "maxLength": 160,
-          "minLength": 1,
-          "title": "Display Name",
-          "type": "string"
-        },
-        "iterations": {
-          "maximum": 100,
-          "minimum": 1,
-          "title": "Iterations",
-          "type": "integer"
-        },
-        "max_questions": {
-          "minimum": 1,
-          "title": "Max Questions",
-          "type": "integer"
-        },
-        "model_ids": {
-          "items": {
-            "type": "string"
-          },
-          "minItems": 1,
-          "title": "Model Ids",
-          "type": "array"
-        },
-        "target_ids": {
-          "items": {
-            "type": "string"
-          },
-          "minItems": 1,
-          "title": "Target Ids",
-          "type": "array"
-        }
-      },
-      "required": [
-        "cohort_id",
-        "display_name",
-        "benchmark_id",
-        "target_ids",
-        "iterations",
-        "base_seed",
-        "max_questions",
-        "model_ids"
-      ],
-      "title": "CohortConfig",
       "type": "object"
     },
     "PublicActionTurn": {

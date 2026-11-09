@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useRunSelection } from "@/lib/run-selection";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -12,6 +13,8 @@ import RankBadge from "@/components/RankBadge.vue";
 import ResultHelp from "@/components/ResultHelp.vue";
 import ResultsContent from "@/components/ResultsContent.vue";
 import ScoreDotPlot from "@/components/ScoreDotPlot.vue";
+import RunHistoryChart from "@/components/RunHistoryChart.vue";
+import { resultHistory } from "@/lib/run-history-chart";
 import {
   getLeaderboard,
   getManifest,
@@ -44,7 +47,9 @@ import { useRepeatAverages } from "@/lib/use-repeat-averages";
 
 const initialLeaderboard = peekLeaderboard();
 const initialManifest = peekManifest();
-const leaderboard = ref<LeaderboardRow[]>(initialLeaderboard?.leaderboard ?? []);
+const resultData = ref(initialLeaderboard);
+const { allRuns } = useRunSelection();
+const leaderboard = computed(() => (allRuns.value ? resultData.value?.runs ?? resultData.value?.leaderboard : resultData.value?.leaderboard) ?? []);
 const manifest = ref<ManifestDocument | null>(initialManifest);
 const router = useRouter();
 const {
@@ -64,8 +69,11 @@ const rows = computed(() =>
     .filter((row) => row.status === "evaluated")
     .sort(
       (left, right) =>
-        (left.rank ?? Number.MAX_SAFE_INTEGER) -
-          (right.rank ?? Number.MAX_SAFE_INTEGER) ||
+        (allRuns.value
+          ? ((resultData.value?.leaderboard.find(row => row.model.model_id === left.model.model_id)?.rank ?? Number.MAX_SAFE_INTEGER) -
+             (resultData.value?.leaderboard.find(row => row.model.model_id === right.model.model_id)?.rank ?? Number.MAX_SAFE_INTEGER))
+          : (left.rank ?? Number.MAX_SAFE_INTEGER) - (right.rank ?? Number.MAX_SAFE_INTEGER)) ||
+        (left.model.model_id === right.model.model_id ? (right.completed_at ?? "").localeCompare(left.completed_at ?? "") : 0) ||
         left.model.display_name.localeCompare(right.model.display_name),
     ),
 );
@@ -85,7 +93,7 @@ const selectedGuesserTime = computed(() =>
 );
 
 const summaryMetrics = computed<MetricGridItem[]>(() => [
-  { key: "models", label: "Models", value: rows.value.length },
+  { key: "models", label: allRuns.value ? "Dated runs" : "Models", value: rows.value.length },
   {
     key: "episodes",
     label: "Rounds per model",
@@ -115,13 +123,19 @@ const scoreDots = computed<ScoreDot[]>(() =>
 const openRun = (row: LeaderboardRow): void => {
   if (row.execution_id !== null) void router.push(modelSummaryRoute(row.model.model_id, row.execution_id));
 };
+const scoreHistory = computed(() => resultHistory(rows.value, row => ({
+  x: row.question_score,
+  xDisplay: number(row.question_score),
+  lower: row.question_score_confidence_interval?.lower,
+  upper: row.question_score_confidence_interval?.upper,
+})));
 
 const { loading, error } = usePublicationLoad(async () => {
   const [leaderboardDocument, manifestDocument] = await Promise.all([
     getLeaderboard(),
     getManifest(),
   ]);
-  leaderboard.value = leaderboardDocument.leaderboard;
+  resultData.value = leaderboardDocument;
   manifest.value = manifestDocument;
 }, undefined, initialLeaderboard !== null && initialManifest !== null);
 </script>
@@ -150,7 +164,7 @@ const { loading, error } = usePublicationLoad(async () => {
         <section class="ranking-section" aria-labelledby="ranked-models-title">
           <header class="ranking-heading">
             <div>
-              <h2 id="ranked-models-title">Ranked models</h2>
+              <h2 id="ranked-models-title">{{ allRuns ? "Dated runs" : "Ranked models" }}</h2>
               <p>Lower question scores are better.</p>
             </div>
             <InfoPopover label="Ranking rules">
@@ -168,7 +182,7 @@ const { loading, error } = usePublicationLoad(async () => {
               <tbody>
                 <tr
                   v-for="row in sortedRows"
-                  :key="row.model.model_id"
+                  :key="row.execution_id!"
                   :class="{
                     'result-row--clickable': row.execution_id !== null,
                     'result-row--navigable': row.execution_id !== null,
@@ -182,7 +196,8 @@ const { loading, error } = usePublicationLoad(async () => {
                       v-if="row.execution_id !== null"
                       :to="modelSummaryRoute(row.model.model_id, row.execution_id)"
                       :name="row.model.display_name"
-                      :meta="row.model.provider"
+                      :meta="`${row.model.provider}${row.is_latest === false ? ' · Earlier run' : ''}`"
+                      :date="row.completed_at"
                     />
                     <strong v-else>{{ row.model.display_name }}</strong>
                     <small v-if="row.execution_id === null">{{ row.model.provider }}</small>
@@ -233,12 +248,13 @@ const { loading, error } = usePublicationLoad(async () => {
           <div class="mobile-result-list" aria-label="Result comparison">
             <MobileResultCard
               v-for="row in rows"
-              :key="`mobile-${row.model.model_id}`"
+              :key="`mobile-${row.execution_id}`"
               :rank="row.rank ?? '-'"
               :rank-tied="rankPresentation(row, rows).tied"
               :rank-note="rankPresentation(row, rows).note"
               :name="row.model.display_name"
               :provider="row.model.provider"
+              :date="row.completed_at"
               :to="row.execution_id === null ? null : modelSummaryRoute(row.model.model_id, row.execution_id)"
               :metrics="[
                 {
@@ -275,7 +291,7 @@ const { loading, error } = usePublicationLoad(async () => {
               <p class="eyebrow">Score distribution</p>
               <h2 id="overview-chart-title">Question score.</h2>
             </div>
-            <p>{{ questionScoreChartSummary }}</p>
+            <p>{{ allRuns ? "Solid markers show the latest question score. Hollow markers show earlier dates on the same model row. Scores are never averaged across dates." : questionScoreChartSummary }}</p>
             <ResultHelp label="Score metric explanations">
               <InfoPopover label="Question score">
                 <p>
@@ -291,7 +307,7 @@ const { loading, error } = usePublicationLoad(async () => {
                   narrower CI means more consistent results across repeated rounds on these
                   subjects.
                 </p>
-                <p>
+                <p v-if="!allRuns">
                   The side plot shows each CI width. Its three shaded bands split the shown
                   range into equal parts. They are a visual aid, not quality grades.
                 </p>
@@ -309,7 +325,9 @@ const { loading, error } = usePublicationLoad(async () => {
               </InfoPopover>
             </ResultHelp>
           </header>
+          <RunHistoryChart v-if="allRuns" :items="scoreHistory" x-label="Question score" />
           <ScoreDotPlot
+            v-else
             :items="scoreDots"
             :repeat-averages="repeatAverages"
             :repeat-averages-loading="repeatAveragesLoading"
@@ -320,8 +338,8 @@ const { loading, error } = usePublicationLoad(async () => {
 
         <p class="results-note">
           The 95% CI comes from repeated rounds on this edition's subjects. It does not
-          cover other subjects, model versions, or providers. The three CI width bands split
-          the shown range into equal parts; they are not quality grades.
+          cover other subjects, model versions, or providers. <template v-if="!allRuns">The three CI width bands split
+          the shown range into equal parts; they are not quality grades.</template>
           <RouterLink :to="editionRoute('models')">All models, A to Z →</RouterLink>
         </p>
     </ResultsContent>

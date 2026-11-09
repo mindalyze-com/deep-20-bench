@@ -57,6 +57,7 @@ const roundsById = computed(() => new Map(
   (model.value?.subjects ?? []).flatMap((subject) =>
     subject.rounds.map((item) => [`${item.target_id}/${item.trial_id}`, item] as const)),
 ));
+const history = computed(() => model.value?.runs?.length ? model.value.runs : result.value ? [result.value] : []);
 const formatErrors = computed(() => result.value?.contract?.violations ?? 0);
 
 const ordinal = (value: number): string => {
@@ -196,14 +197,14 @@ watch(result, applyContext);
           <div class="lede model-lede">
             <p>{{ scopeText }}</p>
             <p>
-              This page always shows the model’s newest ranked run.
+              Latest qualifying run. Earlier test dates and their individual scores are listed below.
             </p>
             <div class="button-row">
               <RouterLink class="button button-primary" :to="runRoute(executionId)">
                 See all {{ result.terminal_trials }} rounds →
               </RouterLink>
-              <RouterLink class="button button-secondary" :to="comparisonRoute([result.model.model_id], editionId)">
-                Compare this model
+              <RouterLink class="button button-secondary" :to="comparisonRoute([executionId], editionId)">
+                Compare this run
               </RouterLink>
               <RouterLink class="button button-secondary" :to="editionRoute('models')">
                 All models
@@ -379,28 +380,29 @@ watch(result, applyContext);
               <h2 id="model-history-title">Runs of this model.</h2>
             </div>
             <p>
-              Each edition ranks only the newest complete run of a model. Earlier runs are
-              not ranked and their details are not published.
+              Each test date keeps its own score and complete report. The latest qualifying run represents this model in the leaderboard. Scores are never averaged across dates.
             </p>
           </header>
-          <ul class="run-history">
-            <li>
-              Current run in edition {{ editionLabel }}:
-              <RouterLink :to="runRoute(executionId)">{{ executionId }}</RouterLink>,
-              completed
-              <PublicationTime v-if="result.completed_at !== null" :value="result.completed_at" date-only />.
-            </li>
-            <li v-for="other in model.other_editions" :key="other.edition_id">
-              Edition {{ other.edition_label }}:
-              <RouterLink :to="modelRoute(other.slug, other.edition_id)">
-                {{ other.rank === null ? "unranked" : `rank ${other.rank} of ${other.ranked_models}` }},
-                question score {{ number(other.question_score) }}
-              </RouterLink>.
-              Different rules and subjects, so scores are not comparable across editions.
-            </li>
-            <li v-for="run in model.superseded_runs" :key="run.execution_id">
-              Replaced run {{ run.execution_id }}, completed
-              <PublicationTime :value="run.completed_at" date-only />. Not published.
+          <div class="run-history-table">
+            <table>
+              <caption class="visually-hidden">Dated runs of {{ name }} in edition {{ editionLabel }}</caption>
+              <thead><tr><th>Completed</th><th>Question score</th><th>Solved</th><th>Format errors</th><th>Explore</th></tr></thead>
+              <tbody><tr v-for="run in history" :key="run.execution_id!" :class="{ 'latest-run': run.is_latest !== false }">
+                <th scope="row"><PublicationTime v-if="run.completed_at" :value="run.completed_at" date-only /><small>{{ run.is_latest !== false ? 'Latest' : 'Earlier run' }}</small></th>
+                <td>{{ number(run.question_score) }}</td><td>{{ run.successful }}/{{ run.terminal_trials }}</td><td>{{ run.contract?.violations ?? 0 }}</td>
+                <td><RouterLink :to="runRoute(run.execution_id!)">Open run →</RouterLink>
+                  <RouterLink v-if="run.execution_id !== executionId" :to="comparisonRoute([run.execution_id!, executionId], editionId, run.execution_id!)">Compare with latest →</RouterLink>
+                </td>
+              </tr></tbody>
+            </table>
+          </div>
+          <div v-if="history.length > 1" class="button-row">
+            <RouterLink class="button button-secondary" :to="comparisonRoute([history[1]!.execution_id!, executionId], editionId, history[1]!.execution_id!)">Compare latest with previous run</RouterLink>
+          </div>
+          <ul v-if="model.other_editions.length" class="run-history">
+            <li v-for="other in model.other_editions" :key="other.edition_id">Edition {{ other.edition_label }}:
+              <RouterLink :to="modelRoute(other.slug, other.edition_id)">question score {{ number(other.question_score) }}</RouterLink>.
+              Different rules and subjects; scores are not comparable across editions.
             </li>
           </ul>
           <p class="model-related">
@@ -537,4 +539,14 @@ watch(result, applyContext);
     white-space: normal;
   }
 }
+</style>
+
+<style scoped>
+.run-history-table { overflow-x: auto; margin: 1rem 0; border: var(--rule-default); border-radius: 6px; }
+.run-history-table table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; }
+.run-history-table th, .run-history-table td { padding: 0.85rem 1rem; border-bottom: var(--rule-default); white-space: nowrap; }
+.run-history-table thead { background: var(--surface-raised); }
+.run-history-table small { display: block; color: var(--text-secondary); font-size: 0.75rem; font-weight: 400; margin-top: 0.2rem; }
+.run-history-table td:last-child a { display: block; padding-block: 0.4rem; min-height: 36px; }
+.latest-run { background: var(--surface-accent-soft); }
 </style>

@@ -106,6 +106,7 @@ export type EfficiencyStatus =
   | "no_guesser_calls";
 
 export interface LeaderboardRow {
+  is_latest?: boolean;
   rank: number | null;
   model: PublicModel;
   efficiency_rank: number | null;
@@ -415,6 +416,7 @@ export interface LeaderboardDocument {
   schema_version: 4;
   edition_id: string;
   leaderboard: LeaderboardRow[];
+  runs?: LeaderboardRow[];
 }
 
 export interface PublicRepeatAverage {
@@ -446,7 +448,7 @@ export interface ComparisonModel {
 
 export interface ComparisonDocument {
   document_type: "comparison";
-  schema_version: 1;
+  schema_version: 1 | 2;
   edition_id: string;
   iterations: number;
   max_questions: number;
@@ -494,7 +496,7 @@ export interface EditionReference {
   manifest_path: string;
   leaderboard_path: string;
   repeat_averages_path: string;
-  runs: { execution_id: string; model_id: string; model_name: string;
+  runs: { completed_at?: string; execution_id: string; model_id: string; model_name: string;
     classification: "official" | "lab"; target_ids: string[] }[];
   models: { model_id: string; slug: string }[];
 }
@@ -569,6 +571,7 @@ export interface ModelDocument {
     question_score: string | null;
   }[];
   superseded_runs: { execution_id: string; completed_at: string }[];
+  runs?: LeaderboardRow[];
 }
 
 export interface ModelIndexDocument {
@@ -576,6 +579,8 @@ export interface ModelIndexDocument {
   schema_version: 1;
   edition_id: string;
   models: {
+    completed_at?: string | null;
+    run_count?: number;
     slug: string;
     model: PublicModel;
     execution_id: string;

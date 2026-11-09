@@ -12,6 +12,7 @@ import QuestionScore from "@/components/QuestionScore.vue";
 import RankBadge from "@/components/RankBadge.vue";
 import ReasoningEffort from "@/components/ReasoningEffort.vue";
 import RunModelsSection from "@/components/run/RunModelsSection.vue";
+import RunHistorySwitcher from "@/components/run/RunHistorySwitcher.vue";
 import { getLeaderboard, getSubject, peekLeaderboard } from "@/lib/api";
 import { readChartTheme } from "@/lib/chart-theme";
 import {
@@ -31,7 +32,7 @@ import { useRunWorkspace } from "@/lib/workspace-context";
 import { rankPresentation } from "@/lib/rank-presentation";
 import type { LeaderboardRow } from "@/lib/types";
 
-const { run, subjects } = useRunWorkspace();
+const { document, run, subjects } = useRunWorkspace();
 const leaderboard = ref<LeaderboardRow[]>(peekLeaderboard()?.leaderboard ?? []);
 const exampleTo = ref<RouteLocationRaw | null>(null);
 let exampleRequest = 0;
@@ -189,6 +190,7 @@ const roleGuide = runRoleOrder.map((role) => ({
       <div>
         <p class="eyebrow">Official run</p>
         <h1><ModelName :name="run.model_name" /></h1>
+        <RunHistorySwitcher v-if="document" class="mobile-run-history" :run="run" :edition-id="document.edition_id" />
         <p class="run-deck">
           {{ runDeck }} Choose a subject to see its rounds.
         </p>
@@ -585,6 +587,7 @@ const roleGuide = runRoleOrder.map((role) => ({
   font-weight: var(--font-weight-semibold);
 }
 
+.mobile-run-history,
 .mobile-subjects {
   display: none;
 }
@@ -659,6 +662,11 @@ const roleGuide = runRoleOrder.map((role) => ({
     margin: 1px 0;
     border: var(--rule-default);
     background: var(--paper-bright);
+  }
+
+  .mobile-run-history {
+    display: block;
+    margin-block: 1rem;
   }
 
   .mobile-subjects header {

@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import ErrorState from "@/components/ErrorState.vue";
 import LoadingState from "@/components/LoadingState.vue";
+import PublicationTime from "@/components/PublicationTime.vue";
 import ModelName from "@/components/ModelName.vue";
 import RankBadge from "@/components/RankBadge.vue";
 import { getModelIndex, peekModelIndex } from "@/lib/api";
@@ -60,6 +61,8 @@ usePageRouteContext({
               <thead>
                 <tr>
                   <th scope="col">Model</th>
+                  <th scope="col">Latest completion</th>
+                  <th scope="col" data-numeric>Runs</th>
                   <th scope="col" data-numeric>Rank</th>
                   <th scope="col" data-numeric>Question score</th>
                   <th scope="col" data-numeric>Rounds solved</th>
@@ -76,6 +79,8 @@ usePageRouteContext({
                       <ModelName :name="entry.model.display_name" compact />
                     </RouterLink>
                   </th>
+                  <td><PublicationTime v-if="entry.completed_at" :value="entry.completed_at" date-only /></td>
+                  <td data-numeric>{{ entry.run_count ?? 1 }}</td>
                   <td data-numeric><RankBadge :rank="entry.rank" /></td>
                   <td data-numeric>{{ number(entry.question_score) }}</td>
                   <td data-numeric>{{ entry.successful }} of {{ entry.terminal_trials }}</td>

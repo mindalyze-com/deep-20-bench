@@ -2461,7 +2461,9 @@ def test_results_pages_keep_model_metrics_explicit() -> None:
     assert "Close expanded graph" in efficiency
     assert "chart-expand-icon" in efficiency
     assert "border-bottom-color: currentColor" in efficiency
-    assert '<h3 id="tradeoff-title">Cost and question score on a shared scale.</h3>' in efficiency
+    assert '<h3 id="tradeoff-title">' in efficiency
+    assert "Cost and question score on a shared scale." in efficiency
+    assert "Cost and question score across dates." in efficiency
     assert efficiency.count("result-chart-panel") == 1
     assert 'color="efficiency"' in efficiency
     assert "ideal_distance_rank" in efficiency

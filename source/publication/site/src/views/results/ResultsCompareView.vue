@@ -8,6 +8,8 @@ import InfoPopover from "@/components/InfoPopover.vue";
 import LoadingState from "@/components/LoadingState.vue";
 import ModelName from "@/components/ModelName.vue";
 import PublicationTime from "@/components/PublicationTime.vue";
+import { dateTime } from "@/lib/format";
+import { runDate } from "@/lib/run-selection";
 import { getComparison, peekComparison } from "@/lib/api";
 import { compareDecimal } from "@/lib/exact-decimal";
 import { comparisonScroll, rememberComparisonScroll } from "@/lib/comparison-navigation";
@@ -35,7 +37,7 @@ const { editionId } = useEditionContext();
 const active = ref(true); const mounted = ref(false); const pickerOpen = ref(true);
 onMounted(() => {
   mounted.value = true;
-  pickerOpen.value = comparisonState(route.query).modelIds.length === 0;
+  pickerOpen.value = comparisonState(route.query).modelIds.length === 0 && comparisonState(route.query).runIds.length === 0;
 });
 onActivated(() => { active.value = true; });
 onDeactivated(() => { active.value = false; });
@@ -57,30 +59,52 @@ watch([document, active, mounted, () => route.fullPath], async () => {
   // Restore vertical position once its content exists, even on a slow connection.
   window.scrollTo({ top: saved.top });
 }, { flush: "post" });
-usePageRouteContext({ title: "Compare models",
-  description: "Compare up to five models side by side: score, stability, cost, time, and each round." });
+usePageRouteContext({ title: "Compare runs",
+  description: "Compare up to five dated runs side by side: score, stability, cost, time, and each round." });
 
 // Static HTML represents the canonical picker. Apply URL selections after hydration.
 const state = computed(() => comparisonState(mounted.value ? route.query : {}));
 const models = computed(() => document.value?.models ?? []);
-const selected = computed(() => state.value.modelIds.flatMap(id => {
-  const model = models.value.find(item => item.result.model.model_id === id);
+const selected = computed(() => state.value.runIds.flatMap(id => {
+  const model = models.value.find(item => item.result.execution_id === id);
   return model === undefined ? [] : [model];
 }));
-const selectedNames = computed(() => selected.value.map(model => model.result.model.display_name));
-const missing = computed(() => state.value.modelIds.filter(id =>
-  !models.value.some(item => item.result.model.model_id === id)));
-const tooMany = computed(() => mounted.value && queryList(route.query.models).length > MAX_COMPARISON_MODELS);
+const modelRuns = (model: ComparisonModel) => models.value.filter(run => run.result.model.model_id === model.result.model.model_id);
+const optionDate = (run: ComparisonModel): string => {
+  const date = runDate(run.result.completed_at);
+  const sameDay = modelRuns(run).filter(item => runDate(item.result.completed_at) === date).length > 1;
+  return sameDay && run.result.completed_at ? dateTime(run.result.completed_at) : date;
+};
+watch([document, mounted, () => route.query.models], () => {
+  if (!mounted.value || document.value === null || state.value.runIds.length || !state.value.modelIds.length) return;
+  const resolved = state.value.modelIds.flatMap(id => {
+    const found = models.value.find(item => item.result.model.model_id === id && item.result.is_latest !== false);
+    return found ? [found.result.execution_id!] : [];
+  });
+  const baselineRun = models.value.find(item => item.result.model.model_id === state.value.baseline && item.result.is_latest !== false);
+  void router.replace({ query: { ...route.query, models: undefined, runs: resolved.join(",") || undefined,
+    baseline: baselineRun?.result.execution_id || undefined } });
+}, { immediate: true });
+const changeRun = (oldId: string, event: Event): void => {
+  const id = (event.target as HTMLSelectElement).value;
+  if (state.value.runIds.includes(id) && id !== oldId) return;
+  update({ runs: state.value.runIds.map(item => item === oldId ? id : item).join(","),
+    baseline: state.value.baseline === oldId ? id : state.value.baseline || undefined });
+};
+const selectedNames = computed(() => selected.value.map(model => `${model.result.model.display_name} · ${runDate(model.result.completed_at)}`));
+const missing = computed(() => state.value.runIds.filter(id =>
+  !models.value.some(item => item.result.execution_id === id)));
+const tooMany = computed(() => mounted.value && queryList(route.query.runs).length > MAX_COMPARISON_MODELS);
 const search = ref(""); const copied = ref("");
 const shareUrl = ref(""); const shareInput = ref<HTMLInputElement | null>(null);
 const shareButton = ref<HTMLButtonElement | null>(null);
 const copyButton = ref<HTMLButtonElement | null>(null);
 const sharing = ref(false);
 const available = computed(() => models.value.filter(model =>
-  !state.value.modelIds.includes(model.result.model.model_id) &&
-  `${model.result.model.display_name} ${model.result.model.provider}`.toLowerCase().includes(search.value.toLowerCase()))
+  !state.value.runIds.includes(model.result.execution_id!) &&
+  `${model.result.model.display_name} ${model.result.model.provider} ${model.result.completed_at}`.toLowerCase().includes(search.value.toLowerCase()))
   .sort((left, right) => left.result.model.display_name.localeCompare(right.result.model.display_name)));
-const baseline = computed(() => selected.value.find(model => model.result.model.model_id === state.value.baseline));
+const baseline = computed(() => selected.value.find(model => model.result.execution_id === state.value.baseline));
 const sourceSubjects = computed(() => models.value[0]?.subjects ?? []);
 const rounds = computed(() => Array.from({ length: document.value?.iterations ?? 0 }, (_, index) => index + 1));
 const subjectFor = (model: ComparisonModel, id: string) => model.subjects.find(subject => subject.target_id === id);
@@ -115,26 +139,26 @@ const update = (patch: LocationQueryRaw): void => {
   void router.push({ name: "results-compare", params: { editionId: editionId.value },
     query: { ...route.query, comparisonNotice: undefined, ...patch } });
 };
-const modelIds = (items: readonly ComparisonModel[]) => items.map(model => model.result.model.model_id);
+const runIds = (items: readonly ComparisonModel[]) => items.map(model => model.result.execution_id!);
 const add = (event: Event): void => {
   const picker = event.target as HTMLSelectElement;
   const id = picker.value; picker.value = "";
   if (selected.value.length < MAX_COMPARISON_MODELS &&
-      available.value.some(model => model.result.model.model_id === id)) {
-    update({ models: [...modelIds(selected.value), id].join(",") }); search.value = "";
+      available.value.some(model => model.result.execution_id === id)) {
+    update({ runs: [...runIds(selected.value), id].join(",") }); search.value = "";
     if (selected.value.length + 1 === MAX_COMPARISON_MODELS) pickerOpen.value = false;
   }
 };
 const remove = (id: string): void => {
-  const remaining = modelIds(selected.value).filter(item => item !== id);
-  update({ models: remaining.join(",") || undefined,
+  const remaining = runIds(selected.value).filter(item => item !== id);
+  update({ runs: remaining.join(",") || undefined,
     baseline: state.value.baseline === id ? undefined : state.value.baseline || undefined });
 };
 const move = (index: number, direction: number): void => {
-  const ids = modelIds(selected.value); const next = index + direction;
+  const ids = runIds(selected.value); const next = index + direction;
   if (next < 0 || next >= ids.length) return;
   [ids[index], ids[next]] = [ids[next]!, ids[index]!];
-  update({ models: ids.join(",") });
+  update({ runs: ids.join(",") });
 };
 const toggleSubject = (id: string): void => update({ expanded: (state.value.expanded.includes(id)
   ? state.value.expanded.filter(item => item !== id) : [...state.value.expanded, id]).join(",") || undefined });
@@ -198,8 +222,8 @@ const togglePicker = (event: Event): void => { pickerOpen.value = (event.target 
       <div class="content-inner compare-content">
         <header class="compare-intro">
           <div>
-            <h2>Compare models</h2>
-            <p>Pick up to five models and see their results side by side.</p>
+            <h2>Compare dated runs</h2>
+            <p>Choose models and test dates. Compare different models or several runs of the same model.</p>
           </div>
           <button ref="shareButton" class="button button-primary" :disabled="selected.length === 0 || sharing"
             :aria-expanded="shareUrl ? true : undefined" :aria-controls="shareUrl ? 'comparison-share-panel' : undefined" @click="share">Share</button>
@@ -221,42 +245,42 @@ const togglePicker = (event: Event): void => { pickerOpen.value = (event.target 
         </template>
         <template v-else-if="document !== null">
           <details class="compare-model-picker" :open="pickerOpen" @toggle="togglePicker">
-            <summary><strong>Models</strong><span>{{ selected.length }} of {{ MAX_COMPARISON_MODELS }} selected</span><span aria-hidden="true">{{ pickerOpen ? '▾' : '▸' }}</span></summary>
+            <summary><strong>Runs</strong><span>{{ selected.length }} of {{ MAX_COMPARISON_MODELS }} selected</span><span aria-hidden="true">{{ pickerOpen ? '▾' : '▸' }}</span></summary>
             <div class="compare-picker">
-            <label>Find a model
-              <input v-model="search" type="search" placeholder="Name or provider" :disabled="selected.length >= MAX_COMPARISON_MODELS" />
+            <label>Find a model or date
+              <input v-model="search" type="search" placeholder="Name, provider or date" :disabled="selected.length >= MAX_COMPARISON_MODELS" />
             </label>
-            <label>Add model
-              <select aria-label="Add model" value="" :disabled="selected.length >= MAX_COMPARISON_MODELS" @change="add">
-                <option value="">{{ selected.length >= MAX_COMPARISON_MODELS ? 'Remove a model to add another' : available.length === 0 ? 'No models match your search' : 'Choose a model…' }}</option>
-                <option v-for="model in selected" :key="model.result.model.model_id" :value="model.result.model.model_id" disabled>{{ model.result.model.display_name }} - selected</option>
-                <option v-for="model in available" :key="model.result.model.model_id" :value="model.result.model.model_id">{{ model.result.model.display_name }}</option>
+            <label>Add run
+              <select aria-label="Add run" value="" :disabled="selected.length >= MAX_COMPARISON_MODELS" @change="add">
+                <option value="">{{ selected.length >= MAX_COMPARISON_MODELS ? 'Remove a run to add another' : available.length === 0 ? 'No runs match your search' : 'Choose a dated run…' }}</option>
+                <option v-for="model in selected" :key="model.result.execution_id!" :value="model.result.execution_id!" disabled>{{ model.result.model.display_name }} · {{ optionDate(model) }} - selected</option>
+                <option v-for="model in available" :key="model.result.execution_id!" :value="model.result.execution_id!">{{ model.result.model.display_name }} · {{ optionDate(model) }}{{ model.result.is_latest !== false ? " · Latest" : "" }}</option>
               </select>
             </label>
             </div>
-          <ul v-if="selected.length" class="compare-selections" aria-label="Selected models">
-            <li v-for="(model, index) in selected" :key="model.result.model.model_id">
-              <span><ModelName :name="model.result.model.display_name" compact /></span>
+          <ul v-if="selected.length" class="compare-selections" aria-label="Selected runs">
+            <li v-for="(model, index) in selected" :key="model.result.execution_id!">
+              <span><ModelName :name="model.result.model.display_name" compact /><small>{{ optionDate(model) }}</small></span>
               <button v-if="selected.length > 1" :disabled="index === 0" :aria-label="`Move ${model.result.model.display_name} left`" @click="move(index, -1)">←</button>
               <button v-if="selected.length > 1" :disabled="index === selected.length - 1" :aria-label="`Move ${model.result.model.display_name} right`" @click="move(index, 1)">→</button>
-              <button :aria-label="`Remove ${model.result.model.display_name}`" @click="remove(model.result.model.model_id)">×</button>
+              <button :aria-label="`Remove ${model.result.model.display_name}`" @click="remove(model.result.execution_id!)">×</button>
             </li>
           </ul>
           </details>
           <p v-if="missing.length || tooMany || (mounted && route.query.comparisonNotice)" class="compare-notice" role="status">
             <template v-if="missing.length">Not in this edition: {{ missing.join(', ') }}. </template>
-            <template v-if="tooMany">Only the first five models are shown. </template>
-            <template v-if="route.query.comparisonNotice">Some models are not in this edition and were removed.</template>
+            <template v-if="tooMany">Only the first five runs are shown. </template>
+            <template v-if="route.query.comparisonNotice === 'edition-runs'">Edition changed. The latest run of each available model is selected; test dates do not carry across editions.</template>
+            <template v-else-if="route.query.comparisonNotice">Some models are not in this edition and were removed.</template>
           </p>
-          <p v-if="selected.length === 0" class="compare-empty">Add a model above to start.</p>
+          <p v-if="selected.length === 0" class="compare-empty">Add a dated run above to start.</p>
           <template v-else>
             <div class="compare-context">
-              <p>Each model's latest ranked run: {{ document.target_ids.length }} subjects, {{ document.iterations }} rounds each.
-                Shared links always show the latest results.</p>
+              <p>Each column is one dated run: {{ document.target_ids.length }} subjects, {{ document.iterations }} rounds each. Shared links keep these exact runs.</p>
               <label>Show differences from
                 <select aria-label="Show differences from" :value="state.baseline" @change="change('baseline', $event)">
                   <option value="">None</option>
-                  <option v-for="model in selected" :key="model.result.model.model_id" :value="model.result.model.model_id">{{ model.result.model.display_name }}</option>
+                  <option v-for="model in selected" :key="model.result.execution_id!" :value="model.result.execution_id!">{{ model.result.model.display_name }} · {{ optionDate(model) }}{{ model.result.is_latest !== false ? " · Latest" : "" }}</option>
                 </select>
               </label>
             </div>
@@ -271,17 +295,18 @@ const togglePicker = (event: Event): void => { pickerOpen.value = (event.target 
               </InfoPopover>
             </div>
             <p class="compare-help">Lower is better, except for rounds solved. Green marks the best value among these models, red the worst.</p>
-            <p v-if="mainOverflow" class="compare-mobile-hint"><span aria-hidden="true">↔</span> Swipe to see more models</p>
+            <p v-if="mainOverflow" class="compare-mobile-hint"><span aria-hidden="true">↔</span> Swipe to see more runs</p>
             <ComparisonTable ref="mainScroll" :models="selectedNames" label="Main metric comparison" column-label="Metric" @overflow="mainOverflow = $event">
               <table class="compare-table compare-main-table">
                 <caption class="visually-hidden">Main metrics for the selected models</caption>
                 <thead><tr>
                   <th scope="col">Metric</th>
-                  <th v-for="model in selected" :key="model.result.model.model_id" scope="col">
+                  <th v-for="model in selected" :key="model.result.execution_id!" scope="col">
                     <div class="compare-model-heading">
                     <RouterLink class="compare-model-link" :to="modelSummaryRoute(model.result.model.model_id, model.result.execution_id!, editionId, detailQuery)"><ModelName :name="model.result.model.display_name" compact separated /></RouterLink>
                     <small class="compare-provider">{{ model.result.model.provider }}</small>
-                    <small v-if="state.baseline" class="compare-reference" :aria-hidden="state.baseline !== model.result.model.model_id ? true : undefined">{{ state.baseline === model.result.model.model_id ? 'Reference' : '' }}</small>
+                    <label class="compare-date-label">Completed<select aria-label="Run date" :value="model.result.execution_id" @change="changeRun(model.result.execution_id!, $event)"><option v-for="run in modelRuns(model)" :key="run.result.execution_id!" :value="run.result.execution_id!" :disabled="run.result.execution_id !== model.result.execution_id && state.runIds.includes(run.result.execution_id!)">{{ optionDate(run) }}</option></select><span class="compare-run-period">{{ model.result.is_latest !== false ? "Latest run" : "Earlier run" }}</span></label>
+                    <small v-if="state.baseline" class="compare-reference" :aria-hidden="state.baseline !== model.result.execution_id ? true : undefined">{{ state.baseline === model.result.execution_id ? 'Reference' : '' }}</small>
                     <details class="compare-run"><summary>Run details</summary>
                       <RouterLink :to="runRoute(model.result.execution_id!, detailQuery)">{{ model.result.execution_id }}</RouterLink>
                       <PublicationTime v-if="model.result.completed_at" :value="model.result.completed_at" date-only />
@@ -291,8 +316,9 @@ const togglePicker = (event: Event): void => { pickerOpen.value = (event.target 
                 </tr></thead>
                 <tbody><tr v-for="metric in mainComparisonMetrics" :key="metric.key" :data-metric="metric.key">
                   <th scope="row">{{ metric.label }}</th>
-                  <td v-for="model in selected" :key="model.result.model.model_id" :data-state="valueMark(metric.value(model), selected.map(metric.value), metric.higherIsBetter)">
-                    <ComparisonValue :value="metric.value(model)" :format="metric.format"
+                  <td v-for="model in selected" :key="model.result.execution_id!" :data-state="valueMark(metric.value(model), selected.map(metric.value), metric.higherIsBetter)">
+                    <span v-if="metric.key === 'rank' && model.result.is_latest === false" class="compare-earlier-rank">Earlier run</span>
+                    <ComparisonValue v-else :value="metric.value(model)" :format="metric.format"
                       :mark="valueMark(metric.value(model), selected.map(metric.value), metric.higherIsBetter)"
                       :baseline="baseline && baseline !== model ? metric.value(baseline) : null">
                       <small v-if="metric.key === 'solved'">{{ model.result.successful }} of {{ model.result.terminal_trials }}</small>
@@ -320,12 +346,12 @@ const togglePicker = (event: Event): void => { pickerOpen.value = (event.target 
               <template v-if="state.metric === 'questions'">A failed round scores {{ document.max_questions + 1 }}; if its counted questions differ, they appear below the score.</template>
               <template v-else-if="state.metric === 'cost'">Includes the tested model and the answer checks.</template>
               <template v-else-if="state.metric === 'duration'">Total time for the round, including answer checks.</template></p>
-            <p v-if="subjectOverflow" class="compare-mobile-hint"><span aria-hidden="true">↔</span> Swipe to see more models</p>
+            <p v-if="subjectOverflow" class="compare-mobile-hint"><span aria-hidden="true">↔</span> Swipe to see more runs</p>
             <ComparisonTable ref="subjectScroll" :models="selectedNames" label="Subject and round comparison" column-label="Subject / round" @overflow="subjectOverflow = $event">
               <table class="compare-table">
                 <caption class="visually-hidden">{{ metricLabel }} by subject and round</caption>
                 <thead><tr><th scope="col">Subject / round</th>
-                  <th v-for="model in selected" :key="model.result.model.model_id" scope="col"><div class="compare-model-heading"><ModelName :name="model.result.model.display_name" compact separated /></div></th>
+                  <th v-for="model in selected" :key="model.result.execution_id!" scope="col"><div class="compare-model-heading"><ModelName :name="model.result.model.display_name" compact separated /><small>{{ optionDate(model) }}</small></div></th>
                 </tr></thead>
                 <tbody v-for="subject in subjects" :key="subject.target_id" :data-subject="subject.target_id" :data-expanded="state.expanded.includes(subject.target_id)">
                   <tr class="compare-subject-row" @click="toggleSubject(subject.target_id)">
@@ -333,7 +359,7 @@ const togglePicker = (event: Event): void => { pickerOpen.value = (event.target 
                       <svg class="compare-chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="m6 3 5 5-5 5" /></svg>
                       <span>{{ subject.display_name }}<small>Average</small></span>
                     </button></th>
-                    <td v-for="model in selected" :key="model.result.model.model_id" class="compare-average-cell" :data-state="valueMark(subjectValue(subjectFor(model, subject.target_id), state.metric), subjectValues(subject.target_id))">
+                    <td v-for="model in selected" :key="model.result.execution_id!" class="compare-average-cell" :data-state="valueMark(subjectValue(subjectFor(model, subject.target_id), state.metric), subjectValues(subject.target_id))">
                       <div class="compare-average-value">
                       <ComparisonValue :value="subjectValue(subjectFor(model, subject.target_id), state.metric)" :format="roundFormat"
                         :mark="valueMark(subjectValue(subjectFor(model, subject.target_id), state.metric), subjectValues(subject.target_id))"
@@ -351,7 +377,7 @@ const togglePicker = (event: Event): void => { pickerOpen.value = (event.target 
                   </tr>
                   <tr v-for="roundNumber in (state.expanded.includes(subject.target_id) ? rounds : [])" :key="roundNumber" class="compare-round-row" :data-round="roundNumber">
                     <th scope="row">Round {{ roundNumber }}</th>
-                    <td v-for="model in selected" :key="model.result.model.model_id" class="compare-result-cell" :data-state="valueMark(roundValue(roundFor(model, subject.target_id, roundNumber), state.metric), roundValues(subject.target_id, roundNumber))">
+                    <td v-for="model in selected" :key="model.result.execution_id!" class="compare-result-cell" :data-state="valueMark(roundValue(roundFor(model, subject.target_id, roundNumber), state.metric), roundValues(subject.target_id, roundNumber))">
                       <RouterLink v-if="roundFor(model, subject.target_id, roundNumber)" class="compare-result-link compare-round-link" :to="episodeRoute(model.result.execution_id!, subject.target_id, roundFor(model, subject.target_id, roundNumber)!.trial_id, detailQuery)">
                         <span class="visually-hidden">{{ model.result.model.display_name }}, {{ subject.display_name }}, round {{ roundNumber }}: </span>
                         <ComparisonValue :value="roundValue(roundFor(model, subject.target_id, roundNumber), state.metric)" :format="roundFormat" :digits="0"
@@ -492,4 +518,17 @@ const togglePicker = (event: Event): void => { pickerOpen.value = (event.target 
   .compare-action-long { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .compare-action-short { display: inline; }
 }
+</style>
+
+<style scoped>
+.compare-date-label { display: grid; gap: 0.25rem; font-size: 0.6875rem; color: var(--text-secondary); margin-top: 0.4rem; }
+.compare-date-label select { width: 100%; min-height: 44px; font: inherit; font-size: 0.8125rem; padding: 0.4rem; border: var(--rule-default); border-radius: 4px; background: var(--paper-bright); color: var(--ink); }
+.compare-selections small { display: block; color: var(--text-secondary); }
+</style>
+
+<style scoped>
+.compare-date-label { text-align: center; }
+.compare-run-period { font-size: 0.6875rem; font-weight: 400; color: var(--text-secondary); }
+.compare-earlier-rank { font-size: 0.8125rem; color: var(--text-secondary); }
+@media (max-width: 600px) { .compare-date-label select { font-size: 0.6875rem; padding-inline: 0.2rem; } }
 </style>

@@ -1,3 +1,4 @@
+import { runLabel } from "./run-selection";
 import type { RouteLocationRaw } from "vue-router";
 
 import { confidenceIntervalLabel, number } from "./format";
@@ -22,8 +23,8 @@ export const leaderboardScoreDot = (
 ): ScoreDot => {
   const interval = row.question_score_confidence_interval;
   return {
-    modelId: row.model.model_id,
-    label: row.model.display_name,
+    modelId: row.execution_id ?? row.model.model_id,
+    label: runLabel(row.model.display_name, row.completed_at),
     value: Number(row.question_score ?? 0),
     display: number(row.question_score),
     confidenceLower: interval === null ? undefined : Number(interval.lower),

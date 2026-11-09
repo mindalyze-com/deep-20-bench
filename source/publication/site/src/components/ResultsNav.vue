@@ -39,7 +39,7 @@ watch(
     <RouterLink
       v-for="link in links"
       :key="link.name"
-      :to="editionRoute(link.name)"
+      :to="{ ...editionRoute(link.name) as object, query: route.query.history === 'all' ? { history: 'all' } : {} }"
       exact-active-class="active"
     >
       {{ link.label }}

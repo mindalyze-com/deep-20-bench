@@ -97,7 +97,10 @@ def test_subject_ranks_compare_every_model_with_shared_competition_ranks() -> No
     bundles = _bundles()
     for bundle, edition in zip(bundles, build_model_pages(bundles, (), {}), strict=True):
         averages: dict[str, list[Decimal]] = {}
+        latest_ids = {row.execution_id for row in bundle.leaderboard.leaderboard}
         for run in bundle.runs:
+            if run.run.execution_id not in latest_ids:
+                continue
             for summary in run.subjects:
                 if summary.average_questions is not None:
                     averages.setdefault(summary.target_id, []).append(summary.average_questions)

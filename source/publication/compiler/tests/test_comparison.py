@@ -32,7 +32,7 @@ def test_comparison_preserves_every_source_value_and_excludes_transcripts(editio
     assert len(comparison.models) == len(dataset.official_runs)
     for model in comparison.models:
         run = next(run for run in bundle.runs if run.run.execution_id == model.result.execution_id)
-        assert model.result == next(row for row in dataset.leaderboard
+        assert model.result == next(row for row in (dataset.run_results or dataset.leaderboard)
                                     if row.execution_id == run.run.execution_id)
         assert model.totals == run.run.totals
         for subject, summary in zip(model.subjects, run.subjects, strict=True):
@@ -69,3 +69,50 @@ def test_comparison_rejects_incomplete_and_duplicate_results() -> None:
         PublicationComparisonDocument.model_validate(comparison.model_copy(
             update={"models": (incomplete,)},
         ).model_dump())
+
+
+def test_dated_runs_of_same_model_keep_separate_scores_and_transcripts() -> None:
+    """Two dates remain two observations, with one current leaderboard result."""
+    from datetime import timedelta
+    from deep20_publication.models import LeaderboardRow
+
+    dataset = PublishedDataset.model_validate_json(
+        (REPOSITORY / 'docs/data/editions/1.1/deep20bench-v10.json').read_text()
+    )
+    current = dataset.official_runs[0]
+    row = next(item for item in dataset.leaderboard if item.execution_id == current.execution_id)
+    earlier = current.model_copy(update={
+        'execution_id': 'BX-dated-comparison-earlier',
+        'completed_at': current.completed_at - timedelta(days=30),
+    })
+    old_row = LeaderboardRow.model_validate({
+        **row.model_dump(), 'execution_id': earlier.execution_id,
+        'completed_at': earlier.completed_at, 'is_latest': False,
+        'rank': None, 'efficiency_rank': None, 'ideal_distance_rank': None,
+        'product_efficiency_rank': None, 'ideal_distance_score': None,
+        'normalized_question_score': None, 'normalized_guesser_cost': None,
+    })
+    selected = dataset.model_copy(update={
+        'official_runs': (current, earlier), 'leaderboard': (row,),
+        'run_results': (row, old_row),
+    })
+    bundle = split_publication(selected)
+    comparison = build_comparison(bundle)
+    assert comparison.schema_version == 2
+    assert [item.result.execution_id for item in comparison.models] == [current.execution_id, earlier.execution_id]
+    assert len({item.result.model.model_id for item in comparison.models}) == 1
+    assert comparison.models[0].result.question_score == row.question_score
+    assert comparison.models[1].result.question_score == old_row.question_score
+    assert comparison.models[1].result.rank is None
+    assert comparison.models[1].result.ideal_distance_score is None
+    assert {item.execution_id for item in bundle.episodes} == {current.execution_id, earlier.execution_id}
+
+
+def test_earlier_run_cannot_borrow_current_rank() -> None:
+    from deep20_publication.models import LeaderboardRow
+
+    dataset = PublishedDataset.model_validate_json(
+        (REPOSITORY / 'docs/data/editions/1.1/deep20bench-v10.json').read_text()
+    )
+    with pytest.raises(ValidationError, match='earlier runs'):
+        LeaderboardRow.model_validate({**dataset.leaderboard[0].model_dump(), 'is_latest': False})

@@ -505,6 +505,26 @@ Seed support was checked in metadata; the existing canary sends no provider seed
 cache savings, and game performance remain unmeasured. The supporting record is
 `private/reviews/deepseek41-flash-smoke-20261028/smoke.json`.
 
+Date: 2026-11-09T21:27:44+01:00
+
+Claude Fable 5.2 (`M-0038`) uses `anthropic/claude-fable-5.2` pinned to Anthropic
+with high reasoning, strict JSON Schema output, and disabled fallbacks. The standard
+endpoint advertises structured output and reasoning effort. It omits provider seed support.
+Advertised prices per million tokens are $8 input, $40 output, $0.20 cache reads, and
+$10 five-minute cache writes.
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/anthropic/claude-fable-5.2/endpoints)
+
+The configuration keeps the fixed prefix and append-only visible history with best-effort
+`ephemeral_5m`, a 512-token minimum, a 300-second lifetime, and a 1.25 write multiplier.
+It adds no padding or response reuse.
+[Anthropic prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)
+
+The edition 1.1 `qualified_v1` opening-turn canary passed on the configured model and
+provider with one valid `ASK`, HTTP 200, and finish reason `stop`. With retries disabled
+and a 4,096-output-token cap for the probe, it used 1,570 input tokens and 120 output
+tokens (62 reasoning), took 5,405 milliseconds, and cost $0.020492. It recorded 1,566
+cache-write tokens and zero cache-read tokens. The single call confirms cache creation.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input
@@ -761,3 +781,7 @@ savings are claimed; this revision has only local validation.
 - [OpenAI prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching)
 - [OpenRouter prompt caching and sticky routing](https://openrouter.ai/docs/guides/best-practices/prompt-caching)
 - [OpenRouter response caching](https://openrouter.ai/docs/guides/features/response-caching)
+
+## Dated-run publication
+
+The dated-run history and exact-run comparison views read completed artifacts and already-public website data only. They add no LLM calls, prompt changes, provider or application response caching, or answer reuse. Browser publication-data caching retains execution identities; selecting another date cannot reuse another run's score, cost, timing or transcript. Existing role-specific prompt-cache policies and benchmark ASK inventories remain unchanged.

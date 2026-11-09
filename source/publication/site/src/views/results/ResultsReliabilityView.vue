@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { runLabel, useRunSelection } from "@/lib/run-selection";
 import { computed } from "vue";
 
 import InfoPopover from "@/components/InfoPopover.vue";
@@ -8,6 +9,8 @@ import MobileResultCard from "@/components/MobileResultCard.vue";
 import RankingTable from "@/components/RankingTable.vue";
 import RankingDataRow from "@/components/RankingDataRow.vue";
 import ReliabilityScatter from "@/components/ReliabilityScatter.vue";
+import RunHistoryChart from "@/components/RunHistoryChart.vue";
+import { resultHistory } from "@/lib/run-history-chart";
 import ResultHelp from "@/components/ResultHelp.vue";
 import ResultsContent from "@/components/ResultsContent.vue";
 import SortButton from "@/components/SortButton.vue";
@@ -23,10 +26,12 @@ import { useTableSort } from "@/lib/use-table-sort";
 interface ReliabilityEntry {
   row: LeaderboardRow;
   intervalWidth: number;
-  reliabilityRank: number;
+  reliabilityRank: number | null;
 }
 
-const { leaderboard, loading, error, openRun } = useLeaderboardResults();
+const { leaderboard, allRows, latestRows, loading, error, openRun } = useLeaderboardResults();
+
+const { allRuns } = useRunSelection();
 
 usePageRouteContext({
   title: "Stability results",
@@ -52,9 +57,11 @@ const ranked = computed<ReliabilityEntry[]>(() => {
       left.intervalWidth - right.intervalWidth ||
       left.row.model.display_name.localeCompare(right.row.model.display_name),
   );
-  return entries.map((entry, index) => ({
+  const current = entries.filter(entry => entry.row.is_latest !== false);
+  const ranks = new Map(current.map((entry,index) => [entry.row.execution_id,index+1]));
+  return entries.map(entry => ({
     ...entry,
-    reliabilityRank: index + 1,
+    reliabilityRank: ranks.get(entry.row.execution_id) ?? null,
   }));
 });
 
@@ -88,7 +95,7 @@ const unranked = computed(() =>
 );
 
 const summaryMetrics = computed<MetricGridItem[]>(() => [
-  { key: "models", label: "Models", value: ranked.value.length },
+  { key: "models", label: allRuns.value ? "Dated runs" : "Models", value: ranked.value.length },
   {
     key: "narrowest",
     label: "Smallest CI width",
@@ -108,23 +115,29 @@ const summaryMetrics = computed<MetricGridItem[]>(() => [
 ]);
 
 const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
-  ranked.value.map(({ row, intervalWidth, reliabilityRank }) => {
+  ranked.value.filter(entry => entry.reliabilityRank !== null).map(({ row, intervalWidth, reliabilityRank }) => {
     const interval = row.question_score_confidence_interval;
     if (interval === null) throw new Error("ranked reliability row has no interval");
     return {
-      label: row.model.display_name,
+      label: runLabel(row.model.display_name, row.completed_at),
       score: Number(row.question_score ?? 0),
       scoreDisplay: number(row.question_score),
       confidenceDisplay: confidenceIntervalLabel(interval),
       intervalWidth,
       intervalWidthDisplay: number(intervalWidth, 2),
-      reliabilityRank,
+      reliabilityRank: reliabilityRank!,
       link:
         row.execution_id === null ? undefined : `/runs/${row.execution_id}/`,
     };
   }),
 );
 
+const stabilityHistory = computed(() => resultHistory(
+  [...latestRows.value, ...allRows.value.filter(row=>row.is_latest===false)]
+    .filter(row=>row.question_score_confidence_interval!==null)
+    .sort((left,right)=>(rowConfidenceIntervalWidth(left)??0)-(rowConfidenceIntervalWidth(right)??0)),
+  row=>({x:rowConfidenceIntervalWidth(row),xDisplay:number(rowConfidenceIntervalWidth(row)),y:row.question_score,yDisplay:number(row.question_score)}),
+));
 </script>
 
 <template>
@@ -158,7 +171,7 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
                 <h2 id="reliability-scatter-title">Stability.</h2>
               </div>
               <p>
-                Each dot is one model. Lower means a better average question score. Further
+                {{ allRuns ? 'Solid points show the latest runs; hollow points show earlier dates.' : 'Each dot is one model.' }} Lower means a better average question score. Further
                 left means a narrower CI, so the model's results varied less across repeated
                 rounds on these subjects.
               </p>
@@ -182,7 +195,8 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
                 </InfoPopover>
               </ResultHelp>
             </header>
-            <ReliabilityScatter :items="reliabilityChartItems" />
+            <RunHistoryChart v-if="allRuns" :items="stabilityHistory" mode="scatter" x-label="CI width" y-label="Question score" />
+            <ReliabilityScatter v-else :items="reliabilityChartItems" />
           </section>
 
           <RankingTable label="Stability ranking" min-width="900px">
@@ -213,7 +227,7 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
               <tbody>
                 <RankingDataRow
                   v-for="entry in sortedRanked"
-                  :key="entry.row.model.model_id"
+                  :key="entry.row.execution_id!"
                   :class="{
                     'result-row--clickable': entry.row.execution_id !== null,
                     'result-row--navigable': entry.row.execution_id !== null,
@@ -221,6 +235,7 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
                   :rank="entry.reliabilityRank"
                   :name="entry.row.model.display_name"
                   :meta="entry.row.model.provider"
+                  :date="entry.row.completed_at"
                   :to="
                     entry.row.execution_id === null
                       ? null
@@ -245,10 +260,11 @@ const reliabilityChartItems = computed<ReliabilityChartItem[]>(() =>
           <div class="mobile-result-list" aria-label="Stability ranking">
             <MobileResultCard
               v-for="entry in ranked"
-              :key="`mobile-${entry.row.model.model_id}`"
-              :rank="entry.reliabilityRank"
+              :key="`mobile-${entry.row.execution_id}`"
+              :rank="entry.reliabilityRank ?? '-'"
               :name="entry.row.model.display_name"
               :provider="entry.row.model.provider"
+              :date="entry.row.completed_at"
               :to="
                 entry.row.execution_id === null
                   ? null

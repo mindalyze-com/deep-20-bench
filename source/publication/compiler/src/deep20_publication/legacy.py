@@ -53,6 +53,10 @@ class LegacyPublicRun(PublicRunSummary):
     subjects: tuple[LegacyPublicSubject, ...]
 
 
+class LegacyLeaderboardRow(LeaderboardRow):
+    is_latest: bool = Field(default=True, exclude=True)
+
+
 class LegacyPublishedDataset(FrozenModel):
     schema_version: Literal[9] = 9
     site: SiteMetadata
@@ -60,7 +64,7 @@ class LegacyPublishedDataset(FrozenModel):
     active_cohort: LegacyCohortConfig
     provenance: DatasetProvenance
     winner: Winner | None
-    leaderboard: tuple[LeaderboardRow, ...]
+    leaderboard: tuple[LegacyLeaderboardRow, ...]
     models: tuple[PublicModel, ...]
     official_runs: tuple[LegacyPublicRun, ...]
     lab_runs: tuple[LegacyPublicRun, ...]
@@ -70,6 +74,10 @@ def legacy_dataset(dataset: PublishedDataset) -> LegacyPublishedDataset:
     if not isinstance(dataset.active_cohort.eligibility, HistoricalEligibility):
         raise TypeError("v9 cannot represent a qualified-answer edition")
     value = dataset.model_dump(mode="json")
+    value.pop("run_results", None)
+    selected = {row.execution_id for row in dataset.leaderboard}
+    value["official_runs"] = [run for run in value["official_runs"] if run["execution_id"] in selected]
+    value["provenance"]["official_run_count"] = len(value["official_runs"])
     value["schema_version"] = 9
     value["active_cohort"] = dataset.active_cohort.model_dump(
         mode="json",

@@ -1,8 +1,8 @@
 # Deep20Bench publication
 
 `deep20-publication` builds the Deep20Bench website from finished benchmark runs. It validates
-signed benchmark artifacts, decides which runs are official, picks the latest qualifying run for
-each model, calculates the question score, writes versioned public JSON and CSV data, and builds
+signed benchmark artifacts, decides which runs are official, ranks the latest qualifying run for
+each model, preserves every qualifying dated run, calculates the question score, writes versioned public JSON and CSV data, and builds
 the static GitHub Pages site.
 
 It does not import the benchmark runner, game, Oracle, Reviewer, Judge, Validator, provider,
@@ -14,6 +14,18 @@ application. In edition 1.1, questions get four directional answers plus UNKNOWN
 uses YES/NO/UNKNOWN. Guesses get three answers in both editions. See
 [benchmark editions](../../documentation/benchmark-editions-proposal.md) and
 [qualified answers](../../documentation/five-answer-experiment.md).
+
+## Dated runs
+
+Every qualifying run retains its recorded score, completion date, costs, timing, uncertainty, subjects and transcripts. Scores are never averaged across dates. The leaderboard and relative efficiency normalization use the latest qualifying run per model. `official_runs` now includes all qualifying dates; `run_results` contains their individual result rows. Historical rows have `is_latest: false`, no current rank and no normalized efficiency values. The maintained v9 download keeps the latest standard-edition selection.
+
+Results offer Latest per model and All dated runs. The setting follows navigation between result tabs. Every result and chart point shows its completion date. Model pages contain a dated history and exact-run comparison links. Run, subject and episode pages retain execution-specific routes; changing a run date keeps the subject and trial within the same edition. Full historical pages are canonical, crawlable, prerendered and included in the sitemap.
+
+The workspace toolbar shows the selected test date and question score. Opening this control reveals dated cards and Compare runs. Each card shows its own question score, identifies the latest run and marks the selected run. Compare runs opens the selected run beside the latest other date. The cards appear below the model name on phones. Their links keep the current subject or round when switching dates.
+
+All dated runs adds a history layer to the graphs. Each model keeps one row or solid point for its latest run; earlier executions use smaller hollow markers. Score rows retain the latest 95% CI and reveal earlier intervals on hover or keyboard focus. Cost and time retain the latest bars, with earlier values marked on the same axes. Highlighting a model connects its dated observations. Overlapping earlier markers open a date choice; clustering keeps a recorded position rather than averaging coordinates or scores. An expandable list provides all earlier dates, values, differences and exact execution links on desktop and mobile. The efficiency history map uses actual recorded cost per round and question score, so historical runs do not inherit current normalization or ranks. Current efficiency ranking remains based on the latest selections.
+
+Comparison schema 2 permits repeated model IDs with unique execution IDs. Historical result rows never inherit the current model rank or efficiency context. Old schema-1 comparison data remains readable by the browser during updates. Other public documents receive additive history/date fields. Existing artifact schemas, scoring within a run, provider requests, sessions and caches remain unchanged.
 
 ## Current policies
 
@@ -435,8 +447,7 @@ qualify for one configured model ID, publication selects the run with the greate
 completion timestamp. It never selects by score, and a latest-timestamp tie fails the build.
 Cache status and cache metrics are reporting-only and never affect qualification.
 
-Only selected current-protocol runs and their models enter the leaderboard, public run details,
-and generated routes. Historical protocol artifacts live outside `runs/` under `archive/` and
+Only the latest qualifying run per model enters the leaderboard. Every qualifying current-protocol run gets public run details and generated routes. Historical protocol artifacts live outside `runs/` under `archive/` and
 are never parsed by the publication compiler. Non-qualifying current runs remain under `runs/`
 but are omitted from the public projection. The public JSON shape emits an empty `lab_runs`
 collection. Tampered or malformed discovered input still fails the build.
@@ -602,7 +613,7 @@ response caching.
 
 ### Selected-model comparison
 
-Compare shows 1-5 models from the selected edition. Its Results tab opens the picker;
+Compare shows 1-5 dated runs from the selected edition, including multiple dates of the same model. Its Results tab opens the picker;
 "Compare this model" on a model page preselects that model. Main metrics retain the published
 score, interval, rank, recorded costs, time, solved count, and format errors. Subject averages
 expand into round summaries and links to the existing transcripts. Clicking a subject name
@@ -612,12 +623,12 @@ These actions are absent from collapsed rows. Round cost is the full
 round cost; round duration includes answer checks. Scored question comparisons use
 `penalized_questions`, including the edition's failure penalty, with counted questions and
 the outcome shown separately. Existing average-then-average scoring does not change.
-The picker marks chosen models as selected and disables them. Repeat additions are rejected;
+The picker marks chosen dated runs as selected and disables them. Adding the exact same run twice is rejected;
 removing a model makes it available again.
 
 The compiler builds compact `data/editions/<id>/compare.json` directly from its typed
 publication graph. The versioned `comparison` document contains the edition's subject IDs,
-round count, question limit, selected official leaderboard rows, run totals, subject summaries,
+round count, question limit, all qualifying dated result rows, run totals, subject summaries,
 and round summaries. It contains no transcripts, prompts, evidence, or provider traces. It is
 site data, outside the Data page's advertised downloads. It is embedded in the canonical
 comparison page for static rendering; client navigation fetches one bundle per edition through
@@ -632,10 +643,8 @@ descriptive, not pairwise significance tests.
 Unavailable values remain unavailable. Cost-efficiency normalization is not recalculated for
 the selected subset.
 
-Share URLs store ordered stable model IDs in `models`, expanded subject IDs in `expanded`,
-the round `metric`, optional `baseline`, and subject `sort`. They select each model's latest
-published qualifying run; run IDs and completion dates are available in the table. They do
-not promise historical run snapshots. Edition switches retain matching model IDs and subjects,
+Share URLs store ordered execution IDs in `runs`, expanded subject IDs in `expanded`,
+the round `metric`, an optional baseline execution ID, and subject `sort`. These links retain exact run snapshots. Legacy `models` links resolve once to the latest published runs and are replaced with execution-based URLs. Run dates, date selectors and complete-report links appear in every comparison column. Edition switches retain matching model IDs and subjects,
 drop unavailable models with a notice, and read the destination's round counts. Round rows
 align by subject ID and round number within an edition, without implying statistical pairing.
 Share prefers the native Web Share API, which requires a secure context. Its fallback panel
@@ -686,11 +695,11 @@ Each observation cites its rounds, and the page states the tested subjects and s
 that results do not predict other subjects or settings. Nothing groups subjects by type or
 claims a cause.
 
-A model page also links the same model ID in other editions and lists replaced qualifying runs
-in the same edition by ID and completion time. Their details stay unpublished. Each replaced
-run's former `/runs/<execution>/` address remains as an alias that shows the model page,
-canonicalizes to it, and stays outside the sitemap. Its former subject and round addresses are
-not kept. Unversioned `/models/...` paths follow the default edition, like other aliases.
+A model page also links the same model ID in other editions and lists every qualifying dated run
+in the same edition with its score, completion time, outcomes and comparison links. Earlier run,
+subject and round addresses remain canonical full reports and stay in the sitemap. Legacy
+identity-only aliases remain only when no qualifying complete report exists at that address.
+Unversioned `/models/...` paths follow the default edition, like other aliases.
 
 ## Public drill-down
 
