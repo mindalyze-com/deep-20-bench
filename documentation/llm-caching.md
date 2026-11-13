@@ -525,6 +525,54 @@ and a 4,096-output-token cap for the probe, it used 1,570 input tokens and 120 o
 tokens (62 reasoning), took 5,405 milliseconds, and cost $0.020492. It recorded 1,566
 cache-write tokens and zero cache-read tokens. The single call confirms cache creation.
 
+Date: 2026-11-10T20:01:25+01:00
+Gemini 4 Carbon (`M-0039`) uses `google/gemini-4-carbon` pinned to Google Vertex
+with high reasoning, strict JSON Schema output, and fallbacks disabled. OpenRouter lists
+seed support and introductory standard global prices of $2 input, $10 output, and $0.10
+cache reads per million tokens. The metadata lists $0.1875 per million cache-write tokens
+and marks implicit caching unsupported on that endpoint. Recheck the prices after
+30 November 2026.
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/google/gemini-4-carbon/endpoints)
+
+Google documents implicit prefix caching from 4,096 tokens. The configuration uses that
+minimum with automatic best-effort caching, the existing stable prefix, and a 300-second
+observation window. It uses standard input prices for estimated write accounting and adds
+no padding, explicit cache storage, or response reuse. Prefix reuse through OpenRouter and
+retention for this route are unmeasured.
+[Google Cloud model documentation](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/4-carbon)
+
+The first edition 1.1 opening-turn probe reached the pinned model and provider. It used
+1,107 input tokens and hit the 4,096-token output cap before returning a complete action.
+It finished with `length` in 65.9 seconds at a cost of $0.043174. It reported zero cache
+reads and writes. The existing canary sends no provider seed.
+
+The follow-up passed with the registered 32,768-token cap and returned a valid `ASK` with
+finish reason `stop`. The call used 1,107 input tokens and 3,942 output tokens, including
+3,888 reasoning tokens. It took 62.4 seconds and cost $0.041634, with zero cache reads
+or writes. Both probes used one request each. The records are under
+`private/reviews/gemini4-carbon-smoke-20261110/`.
+
+Date: 2026-11-13T07:45:55+01:00
+Gemini 4 Hydrogen (`M-0040`) uses `google/gemini-4-hydrogen` pinned to Google Vertex
+with high reasoning, strict JSON Schema output, and fallbacks disabled. OpenRouter lists
+seed support and standard global prices of $1.50 input, $7.50 output, and $0.075 cache
+reads per million tokens. Its endpoint metadata lists $0.0833 per million cache-write
+tokens and marks implicit caching unsupported.
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/google/gemini-4-hydrogen/endpoints)
+
+Google documents automatic implicit caching for shared prefixes of at least 4,096 tokens.
+The configuration uses the existing stable prefix, automatic best-effort caching, and a
+300-second observation window. Estimated write accounting uses the standard input price.
+Cache reuse and retention through OpenRouter remain unmeasured.
+[Google Cloud model documentation](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/4-hydrogen)
+
+The edition 1.1 opening-turn canary returned a valid `ASK` with finish reason `stop`
+on the pinned route. One request at the registered 32,768-token output cap used 1,107
+input tokens and 136 output tokens, including 92 reasoning tokens. It took 2.001 seconds
+and cost $0.0026805. The prompt was below the documented threshold and the call recorded
+zero cache reads and writes. The canary did not send a provider seed. The record is in
+`private/reviews/gemini4-hydrogen-smoke-20261113/smoke.json`.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input

@@ -7,6 +7,22 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-11-13",
+    displayDate: "13 November 2026",
+    title: "Gemini 4 Hydrogen averages 14.93 questions in its first Deep20Bench run.",
+    summary:
+      "At high reasoning, Gemini 4 Hydrogen placed fifth of 25 models in edition 1.1. " +
+      "It solved all 30 rounds without a format error. Gemini 4 Argon averaged 13.67 questions. " +
+      "Hydrogen needed fewer questions on Moon (10.00 versus 12.33) and more on Door handle " +
+      "(25.67 versus 16.00), its largest gap with Argon. Bike pump was Hydrogen’s hardest subject " +
+      "at 29.33 questions. Two Bike pump rounds were replayed after the answering model’s replies failed validation.",
+    link: {
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0040",
+    },
+  },
+  {
     date: "2026-11-09",
     displayDate: "9 November 2026",
     title: "Claude Fable 5.2 (high) joins the leaderboard.",

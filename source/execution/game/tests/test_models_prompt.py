@@ -373,6 +373,10 @@ def test_repository_model_catalog_has_expected_active_ids() -> None:
         "M-0034",
         "M-0035",
         "M-0036",
+        "M-0037",
+        "M-0038",
+        "M-0039",
+        "M-0040",
     )
 
 
@@ -756,6 +760,19 @@ def test_ox_alpha_uses_json_object_output_mode() -> None:
             Decimal("0.20"),
             512,
         ),
+        (
+            "M-0040",
+            "Gemini 4 Hydrogen (high)",
+            "google/gemini-4-hydrogen",
+            "google-vertex",
+            "high",
+            32_768,
+            300,
+            "supported",
+            Decimal("1.50"),
+            Decimal("0.075"),
+            4_096,
+        ),
     ],
 )
 def test_active_benchmark_model_routes_are_fully_pinned(
@@ -839,6 +856,8 @@ def test_active_benchmark_model_routes_are_fully_pinned(
         "M-0028",
         "M-0029",
         "M-0030",
+        "M-0039",
+        "M-0040",
     ],
 )
 def test_active_model_configuration_stays_out_of_guesser_visible_projection(
