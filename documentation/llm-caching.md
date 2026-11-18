@@ -573,6 +573,24 @@ and cost $0.0026805. The prompt was below the documented threshold and the call 
 zero cache reads and writes. The canary did not send a provider seed. The record is in
 `private/reviews/gemini4-hydrogen-smoke-20261113/smoke.json`.
 
+Date: 2026-11-17T22:41:38+01:00
+GPT-6.2 Sol (`M-0041`) uses `openai/gpt-6.2-sol` pinned to the standard OpenAI
+endpoint, with high reasoning, strict JSON Schema output, and fallbacks disabled.
+OpenRouter lists seed support and standard prices of $2 input, $10 output, $0.10
+cache reads, and $2.50 cache writes per million tokens. The endpoint metadata
+marks implicit caching unsupported.
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/openai/gpt-6.2-sol/endpoints)
+
+OpenAI documents a 1,024-token minimum and a 30-minute default lifetime. The
+configuration uses those values for best-effort observation of the existing stable
+prefix. Cache reuse and retention through OpenRouter remain unmeasured.
+[OpenAI prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching)
+
+The single Edition 1.1 opening-turn request returned a valid `ASK` with finish
+reason `stop` in 3.483 seconds for $0.002622. It used 801 input and 102 output
+tokens, including 64 reasoning tokens, and reported zero cache reads or writes.
+The canary did not send a provider seed.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input

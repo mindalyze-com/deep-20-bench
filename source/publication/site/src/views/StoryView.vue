@@ -7,6 +7,21 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-11-18",
+    displayDate: "18 November 2026",
+    title: "GPT-6.2 Sol (high) averages 14.67 questions in its first Deep20Bench run.",
+    summary:
+      "GPT-6.2 Sol placed fourth of 26 models in edition 1.1. GPT-6.1 Sol averaged 15.23 questions. " +
+      "The new model solved all 30 rounds without a format error. " +
+      "It averaged 17.33 questions on Door handle, down from 33.33 for GPT-6.1 Sol. " +
+      "Bike pump took 29.67 questions, up from 20.67.",
+    link: {
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0041",
+    },
+  },
+  {
     date: "2026-11-13",
     displayDate: "13 November 2026",
     title: "Gemini 4 Hydrogen averages 14.93 questions in its first Deep20Bench run.",
