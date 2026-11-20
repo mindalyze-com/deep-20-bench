@@ -7,6 +7,21 @@ import { setRouteContext } from "@/lib/route-context";
 
 const newsEntries = [
   {
+    date: "2026-11-20",
+    displayDate: "20 November 2026",
+    title: "Gemini 4 Neon (high) averages 13.90 questions in its first Deep20Bench run.",
+    summary:
+      "Gemini 4 Neon placed third of 27 models in edition 1.1. GPT-6 Astra and Gemini 4 Argon both averaged 13.67 questions. " +
+      "Neon solved all 30 rounds without a format error. " +
+      "It averaged 10.00 questions on Garfield, compared with 12.00 for Argon. " +
+      "Bike pump was Neon's hardest subject at 27.00 questions, compared with Argon's 22.67.",
+    link: {
+      type: "model",
+      editionId: "1.1",
+      modelId: "M-0042",
+    },
+  },
+  {
     date: "2026-11-18",
     displayDate: "18 November 2026",
     title: "GPT-6.2 Sol (high) averages 14.67 questions in its first Deep20Bench run.",

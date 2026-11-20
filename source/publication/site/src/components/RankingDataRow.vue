@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PublicationTime from "@/components/PublicationTime.vue";
 import type { RouteLocationRaw } from "vue-router";
 
 import ModelRunLink from "@/components/ModelRunLink.vue";

@@ -591,6 +591,27 @@ reason `stop` in 3.483 seconds for $0.002622. It used 801 input and 102 output
 tokens, including 64 reasoning tokens, and reported zero cache reads or writes.
 The canary did not send a provider seed.
 
+Date: 2026-11-20T10:26:14+01:00
+Gemini 4 Neon (`M-0042`) uses `google/gemini-4-neon` pinned to Google Vertex
+with high reasoning, strict JSON Schema output, and fallbacks disabled. OpenRouter
+lists seed support and standard global prices of $3 input, $15 output, $0.15 cache
+reads, and $0.0833 cache writes per million tokens. The endpoint metadata marks
+implicit caching unsupported.
+[OpenRouter endpoint metadata](https://openrouter.ai/api/v1/models/google/gemini-4-neon/endpoints)
+
+Google documents automatic implicit caching for shared prefixes of at least 4,096
+tokens. The configuration uses that threshold, the existing stable prefix, and a
+300-second observation window. Estimated write accounting uses the standard input
+price. Cache reuse, retention, and savings through OpenRouter remain unmeasured.
+[Google Cloud developer guide](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/guides/gemini-4-neon)
+
+One edition 1.1 opening-turn request with an 8,192-token output cap returned a
+valid `ASK` with finish reason `stop` on the pinned route in 6.952 seconds. It cost
+$0.011856 and used 1,107 input and 569 output tokens, including 523 reasoning tokens.
+The prompt was below the documented cache threshold, and the reported cache reads
+and writes were both zero. The canary sent no seed. The record is in
+`private/reviews/gemini4-neon-smoke-20261120/smoke.json`.
+
 Official configurations use `prompt_cache.policy: required` and must supply a compatible
 successful cache-probe artifact before a game manifest can be created. The probe makes two
 representative append-only requests and requires a cache creation/read, nonzero cached input

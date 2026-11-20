@@ -140,17 +140,17 @@ test(
       const news = page.locator("#news");
       const entries = news.locator(".news-entry:visible");
       const archive = news.locator("summary");
-      await expect(news.locator(".news-entry")).toHaveCount(22);
+      await expect(news.locator(".news-entry")).toHaveCount(23);
       await expect(entries).toHaveCount(4);
-      await expect(entries.first()).toContainText("GPT-6.2 Sol (high) averages 14.67 questions");
+      await expect(entries.first()).toContainText("Gemini 4 Neon (high) averages 13.90 questions");
       await expect(entries.first().getByRole("link", { name: "View model results" })).toHaveAttribute(
         "href",
-        "/editions/1.1/models/gpt-6-2-sol-high/",
+        "/editions/1.1/models/gemini-4-neon-high/",
       );
-      await expect(archive).toHaveText("Older updates (18)");
+      await expect(archive).toHaveText("Older updates (19)");
       await expectMinimumSize(archive, 44);
       await archive.click();
-      await expect(entries).toHaveCount(22);
+      await expect(entries).toHaveCount(23);
       await expect(news.getByRole("link", { name: /Read article/ })).toBeVisible();
       await expectNoViewportOverflow(page);
       await archive.click();
